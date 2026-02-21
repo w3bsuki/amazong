@@ -13,6 +13,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { PageShell } from "../../../_components/page-shell"
+import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
 
 // Generate static params for all locales
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -204,9 +205,12 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
   ]
 
   return (
-    <PageShell className="pb-12">
+    <PageShell className="pb-12 overflow-x-hidden">
+      <StaticPageHeaderSync title={t.title} backHref="/" />
       <div className="container py-8 px-4 sm:px-6">
-        <AppBreadcrumb items={breadcrumbItems} />
+        <div className="hidden md:block">
+          <AppBreadcrumb items={breadcrumbItems} />
+        </div>
         
         {/* Header */}
         <div className="text-center mb-10">

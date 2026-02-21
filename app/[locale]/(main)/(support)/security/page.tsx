@@ -6,6 +6,7 @@ import { Bug, CircleCheck as CheckCircle, CreditCard, Mail as EnvelopeSimple, Ey
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { PageShell } from "../../../_components/page-shell"
+import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 
@@ -58,11 +59,12 @@ export default async function SecurityPage({
   ]
   
   return (
-    <PageShell className="pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12 overflow-x-hidden">
+      <StaticPageHeaderSync title={t("metaTitle")} backHref="/" />
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground">
-        <div className="container py-10 md:py-16">
-          <div className="[&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
+        <div className="container px-4 sm:px-6 py-10 md:py-16">
+          <div className="hidden md:block [&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
             <AppBreadcrumb
               items={breadcrumbItems}
               ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -81,7 +83,7 @@ export default async function SecurityPage({
         </div>
       </div>
 
-      <div className="container py-8 md:py-12">
+      <div className="container px-4 sm:px-6 py-8 md:py-12">
         {/* Stripe Badge Section */}
         <Card className="mb-8 border-selected-border bg-selected">
           <CardContent className="p-4">

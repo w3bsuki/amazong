@@ -9,6 +9,7 @@ import {
 import { Mail as Envelope, CircleAlert as WarningCircle } from "lucide-react";
 import { type LucideIcon as Icon } from "lucide-react";
 
+import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
 import { Link } from "@/i18n/routing"
 import { AppBreadcrumb, type BreadcrumbItemData } from "../../../_components/navigation/app-breadcrumb"
 
@@ -95,11 +96,12 @@ export function LegalPageLayout({
     : "text-info"
 
   return (
-    <PageShell className="pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12 overflow-x-hidden">
+      <StaticPageHeaderSync title={title} backHref="/" />
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground">
-        <div className="container py-10 md:py-14">
-          <div className="[&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
+        <div className="container px-4 sm:px-6 py-10 md:py-14">
+          <div className="hidden md:block [&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
             <AppBreadcrumb
               items={breadcrumbItems}
               ariaLabel={breadcrumbAriaLabel}
@@ -118,7 +120,7 @@ export function LegalPageLayout({
         </div>
       </div>
 
-      <div className="container py-8">
+      <div className="container px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {/* Sidebar Navigation */}
           <aside className="lg:col-span-1">

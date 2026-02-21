@@ -14,6 +14,7 @@ import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { PageShell } from "../../../_components/page-shell"
+import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -35,11 +36,12 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
   
   return (
-    <PageShell className="pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12 overflow-x-hidden">
+      <StaticPageHeaderSync title={t("metaTitle")} backHref="/" />
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground">
-        <div className="container py-10 md:py-16">
-          <div className="[&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
+        <div className="container px-4 sm:px-6 py-10 md:py-16">
+          <div className="hidden md:block [&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
             <AppBreadcrumb
               items={breadcrumbPresets(tBreadcrumbs).returns}
               ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -61,7 +63,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
         </div>
       </div>
 
-      <div className="container py-8">
+      <div className="container px-4 sm:px-6 py-8">
         {/* Return Policy Highlights */}
         <section className="mb-12">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4">

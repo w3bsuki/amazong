@@ -10,6 +10,7 @@ import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { CustomerServiceChat } from "./_components/customer-service-chat"
 import { PageShell } from "../../../_components/page-shell"
+import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -45,12 +46,15 @@ export default async function CustomerServicePage({ params }: { params: Promise<
 
     return (
         <PageShell className="pb-12 overflow-x-hidden">
+            <StaticPageHeaderSync title={t("title")} backHref="/" />
             <div className="container py-8 px-4 sm:px-6">
-                <AppBreadcrumb
-                    items={breadcrumbPresets(tBreadcrumbs).customerService}
-                    ariaLabel={tBreadcrumbs("ariaLabel")}
-                    homeLabel={tBreadcrumbs("homeLabel")}
-                />
+                <div className="hidden md:block">
+                    <AppBreadcrumb
+                        items={breadcrumbPresets(tBreadcrumbs).customerService}
+                        ariaLabel={tBreadcrumbs("ariaLabel")}
+                        homeLabel={tBreadcrumbs("homeLabel")}
+                    />
+                </div>
                 
                 <h1 className="text-3xl font-bold tracking-tight mb-8">{t('title')}</h1>
 

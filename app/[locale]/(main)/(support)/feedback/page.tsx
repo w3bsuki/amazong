@@ -11,6 +11,7 @@ import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 import { PageShell } from "../../../_components/page-shell"
+import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params
@@ -47,11 +48,12 @@ export default async function FeedbackPage({
   ]
   
   return (
-    <PageShell className="pb-20 sm:pb-12">
+    <PageShell className="pb-20 sm:pb-12 overflow-x-hidden">
+      <StaticPageHeaderSync title={t("metaTitle")} backHref="/" />
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground">
-        <div className="container py-10 md:py-16">
-          <div className="[&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
+        <div className="container px-4 sm:px-6 py-10 md:py-16">
+          <div className="hidden md:block [&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
             <AppBreadcrumb
               items={breadcrumbItems}
               ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -68,7 +70,7 @@ export default async function FeedbackPage({
         </div>
       </div>
 
-      <div className="container py-8">
+      <div className="container px-4 sm:px-6 py-8">
         {/* Why Your Feedback Matters */}
         <section className="mb-10">
           <h2 className="text-xl font-bold tracking-tight mb-4">{t('whyMattersTitle')}</h2>
