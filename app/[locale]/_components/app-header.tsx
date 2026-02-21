@@ -37,7 +37,7 @@ import { Link, useRouter, usePathname } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { MessageCircle as ChatCircle, Share as Export, Settings as Gear } from "lucide-react"
 import type { User } from "@supabase/supabase-js"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu"
 import type { HeaderVariant } from "@/components/layout/header/types"
 
@@ -224,7 +224,7 @@ export function AppHeader({
   const effectiveHomepageCategory = homepageHeaderState?.activeCategory ?? activeCategory
   const effectiveHomepageCategorySelect = homepageHeaderState?.onCategorySelect ?? onCategorySelect
   const effectiveHomepageSearchOpen = homepageHeaderState?.onSearchOpen ?? onSearchOpen
-  const effectiveHomepageContextLabel = homepageHeaderState?.contextLabel
+  // Context chip removed from header — SmartRail shows category context instead.
   
   // Avoid hydration mismatch when other client boundaries update HeaderProvider state
   // before the header boundary itself hydrates (e.g., ProductHeaderSync on PDP).
@@ -238,6 +238,8 @@ export function AppHeader({
   const effectiveContextualSubcategoryClick =
     contextualHeaderState?.onSubcategoryClick ?? onSubcategoryClick
   const effectiveContextualHideActions = contextualHeaderState?.hideActions ?? false
+  const effectiveContextualExpandTitle = contextualHeaderState?.expandTitle ?? false
+  const effectiveContextualTrailingActions = contextualHeaderState?.trailingActions ?? undefined
 
   const effectiveProductTitle = productHeaderState?.productTitle ?? productTitle
   const effectiveSellerName = productHeaderState?.sellerName ?? sellerName
@@ -305,7 +307,7 @@ export function AppHeader({
       activeCategory={effectiveHomepageCategory}
       onCategorySelect={effectiveHomepageCategorySelect}
       onSearchOpen={handleSearchOpen}
-      {...(effectiveHomepageContextLabel ? { contextLabel: effectiveHomepageContextLabel } : {})}
+
       locale={locale}
     />
   )
@@ -413,8 +415,9 @@ export function AppHeader({
             onBack={isProfileHeader ? () => router.back() : effectiveContextualBack}
             subcategories={effectiveContextualSubcategories}
             onSubcategoryClick={effectiveContextualSubcategoryClick}
-            trailingActions={isProfileHeader ? profileMobileActions : undefined}
+            trailingActions={isProfileHeader ? profileMobileActions : effectiveContextualTrailingActions}
             hideActions={effectiveContextualHideActions}
+            expandTitle={effectiveContextualExpandTitle}
             locale={locale}
           />
         )

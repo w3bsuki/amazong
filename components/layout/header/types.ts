@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import type { User } from "@supabase/supabase-js"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu"
 
 // =============================================================================
@@ -69,5 +69,7 @@ export interface ContextualHeaderProps extends BaseHeaderProps {
   trailingActions?: ReactNode | undefined
   /** Hide the entire trailing actions area. */
   hideActions?: boolean | undefined
+  /** When true, title area expands to fill available space (for inline search bar). */
+  expandTitle?: boolean | undefined
 }
 

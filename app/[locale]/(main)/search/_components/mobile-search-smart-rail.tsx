@@ -1,13 +1,11 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
-import { SlidersHorizontal } from "lucide-react"
 
-import { useRouter } from "@/i18n/routing"
-import { SmartRail, type SmartRailAction, type SmartRailPill } from "@/components/mobile/chrome/smart-rail"
+import { SmartRail, type SmartRailPill } from "@/components/mobile/chrome/smart-rail"
 import { FilterHub, type FilterHubSubcategory } from "../../_components/filters/filter-hub"
+import { SearchActionBar } from "./search-action-bar"
 import type { CategoryAttribute } from "@/lib/data/categories"
 
 interface MobileSearchSmartRailProps {
@@ -22,19 +20,6 @@ interface MobileSearchSmartRailProps {
   sellersHref?: string
 }
 
-function buildSortParams(searchParams: URLSearchParams, nextSort: string | null): URLSearchParams {
-  const next = new URLSearchParams(searchParams.toString())
-  next.delete("page")
-
-  if (!nextSort || nextSort === "rating") {
-    next.delete("sort")
-  } else {
-    next.set("sort", nextSort)
-  }
-
-  return next
-}
-
 export function MobileSearchSmartRail({
   locale,
   query,
@@ -47,87 +32,44 @@ export function MobileSearchSmartRail({
   sellersHref,
 }: MobileSearchSmartRailProps) {
   const t = useTranslations("SearchFilters")
-  const router = useRouter()
-  const searchParams = useSearchParams()
 
   const [filterOpen, setFilterOpen] = useState(false)
 
-  const currentSort = searchParams.get("sort")
-  const relevanceActive = !currentSort || currentSort === "rating"
+  // Subcategory pills (only show when we have subcategories)
+  const pills = useMemo<SmartRailPill[]>(() => {
+    return subcategories.map((sub) => ({
+      id: sub.id,
+      label: sub.name,
+      href: `${basePath}?category=${sub.slug}`,
+    }))
+  }, [subcategories, basePath])
 
-  const replaceUrl = useCallback(
-    (nextParams: URLSearchParams) => {
-      const queryString = nextParams.toString()
-      router.replace(queryString ? `${basePath}?${queryString}` : basePath)
-    },
-    [basePath, router],
-  )
-
-  const setSort = useCallback(
-    (nextSort: string | null) => {
-      const next = buildSortParams(new URLSearchParams(searchParams.toString()), nextSort)
-      replaceUrl(next)
-    },
-    [replaceUrl, searchParams],
-  )
-
-  const pills = useMemo<SmartRailPill[]>(
-    () => [
-      {
-        id: "relevance",
-        label: t("relevance"),
-        active: relevanceActive,
-        onSelect: () => setSort(null),
-      },
-      {
-        id: "price-asc",
-        label: t("priceAscShort"),
-        active: currentSort === "price-asc",
-        onSelect: () => setSort("price-asc"),
-      },
-      {
-        id: "price-desc",
-        label: t("priceDescShort"),
-        active: currentSort === "price-desc",
-        onSelect: () => setSort("price-desc"),
-      },
-      {
-        id: "newest",
-        label: t("newShort"),
-        active: currentSort === "newest",
-        onSelect: () => setSort("newest"),
-      },
-    ],
-    [currentSort, relevanceActive, setSort, t],
-  )
-
-  const leadingAction = useMemo<SmartRailAction | undefined>(() => {
-    if (!sellersHref) return undefined
+  const leadingAction = useMemo(() => {
+    if (!sellersHref) return
 
     return {
       label: t("sellersMode"),
       href: sellersHref,
-      variant: "chip",
+      variant: "chip" as const,
     }
   }, [sellersHref, t])
 
+  const showPillRail = pills.length > 0 || leadingAction
+
   return (
     <>
-      <SmartRail
-        ariaLabel={t("sortBy")}
-        pills={pills}
-        leadingAction={leadingAction}
-        trailingAction={{
-          label: t("filters"),
-          icon: <SlidersHorizontal className="size-4" aria-hidden="true" />,
-          onSelect: () => setFilterOpen(true),
-          ariaLabel: t("filters"),
-          variant: "chip",
-        }}
-        stickyTop="var(--offset-mobile-primary-rail)"
-        sticky={true}
-        testId="mobile-search-smart-rail"
-      />
+      {showPillRail && (
+        <SmartRail
+          ariaLabel={t("subcategories")}
+          pills={pills}
+          leadingAction={leadingAction}
+          stickyTop="var(--offset-mobile-primary-rail)"
+          sticky={true}
+          testId="mobile-search-smart-rail"
+        />
+      )}
+
+      <SearchActionBar onFilterOpen={() => setFilterOpen(true)} />
 
       <FilterHub
         open={filterOpen}

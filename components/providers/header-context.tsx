@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, type ReactNode } from "react"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
 
 export interface HomepageHeaderState {
   activeCategory: string
@@ -12,13 +12,17 @@ export interface HomepageHeaderState {
 }
 
 export interface ContextualHeaderState {
-  title: string
+  title: ReactNode
   backHref: string
   onBack?: () => void
   activeSlug?: string
   subcategories?: CategoryTreeNode[]
   onSubcategoryClick?: (category: CategoryTreeNode) => void
   hideActions?: boolean
+  /** When true, title area expands to fill available space (for search bar). */
+  expandTitle?: boolean
+  /** Custom trailing actions (replaces default search/wishlist/cart). */
+  trailingActions?: ReactNode
 }
 
 export interface ProductHeaderState {

@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { trackDrawerClose, trackDrawerOpen } from "@/components/providers/_lib/analytics-drawer"
