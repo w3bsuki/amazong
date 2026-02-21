@@ -6,6 +6,7 @@ import { Eye, EyeOff as EyeSlash } from "lucide-react";
 import { useTranslations } from "next-intl"
 
 import { SubmitButton } from "@/components/auth/submit-button"
+import { GoogleOAuthButton } from "@/components/auth/google-oauth-button"
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -29,6 +30,7 @@ interface LoginFormBodyProps {
   onSuccess?: () => void
   onSwitchToSignUp?: () => void
   onNavigateAway?: () => void
+  redirectPath?: string | null
   showCreateAccountCta?: boolean
   showLegalText?: boolean
   className?: string
@@ -46,6 +48,7 @@ export function LoginFormBody({
   onSuccess,
   onSwitchToSignUp,
   onNavigateAway,
+  redirectPath,
   showCreateAccountCta = true,
   showLegalText = true,
   className,
@@ -53,6 +56,7 @@ export function LoginFormBody({
   const t = useTranslations("Auth")
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const [oauthError, setOauthError] = useState<string | null>(null)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const handledSuccess = useRef(false)
@@ -102,6 +106,16 @@ export function LoginFormBody({
 
   return (
     <div className={cn("flex flex-col gap-4", className)}>
+      {oauthError ? (
+        <div
+          className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive"
+          role="alert"
+          aria-live="assertive"
+        >
+          {oauthError}
+        </div>
+      ) : null}
+
       {state?.error && (
         <div
           className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive"
@@ -112,6 +126,19 @@ export function LoginFormBody({
           {t(state.error as never)}
         </div>
       )}
+
+      <div className="space-y-3" data-testid="login-oauth-section">
+        <GoogleOAuthButton
+          nextPath={redirectPath ?? "/"}
+          onError={(message) => setOauthError(message)}
+          onNavigateAway={onNavigateAway}
+        />
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <p className="text-xs text-muted-foreground">{t("or")}</p>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+      </div>
 
       <form
         action={formAction}
@@ -228,29 +255,28 @@ export function LoginFormBody({
       </form>
 
       {showCreateAccountCta && (
-        <div data-testid="login-create-account-section">
-          <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <p className="text-xs text-muted-foreground">{t("newToTreido")}</p>
-            <div className="h-px flex-1 bg-border" />
-          </div>
-
+        <div
+          className="text-center text-sm text-muted-foreground"
+          data-testid="login-create-account-section"
+        >
+          {t("noAccount")}{" "}
           {onSwitchToSignUp ? (
             <Button
               type="button"
-              variant="outline"
-              size="lg"
-              className="w-full mt-3"
+              variant="link"
+              className="min-h-11 p-0 font-medium text-primary hover:underline"
               onClick={onSwitchToSignUp}
             >
-              {t("createAccount")}
+              {t("signUp")}
             </Button>
           ) : (
-            <Button asChild variant="outline" size="lg" className="w-full mt-3">
-              <Link href="/auth/sign-up" onClick={onNavigateAway}>
-                {t("createAccount")}
-              </Link>
-            </Button>
+            <Link
+              href="/auth/sign-up"
+              className="inline-flex min-h-11 items-center font-medium text-primary hover:underline"
+              onClick={onNavigateAway}
+            >
+              {t("signUp")}
+            </Link>
           )}
         </div>
       )}

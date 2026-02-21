@@ -1,24 +1,27 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { ArrowLeft, SlidersHorizontal as FiltersIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UIProduct } from "@/lib/types/products"
 import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
-import { buildHomeBrowseHref } from "@/lib/home-browse-href"
 import { useHeader } from "@/components/providers/header-context"
+import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
+import {
+  SmartRail,
+  type SmartRailAction,
+  type SmartRailPill,
+} from "@/components/mobile/chrome/smart-rail"
 import { MobileSearchOverlay } from "../../_components/search/mobile-search-overlay"
 import { HomeCityPickerSheet } from "./mobile/home-city-picker-sheet"
-import { HomeBrowseOptionsSheet } from "./mobile/home-browse-options-sheet"
 import { PageShell } from "../../_components/page-shell"
 import { FilterHub } from "./filters/filter-hub"
 import { useHomeDiscoveryFeed } from "./mobile-home/use-home-discovery-feed"
 import type { HomeDiscoveryScope } from "./mobile-home/use-home-discovery-feed"
-import { MobileHomeRails } from "./mobile-home/mobile-home-rails"
 import { MobileHomeFeed } from "./mobile-home/mobile-home-feed"
 import { useMobileHomeCategoryNav } from "./mobile-home/use-mobile-home-category-nav"
-import { MobileHomeCategoryPicker } from "./mobile-home/mobile-home-category-picker"
 import { useHomeCityStorage } from "./mobile-home/use-home-city-storage"
 
 interface MobileHomeProps {
@@ -39,9 +42,7 @@ export function MobileHome({
   const tV4 = useTranslations("Home.mobile.v4")
 
   const [searchOpen, setSearchOpen] = useState(false)
-  const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
   const [filterOpen, setFilterOpen] = useState(false)
-  const [browseOptionsOpen, setBrowseOptionsOpen] = useState(false)
   const [cityPickerOpen, setCityPickerOpen] = useState(false)
   const [pendingNearbyScope, setPendingNearbyScope] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
@@ -74,27 +75,24 @@ export function MobileHome({
     limit: 24,
   })
 
-  const { visibleCategoryTabs, overflowCategories, activeCategory, activeSubcategories, activeSubcategory, activeL2Categories } = useMobileHomeCategoryNav({
+  const {
+    activeCategory,
+    activeSubcategories,
+    activeSubcategory,
+    activeL2Categories,
+  } = useMobileHomeCategoryNav({
     categories,
     activeCategorySlug,
     activeSubcategorySlug,
   })
-  const cityHydrated = useHomeCityStorage(city, setCity)
+  useHomeCityStorage(city, setCity)
 
+  const categoryDrawer = useCategoryDrawerOptional()
   const { setHeaderState } = useHeader()
 
   useEffect(() => {
-    setHeaderState({
-      type: "homepage",
-      value: {
-        activeCategory: activeCategorySlug ?? "all",
-        onCategorySelect: () => {},
-        onSearchOpen: () => setSearchOpen(true),
-        categories,
-      },
-    })
     return () => setHeaderState(null)
-  }, [activeCategorySlug, categories, setHeaderState])
+  }, [setHeaderState])
 
   useEffect(() => {
     const target = loadMoreRef.current
@@ -127,16 +125,35 @@ export function MobileHome({
   const activeSubcategoryLabel = activeSubcategory ? getCategoryLabel(activeSubcategory) : null
   const activeL2Category = activeL2Categories.find((category) => category.slug === activeL2Slug) ?? null
   const activeL2Label = activeL2Category ? getCategoryLabel(activeL2Category) : null
-  const scopeTitle = tV4(`banner.scopeTitle.${scope}`)
 
-  const fullBrowseHref = buildHomeBrowseHref({ scope, activeCategorySlug, activeSubcategorySlug, activeL2Slug, filters, city, nearby })
-  const showBrowseOptionsTrigger = activeSubcategorySlug !== null && activeL2Categories.length > 0
+  const headerContextLabel = useMemo(() => {
+    return activeL2Label
+      ?? activeSubcategoryLabel
+      ?? activeCategoryLabel
+  }, [activeCategoryLabel, activeL2Label, activeSubcategoryLabel])
 
   const handlePrimaryTab = useCallback((slug: string | null) => {
     setActiveCategorySlug(slug)
     setActiveSubcategorySlug(null)
     setActiveL2Slug(null)
   }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug])
+
+  const handleHeaderCategorySelect = useCallback((slug: string) => {
+    handlePrimaryTab(slug === "all" ? null : slug)
+  }, [handlePrimaryTab])
+
+  useEffect(() => {
+    setHeaderState({
+      type: "homepage",
+      value: {
+        activeCategory: activeCategorySlug ?? "all",
+        onCategorySelect: handleHeaderCategorySelect,
+        onSearchOpen: () => setSearchOpen(true),
+        categories,
+        ...(headerContextLabel ? { contextLabel: headerContextLabel } : {}),
+      },
+    })
+  }, [activeCategorySlug, categories, handleHeaderCategorySelect, headerContextLabel, setHeaderState])
 
   const handleScopeSelect = useCallback((nextScope: HomeDiscoveryScope) => {
     if (nextScope === "nearby" && !city) {
@@ -148,24 +165,10 @@ export function MobileHome({
     setNearby(nextScope === "nearby")
   }, [city, setNearby, setScope])
 
-  const handleOverflowCategoryPick = useCallback((slug: string) => {
-    setCategoryPickerOpen(false)
-    setActiveCategorySlug(slug)
-    setActiveSubcategorySlug(null)
-    setActiveL2Slug(null)
-  }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug])
-
   const handleSubcategoryPill = useCallback((slug: string | null) => {
     setActiveSubcategorySlug((previous) => (previous === slug ? null : slug))
     setActiveL2Slug(null)
   }, [setActiveSubcategorySlug, setActiveL2Slug])
-
-
-
-  const handleBrowseOptionsSelect = useCallback((slug: string | null) => {
-    setActiveL2Slug(slug)
-    setBrowseOptionsOpen(false)
-  }, [setActiveL2Slug])
 
   const handleApplyFilters = useCallback((next: { queryString: string }) => {
     const params = new URLSearchParams(next.queryString)
@@ -191,10 +194,79 @@ export function MobileHome({
     setFilters(new URLSearchParams())
   }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug, setScope, setNearby, setFilters])
 
-  useEffect(() => {
-    if (showBrowseOptionsTrigger) return
-    setBrowseOptionsOpen(false)
-  }, [showBrowseOptionsTrigger])
+  const railAriaLabel = tV4("quickJump.label")
+
+  const railLeadingAction: SmartRailAction | undefined = activeCategorySlug
+    ? {
+        label: tV4("actions.reset"),
+        icon: <ArrowLeft size={18} aria-hidden="true" />,
+        onSelect: () => handlePrimaryTab(null),
+        testId: "home-v4-rail-back",
+      }
+    : categoryDrawer
+      ? {
+          label: tCategories("title"),
+          variant: "pill",
+          onSelect: () => categoryDrawer.openRoot(),
+          ariaLabel: tV4("actions.openCategories"),
+          testId: "home-v4-rail-open-categories",
+        }
+      : undefined
+
+  const railTrailingAction: SmartRailAction = {
+    label: tV4("actions.filter"),
+    icon: <FiltersIcon size={18} aria-hidden="true" />,
+    active: hasActiveFilters,
+    badgeCount: activeFilterCount,
+    onSelect: () => setFilterOpen(true),
+    testId: "home-v4-filter-trigger",
+  }
+
+  const railPills: SmartRailPill[] = useMemo(() => {
+    if (!activeCategorySlug) {
+      const scopes: Array<{ id: HomeDiscoveryScope; testId: string }> = [
+        { id: "forYou", testId: "home-v4-scope-forYou" },
+        { id: "newest", testId: "home-v4-scope-newest" },
+        { id: "promoted", testId: "home-v4-scope-promoted" },
+        { id: "nearby", testId: "home-v4-scope-nearby" },
+        { id: "deals", testId: "home-v4-scope-deals" },
+      ]
+
+      return scopes.map(({ id, testId }) => ({
+        id,
+        label: tV4(`scopes.${id}`),
+        active: scope === id,
+        onSelect: () => handleScopeSelect(id),
+        testId,
+      }))
+    }
+
+    return [
+      {
+        id: "view",
+        label: tV4("actions.view"),
+        active: activeSubcategorySlug === null,
+        onSelect: () => handleSubcategoryPill(null),
+        testId: "home-v4-subcategory-view",
+      },
+      ...activeSubcategories.map((subcategory) => ({
+        id: subcategory.slug,
+        label: getCategoryLabel(subcategory),
+        active: activeSubcategorySlug === subcategory.slug,
+        onSelect: () => handleSubcategoryPill(subcategory.slug),
+        testId: `home-v4-subcategory-${subcategory.slug}`,
+      })),
+    ]
+  }, [
+    activeCategorySlug,
+    activeSubcategories,
+    activeSubcategorySlug,
+    getCategoryLabel,
+    handleScopeSelect,
+    handleSubcategoryPill,
+    scope,
+    tV4,
+  ])
 
   return (
     <PageShell variant="default" className="pb-4">
@@ -207,31 +279,14 @@ export function MobileHome({
       <div className="mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe">
         <h1 className="sr-only">{tV4("title")}</h1>
 
-        <MobileHomeRails
-          tCategories={tCategories}
-          tV4={tV4}
-          scope={scope}
-          activeCategorySlug={activeCategorySlug}
-          activeSubcategorySlug={activeSubcategorySlug}
-          visibleCategoryTabs={visibleCategoryTabs}
-          overflowCategories={overflowCategories}
-          activeSubcategories={activeSubcategories}
-          activeCategoryLabel={activeCategoryLabel}
-          activeSubcategoryLabel={activeSubcategoryLabel}
-          activeL2Label={activeL2Label}
-          scopeTitle={scopeTitle}
-          listingCount={products.length}
-          fullBrowseHref={fullBrowseHref}
-          showBrowseOptionsTrigger={showBrowseOptionsTrigger}
-          hasActiveFilters={hasActiveFilters}
-          activeFilterCount={activeFilterCount}
-          onPrimaryTab={handlePrimaryTab}
-          onScopeSelect={handleScopeSelect}
-          onSubcategoryPill={handleSubcategoryPill}
-          onCategoryPickerOpen={() => setCategoryPickerOpen(true)}
-          onBrowseOptionsOpen={() => setBrowseOptionsOpen(true)}
-          onFilterOpen={() => setFilterOpen(true)}
-          getCategoryLabel={getCategoryLabel}
+        <SmartRail
+          ariaLabel={railAriaLabel}
+          pills={railPills}
+          leadingAction={railLeadingAction}
+          trailingAction={railTrailingAction}
+          sticky={true}
+          stickyTop="var(--offset-mobile-primary-rail)"
+          testId="home-v4-smart-rail"
         />
 
         <MobileHomeFeed
@@ -245,28 +300,6 @@ export function MobileHome({
           onRetry={retry}
         />
       </div>
-
-      <MobileHomeCategoryPicker
-        categories={categories}
-        activeCategorySlug={activeCategorySlug}
-        open={categoryPickerOpen}
-        onOpenChange={setCategoryPickerOpen}
-        onPickCategory={handleOverflowCategoryPick}
-        onResetAll={handleResetAll}
-        getCategoryLabel={getCategoryLabel}
-        tV4={tV4}
-      />
-
-      <HomeBrowseOptionsSheet
-        open={browseOptionsOpen}
-        onOpenChange={setBrowseOptionsOpen}
-        locale={locale}
-        subcategoryLabel={activeSubcategoryLabel ?? ""}
-        categories={activeL2Categories}
-        activeSlug={activeL2Slug}
-        onSelect={handleBrowseOptionsSelect}
-        fullBrowseHref={fullBrowseHref}
-      />
 
       <FilterHub
         open={filterOpen}

@@ -13,8 +13,8 @@ export const planIcons: Record<string, React.ReactNode> = {
 
 export const navItems = [
   { id: "pricing", icon: CreditCard },
-  { id: "features", icon: Sparkle },
   { id: "comparison", icon: ChartBar },
+  { id: "features", icon: Sparkle },
   { id: "guarantee", icon: ShieldCheck },
   { id: "faq", icon: Question },
 ] as const

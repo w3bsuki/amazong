@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import { Briefcase, House, MapPin, Pencil, Phone, Plus, Star, Trash, X } from "lucide-react";
+import { Briefcase, House, MapPin, Pencil, Phone, Plus, Star, Trash } from "lucide-react";
 
 
 import { Badge } from "@/components/ui/badge"
@@ -11,18 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  Drawer,
-  DrawerBody,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import { IconButton } from "@/components/ui/icon-button"
+import { DrawerBody } from "@/components/ui/drawer"
 import { Separator } from "@/components/ui/separator"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 
 type UserAddress = {
   id: string
@@ -120,56 +111,57 @@ export function AccountAddressesGrid({
     const isOpen = openDrawerId === address.id
 
     return (
-      <Drawer open={isOpen} onOpenChange={(open) => setOpenDrawerId(open ? address.id : null)}>
-        <DrawerTrigger asChild>
-          <button
-            type="button"
-            className="w-full rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            aria-label={t("addressDetails")}
-          >
-            <Card className={`cursor-pointer transition-colors hover:bg-hover ${address.is_default ? 'border-selected-border ring-1 ring-border-subtle' : ''}`}>
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <LabelIcon className={`size-5 shrink-0 ${getLabelColor(address.label)}`} />
-                    <CardTitle className="text-base truncate">{address.label}</CardTitle>
-                  </div>
-                  {address.is_default && (
-                    <Badge variant="secondary" className="shrink-0 text-xs bg-selected text-primary border-0">
-                      <Star className="size-3 mr-1" />
-                      {t("default")}
-                    </Badge>
-                  )}
+      <>
+        <button
+          type="button"
+          className="w-full rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          onClick={() => setOpenDrawerId(address.id)}
+          aria-label={t("addressDetails")}
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
+        >
+          <Card className={`cursor-pointer transition-colors hover:bg-hover ${address.is_default ? 'border-selected-border ring-1 ring-border-subtle' : ''}`}>
+            <CardHeader className="pb-2">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <LabelIcon className={`size-5 shrink-0 ${getLabelColor(address.label)}`} />
+                  <CardTitle className="text-base truncate">{address.label}</CardTitle>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="font-medium text-sm">{address.full_name}</p>
-                <p className="text-sm text-muted-foreground line-clamp-2">{address.address_line1}, {address.city}</p>
-              </CardContent>
-            </Card>
-          </button>
-        </DrawerTrigger>
-        <DrawerContent className="max-h-(--dialog-h-85vh)">
-          <DrawerHeader className="border-b border-border-subtle text-left">
-            <div className="flex items-start justify-between gap-3">
-              <DrawerTitle className="flex items-center gap-2">
-                <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} />
-                {address.label}
                 {address.is_default && (
-                  <Badge variant="secondary" className="ml-2 text-xs bg-selected text-primary border-0">
+                  <Badge variant="secondary" className="shrink-0 text-xs bg-selected text-primary border-0">
                     <Star className="size-3 mr-1" />
                     {t("default")}
                   </Badge>
                 )}
-              </DrawerTitle>
-              <DrawerClose asChild>
-                <IconButton aria-label={t("close")} variant="ghost" size="icon-compact">
-                  <X className="size-4" />
-                </IconButton>
-              </DrawerClose>
-            </div>
-            <DrawerDescription>{t("addressDetails")}</DrawerDescription>
-          </DrawerHeader>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="font-medium text-sm">{address.full_name}</p>
+              <p className="text-sm text-muted-foreground line-clamp-2">{address.address_line1}, {address.city}</p>
+            </CardContent>
+          </Card>
+        </button>
+
+        <DrawerShell
+          open={isOpen}
+          onOpenChange={(open) => setOpenDrawerId(open ? address.id : null)}
+          title={address.label}
+          closeLabel={t("close")}
+          contentAriaLabel={t("addressDetails")}
+          icon={<LabelIcon className={`size-5 ${getLabelColor(address.label)}`} />}
+          titleSuffix={
+            address.is_default ? (
+              <Badge variant="secondary" className="ml-2 text-xs bg-selected text-primary border-0">
+                <Star className="size-3 mr-1" />
+                {t("default")}
+              </Badge>
+            ) : null
+          }
+          description={t("addressDetails")}
+          descriptionClassName="text-sm text-muted-foreground"
+          headerClassName="border-border-subtle text-left"
+          contentClassName="max-h-(--dialog-h-85vh)"
+        >
           <DrawerBody className="px-4 py-4">
             <div className="space-y-4">
               <div>
@@ -234,8 +226,8 @@ export function AccountAddressesGrid({
               </div>
             </div>
           </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+        </DrawerShell>
+      </>
     )
   }
 

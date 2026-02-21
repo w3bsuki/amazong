@@ -31,6 +31,8 @@ const CountRequestSchema = z
         availability: z.enum(["instock"]).nullable().optional(),
         deals: z.coerce.boolean().nullable().optional(),
         verified: z.coerce.boolean().nullable().optional(),
+        city: z.string().trim().min(1).max(80).nullable().optional(),
+        nearby: z.coerce.boolean().nullable().optional(),
         attributes: z
           .record(z.string(), z.union([z.string(), z.array(z.string()).max(20)]))
           .optional(),
@@ -86,6 +88,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
 
     const body = parseResult.data
     const { categoryId, query, filters = {} } = body
+    const verifiedOnly = filters.verified === true
 
     const { url, anonKey } = getPublicSupabaseEnv()
     const supabase = createSupabaseClient<Database>(url, anonKey, {
@@ -95,7 +98,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
     // Build count-only query (select single column, head: true)
     let countQuery = supabase
       .from("products")
-      .select("id", { count: "planned", head: true })
+      .select(
+        verifiedOnly
+          ? "id, profiles!products_seller_id_fkey(is_verified_business)"
+          : "id",
+        { count: "planned", head: true }
+      )
       // Public browsing surfaces must not show non-active listings.
       // Temporary legacy allowance: status can be NULL for older rows.
       .or("status.eq.active,status.is.null")
@@ -139,6 +147,23 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
     // Deals filter (match canonical deal_products semantics: compare-at OR explicit sale)
     if (filters.deals) {
       countQuery = countQuery.or("and(is_on_sale.eq.true,sale_percent.gt.0),list_price.not.is.null")
+    }
+
+    // Verified sellers (business verification)
+    if (verifiedOnly) {
+      countQuery = countQuery.eq("profiles.is_verified_business", true)
+    }
+
+    const normalizedCity = filters.city?.trim().toLowerCase()
+    const city =
+      normalizedCity && normalizedCity !== "undefined" && normalizedCity !== "null"
+        ? normalizedCity
+        : null
+
+    if (filters.nearby === true) {
+      countQuery = countQuery.ilike("seller_city", city ?? "sofia")
+    } else if (city) {
+      countQuery = countQuery.ilike("seller_city", city)
     }
 
     // Attribute filters

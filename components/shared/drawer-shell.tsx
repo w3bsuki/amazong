@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import type { ComponentProps, ReactNode } from "react"
 import { X } from "lucide-react"
 
 import {
@@ -20,7 +20,7 @@ interface DrawerShellProps {
   showCloseButton?: boolean | undefined
   closeLabel: string
   contentAriaLabel?: string | undefined
-  description?: string | undefined
+  description?: ReactNode | undefined
   icon?: ReactNode | undefined
   titleSuffix?: ReactNode | undefined
   headerLeading?: ReactNode | undefined
@@ -35,6 +35,11 @@ interface DrawerShellProps {
   closeButtonSize?: IconButtonProps["size"] | undefined
   closeIconSize?: number | undefined
   dataTestId?: string | undefined
+  drawerProps?: Omit<ComponentProps<typeof Drawer>, "children" | "open" | "onOpenChange" | "fadeFromIndex"> | undefined
+  drawerContentProps?: Omit<
+    ComponentProps<typeof DrawerContent>,
+    "children" | "className" | "data-testid" | "aria-label"
+  > | undefined
 }
 
 /**
@@ -63,6 +68,8 @@ export function DrawerShell({
   closeButtonSize = "icon-default",
   closeIconSize = 16,
   dataTestId,
+  drawerProps,
+  drawerContentProps,
 }: DrawerShellProps) {
   const isCentered = headerLayout === "centered"
   const closeButton = showCloseButton ? (
@@ -80,11 +87,12 @@ export function DrawerShell({
   ) : null
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={onOpenChange} {...drawerProps}>
       <DrawerContent
         className={contentClassName}
         data-testid={dataTestId}
         {...(contentAriaLabel ? { "aria-label": contentAriaLabel } : {})}
+        {...drawerContentProps}
       >
         <DrawerHeader className={headerClassName}>
           {headerLayout === "centered" ? (

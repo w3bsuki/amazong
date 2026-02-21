@@ -11,11 +11,9 @@ import * as React from "react"
 import { useTranslations } from "next-intl"
 
 import {
-  Drawer,
   DrawerBody,
-  DrawerContent,
-  DrawerDescription,
 } from "@/components/ui/drawer"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { ProductQuickViewContent } from "@/components/shared/product/quick-view/product-quick-view-content"
 import { QuickViewSkeleton } from "@/components/shared/product/quick-view/quick-view-skeleton"
@@ -115,31 +113,36 @@ function ProductQuickViewDrawerMobile({
   const showOnlyBlockingSkeleton = isLoading || (open && !activeProduct && !product)
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} onAnimationEnd={handleDrawerAnimationEnd}>
-      <DrawerContent
-        aria-label={t("quickView")}
-        showHandle
-        className="touch-pan-y max-h-dialog rounded-t-2xl"
-        overlayBlur="none"
-      >
-        <DrawerDescription className="sr-only">{description}</DrawerDescription>
-        <DrawerBody className="px-0 py-0">
-          {showOnlyBlockingSkeleton ? (
-            <QuickViewSkeleton />
-          ) : activeProduct ? (
-            <ProductQuickViewContent
-              product={activeProduct}
-              productPath={productPath}
-              onRequestClose={() => onOpenChange(false)}
-              onAddToCart={handleAddToCart}
-              onBuyNow={handleBuyNow}
-              onNavigateToProduct={handleNavigateToProduct}
-              detailsLoading={detailsLoading}
-              layout="mobile"
-            />
-          ) : null}
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("quickView")}
+      closeLabel={t("close")}
+      contentAriaLabel={t("quickView")}
+      description={description}
+      descriptionClassName="sr-only"
+      showCloseButton={false}
+      headerClassName="sr-only border-none p-0"
+      contentClassName="touch-pan-y max-h-dialog rounded-t-2xl"
+      drawerProps={{ onAnimationEnd: handleDrawerAnimationEnd }}
+      drawerContentProps={{ showHandle: true, overlayBlur: "none" }}
+    >
+      <DrawerBody className="px-0 py-0">
+        {showOnlyBlockingSkeleton ? (
+          <QuickViewSkeleton />
+        ) : activeProduct ? (
+          <ProductQuickViewContent
+            product={activeProduct}
+            productPath={productPath}
+            onRequestClose={() => onOpenChange(false)}
+            onAddToCart={handleAddToCart}
+            onBuyNow={handleBuyNow}
+            onNavigateToProduct={handleNavigateToProduct}
+            detailsLoading={detailsLoading}
+            layout="mobile"
+          />
+        ) : null}
+      </DrawerBody>
+    </DrawerShell>
   )
 }

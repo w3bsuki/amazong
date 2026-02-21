@@ -1,12 +1,6 @@
 import { Button } from "@/components/ui/button"
-import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer"
+import { DrawerBody, DrawerFooter } from "@/components/ui/drawer"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import { FilterCheckboxItem } from "@/components/shared/filters/controls/filter-checkbox-item"
 import { FilterRadioGroup, FilterRadioItem } from "../../_components/filters/shared/controls/filter-radio-group"
 import type { SellerSortKey } from "../_lib/types"
@@ -27,11 +21,15 @@ export function MobileSellerSortDrawer({
   t: Translate
 }) {
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent aria-label={t("sellerSort")}>
-        <DrawerHeader className="border-b border-border-subtle px-inset py-3">
-          <DrawerTitle className="text-base font-semibold">{t("sellerSort")}</DrawerTitle>
-        </DrawerHeader>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("sellerSort")}
+      closeLabel={t("closeFilters")}
+      contentAriaLabel={t("sellerSort")}
+      headerClassName="border-b border-border-subtle px-inset py-3"
+      titleClassName="text-base font-semibold"
+    >
         <DrawerBody className="px-0">
           <FilterRadioGroup value={currentSort} onValueChange={(value) => applySort(value as SellerSortKey)}>
             <FilterRadioItem value="products" fullBleed>
@@ -45,8 +43,7 @@ export function MobileSellerSortDrawer({
             </FilterRadioItem>
           </FilterRadioGroup>
         </DrawerBody>
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   )
 }
 
@@ -78,11 +75,15 @@ export function MobileSellerFilterDrawer({
   t: Translate
 }) {
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent aria-label={t("sellerFilters")}>
-        <DrawerHeader className="border-b border-border-subtle px-inset py-3">
-          <DrawerTitle className="text-base font-semibold">{t("sellerFilters")}</DrawerTitle>
-        </DrawerHeader>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("sellerFilters")}
+      closeLabel={t("closeFilters")}
+      contentAriaLabel={t("sellerFilters")}
+      headerClassName="border-b border-border-subtle px-inset py-3"
+      titleClassName="text-base font-semibold"
+    >
         <DrawerBody className="px-0 pb-safe-max">
           <div className="-mx-inset">
             <FilterCheckboxItem
@@ -135,7 +136,6 @@ export function MobileSellerFilterDrawer({
             </Button>
           </div>
         </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   )
 }

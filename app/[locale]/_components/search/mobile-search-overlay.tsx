@@ -1,17 +1,27 @@
 "use client"
 
 import * as React from "react"
-import { useRef, useEffect, useCallback, useId } from "react"
 import dynamic from "next/dynamic"
-import { ArrowRight, Clock, Search as MagnifyingGlass, Package, Bot as Robot, TrendingUp as TrendUp, X } from "lucide-react";
+import Image from "next/image"
+import {
+  ArrowRight,
+  Bot as Robot,
+  Clock,
+  Package,
+  Search as MagnifyingGlass,
+  TrendingUp as TrendUp,
+  X,
+} from "lucide-react"
 
+import { getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
+import { DrawerBody, DrawerFooter } from "@/components/ui/drawer"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import { FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useProductSearch } from "@/hooks/use-product-search"
 import { buildSearchHref, type SearchLaunchContext } from "@/components/shared/search/overlay/search-context"
@@ -57,9 +67,7 @@ export function MobileSearchOverlay({
   searchContext,
 }: MobileSearchOverlayProps) {
   // Generate unique IDs for accessibility
-  const searchInputId = useId()
-  const overlayTitleId = useId()
-  const overlayDescId = useId()
+  const searchInputId = React.useId()
 
   // State - use external control if provided
   const [internalOpen, setInternalOpen] = React.useState(false)
@@ -75,8 +83,8 @@ export function MobileSearchOverlay({
   }, [onOpenChange])
 
   // Refs
-  const inputRef = useRef<HTMLInputElement>(null)
-  const triggerRef = useRef<HTMLButtonElement>(null)
+  const inputRef = React.useRef<HTMLInputElement>(null)
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
 
   // Hooks
   const router = useRouter()
@@ -101,18 +109,34 @@ export function MobileSearchOverlay({
     minSearchLength,
   } = useProductSearch(8)
 
-  const handleOpen = useCallback(() => {
+  const handleOpen = React.useCallback(() => {
     setIsOpen(true)
   }, [setIsOpen])
 
-  const handleClose = useCallback(() => {
+  const closeDrawer = React.useCallback((options?: { focusTrigger?: boolean }) => {
     setIsOpen(false)
     clearQuery()
-    triggerRef.current?.focus()
+    setAiMode(false)
+
+    if (options?.focusTrigger ?? true) {
+      triggerRef.current?.focus()
+    }
   }, [clearQuery, setIsOpen])
 
+  const handleDrawerOpenChange = React.useCallback(
+    (open: boolean) => {
+      if (open) {
+        setIsOpen(true)
+        return
+      }
+
+      closeDrawer({ focusTrigger: true })
+    },
+    [closeDrawer, setIsOpen],
+  )
+
   // Focus input when opened
-  useEffect(() => {
+  React.useEffect(() => {
     if (!isOpen) return undefined
 
     const timer = setTimeout(() => {
@@ -122,47 +146,13 @@ export function MobileSearchOverlay({
     return () => clearTimeout(timer)
   }, [isOpen])
 
-  // Lock body scroll when open
-  useEffect(() => {
-    if (!isOpen) return undefined
-
-    const scrollY = window.scrollY
-    document.body.style.position = "fixed"
-    document.body.style.top = `-${scrollY}px`
-    document.body.style.width = "100%"
-    document.body.style.overflow = "hidden"
-
-    return () => {
-      document.body.style.position = ""
-      document.body.style.top = ""
-      document.body.style.width = ""
-      document.body.style.overflow = ""
-      window.scrollTo(0, scrollY)
-    }
-  }, [isOpen])
-
-  // Handle Escape key to close overlay
-  useEffect(() => {
-    if (!isOpen) return
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault()
-        handleClose()
-      }
-    }
-
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [handleClose, isOpen])
-
-  const handleSearch = useCallback(
+  const handleSearch = React.useCallback(
     (value: string) => {
       const trimmedValue = value.trim()
       if (!trimmedValue) return
 
       saveSearch(trimmedValue)
-      handleClose()
+      closeDrawer({ focusTrigger: false })
       router.push(
         buildSearchHref({
           query: trimmedValue,
@@ -170,30 +160,33 @@ export function MobileSearchOverlay({
         })
       )
     },
-    [saveSearch, handleClose, router, searchContext]
+    [saveSearch, closeDrawer, router, searchContext]
   )
 
-  const handleProductSelect = useCallback(
+  const handleProductSelect = React.useCallback(
     (product: { slug?: string; storeSlug?: string | null; id: string }) => {
       if (!product) return
-      handleClose()
+      closeDrawer({ focusTrigger: false })
       router.push(getProductUrl(product))
     },
-    [handleClose, router]
+    [closeDrawer, router]
   )
 
-  const handleClearInput = useCallback(() => {
+  const handleClearInput = React.useCallback(() => {
     setQuery("")
     inputRef.current?.focus()
   }, [setQuery])
 
-  const handleSubmit = useCallback(
+  const handleSubmit = React.useCallback(
     (e: React.FormEvent) => {
       e.preventDefault()
       handleSearch(query)
     },
     [handleSearch, query]
   )
+
+  const quickChipClass = getMobileQuickPillClass(false, "min-h-(--control-default)")
+  const trimmedQuery = query.trim()
 
   return (
     <>
@@ -221,66 +214,37 @@ export function MobileSearchOverlay({
         </button>
       )}
 
-      {/* Full-Screen Search Overlay */}
-      {isOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={overlayTitleId}
-          aria-describedby={overlayDescId}
-          className={cn(
-            "fixed inset-0 z-60",
-            "flex flex-col",
-            "bg-background"
-          )}
-        >
-          {/* Visually hidden title for screen readers */}
-          <h2 id={overlayTitleId} className="sr-only">
-            {tSearch("search")}
-          </h2>
-          <p id={overlayDescId} className="sr-only">
-            {tSearch("searchDescription")}
-          </p>
-
-          {/* Search Header - Close above, full-width search below */}
-          <header className="shrink-0 bg-background border-b border-border px-inset pt-2 pb-2">
-            <div className="flex items-center justify-between">
-              {isAiModeAvailable ? (
-                <div className="flex items-center gap-2">
-                  <Robot size={16} className={aiMode ? "text-primary" : "text-muted-foreground"} />
-                  <span className={cn("text-sm font-medium", aiMode ? "text-foreground" : "text-muted-foreground")}>
-                    {tSearch("aiMode")}
-                  </span>
-                  <Switch
-                    checked={aiMode}
-                    onCheckedChange={setAiMode}
-                    aria-label={tSearch("aiMode")}
-                  />
-                </div>
-              ) : (
-                <div />
-              )}
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleClose}
-                className="h-(--control-default) px-3 text-link font-medium hover:bg-transparent hover:text-link-hover"
-              >
-                {tSearch("close")}
-              </Button>
-            </div>
+      <DrawerShell
+        open={isOpen}
+        onOpenChange={handleDrawerOpenChange}
+        title={tSearch("search")}
+        closeLabel={tSearch("close")}
+        contentAriaLabel={tSearch("searchDescription")}
+        titleClassName="sr-only"
+        headerClassName="border-b border-border-subtle px-inset py-2"
+        headerExtra={
+          <div className="space-y-2">
+            {isAiModeAvailable ? (
+              <div className="flex items-center gap-2" data-vaul-no-drag>
+                <Robot size={16} className={aiMode ? "text-primary" : "text-muted-foreground"} aria-hidden="true" />
+                <span
+                  className={cn(
+                    "text-sm font-medium",
+                    aiMode ? "text-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  {tSearch("aiMode")}
+                </span>
+                <Switch checked={aiMode} onCheckedChange={setAiMode} aria-label={tSearch("aiMode")} />
+              </div>
+            ) : null}
 
             {/* Search Input - hidden in AI mode */}
             {(!isAiModeAvailable || !aiMode) && (
-              <form
-                onSubmit={handleSubmit}
-                className="relative"
-                role="search"
-                aria-label={tSearch("search")}
-              >
+              <form onSubmit={handleSubmit} className="relative" role="search" aria-label={tSearch("search")}>
                 <MagnifyingGlass
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground pointer-events-none"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-foreground"
                   aria-hidden="true"
                 />
                 <FieldLabel htmlFor={searchInputId} className="sr-only">
@@ -301,176 +265,189 @@ export function MobileSearchOverlay({
                   autoCorrect="off"
                   spellCheck={false}
                   aria-label={tSearch("searchFieldLabel")}
+                  data-vaul-no-drag
                 />
                 {query && (
                   <button
                     type="button"
                     onClick={handleClearInput}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 size-touch-xs rounded-full flex items-center justify-center bg-muted text-foreground hover:bg-hover active:bg-active"
+                    className="absolute right-2 top-1/2 flex size-touch-xs -translate-y-1/2 items-center justify-center rounded-full bg-muted text-foreground transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active"
                     aria-label={tSearch("clear")}
+                    data-vaul-no-drag
                   >
                     <X size={12} aria-hidden="true" />
                   </button>
                 )}
               </form>
             )}
-          </header>
-
-          {/* Search Content */}
-          <main className="flex-1 overflow-y-auto overscroll-contain" role="region" aria-label={tSearch("search")}>
-            {/* AI Chat Mode */}
-            {isAiModeAvailable && aiMode ? (
-              <SearchAiChat onClose={handleClose} className="h-full" />
-            ) : (
-            <>
-            {/* Loading State */}
-            {isSearching && (
-              <div role="status" aria-live="polite" className="px-4 py-8 text-center">
-                <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="size-5 border-2 border-border border-t-primary rounded-full animate-spin" aria-hidden="true" />
-                  <span>{tSearch("searching")}</span>
+          </div>
+        }
+        drawerProps={{ snapPoints: [1] }}
+      >
+        {isAiModeAvailable && aiMode ? (
+          <DrawerBody className="px-0 py-0">
+            <SearchAiChat onClose={() => closeDrawer({ focusTrigger: true })} className="h-full" />
+          </DrawerBody>
+        ) : (
+          <>
+            <DrawerBody className="px-0 py-0" aria-label={tSearch("search")}>
+              {/* Loading State */}
+              {isSearching && (
+                <div role="status" aria-live="polite" className="px-inset py-8 text-center">
+                  <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                    <div
+                      className="size-5 animate-spin rounded-full border-2 border-border border-t-primary"
+                      aria-hidden="true"
+                    />
+                    <span>{tSearch("searching")}</span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Product Results */}
-            {!isSearching && products.length > 0 && (
-              <section aria-labelledby="products-heading" className="border-b border-border">
-                <div className="flex items-center justify-between px-inset py-2 bg-muted">
-                  <h3 id="products-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                    <Package size={14} aria-hidden="true" />
-                    {tSearch("products")}
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => handleSearch(query)}
-                    className="text-xs text-link font-medium flex items-center gap-1 hover:text-link-hover"
-                  >
-                    {tSearch("viewAll")}
-                    <ArrowRight size={12} aria-hidden="true" />
-                  </button>
-                </div>
-
-                <ul className="divide-y divide-border" role="listbox" aria-label={tSearch("products")}>
-                  {products.map((product) => (
-                    <li key={product.id} role="option" aria-selected="false">
-                      <button
-                        type="button"
-                        onClick={() => handleProductSelect(product)}
-                        className="w-full flex items-center gap-2 p-2 hover:bg-hover active:bg-active text-left touch-manipulation transition-colors"
-                      >
-                        <div className="size-12 bg-muted rounded-lg overflow-hidden shrink-0 ring-1 ring-border">
-                          {product.images?.[0] ? (
-                            <Image
-                              src={product.images[0]}
-                              alt={product.title}
-                              width={56}
-                              height={56}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center" aria-hidden="true">
-                              <Package size={24} className="text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground line-clamp-2">{product.title}</p>
-                          <p className="text-sm font-bold text-price-sale mt-0.5">{formatPrice(product.price)}</p>
-                        </div>
-                        <ArrowRight size={16} className="text-foreground shrink-0" aria-hidden="true" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
-            {/* No Results */}
-            {!isSearching && query.length >= minSearchLength && products.length === 0 && (
-              <div role="status" aria-live="polite" className="px-inset py-10 text-center">
-                <Package size={48} className="text-muted-foreground mx-auto mb-3" aria-hidden="true" />
-                <p className="text-base font-medium text-foreground">
-                  {tSearch("noResultsFor", { query })}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">{tSearch("tryDifferent")}</p>
-              </div>
-            )}
-
-            {/* Default State - Recent & Trending Searches */}
-            {!query && (
-              <>
-                {/* Recent Searches Section */}
-                {recentSearches.length > 0 && (
-                  <section aria-labelledby="recent-searches-heading" className="border-b border-border">
-                    <div className="flex items-center justify-between px-inset py-2 bg-muted">
-                      <h3 id="recent-searches-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                        <Clock size={14} aria-hidden="true" />
-                        {tSearch("recentSearches")}
-                      </h3>
-                      <button
-                        type="button"
-                        onClick={clearRecentSearches}
-                        className="text-xs text-muted-foreground font-medium hover:text-foreground"
-                      >
-                        {tSearch("clear")}
-                      </button>
-                    </div>
-                    <ul className="divide-y divide-border" role="list" aria-label={tSearch("recentSearches")}>
-                      {recentSearches.map((search, index) => (
-                        <li key={`recent-${index}`}>
-                          <button
-                            type="button"
-                            onClick={() => handleSearch(search)}
-                            className="w-full flex items-center gap-2 px-inset py-3 hover:bg-hover active:bg-active text-left touch-manipulation transition-colors"
-                          >
-                            <Clock size={18} className="text-muted-foreground shrink-0" aria-hidden="true" />
-                            <span className="flex-1 text-base text-foreground">{search}</span>
-                            <ArrowRight size={16} className="text-foreground shrink-0" aria-hidden="true" />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                )}
-
-                {/* Trending Searches Section */}
-                <section aria-labelledby="trending-searches-heading" className="border-b border-border">
-                  <div className="flex items-center gap-2 px-inset py-2 bg-muted">
-                    <h3 id="trending-searches-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                      <TrendUp size={14} aria-hidden="true" />
-                      {tSearch("trending")}
+              {/* Product Results */}
+              {!isSearching && products.length > 0 && (
+                <section aria-labelledby="products-heading" className="border-b border-border-subtle">
+                  <div className="flex items-center gap-2 px-inset py-2">
+                    <h3
+                      id="products-heading"
+                      className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                    >
+                      <Package size={14} aria-hidden="true" />
+                      {tSearch("products")}
                     </h3>
                   </div>
-                  <ol className="divide-y divide-border" role="list" aria-label={tSearch("trending")}>
-                    {trendingSearches.map((search, index) => (
-                      <li key={`trending-${index}`}>
+
+                  <ul className="divide-y divide-border-subtle" role="listbox" aria-label={tSearch("products")}>
+                    {products.map((product) => (
+                      <li key={product.id} role="option" aria-selected="false">
                         <button
                           type="button"
-                          onClick={() => handleSearch(search)}
-                          className="w-full flex items-center gap-2 px-inset py-3 hover:bg-hover active:bg-active text-left touch-manipulation transition-colors"
+                          onClick={() => handleProductSelect(product)}
+                          className="flex w-full items-center gap-2 px-inset py-3 text-left transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active"
+                          data-vaul-no-drag
                         >
-                          <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-primary-foreground bg-primary" aria-hidden="true">
-                            {index + 1}
-                          </span>
-                          <span className="flex-1 text-base text-foreground">{search}</span>
-                          <ArrowRight size={16} className="text-foreground shrink-0" aria-hidden="true" />
+                          <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-muted ring-1 ring-border">
+                            {product.images?.[0] ? (
+                              <Image
+                                src={product.images[0]}
+                                alt={product.title}
+                                width={56}
+                                height={56}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center" aria-hidden="true">
+                                <Package size={24} className="text-muted-foreground" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="line-clamp-2 text-sm font-medium text-foreground">{product.title}</p>
+                            <p className="mt-0.5 text-sm font-bold text-price-sale">{formatPrice(product.price)}</p>
+                          </div>
+                          <ArrowRight size={16} className="shrink-0 text-foreground" aria-hidden="true" />
                         </button>
                       </li>
                     ))}
-                  </ol>
+                  </ul>
                 </section>
-              </>
-            )}
-            </>
-            )}
-          </main>
+              )}
 
-          {/* Bottom Safe Area for notched devices */}
-          <div className="shrink-0 h-safe-bottom bg-background" aria-hidden="true" />
-        </div>
-      )}
+              {/* No Results */}
+              {!isSearching && query.length >= minSearchLength && products.length === 0 && (
+                <div role="status" aria-live="polite" className="px-inset py-10 text-center">
+                  <Package size={48} className="mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
+                  <p className="text-base font-medium text-foreground">{tSearch("noResultsFor", { query })}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{tSearch("tryDifferent")}</p>
+                </div>
+              )}
+
+              {/* Default State - Recent & Trending Searches */}
+              {!query && (
+                <div className="space-y-5 px-inset py-4">
+                  {recentSearches.length > 0 && (
+                    <section aria-labelledby="recent-searches-heading">
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <h3
+                          id="recent-searches-heading"
+                          className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                        >
+                          <Clock size={14} aria-hidden="true" />
+                          {tSearch("recentSearches")}
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={clearRecentSearches}
+                          className="text-xs font-medium text-muted-foreground transition-colors duration-fast ease-smooth hover:text-foreground"
+                          data-vaul-no-drag
+                        >
+                          {tSearch("clear")}
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {recentSearches.map((search) => (
+                          <button
+                            key={search}
+                            type="button"
+                            onClick={() => handleSearch(search)}
+                            className={cn(quickChipClass, "max-w-full")}
+                            data-vaul-no-drag
+                          >
+                            <span className="truncate">{search}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {trendingSearches.length > 0 && (
+                    <section aria-labelledby="trending-searches-heading">
+                      <h3
+                        id="trending-searches-heading"
+                        className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                      >
+                        <TrendUp size={14} aria-hidden="true" />
+                        {tSearch("trending")}
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {trendingSearches.map((search) => (
+                          <button
+                            key={search}
+                            type="button"
+                            onClick={() => handleSearch(search)}
+                            className={cn(quickChipClass, "max-w-full")}
+                            data-vaul-no-drag
+                          >
+                            <span className="truncate">{search}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+                </div>
+              )}
+            </DrawerBody>
+
+            {trimmedQuery && (
+              <DrawerFooter className="border-t border-border-subtle px-inset py-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => handleSearch(trimmedQuery)}
+                  className="h-(--control-default) w-full justify-between rounded-full bg-surface-subtle px-4 text-sm font-semibold text-foreground hover:bg-hover active:bg-active"
+                  data-vaul-no-drag
+                >
+                  <span className="truncate">
+                    {tSearch("viewAllResultsFor", { query: trimmedQuery })}
+                  </span>
+                  <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
+                </Button>
+              </DrawerFooter>
+            )}
+          </>
+        )}
+      </DrawerShell>
     </>
   )
 }

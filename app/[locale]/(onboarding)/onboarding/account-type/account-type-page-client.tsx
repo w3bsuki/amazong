@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "@/i18n/routing"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
@@ -11,12 +11,10 @@ import { OnboardingShell } from "../_components/onboarding-shell"
 
 export default function AccountTypePage() {
   const router = useRouter()
-  const locale = useLocale()
   const t = useTranslations("Onboarding")
 
   const [selectedType, setSelectedType] = useState<AccountType | null>(null)
   const totalSteps = selectedType === "business" ? 5 : 4
-  const progress = (1 / totalSteps) * 100
 
   const handleContinue = () => {
     if (!selectedType) return
@@ -28,7 +26,7 @@ export default function AccountTypePage() {
       title={t("accountType.title")}
       subtitle={t("accountType.subtitle")}
       stepLabel={t("common.stepLabel", { current: 1, total: totalSteps })}
-      progress={progress}
+      stepProgress={{ current: 1, total: totalSteps }}
       footer={
         <Button onClick={handleContinue} disabled={!selectedType} size="lg" className="w-full">
           {t("common.continue")}

@@ -48,6 +48,8 @@ export function ChatInterface({
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const isNearBottomRef = useRef(true)
+  const didInitialScrollRef = useRef(false)
 
   const {
     currentConversation,
@@ -76,13 +78,44 @@ export function ChatInterface({
     getUser()
   }, [supabase])
 
-  // Scroll to bottom when messages change
+  // Track whether the user is near the bottom (avoid yanking scroll when reading history)
   useEffect(() => {
     const container = messagesContainerRef.current
-    if (container) {
-      container.scrollTop = container.scrollHeight
+    if (!container) return
+
+    const updateIsNearBottom = () => {
+      const distance = container.scrollHeight - container.scrollTop - container.clientHeight
+      isNearBottomRef.current = distance < 160
     }
-  }, [messages])
+
+    updateIsNearBottom()
+    container.addEventListener("scroll", updateIsNearBottom, { passive: true })
+    return () => {
+      container.removeEventListener("scroll", updateIsNearBottom)
+    }
+  }, [])
+
+  // Reset scroll behavior on conversation change
+  useEffect(() => {
+    didInitialScrollRef.current = false
+    isNearBottomRef.current = true
+  }, [currentConversation?.id])
+
+  // Smooth-scroll to bottom on new messages (honor reduced-motion)
+  useEffect(() => {
+    const container = messagesContainerRef.current
+    if (!container) return
+
+    const shouldAutoScroll = isNearBottomRef.current || !didInitialScrollRef.current
+    if (!shouldAutoScroll) return
+
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false
+    const behavior: ScrollBehavior =
+      prefersReducedMotion || !didInitialScrollRef.current ? "auto" : "smooth"
+
+    container.scrollTo({ top: container.scrollHeight, behavior })
+    didInitialScrollRef.current = true
+  }, [messages.length])
 
   // Auto-resize textarea and send typing indicator
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -214,7 +247,7 @@ export function ChatInterface({
 
       <div
         ref={messagesContainerRef}
-        className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3"
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-inset py-3"
       >
         <ChatMessagesPane
           messages={messages}
@@ -230,7 +263,7 @@ export function ChatInterface({
         />
       </div>
 
-      <div className="h-6 px-4 flex items-center">
+      <div className="h-6 px-inset flex items-center">
         {isOtherUserTyping && !isClosed && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <div className="flex gap-1">

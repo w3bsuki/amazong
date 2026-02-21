@@ -44,6 +44,9 @@
   /* Support chat */
   --support-chat-message-max-w: 80%;
 
+  /* Marketplace chat */
+  --chat-message-max-w: 80%;
+
   /* Product page modal */
   --product-modal-h: calc(100dvh - 2rem);
   --product-modal-w: calc(100vw - 2rem);

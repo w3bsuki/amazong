@@ -26,6 +26,7 @@ const authMessages: Record<string, string> = {
 
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => authMessages[key] ?? key,
+  useLocale: () => "en",
 }))
 
 vi.mock("@/i18n/routing", () => ({

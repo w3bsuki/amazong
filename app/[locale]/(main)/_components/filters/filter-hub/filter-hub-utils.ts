@@ -162,6 +162,17 @@ export function buildFilterApplyResult({
     }
   }
 
-  const finalPath = pendingCategorySlug ? `/categories/${pendingCategorySlug}` : resolvedBasePath
-  return { finalPath, queryString: params.toString() }
+  const isCategoriesSurface =
+    resolvedBasePath === "/categories" || resolvedBasePath.startsWith("/categories/")
+
+  if (isCategoriesSurface) {
+    const finalPath = pendingCategorySlug ? `/categories/${pendingCategorySlug}` : resolvedBasePath
+    return { finalPath, queryString: params.toString() }
+  }
+
+  if (pendingCategorySlug) {
+    params.set("category", pendingCategorySlug)
+  }
+
+  return { finalPath: resolvedBasePath, queryString: params.toString() }
 }

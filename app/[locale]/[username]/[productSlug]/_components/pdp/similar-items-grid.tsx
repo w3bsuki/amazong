@@ -20,13 +20,13 @@ interface SimilarItemsGridProps {
 }
 
 /**
- * Similar items grid for product pages.
- * Displays related products in a 2-column grid.
+ * Similar items rail for product pages (mobile).
+ * Displays related products in a horizontal scroll rail.
  */
 export function SimilarItemsGrid({
   products,
   rootCategory,
-  maxItems = 4,
+  maxItems = 10,
 }: SimilarItemsGridProps) {
   const locale = useLocale()
   const t = useTranslations("Product")
@@ -34,8 +34,8 @@ export function SimilarItemsGrid({
   if (!products || products.length === 0) return null
 
   return (
-    <section className="border-t border-border bg-background px-4 py-4">
-      <div className="mb-3 flex items-center justify-between">
+    <section className="mt-4 border-t border-border pt-4">
+      <div className="flex items-center justify-between px-4">
         <h2 className="font-semibold text-foreground">{t("similarItems")}</h2>
         {rootCategory?.slug && (
           <Link
@@ -47,19 +47,22 @@ export function SimilarItemsGrid({
           </Link>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3">
+
+      <div className="scrollbar-hide mt-3 flex gap-3 overflow-x-auto px-4 pb-4 snap-x snap-mandatory">
         {products.slice(0, maxItems).map((item) => {
           const productHref = item.storeSlug ? `/${item.storeSlug}/${item.slug || item.id}` : null
           return (
-            <ProductMiniCard
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              price={item.price}
-              image={item.image}
-              href={productHref}
-              locale={locale}
-            />
+            <div key={item.id} className="shrink-0 snap-start">
+              <ProductMiniCard
+                id={item.id}
+                title={item.title}
+                price={item.price}
+                image={item.image}
+                href={productHref}
+                locale={locale}
+                className="w-40"
+              />
+            </div>
           )
         })}
       </div>

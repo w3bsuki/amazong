@@ -5,7 +5,7 @@ import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLin
 
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { DrawerBody } from "@/components/ui/drawer"
 import { DrawerShell } from "@/components/shared/drawer-shell"
 
@@ -18,13 +18,19 @@ type AccountNavItem = {
 
 export function AccountTabBar() {
   const [moreOpen, setMoreOpen] = useState(false)
+  const locale = useLocale()
   const pathname = usePathname()
   const t = useTranslations("Account")
   const tCommon = useTranslations("Common")
 
+  const localePrefix = `/${locale}`
+  const basePathname = pathname.startsWith(localePrefix)
+    ? (pathname.slice(localePrefix.length) || "/")
+    : pathname
+
   const isActive = (path: string, exact?: boolean) => {
-    if (exact) return pathname === path
-    return pathname === path || pathname.startsWith(path + '/')
+    if (exact) return basePathname === path
+    return basePathname === path || basePathname.startsWith(path + '/')
   }
 
   const tabs: AccountNavItem[] = [
@@ -115,7 +121,7 @@ export function AccountTabBar() {
   return (
     <>
       <nav 
-        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border-subtle bg-background pb-safe lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border-subtle bg-background pb-safe md:hidden rounded-t-2xl shadow-nav overflow-hidden"
         role="navigation"
         aria-label={t("tabBarAriaLabel")}
       >
@@ -180,7 +186,7 @@ export function AccountTabBar() {
         contentAriaLabel={t("tabBar.moreTitle")}
         description={t("tabBar.moreDescription")}
         descriptionClassName="max-w-sm"
-        contentClassName="max-h-dialog lg:hidden"
+        contentClassName="max-h-dialog md:hidden"
         headerClassName="border-border-subtle px-inset pt-4 pb-3"
         titleClassName="text-base font-semibold tracking-tight"
       >

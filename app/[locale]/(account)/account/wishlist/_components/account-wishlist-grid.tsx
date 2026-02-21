@@ -15,23 +15,16 @@ import {
   Package,
   ShoppingCart,
   Trash,
-  X,
   CircleX as XCircle,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
-  Drawer,
   DrawerBody,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
   DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
 } from "@/components/ui/drawer"
-import { IconButton } from "@/components/ui/icon-button"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import { Separator } from "@/components/ui/separator"
 import { useCart } from "@/components/providers/cart-context"
 import { createClient } from "@/lib/supabase/client"
@@ -161,7 +154,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
     <>
       <div className="grid grid-cols-2 gap-3 pb-20 md:hidden md:pb-0">
         {items.map((item) => (
-          <Drawer key={item.id} open={selectedItem?.id === item.id} onOpenChange={(open) => !open && setSelectedItem(null)}>
+          <div key={item.id}>
             <div
               onClick={() => setSelectedItem(item)}
               onKeyDown={(e) => {
@@ -254,17 +247,15 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
             </div>
 
             {/* Detail Drawer */}
-            <DrawerContent className="max-h-(--dialog-h-85vh) rounded-t-2xl gap-0 overflow-hidden">
-              <DrawerHeader className="border-b border-border bg-background text-left">
-                <div className="flex items-start justify-between gap-3">
-                  <DrawerTitle className="line-clamp-2 text-lg">{item.title}</DrawerTitle>
-                  <DrawerClose asChild>
-                    <IconButton aria-label={locale === "bg" ? "Затвори" : "Close"} variant="ghost" size="icon-compact">
-                      <X className="size-4" />
-                    </IconButton>
-                  </DrawerClose>
-                </div>
-                <DrawerDescription className="flex items-center gap-2 flex-wrap">
+            <DrawerShell
+              open={selectedItem?.id === item.id}
+              onOpenChange={(open) => !open && setSelectedItem(null)}
+              title={item.title}
+              titleClassName="line-clamp-2 text-lg"
+              closeLabel={locale === "bg" ? "Затвори" : "Close"}
+              contentAriaLabel={item.title}
+              description={
+                <>
                   {labels.addedOn} {formatDate(item.created_at)}
                   {item.category_name && (
                     <>
@@ -275,8 +266,12 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
                       </Badge>
                     </>
                   )}
-                </DrawerDescription>
-              </DrawerHeader>
+                </>
+              }
+              descriptionClassName="flex items-center gap-2 flex-wrap"
+              headerClassName="border-b border-border bg-background text-left"
+              contentClassName="max-h-(--dialog-h-85vh) rounded-t-2xl gap-0 overflow-hidden"
+            >
 
               <DrawerBody className="px-4 py-4">
                 <div className="relative mx-auto aspect-square w-full max-w-60 overflow-hidden rounded-xl bg-muted">
@@ -351,8 +346,8 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
                   </Button>
                 </div>
               </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
+            </DrawerShell>
+          </div>
         ))}
       </div>
 

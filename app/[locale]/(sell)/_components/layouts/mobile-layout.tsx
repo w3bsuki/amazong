@@ -4,29 +4,29 @@ import { useMemo } from "react";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { StepCategory } from "../steps/step-category";
 import { StepDetails } from "../steps/step-details";
+import { StepPhotos } from "../steps/step-photos";
 import { StepPricing } from "../steps/step-pricing";
 import { StepReview } from "../steps/step-review";
-import { StepWhat } from "../steps/step-what";
 import { StepperWrapper } from "./stepper-wrapper";
 import type { SellFormDataV4 } from "@/lib/sell/schema";
 
 // ============================================================================
 // MOBILE LAYOUT - Premium 5-step wizard with Framer Motion animations
-// New flow: What → Category → Details → Pricing → Review
+// New flow: Photos → Details → Category → Pricing → Review
 // Following the PLAN-sell-form-masterpiece.md spec
 // ============================================================================
 
 // Step configuration for mobile wizard (5-step flow)
-// 1) What: title + 1 photo (low friction entry)
-// 2) Category: full-screen picker (determines subsequent fields)
-// 3) Details: condition + attributes + description + additional photos
-// 4) Pricing: price + shipping options
-// 5) Review: final validation + publish
+// 1) Photos: upload + reorder + cover photo
+// 2) Details: title + description + condition
+// 3) Category: hierarchical picker (+ optional specifics)
+// 4) Pricing: price + shipping + location
+// 5) Review: summary + publish
 const MOBILE_STEPS = [
-  { id: 1, fields: ["title", "images"] },
-  { id: 2, fields: ["categoryId"] },
-  { id: 3, fields: ["condition", "description"] },
-  { id: 4, fields: ["price", "shippingPrice", "sellerCity"] },
+  { id: 1, fields: ["images"] },
+  { id: 2, fields: ["title", "description", "condition"] },
+  { id: 3, fields: ["categoryId", "brandId", "brandName", "attributes"] },
+  { id: 4, fields: ["format", "price", "compareAtPrice", "quantity", "shippingPrice", "sellerCity"] },
   { id: 5, fields: [] },
 ];
 
@@ -49,18 +49,18 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
   const canContinue = useMemo(() => {
     if (currentStep === 1) {
       const hasPhotos = Boolean(images && images.length > 0);
-      const hasTitle = Boolean(title && title.trim().length >= 5);
-      return hasPhotos && hasTitle;
+      return hasPhotos;
     }
 
     if (currentStep === 2) {
-      return Boolean(categoryId);
+      const hasTitle = Boolean(title && title.trim().length >= 5);
+      const hasDescription = Boolean(description && description.trim().length >= 50);
+      const hasCondition = Boolean(condition);
+      return hasTitle && hasDescription && hasCondition;
     }
 
     if (currentStep === 3) {
-      const hasCondition = Boolean(condition);
-      const hasDescription = Boolean(description && description.trim().length >= 50);
-      return hasCondition && hasDescription;
+      return Boolean(categoryId);
     }
 
     if (currentStep === 4) {
@@ -89,19 +89,19 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
         const firstError = errorKeys[0];
         if (!firstError) return;
 
-        if (firstError === "images" || firstError === "title") {
+        if (firstError === "images") {
           setCurrentStep(1);
           return;
         }
 
-        if (firstError === "categoryId" || firstError === "categoryPath") {
+        if (firstError === "title" || firstError === "description" || firstError === "condition") {
           setCurrentStep(2);
           return;
         }
 
         if (
-          firstError === "condition" ||
-          firstError === "description" ||
+          firstError === "categoryId" ||
+          firstError === "categoryPath" ||
           firstError === "attributes" ||
           firstError === "brandId" ||
           firstError === "brandName"
@@ -126,11 +126,11 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <StepWhat />;
+        return <StepPhotos />;
       case 2:
-        return <StepCategory />;
-      case 3:
         return <StepDetails />;
+      case 3:
+        return <StepCategory />;
       case 4:
         return <StepPricing />;
       case 5:
@@ -153,4 +153,5 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
     </StepperWrapper>
   );
 }
+
 

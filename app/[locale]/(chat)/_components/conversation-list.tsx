@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useMessages, type Conversation } from "@/components/providers/message-context"
 import { Skeleton } from "@/components/ui/skeleton"
-import { MessageCircle as ChatCircle, Check, CheckCheck as Checks } from "lucide-react";
+import { MessageCircle as ChatCircle, Image as ImageIcon } from "lucide-react";
 
 import Image from "next/image"
 
@@ -101,7 +101,7 @@ export function ConversationList({
     return (
       <div className={cn("flex flex-col", className)}>
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+          <div key={i} className="flex items-center gap-3 px-inset py-3">
             <Skeleton className="size-12 rounded-full shrink-0" />
             <div className="flex-1 min-w-0">
               <Skeleton className="h-3.5 w-24 mb-1.5" />
@@ -138,7 +138,7 @@ export function ConversationList({
   }
 
   return (
-    <div className={cn("flex flex-col", className)}>
+    <div className={cn("flex flex-col divide-y divide-border-subtle", className)}>
       {filteredConversations.map((conversation) => (
         <ConversationItem
           key={conversation.id}
@@ -201,14 +201,16 @@ function ConversationItem({
   const isOwnMessage = lastMessage?.sender_id === currentUserId
 
   // Format last message preview
-  let lastMessagePreview = ""
-  if (lastMessage?.content) {
-    lastMessagePreview =
-      lastMessage.content.length > 35
-        ? lastMessage.content.slice(0, 35) + "..."
-        : lastMessage.content
-  } else {
-    lastMessagePreview = t("noMessages")
+  let lastMessagePreview = t("noMessages")
+  if (lastMessage) {
+    if (lastMessage.message_type === "image") {
+      lastMessagePreview = t("imageMessage")
+    } else if (lastMessage.content.trim()) {
+      lastMessagePreview =
+        lastMessage.content.length > 55
+          ? lastMessage.content.slice(0, 55) + "..."
+          : lastMessage.content
+    }
   }
 
   // Format time - Instagram style (1h, 2d, 1w, etc.) using i18n
@@ -240,9 +242,10 @@ function ConversationItem({
       type="button"
       onClick={onClick}
       className={cn(
-        "w-full text-left flex items-center gap-3 px-3 py-2.5 transition-colors min-h-touch-lg",
+        "w-full text-left flex items-center gap-3 px-inset py-3 transition-colors min-h-touch-lg",
         "hover:bg-hover active:bg-active",
-        isSelected && "bg-selected"
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        isSelected && "bg-selected hover:bg-selected"
       )}
     >
       {/* Avatar with product thumbnail overlay */}
@@ -269,62 +272,43 @@ function ConversationItem({
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        {/* Name and time row */}
-        <div className="flex items-center justify-between gap-2 mb-0.5">
+        {/* Name, time, unread */}
+        <div className="flex items-center gap-2">
           <span
             className={cn(
-              "text-sm truncate",
-              hasUnread ? "font-bold text-foreground" : "font-medium text-foreground"
+              "truncate text-body font-semibold",
+              hasUnread && "text-foreground"
             )}
           >
             {displayName}
           </span>
-          <span
-            className={cn(
-              "text-xs shrink-0",
-              hasUnread ? "text-primary font-medium" : "text-muted-foreground"
-            )}
-          >
-            {timeDisplay}
-          </span>
+
+          <div className="ml-auto flex items-center gap-2 shrink-0">
+            {timeDisplay ? (
+              <span className={cn("text-2xs", hasUnread ? "text-foreground" : "text-muted-foreground")}>
+                {timeDisplay}
+              </span>
+            ) : null}
+            {hasUnread ? <span aria-hidden="true" className="size-2 rounded-full bg-primary" /> : null}
+          </div>
         </div>
 
-        {/* Product title if exists */}
-        {conversation.product && (
-          <p className="text-xs text-muted-foreground truncate mb-0.5">
-            {t("replyPrefix")}: {conversation.product.title}
-          </p>
-        )}
-
-        {/* Last message preview with read status */}
-        <div className="flex items-center gap-1.5">
-          <span
-            className={cn(
-              "text-xs truncate flex-1",
-              hasUnread ? "text-foreground font-medium" : "text-muted-foreground"
-            )}
-          >
-            {lastMessagePreview}
-          </span>
-
-          {/* Read status icon (only for own messages) */}
-          {isOwnMessage && (
-            <span className="shrink-0">
-              {hasUnread ? (
-                <Check size={14} className="text-muted-foreground" />
-              ) : (
-                <Checks size={14} className="text-primary" />
-              )}
-            </span>
+        {/* Last message preview */}
+        <p
+          className={cn(
+            "mt-0.5 flex items-center gap-1.5 truncate text-tiny",
+            hasUnread ? "text-foreground" : "text-muted-foreground"
           )}
-
-          {/* Unread badge */}
-          {hasUnread && unreadCount > 0 && (
-            <span className="ml-1 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-primary text-2xs font-bold text-primary-foreground">
-              {unreadCount > 99 ? "99+" : unreadCount}
+        >
+          {lastMessage?.message_type === "image" ? (
+            <span className="inline-flex items-center gap-1.5">
+              <ImageIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <span className="truncate">{isOwnMessage ? `${t("you")}: ${lastMessagePreview}` : lastMessagePreview}</span>
             </span>
+          ) : (
+            <span className="truncate">{isOwnMessage ? `${t("you")}: ${lastMessagePreview}` : lastMessagePreview}</span>
           )}
-        </div>
+        </p>
       </div>
     </button>
   )

@@ -1,9 +1,7 @@
 import { useTranslations } from "next-intl"
-import { AttributesField } from "../fields/attributes-field"
-import { BrandField } from "../fields/brand-field"
 import { ConditionField } from "../fields/condition-field"
 import { DescriptionField } from "../fields/description-field"
-import { PhotosField } from "../fields/photos-field"
+import { TitleField } from "../fields/title-field"
 import { StepLayout } from "./step-layout"
 
 export function StepDetails() {
@@ -15,11 +13,9 @@ export function StepDetails() {
       description={tSell("steps.details.description")}
       contentClassName="space-y-5"
     >
-      <ConditionField compact />
-      <BrandField compact />
-      <AttributesField compact />
+      <TitleField compact idPrefix="sell-step-details" />
       <DescriptionField compact idPrefix="sell-step-details" />
-      <PhotosField compact maxPhotos={12} />
+      <ConditionField compact />
     </StepLayout>
   )
 }

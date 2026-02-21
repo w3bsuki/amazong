@@ -43,11 +43,12 @@ export function SearchPagination({
     }
     const queryString = params.toString()
 
-    const localePath = pathname.startsWith(`/${locale}`)
-      ? pathname
-      : `/${locale}${pathname === "/" ? "" : pathname}`
+    const localePrefix = `/${locale}`
+    const basePath = pathname.startsWith(localePrefix)
+      ? (pathname.slice(localePrefix.length) || "/")
+      : pathname
 
-    return `${localePath}${queryString ? `?${queryString}` : ""}`
+    return `${basePath}${queryString ? `?${queryString}` : ""}`
   }
   
   // Generate page numbers to show

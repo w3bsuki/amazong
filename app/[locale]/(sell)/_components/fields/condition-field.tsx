@@ -9,14 +9,7 @@ import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell/schema";
 import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import { DrawerShell } from "@/components/shared/drawer-shell";
 
 // ============================================================================
 // CONDITION FIELD - Item condition selector with proper mobile touch targets
@@ -34,6 +27,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
   const { control } = useSellForm();
   const [isOpen, setIsOpen] = useState(false);
   const tSell = useTranslations("Sell")
+  const tCommon = useTranslations("Common")
 
   return (
     <Controller
@@ -74,53 +68,60 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
             <FieldContent>
               {compact ? (
                 /* Mobile: Drawer Pattern with "SelectionCard" Trigger */
-                <Drawer open={isOpen} onOpenChange={setIsOpen}>
-                  <DrawerTrigger asChild>
-                    <button
-                      type="button"
-                      className={cn(
-                        "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-colors",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        fieldState.invalid 
-                          ? "border-destructive/50 bg-destructive-subtle" 
-                          : selectedLabel 
-                            ? "border-selected-border bg-selected" 
-                            : "border-border bg-card hover:bg-hover"
-                      )}
-                    >
-                      <div className={cn(
-                        "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                        selectedLabel ? "bg-selected text-primary" : "bg-muted text-muted-foreground"
-                      )}>
-                        <Sparkle className="size-5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                            {tSell("steps.details.conditionLabel")}
-                          </span>
-                          <span className="text-destructive text-xs">*</span>
-                        </div>
-                        <span className={cn(
-                          "text-base font-semibold truncate block mt-0.5",
-                          selectedLabel ? "text-foreground" : "text-text-subtle"
-                        )}>
-                          {selectedLabel || tSell("steps.details.conditionPlaceholder")}
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(true)}
+                    className={cn(
+                      "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-colors",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      fieldState.invalid
+                        ? "border-destructive/50 bg-destructive-subtle"
+                        : selectedLabel
+                          ? "border-selected-border bg-selected"
+                          : "border-border bg-card hover:bg-hover"
+                    )}
+                    aria-haspopup="dialog"
+                    aria-expanded={isOpen}
+                  >
+                    <div className={cn(
+                      "size-11 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                      selectedLabel ? "bg-selected text-primary" : "bg-muted text-muted-foreground"
+                    )}>
+                      <Sparkle className="size-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                          {tSell("steps.details.conditionLabel")}
                         </span>
+                        <span className="text-destructive text-xs">*</span>
                       </div>
-                      <CaretRight className={cn(
-                        "size-5 shrink-0 transition-colors",
-                        selectedLabel ? "text-primary" : "text-text-subtle"
-                      )} />
-                    </button>
-                  </DrawerTrigger>
-                  <DrawerContent className="max-h-dialog">
-                    <DrawerHeader className="border-b border-border-subtle pb-4">
-                      <DrawerTitle className="text-xl font-bold">{tSell("steps.details.conditionDrawerTitle")}</DrawerTitle>
-                      <DrawerDescription className="text-sm">
-                        {tSell("fields.condition.drawerDescription")}
-                      </DrawerDescription>
-                    </DrawerHeader>
+                      <span className={cn(
+                        "text-base font-semibold truncate block mt-0.5",
+                        selectedLabel ? "text-foreground" : "text-text-subtle"
+                      )}>
+                        {selectedLabel || tSell("steps.details.conditionPlaceholder")}
+                      </span>
+                    </div>
+                    <CaretRight className={cn(
+                      "size-5 shrink-0 transition-colors",
+                      selectedLabel ? "text-primary" : "text-text-subtle"
+                    )} />
+                  </button>
+
+                  <DrawerShell
+                    open={isOpen}
+                    onOpenChange={setIsOpen}
+                    title={tSell("steps.details.conditionDrawerTitle")}
+                    closeLabel={tCommon("close")}
+                    contentAriaLabel={tSell("steps.details.conditionDrawerTitle")}
+                    description={tSell("fields.condition.drawerDescription")}
+                    descriptionClassName="text-sm text-muted-foreground"
+                    headerClassName="border-b border-border-subtle pb-4"
+                    titleClassName="text-xl font-bold"
+                    contentClassName="max-h-dialog"
+                  >
                     <div className="p-4 space-y-3 max-h-dialog-sm overflow-y-auto" data-vaul-no-drag>
                       {conditionOptions.map((option) => {
                         const isSelected = field.value === option.value;
@@ -170,8 +171,8 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                       })}
                     </div>
                     <div className="h-safe-b" />
-                  </DrawerContent>
-                </Drawer>
+                  </DrawerShell>
+                </>
               ) : (
                 /* Desktop: Grid Pattern */
                 <div className="grid gap-2.5 grid-cols-2 sm:grid-cols-3">

@@ -1,5 +1,6 @@
 import { CheckoutHeader } from "./_components/checkout-header"
 import { CheckoutFooter } from "./_components/checkout-footer"
+import { CheckoutStepProvider } from "./_components/checkout-step-context"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { PageShell } from "../_components/page-shell"
@@ -53,10 +54,10 @@ export default async function CheckoutLayout({
     <FullRouteIntlProvider locale={locale}>
       <CommerceProviders>
         <PageShell variant="muted" className="flex flex-col">
-          <CheckoutHeader />
-          <main className="flex-1">
-            {children}
-          </main>
+          <CheckoutStepProvider>
+            <CheckoutHeader />
+            <main className="flex-1">{children}</main>
+          </CheckoutStepProvider>
           <CheckoutFooter />
         </PageShell>
       </CommerceProviders>

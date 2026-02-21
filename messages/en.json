@@ -714,6 +714,7 @@
         "orders": "Orders",
         "messagesLink": "Messages",
         "myListings": "My Listings",
+        "payouts": "Payouts",
         "wishlist": "Wishlist",
         "settings": "Settings",
         "recentListings": "Recent Listings",
@@ -733,6 +734,7 @@
         "statsRating": "Rating",
         "statsSales": "Sales",
         "sectionAccount": "Account",
+        "sectionShopping": "Shopping",
         "sectionSelling": "Selling",
         "sectionSettings": "Settings",
         "createListing": "Create Listing",
@@ -949,9 +951,20 @@
     },
     "CheckoutPage": {
         "title": "Checkout",
+        "steps": {
+            "address": "Address",
+            "shipping": "Shipping",
+            "payment": "Payment"
+        },
+        "stepProgress": {
+            "ariaLabel": "Checkout progress",
+            "valueText": "Step {current} of {total}"
+        },
         "emptyCart": "Your cart is empty",
         "emptyCartDescription": "Add some items to your cart to proceed with checkout.",
         "continueShopping": "Continue Shopping",
+        "continueToShipping": "Continue to Shipping",
+        "continueToPayment": "Continue to Payment",
         "shippingAddress": "Shipping Address",
         "manageAddresses": "Manage addresses",
         "default": "Default",
@@ -990,6 +1003,7 @@
         "processing": "Processing...",
         "proceedToPayment": "Proceed to Payment",
         "securePayment": "Secure payment with SSL encryption",
+        "paymentStepDescription": "You'll be redirected to Stripe to complete payment securely.",
         "acceptCards": "We accept all major credit cards",
         "returnPolicy": "30-day return policy",
         "qty": "Qty",
@@ -1315,6 +1329,7 @@
         "signIn": "Sign in",
         "signUp": "Sign up",
         "signOut": "Sign out",
+        "continueWithGoogle": "Continue with Google",
         "email": "Email",
         "emailOrPhone": "Email",
         "password": "Password",
@@ -1330,6 +1345,7 @@
         "conditionsOfUse": "Conditions of Use",
         "privacyNotice": "Privacy Notice",
         "and": "and",
+        "or": "or",
         "help": "Help Center",
         "copyright": "© {year} Treido. All rights reserved.",
         "error": "An unexpected error occurred. Please try again.",
@@ -1463,6 +1479,9 @@
             "moreDescription": "More account sections and quick links.",
             "moreOptionsAriaLabel": "More options"
         },
+        "mobileHub": {
+            "planBadge": "{plan} plan"
+        },
         "header": {
             "overview": "Account Overview",
             "orders": "Orders",
@@ -1484,6 +1503,45 @@
         "orders": {
             "title": "Your Orders",
             "desc": "Track, return, or buy things again"
+        },
+        "ordersPage": {
+            "filtersAriaLabel": "Order status",
+            "filters": {
+                "pending": "Pending",
+                "shipped": "Shipped",
+                "completed": "Completed"
+            },
+            "searchPlaceholder": "Search by item or #",
+            "summary": "{count, plural, one {# order} other {# orders}}",
+            "empty": {
+                "title": "No orders found",
+                "description": "When you place an order, it will appear here.",
+                "cta": "Start shopping"
+            },
+            "card": {
+                "viewOrder": "View order",
+                "openOrderAriaLabel": "Open order {id}",
+                "orderNumber": "Order #{id}",
+                "itemsCount": "{count, plural, one {# item} other {# items}}",
+                "productFallbackTitle": "Product"
+            },
+            "drawer": {
+                "title": "Order #{id}",
+                "placed": "Placed",
+                "total": "Total",
+                "qty": "Qty",
+                "tracking": "Tracking",
+                "viewProduct": "View product",
+                "chatWithSeller": "Chat with seller"
+            }
+        },
+        "ordersStats": {
+            "totalOrders": "Total orders",
+            "pending": "Pending",
+            "shipped": "Shipped",
+            "totalSpent": "Total spent",
+            "allTime": "All time",
+            "lifetime": "Lifetime"
         },
         "settings": {
             "title": "Settings",
@@ -1829,6 +1887,7 @@
         "searching": "Searching...",
         "products": "Products",
         "viewAll": "View all",
+        "viewAllResultsFor": "View all results for \"{query}\"",
         "recentlyViewed": "Recently Viewed",
         "recentSearches": "Recent Searches",
         "trending": "Trending now",
@@ -1906,6 +1965,10 @@
         "back": "Back",
         "activeFilters": "Active filters",
         "sortBy": "Sort by",
+        "relevance": "Relevance",
+        "priceAscShort": "Price↑",
+        "priceDescShort": "Price↓",
+        "newShort": "New",
         "featured": "Featured",
         "priceLowHigh": "Price: Low to High",
         "priceHighLow": "Price: High to Low",
@@ -2604,6 +2667,8 @@
         "typeMessage": "Type your message...",
         "send": "Send",
         "attachImage": "Attach image",
+        "imageMessage": "Photo",
+        "imageAttachmentAlt": "Shared image",
         "you": "You",
         "unknownUser": "Unknown User",
         "closed": "Closed",
@@ -2617,6 +2682,7 @@
         "errorStartingConversation": "Error starting conversation",
         "errorStartingConversationDescription": "Something went wrong. Please try again later.",
         "back": "Back",
+        "moreActions": "More actions",
         "replyPrefix": "Re",
         "timeNow": "now",
         "timeMinutes": "{count}m",
@@ -2999,6 +3065,11 @@
         "noProductsTitle": "No products yet",
         "noProductsDesc": "Start selling by creating your first product listing",
         "createListing": "Create Listing",
+        "status": {
+            "active": "Active",
+            "draft": "Draft",
+            "sold": "Sold"
+        },
         "outOfStock": "Out of stock",
         "inStock": "{count} in stock",
         "discountTooltip": "Discount",
@@ -3278,6 +3349,7 @@
     },
     "Sell": {
         "metaTitle": "Sell",
+        "createListing": "Create Listing",
         "payoutSetupRequired": "Set up payouts first",
         "payoutSetupDescription": "Before you can list items for sale, you need to connect your bank account to receive payments.",
         "setupPayouts": "Set up payouts",
@@ -3328,7 +3400,24 @@
             "levelLabel": "Level {level}",
             "stepProgress": "Step {current}/{total}"
         },
+        "stepCounter": "{current} of {total}",
+        "stepProgress": {
+            "ariaLabel": "Step progress",
+            "valueText": "Step {current} of {total}"
+        },
+        "discardDraft": {
+            "title": "Discard draft?",
+            "description": "Your changes will be lost.",
+            "actions": {
+                "keepEditing": "Keep editing",
+                "discard": "Discard"
+            }
+        },
         "steps": {
+            "photos": {
+                "title": "Photos",
+                "description": "Upload photos, reorder them, and set a cover photo"
+            },
             "what": {
                 "title": "What are you selling?",
                 "description": "Give your item a name and add a photo"
@@ -3496,10 +3585,16 @@
         "review": {
             "completeRequiredFieldsTitle": "Complete required fields",
             "sections": {
+                "photos": "Photos",
+                "details": "Details",
+                "category": "Category",
                 "photosAndDetails": "Photos & Details",
                 "categoryAndCondition": "Category & Condition",
                 "itemSpecifics": "Item Specifics",
                 "priceAndShipping": "Price & Shipping"
+            },
+            "placeholders": {
+                "noPhotos": "Add at least one photo"
             },
             "labels": {
                 "category": "Category",

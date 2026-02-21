@@ -34,7 +34,6 @@ export default function CompletePage() {
   const isBusiness = accountType === "business"
   const totalSteps = isBusiness ? 5 : 4
   const currentStep = totalSteps
-  const progress = 100
 
   const [isSaving, setIsSaving] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -99,7 +98,7 @@ export default function CompletePage() {
       title={t("complete.title")}
       subtitle={t("complete.subtitle")}
       stepLabel={t("common.stepLabel", { current: currentStep, total: totalSteps })}
-      progress={progress}
+      stepProgress={{ current: currentStep, total: totalSteps }}
       footer={
         <div className="space-y-2">
           <Button onClick={() => handleNavigation("/")} size="lg" disabled={isPending} className="w-full">

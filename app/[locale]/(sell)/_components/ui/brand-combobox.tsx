@@ -19,12 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
+import { DrawerShell } from "@/components/shared/drawer-shell";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { useTranslations } from "next-intl";
 
@@ -79,6 +74,7 @@ export function BrandCombobox({
   const isMobile = useIsMobile();
   
   const t = useTranslations("Sell")
+  const tCommon = useTranslations("Common")
   const selectedBrand = brands.find((b) => b.id === value);
   
   // Display text for the trigger button
@@ -326,18 +322,19 @@ export function BrandCombobox({
     return (
       <>
         {trigger}
-        <Drawer open={open} onOpenChange={setOpen}>
-          <DrawerContent>
-            <DrawerHeader className="text-left border-b border-border-subtle pb-4">
-              <DrawerTitle className="text-base font-bold">
-                {t("brandCombobox.mobileTitle")}
-              </DrawerTitle>
-            </DrawerHeader>
-            <div className="p-2 pb-8">
-              {commandContent}
-            </div>
-          </DrawerContent>
-        </Drawer>
+        <DrawerShell
+          open={open}
+          onOpenChange={setOpen}
+          title={t("brandCombobox.mobileTitle")}
+          closeLabel={tCommon("close")}
+          contentAriaLabel={t("brandCombobox.mobileTitle")}
+          headerClassName="text-left border-b border-border-subtle pb-4"
+          titleClassName="text-base font-bold"
+        >
+          <div className="p-2 pb-8">
+            {commandContent}
+          </div>
+        </DrawerShell>
       </>
     );
   }

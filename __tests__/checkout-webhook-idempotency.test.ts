@@ -13,6 +13,7 @@ type SupabaseMock = {
 }
 
 let supabase: SupabaseMock
+const createAdminClientMock = vi.fn(() => supabase)
 
 function createSupabaseMock(): SupabaseMock {
   const calls = {
@@ -105,7 +106,7 @@ function createSupabaseMock(): SupabaseMock {
 }
 
 vi.mock("@/lib/supabase/server", () => ({
-  createAdminClient: () => supabase,
+  createAdminClient: () => createAdminClientMock(),
 }))
 
 vi.mock("@/lib/env", () => ({
@@ -196,5 +197,27 @@ describe("app/api/checkout/webhook idempotency", () => {
 
     // Order items should only be inserted once; the retry should detect existing items.
     expect(supabase.__calls.order_items.insert).toHaveLength(1)
+  })
+
+  it("skips database work when webhook signature verification fails", async () => {
+    const { stripe } = await import("@/lib/stripe")
+    const { POST } = await import("@/app/api/checkout/webhook/route")
+
+    ;(stripe.webhooks.constructEvent as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => {
+      throw new Error("invalid signature")
+    })
+
+    const req = new Request("http://localhost/api/checkout/webhook", {
+      method: "POST",
+      headers: { "stripe-signature": "sig" },
+      body: "raw-body",
+    })
+
+    const res = await POST(req)
+    expect(res.status).toBe(400)
+    await res.json()
+
+    expect(createAdminClientMock).not.toHaveBeenCalled()
+    expect(supabase.__calls.orders.upsert).toHaveLength(0)
   })
 })

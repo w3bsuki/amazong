@@ -33,7 +33,7 @@ export function ChatInterfaceInput({
   isUploadingImage: boolean
 }) {
   return (
-    <div className="shrink-0 border-t border-border bg-background px-2 py-2 pb-safe-max-xs">
+    <div className="sticky bottom-0 z-10 shrink-0 border-t border-border-subtle bg-background px-inset py-2 pb-safe-max-xs">
       {isClosed ? (
         <div className="flex items-center justify-center rounded-full bg-muted px-4 py-2">
           <p className="text-sm text-muted-foreground">{t("conversationClosed")}</p>
@@ -53,7 +53,7 @@ export function ChatInterfaceInput({
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploadingImage || isSending}
             aria-label={t("attachImage")}
-            className="flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-hover active:bg-active disabled:opacity-50"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-hover active:bg-active disabled:opacity-50"
           >
             {isUploadingImage ? (
               <CircleNotch size={22} className="animate-spin text-primary motion-reduce:animate-none" />
@@ -62,7 +62,7 @@ export function ChatInterfaceInput({
             )}
           </button>
 
-          <div className="flex min-h-10 flex-1 items-end gap-2 rounded-full bg-surface-subtle px-3 py-2 ring-1 ring-border transition-shadow focus-within:ring-2 focus-within:ring-ring">
+          <div className="flex min-h-11 flex-1 items-end gap-2 rounded-full bg-surface-subtle px-3 py-2 ring-1 ring-border transition-shadow focus-within:ring-2 focus-within:ring-ring">
             <textarea
               ref={inputRef}
               value={inputValue}
@@ -81,7 +81,7 @@ export function ChatInterfaceInput({
             disabled={isSending || isUploadingImage || !inputValue.trim()}
             aria-label={t("send")}
             className={cn(
-              "flex size-10 shrink-0 items-center justify-center rounded-full transition-colors disabled:opacity-50",
+              "flex size-11 shrink-0 items-center justify-center rounded-full transition-colors disabled:opacity-50",
               inputValue.trim()
                 ? "bg-primary text-primary-foreground hover:bg-interactive-hover"
                 : "bg-muted text-muted-foreground"

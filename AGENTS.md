@@ -7,38 +7,36 @@ Next.js 16 · React 19 · TypeScript · Tailwind v4 · shadcn/ui · Supabase · 
 
 ## How to Work
 
-**Read before writing.** Before modifying any file, read it completely.
+You're a strong developer — trust your judgment. This section makes you more effective, not slower.
 
-**Grep before deleting.** Verify zero usage before removing any file or export.
-
-**Think in batches.** Group related changes. Verify after a logical unit — not after every edit.
+1. **Read your task** in `TASKS.md`. Load the context docs it references.
+2. **Think first.** For multi-file changes, sketch your plan before touching code. Think through edge cases.
+3. **Work in batches.** Group related changes. Verify after each batch, not after every file.
+4. **Mark tasks done.** When you finish a task, check its box in `TASKS.md`. If acceptance criteria have sub-items, check those too.
+5. **If something feels risky** (auth, payments, DB schema), add a note to the task explaining what you'd do — don't execute it. The human will review.
+6. **If a doc is wrong,** fix it. You have permission to update docs that are stale or inaccurate.
 
 **Use official docs for framework questions.** Our docs contain what's unique to Treido. For how Next.js / Supabase / Stripe / Tailwind / shadcn / next-intl work, read their official docs (links in `docs/STACK.md`). If a context7 MCP is available, use `resolve-library-id` + `get-library-docs`.
 
-**Load context for your task:**
+---
 
-| Working on | Read first |
-|------------|------------|
+## Find Context for Your Task
+
+Read this file (~100 lines) + one doc for your task area. Only add more for complex work.
+
+| Working on | Read |
+|------------|------|
 | Understanding the product | `docs/PRD.md` |
 | How we use our tech stack | `docs/STACK.md` + official docs |
 | UI, styling, components | `docs/DESIGN.md` |
+| Database, schema, queries | `docs/database.md` |
+| Testing | `docs/testing.md` |
 | A specific feature | `docs/features/<feature>.md` |
 | Why a pattern or decision exists | `docs/DECISIONS.md` |
-| Active non-refactor work | `TASKS.md` |
-| Refactoring | `refactor/CURRENT.md` |
+| What to work on | `TASKS.md` |
 
-Feature docs exist for: auth, bottom-nav, checkout-payments, header, product-cards, search-filters, sell-flow.
-Decision log is append-only: `### DEC-NNN: <title>`, 5-8 lines.
-
-### Doc Philosophy
-
-Our docs are context layers for AI agents, not textbooks. They contain what you can't get elsewhere:
-- **Product context** — what Treido is, how it should feel
-- **Current state** — what's built, what's broken, what files exist
-- **Our decisions** — why we chose specific approaches
-- **Pointers** — where to find framework knowledge (official docs, MCP)
-
-We do NOT re-document how Next.js / Supabase / Stripe / Tailwind / shadcn / next-intl work. Read their official docs for that.
+Feature docs: auth, bottom-nav, checkout-payments, header, product-cards, search-filters, sell-flow.
+Agent personas (optional): `docs/agents/` — ui-engineer, backend-engineer, researcher, reviewer, refactorer.
 
 ---
 
@@ -55,19 +53,18 @@ messages/          → i18n JSON (en, bg)     scripts/             → Build & q
 
 ---
 
-## Constraints
+## Knowledge That Prevents Mistakes
 
-Violating these causes production incidents:
+These aren't arbitrary rules — they exist because violating them causes real production incidents.
 
-- **Auth:** `getUser()` only — `getSession()` is banned (JWT spoofing risk).
-- **Webhooks:** `constructEvent()` before any DB write. Handlers must be idempotent.
-- **Route privacy:** `_components/`, `_actions/`, `_lib/` never imported across route groups.
-- **Styling:** semantic tokens only (`bg-background`, `text-foreground`). Palette classes, raw hex, arbitrary values, and gradients are forbidden. `pnpm -s styles:gate` enforces this.
-- **Data:** no `select('*')` in hot paths — project only needed columns.
-- **Supabase clients:** correct client per context. See `docs/STACK.md` § Supabase client table.
-- **Performance:** no wide joins in list views. Use `createStaticClient()` for cached reads. No caching user-specific data.
+- **Auth:** `getUser()` only — `getSession()` reads the JWT without re-validating, so a spoofed token passes silently.
+- **Webhooks:** `constructEvent()` before any DB write. Stripe signs payloads — without verification, forged events create fake orders.
+- **Route privacy:** `_components/`, `_actions/`, `_lib/` are route-group-private. Never import across route groups.
+- **Styling:** semantic tokens only (`bg-background`, `text-foreground`). No palette classes, hex, arbitrary values, or gradients. `pnpm -s styles:gate` catches violations.
+- **Data:** no `select('*')` in hot paths. Use the correct Supabase client per context (→ `docs/STACK.md` § Supabase client table).
+- **Performance:** no wide joins in list views. `createStaticClient()` for cached reads. Never cache user-specific data.
 
-**Stop and get human approval before touching:** DB schema · migrations · RLS · auth/session logic · payments/webhooks · destructive operations.
+**Stop and flag for human approval:** DB schema · migrations · RLS · auth/session logic · payments/webhooks · destructive operations.
 
 ---
 
@@ -77,26 +74,20 @@ Violating these causes production incidents:
 - Client components are prop-driven — data fetched server-side, passed as props.
 - Zod at boundaries (forms, webhooks, API inputs). Typed data internally.
 - File naming: `kebab-case`. No version suffixes, no generic `client.tsx`.
-- Server actions use `requireAuth()` from `lib/auth/require-auth.ts`.
-- `components/ui/` stays primitive-only (editable open code — no domain logic, no data fetching).
-- `components/shared/` for cross-route composites. `components/layout/` for shells.
-- Navigation: always use `Link` / `redirect` from `@/i18n/routing` — never `next/link` directly.
-
----
-
-## Active Work
-
-Codebase refactor in progress (7 domain audit+refactor tasks, autopilot protocol active). Start here → `refactor/CURRENT.md`
-Launch blockers and feature work → `TASKS.md`
+- `requireAuth()` from `lib/auth/require-auth.ts` for server action auth.
+- `components/ui/` primitive-only. `components/shared/` for cross-route composites. `components/layout/` for shells.
+- Navigation: always `Link` / `redirect` from `@/i18n/routing` — never `next/link` directly.
 
 ---
 
 ## Verify
 
-Run once when your task is complete:
+After every batch of changes:
 
 ```bash
 pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit
 ```
 
-*Last updated: 2026-02-18*
+If you changed files referenced in a doc, verify the doc is still accurate.
+
+*Last updated: 2026-02-21*

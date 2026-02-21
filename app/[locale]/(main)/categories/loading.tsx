@@ -3,52 +3,29 @@ import { PageShell } from "../../_components/page-shell"
 
 /**
  * /categories loading skeleton
- * 
- * Matches the actual page structure:
- * - Compact header with title + count
- * - Directory list with category circles + subcategory preview
- * - Quick action cards at bottom
  */
 export default function CategoriesLoading() {
   return (
-    <PageShell>
-      {/* Header - matches page.tsx */}
-      <div className="border-b border-border-subtle bg-background">
-        <div className="px-inset py-1.5">
-          <div className="flex items-baseline justify-between gap-2">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-3 w-16" />
-          </div>
+    <PageShell variant="muted">
+      <div className="mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe">
+        {/* Search input skeleton */}
+        <div className="border-b border-border-subtle bg-background px-inset py-3">
+          <Skeleton className="h-11 w-full rounded-xl" />
         </div>
-      </div>
 
-      {/* Category List - matches page.tsx directory style */}
-      <div className="divide-y divide-border/60">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <div
-            key={i}
-            className="flex min-h-(--control-default) items-center gap-2 px-inset"
-          >
-            {/* Category circle */}
-            <Skeleton className="size-(--control-primary) shrink-0 rounded-full" />
-
-            {/* Category info */}
-            <div className="min-w-0 flex-1 space-y-1.5 py-2">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-3 w-48" />
-            </div>
-
-            {/* Caret */}
-            <Skeleton className="size-3 shrink-0" />
+        {/* Icon grid skeleton */}
+        <div className="px-inset py-3">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border-subtle bg-background p-4"
+              >
+                <Skeleton className="size-12 rounded-2xl" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      {/* Quick Actions - matches page.tsx */}
-      <div className="px-inset py-3 bg-surface-subtle border-t border-border-subtle">
-        <div className="grid grid-cols-2 gap-2">
-          <Skeleton className="h-14 w-full rounded-md" />
-          <Skeleton className="h-14 w-full rounded-md" />
         </div>
       </div>
     </PageShell>

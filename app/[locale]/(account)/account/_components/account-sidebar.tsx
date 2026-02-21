@@ -240,6 +240,11 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
   const locale = useLocale()
   const pathname = usePathname()
 
+  const localePrefix = `/${locale}`
+  const basePathname = pathname.startsWith(localePrefix)
+    ? (pathname.slice(localePrefix.length) || "/")
+    : pathname
+
   const navItems = getAccountNavItems(locale)
   const manageItems = getAccountManageItems(locale)
   const sellerItems = getAccountSellerItems(locale)
@@ -247,8 +252,8 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
 
   const isActive = (url: string, exact?: boolean) => {
     const fullPath = url
-    if (exact) return pathname === fullPath
-    return pathname === fullPath || pathname.startsWith(fullPath + '/')
+    if (exact) return basePathname === fullPath
+    return basePathname === fullPath || basePathname.startsWith(fullPath + '/')
   }
 
   return (

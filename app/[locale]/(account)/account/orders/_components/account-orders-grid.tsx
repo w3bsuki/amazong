@@ -6,7 +6,6 @@ import type { AccountOrdersGridProps } from "./account-orders-grid.types"
 export type { AccountOrdersGridServerActions } from "./account-orders-grid.types"
 import {
   formatOrderCurrency,
-  getOrderGridText,
 } from "./account-orders-grid.utils"
 import { AccountOrdersGridMobile } from "./account-orders-grid-mobile"
 import { AccountOrdersGridDesktop } from "./account-orders-grid-desktop"
@@ -17,7 +16,6 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
   const [conversationMap, setConversationMap] = useState<Map<string, string>>(new Map())
   const [openMobileOrderId, setOpenMobileOrderId] = useState<string | null>(null)
   const formatCurrency = (value: number) => formatOrderCurrency(value, locale)
-  const t = getOrderGridText(locale)
 
   useEffect(() => {
     async function fetchConversations() {
@@ -41,7 +39,7 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
   }, [actions, orders])
 
   if (orders.length === 0) {
-    return <AccountOrdersEmptyState t={t} />
+    return <AccountOrdersEmptyState />
   }
 
   return (
@@ -55,7 +53,6 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
         openMobileOrderId={openMobileOrderId}
         setOpenMobileOrderId={setOpenMobileOrderId}
         formatCurrency={formatCurrency}
-        t={t}
       />
       <AccountOrdersGridDesktop
         orders={orders}
@@ -64,7 +61,6 @@ export function AccountOrdersGrid({ orders, locale, actions }: AccountOrdersGrid
         actions={actions}
         conversationMap={conversationMap}
         formatCurrency={formatCurrency}
-        t={t}
       />
     </>
   )

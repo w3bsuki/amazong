@@ -3,16 +3,17 @@ import { ArrowLeft } from "lucide-react";
 
 
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
+import { MobileStepProgress } from "@/components/mobile/chrome/mobile-step-progress"
 import { cn } from "@/lib/utils"
 
 export function OnboardingShell({
   title,
   subtitle,
   stepLabel,
-  progress,
+  stepProgress,
   onBack,
   backLabel,
+  headerAction,
   children,
   footer,
   className,
@@ -20,9 +21,10 @@ export function OnboardingShell({
   title: string
   subtitle?: string
   stepLabel?: string
-  progress?: number
+  stepProgress?: { current: number; total: number }
   onBack?: (() => void) | undefined
   backLabel?: string
+  headerAction?: ReactNode
   children: ReactNode
   footer?: ReactNode
   className?: string
@@ -53,12 +55,21 @@ export function OnboardingShell({
             ) : null}
           </div>
 
-          <div className="size-11" aria-hidden="true" />
+          {headerAction ? (
+            <div className="shrink-0">{headerAction}</div>
+          ) : (
+            <div className="size-11" aria-hidden="true" />
+          )}
         </div>
 
-        {typeof progress === "number" ? (
+        {stepProgress ? (
           <div className="px-4 pb-3">
-            <Progress value={progress} />
+            <MobileStepProgress
+              current={stepProgress.current}
+              total={stepProgress.total}
+              aria-label={stepLabel}
+              aria-valuetext={stepLabel}
+            />
           </div>
         ) : null}
       </div>

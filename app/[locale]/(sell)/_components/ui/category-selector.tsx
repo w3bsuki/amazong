@@ -9,13 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-} from "@/components/ui/drawer";
+import { DrawerShell } from "@/components/shared/drawer-shell";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { useTranslations } from "next-intl";
@@ -34,6 +28,7 @@ export function CategorySelector({
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
   const tSell = useTranslations("Sell");
+  const tCommon = useTranslations("Common");
 
   const flatCategories = useMemo(() => {
     const result: FlatCategory[] = [];
@@ -145,22 +140,26 @@ export function CategorySelector({
     return (
       <>
         {triggerButton}
-        <Drawer open={isOpen} onOpenChange={setIsOpen} snapPoints={[1]}>
-          <DrawerContent className="h-full max-h-full rounded-none">
-            <DrawerHeader className="sr-only">
-              <DrawerTitle>{tSell("categoryModal.title")}</DrawerTitle>
-              <DrawerDescription>{tSell("categoryModal.description")}</DrawerDescription>
-            </DrawerHeader>
-            <CategoryModalContent
-              categories={categories}
-              flatCategories={flatCategories}
-              value={value}
-              onSelect={handleSelect}
-              locale={locale}
-              isMobile
-            />
-          </DrawerContent>
-        </Drawer>
+        <DrawerShell
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          title={tSell("categoryModal.title")}
+          closeLabel={tCommon("close")}
+          contentAriaLabel={tSell("categoryModal.title")}
+          description={tSell("categoryModal.description")}
+          descriptionClassName="sr-only"
+          contentClassName="h-full max-h-full rounded-none"
+          drawerProps={{ snapPoints: [1] }}
+        >
+          <CategoryModalContent
+            categories={categories}
+            flatCategories={flatCategories}
+            value={value}
+            onSelect={handleSelect}
+            locale={locale}
+            isMobile
+          />
+        </DrawerShell>
       </>
     );
   }

@@ -46,13 +46,14 @@ export function AvatarUpload({
         )}
       </div>
       <label
-        className="absolute -bottom-1 -right-1 size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-interactive-hover transition-colors shadow-sm"
+        className="group absolute -bottom-3 -right-3 touch-target cursor-pointer flex items-center justify-center tap-highlight"
         aria-label={ariaLabel}
       >
-        <Camera className="size-3.5" />
+        <span className="flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-colors group-hover:bg-interactive-hover">
+          <Camera className="size-3.5" />
+        </span>
         <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
       </label>
     </div>
   )
 }
-

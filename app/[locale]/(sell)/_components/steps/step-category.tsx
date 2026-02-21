@@ -1,8 +1,7 @@
-import { useCallback } from "react"
 import { useTranslations } from "next-intl"
-import type { CategoryPathItem } from "../../_lib/types"
+import { AttributesField } from "../fields/attributes-field"
+import { BrandField } from "../fields/brand-field"
 import { CategoryField } from "../fields/category-field"
-import { useSellFormContext } from "../sell-form-provider"
 import { StepLayout } from "./step-layout"
 
 // ============================================================================
@@ -12,18 +11,7 @@ import { StepLayout } from "./step-layout"
 // ============================================================================
 
 export function StepCategory() {
-  const { setCurrentStep } = useSellFormContext()
   const tSell = useTranslations("Sell")
-
-  const handleCategoryChange = useCallback(
-    (categoryId: string, path: CategoryPathItem[]) => {
-      if (!categoryId || path.length === 0) return
-
-      // Small delay to show the selection before advancing.
-      window.setTimeout(() => setCurrentStep(3), 300)
-    },
-    [setCurrentStep]
-  )
 
   return (
     <StepLayout
@@ -31,7 +19,9 @@ export function StepCategory() {
       description={tSell("steps.category.description")}
       contentClassName="space-y-5"
     >
-      <CategoryField compact onCategoryChange={handleCategoryChange} />
+      <CategoryField compact />
+      <BrandField compact />
+      <AttributesField compact />
     </StepLayout>
   )
 }

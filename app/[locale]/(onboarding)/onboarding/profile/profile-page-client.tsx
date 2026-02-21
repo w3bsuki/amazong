@@ -116,7 +116,7 @@ export default function ProfilePage() {
       title={t("profile.title")}
       subtitle={t("profile.subtitle")}
       stepLabel={t("common.stepLabel", { current: 2, total: 4 })}
-      progress={50}
+      stepProgress={{ current: 2, total: 4 }}
       onBack={handleBack}
       backLabel={t("common.back")}
       footer={

@@ -1,4 +1,4 @@
-import { Archive, ArrowLeft, Ban as ProhibitInset, Flag, Info, Phone, Video as VideoCamera, X } from "lucide-react"
+import { ArrowLeft, Ban as ProhibitInset, Flag, MoreVertical, X } from "lucide-react"
 import type { useTranslations } from "next-intl"
 
 import { Link } from "@/i18n/routing"
@@ -43,14 +43,14 @@ export function ChatInterfaceHeader({
   isBlocking: boolean
 }) {
   return (
-    <div className="shrink-0 border-b border-border bg-background px-2 py-2 pt-safe-max-xs">
-      <div className="flex items-center gap-2">
+    <div className="shrink-0 border-b border-border-subtle bg-background px-inset py-2 pt-safe-max-xs">
+      <div className="flex min-h-touch-lg items-center gap-2">
         {onBack && (
           <button
             type="button"
             onClick={onBack}
             aria-label={t("back")}
-            className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-hover active:bg-active lg:hidden"
+            className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
           >
             <ArrowLeft size={22} className="text-foreground" />
           </button>
@@ -80,41 +80,23 @@ export function ChatInterfaceHeader({
         </div>
 
         <div className="flex items-center">
-          <button
-            type="button"
-            aria-label="Voice call"
-            className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-muted"
-          >
-            <Phone size={20} className="text-foreground" />
-          </button>
-          <button
-            type="button"
-            aria-label="Video call"
-            className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-muted"
-          >
-            <VideoCamera size={20} className="text-foreground" />
-          </button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                aria-label="More actions"
-                className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-muted"
+                aria-label={t("moreActions")}
+                className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <Info size={22} className="text-foreground" />
+                <MoreVertical size={20} className="text-foreground" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-56">
               {!isClosed && (
                 <DropdownMenuItem onClick={onCloseConversation}>
                   <X size={16} className="mr-2" />
                   {t("closeConversation")}
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem>
-                <Archive size={16} className="mr-2" />
-                {t("archiveConversation")}
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={onReportConversation} disabled={isReporting}>
                 <Flag size={16} className="mr-2" />

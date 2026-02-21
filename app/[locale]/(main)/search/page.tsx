@@ -2,9 +2,7 @@ import { cookies } from "next/headers"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { createStaticClient } from "@/lib/supabase/server"
 import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
-import { getCategoryContext } from "@/lib/data/categories"
-import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
-import type { CategoryPillRailItem } from "@/components/mobile/category-nav/category-pill-rail"
+import { getCategoryContext, getCategoryHierarchy } from "@/lib/data/categories"
 import type { ProductGridProduct } from "@/components/grid/product-grid"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { SearchPageLayout } from "./_components/search-page-layout"
@@ -19,7 +17,6 @@ import {
 } from "./_lib/types"
 import {
   BrowseModeSchema,
-  buildCategoryHref,
   buildModeHref,
   extractAttributeFilters,
   toSingleValue,
@@ -64,7 +61,6 @@ export default async function SearchPage({
   let sellers: SellerResultCard[] = []
   let totalSellers = 0
   let currentCategory: Category | null = null
-  let siblingCategories: Category[] = []
   let subcategories: Category[] = []
   let allCategories: Category[] = []
   let allCategoriesWithSubs: { category: Category; subs: Category[] }[] = []
@@ -73,128 +69,101 @@ export default async function SearchPage({
 
   const searchUrlParams = toUrlSearchParams(searchParams)
 
-  if (supabase) {
-    const { data: rootCats, error: rootError } = await supabase
-      .from("categories")
-      .select("id, name, name_bg, slug, parent_id, image_url, display_order")
-      .is("parent_id", null)
-      .order("display_order", { ascending: true })
-      .order("name", { ascending: true })
+  const [categoryHierarchy, categoryContext] = await Promise.all([
+    getCategoryHierarchy(null, 1),
+    categorySlug ? getCategoryContext(categorySlug) : Promise.resolve(null),
+  ])
 
-    if (rootError) {
-      console.error("[SearchPage] Root categories fetch error:", rootError)
-    }
+  const toCategory = (category: {
+    id: string
+    name: string
+    name_bg: string | null
+    slug: string
+    parent_id: string | null
+    image_url?: string | null
+  }): Category => ({
+    id: category.id,
+    name: category.name,
+    name_bg: category.name_bg,
+    slug: category.slug,
+    parent_id: category.parent_id,
+    image_url: category.image_url ?? null,
+  })
 
-    if (rootCats && rootCats.length > 0) {
-      allCategories = rootCats
+  allCategories = categoryHierarchy.map((category) => toCategory(category))
+  allCategoriesWithSubs = categoryHierarchy.map((category) => ({
+    category: toCategory(category),
+    subs: (category.children ?? []).map((child) => toCategory(child)),
+  }))
 
-      const rootIds = rootCats.map((c) => c.id)
-      const { data: subCats } = await supabase
-        .from("categories")
-        .select("id, name, name_bg, slug, parent_id, image_url, display_order")
-        .in("parent_id", rootIds)
-        .order("display_order", { ascending: true })
-        .order("name", { ascending: true })
+  if (categoryContext) {
+    currentCategory = toCategory(categoryContext.current)
+    subcategories = categoryContext.children.map((category) => toCategory(category))
 
-      allCategoriesWithSubs = rootCats.map((cat) => ({
-        category: cat,
-        subs: (subCats || []).filter((c) => c.parent_id === cat.id),
-      }))
-
-      const allCats = [...rootCats, ...(subCats || [])]
-
-      if (categorySlug) {
-        const categoryData = allCats.find((c) => c.slug === categorySlug) || null
-
-        if (categoryData) {
-          currentCategory = categoryData
-          categoryIdForFilters = categoryData.id
-
-          if (categoryData.parent_id) {
-            siblingCategories = allCats.filter((c) => c.parent_id === categoryData.parent_id)
-            subcategories = []
-          } else {
-            subcategories = allCats.filter((c) => c.parent_id === categoryData.id)
-            siblingCategories = []
-          }
-        }
-      }
-
-      if (browseMode === "listings") {
-        const attributeFilters = extractAttributeFilters(searchParams)
-        const categoryIds =
-          currentCategory != null
-            ? currentCategory.parent_id
-              ? [currentCategory.id]
-              : [currentCategory.id, ...subcategories.map((s) => s.id)]
-            : null
-
-        const result = await searchProducts(
-          supabase,
-          query,
-          categoryIds,
-          {
-            minPrice: toSingleValue(searchParams.minPrice),
-            maxPrice: toSingleValue(searchParams.maxPrice),
-            tag: toSingleValue(searchParams.tag),
-            minRating: toSingleValue(searchParams.minRating),
-            deals: toSingleValue(searchParams.deals),
-            promoted: toSingleValue(searchParams.promoted),
-            nearby: toSingleValue(searchParams.nearby),
-            city: toSingleValue(searchParams.city),
-            verified: toSingleValue(searchParams.verified),
-            availability: toSingleValue(searchParams.availability),
-            sort: toSingleValue(searchParams.sort),
-            attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
-          },
-          currentPage,
-          ITEMS_PER_PAGE,
-          shippingFilter
-        )
-
-        products = result.products
-        totalProducts = result.total
-      } else {
-        const sellerSortParam = toSingleValue(searchParams.sellerSort)
-        const sellerVerifiedParam = toSingleValue(searchParams.sellerVerified)
-        const sellerMinRatingParam = toSingleValue(searchParams.sellerMinRating)
-        const sellerMinListingsParam = toSingleValue(searchParams.sellerMinListings)
-        const cityParam = toSingleValue(searchParams.city)
-        const nearbyParam = toSingleValue(searchParams.nearby)
-
-        const sellerFilters = parseSellerSearchFilters({
-          ...(sellerSortParam ? { sellerSort: sellerSortParam } : {}),
-          ...(sellerVerifiedParam ? { sellerVerified: sellerVerifiedParam } : {}),
-          ...(sellerMinRatingParam ? { sellerMinRating: sellerMinRatingParam } : {}),
-          ...(sellerMinListingsParam ? { sellerMinListings: sellerMinListingsParam } : {}),
-          ...(cityParam ? { city: cityParam } : {}),
-          ...(nearbyParam ? { nearby: nearbyParam } : {}),
-        })
-
-        const sellerCategorySlug = currentCategory?.slug ?? categorySlug
-        const sellerResults = await searchSellers(supabase, {
-          query,
-          ...(sellerCategorySlug ? { categorySlug: sellerCategorySlug } : {}),
-          filters: sellerFilters,
-          page: currentPage,
-          limit: ITEMS_PER_PAGE,
-        })
-        sellers = sellerResults.sellers
-        totalSellers = sellerResults.total
-      }
+    if (browseMode === "listings") {
+      filterableAttributes = categoryContext.attributes
+      categoryIdForFilters = categoryContext.current.id
     }
   }
 
-  if (browseMode === "listings" && categorySlug) {
-    const ctx = await getCategoryContext(categorySlug)
-    if (ctx) {
-      filterableAttributes = ctx.attributes
-      categoryIdForFilters = ctx.current.id
-    }
+  if (browseMode === "listings") {
+    const attributeFilters = extractAttributeFilters(searchParams)
+
+    const result = await searchProducts(
+      supabase,
+      query,
+      categoryIdForFilters ?? null,
+      {
+        minPrice: toSingleValue(searchParams.minPrice),
+        maxPrice: toSingleValue(searchParams.maxPrice),
+        tag: toSingleValue(searchParams.tag),
+        minRating: toSingleValue(searchParams.minRating),
+        deals: toSingleValue(searchParams.deals),
+        promoted: toSingleValue(searchParams.promoted),
+        nearby: toSingleValue(searchParams.nearby),
+        city: toSingleValue(searchParams.city),
+        verified: toSingleValue(searchParams.verified),
+        availability: toSingleValue(searchParams.availability),
+        sort: toSingleValue(searchParams.sort),
+        attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
+      },
+      currentPage,
+      ITEMS_PER_PAGE,
+      shippingFilter
+    )
+
+    products = result.products
+    totalProducts = result.total
+  } else {
+    const sellerSortParam = toSingleValue(searchParams.sellerSort)
+    const sellerVerifiedParam = toSingleValue(searchParams.sellerVerified)
+    const sellerMinRatingParam = toSingleValue(searchParams.sellerMinRating)
+    const sellerMinListingsParam = toSingleValue(searchParams.sellerMinListings)
+    const cityParam = toSingleValue(searchParams.city)
+    const nearbyParam = toSingleValue(searchParams.nearby)
+
+    const sellerFilters = parseSellerSearchFilters({
+      ...(sellerSortParam ? { sellerSort: sellerSortParam } : {}),
+      ...(sellerVerifiedParam ? { sellerVerified: sellerVerifiedParam } : {}),
+      ...(sellerMinRatingParam ? { sellerMinRating: sellerMinRatingParam } : {}),
+      ...(sellerMinListingsParam ? { sellerMinListings: sellerMinListingsParam } : {}),
+      ...(cityParam ? { city: cityParam } : {}),
+      ...(nearbyParam ? { nearby: nearbyParam } : {}),
+    })
+
+    const sellerCategorySlug = currentCategory?.slug ?? categorySlug
+    const sellerResults = await searchSellers(supabase, {
+      query,
+      ...(sellerCategorySlug ? { categorySlug: sellerCategorySlug } : {}),
+      filters: sellerFilters,
+      page: currentPage,
+      limit: ITEMS_PER_PAGE,
+    })
+    sellers = sellerResults.sellers
+    totalSellers = sellerResults.total
   }
 
   const t = await getTranslations("SearchFilters")
-  const tCategories = await getTranslations("Categories")
 
   const gridProducts: ProductGridProduct[] = products.map((product) => ({
     id: product.id,
@@ -232,41 +201,6 @@ export default async function SearchPage({
   const modeListingsHref = buildModeHref(searchUrlParams, "listings")
   const modeSellersHref = buildModeHref(searchUrlParams, "sellers")
 
-  const railCategories = currentCategory
-    ? (subcategories.length > 0 ? subcategories : siblingCategories).filter((cat) => cat.slug !== currentCategory.slug)
-    : allCategories.slice(0, 8)
-
-  const allRailLabel = currentCategory
-    ? tCategories("allIn", {
-        category:
-          categoryName ??
-          tCategories("shortName", {
-            slug: currentCategory ? getCategorySlugKey(currentCategory.slug) : "other",
-            name: currentCategory?.name ?? "",
-          }),
-      })
-    : tCategories("headerTitleAll")
-
-  const railItems: CategoryPillRailItem[] = [
-    {
-      id: "all-categories",
-      label: allRailLabel,
-      href: buildCategoryHref(searchUrlParams, browseMode, currentCategory ? currentCategory.slug : null),
-      active: !currentCategory || Boolean(currentCategory),
-      title: allRailLabel,
-    },
-    ...railCategories.map((category) => ({
-      id: category.id,
-      label: tCategories("shortName", {
-        slug: getCategorySlugKey(category.slug),
-        name: getCategoryName(category, locale),
-      }),
-      href: buildCategoryHref(searchUrlParams, browseMode, category.slug),
-      active: currentCategory?.slug === category.slug,
-      title: locale === "bg" && category.name_bg ? category.name_bg : category.name,
-    })),
-  ]
-
   return (
     <SearchPageLayout
       locale={locale}
@@ -281,7 +215,6 @@ export default async function SearchPage({
       categoryIdForFilters={categoryIdForFilters}
       categoryName={categoryName}
       filterableAttributes={filterableAttributes}
-      userZone={userZone ?? null}
       gridProducts={gridProducts}
       productsCount={products.length}
       sellers={sellers}
@@ -290,10 +223,8 @@ export default async function SearchPage({
       totalResults={totalResults}
       modeListingsHref={modeListingsHref}
       modeSellersHref={modeSellersHref}
-      railItems={railItems}
       itemsPerPage={ITEMS_PER_PAGE}
       t={t}
-      tCategories={tCategories}
     />
   )
 }

@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { useLocale, useTranslations } from "next-intl"
-import { useAuth } from "@/components/providers/auth-state-manager"
 import { ProfileHeaderSync } from "./_components/profile/profile-header-sync"
 import { ProfileShell } from "./_components/profile/profile-shell"
 import { ProfileStats } from "./_components/profile/profile-stats"
-import { ProfileTabs } from "./_components/profile/profile-tabs"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 import {
   buildProfileActions,
@@ -30,7 +30,6 @@ export function PublicProfileClient({
   const locale = useLocale()
   const tProfile = useTranslations("ProfilePage")
   const tSeller = useTranslations("Seller")
-  const { signOut } = useAuth()
 
   // Avoid SSR/hydration mismatch for time-based + Intl-rendered text (React error 419 in prod).
   const [isHydrated, setIsHydrated] = useState(false)
@@ -75,7 +74,6 @@ export function PublicProfileClient({
     isHydrated,
     locale,
     tProfile,
-    signOut,
   })
 
   const headerContent = buildProfileHeaderContent({
@@ -121,6 +119,35 @@ export function PublicProfileClient({
     onShare: handleShareProfile,
   })
 
+  const heroTabToggle =
+    profile.is_seller && (
+      <div className="grid grid-cols-2 gap-1 rounded-2xl border border-border bg-card p-1">
+        {[
+          { value: "listings", label: tProfile("forSale") },
+          { value: "reviews", label: tProfile("reviews") },
+        ].map((tab) => (
+          <Button
+            key={tab.value}
+            type="button"
+            size="sm"
+            variant="ghost"
+            aria-pressed={activeTab === tab.value}
+            className={cn(
+              "h-9 rounded-xl px-3 text-xs font-semibold transition-colors",
+              activeTab === tab.value
+                ? "bg-background text-foreground shadow-inner"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+            onClick={() => setActiveTab(tab.value)}
+          >
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+    )
+
+  const activeTabContent = tabs.find((tab) => tab.value === activeTab)?.content ?? null
+
   return (
     <>
       <ProfileHeaderSync
@@ -140,12 +167,11 @@ export function PublicProfileClient({
         stats={<ProfileStats stats={statsItems} />}
         actions={actions}
         headerContent={headerContent}
-        tabs={
-          <ProfileTabs
-            tabs={tabs}
-            value={activeTab}
-            onValueChange={setActiveTab}
-          />
+        heroTabToggle={heroTabToggle}
+        children={
+          activeTabContent ? (
+            <div className="border-t border-border">{activeTabContent}</div>
+          ) : null
         }
       />
     </>

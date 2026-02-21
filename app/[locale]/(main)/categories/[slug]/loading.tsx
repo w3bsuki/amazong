@@ -22,46 +22,25 @@ export default function CategorySlugLoading() {
             </div>
           </div>
         </div>
-        
-        {/* Subcategory circles skeleton - matches CategoryCircles */}
-        <div className="bg-background border-b border-border-subtle">
-          <div className="px-inset py-3">
-            <div className="flex items-start gap-3 overflow-x-auto no-scrollbar">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="flex flex-col items-center gap-1.5 shrink-0 w-18">
-                  <Skeleton className="size-14 rounded-full" />
-                  <Skeleton className="h-3 w-12" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        {/* Filter/Sort bar skeleton - 50/50 split matches FilterSortBar */}
-        <div className="sticky top-12 z-20 bg-background border-b border-border-subtle">
-          <div className="flex items-stretch divide-x divide-border/60 h-10">
-            <div className="flex-1 flex items-center justify-center gap-1.5">
-              <Skeleton className="size-4" />
-              <Skeleton className="h-4 w-12" />
-            </div>
-            <div className="flex-1 flex items-center justify-center gap-1.5">
-              <Skeleton className="size-4" />
-              <Skeleton className="h-4 w-16" />
-            </div>
-          </div>
-        </div>
 
-        {/* Filter chips skeleton */}
-        <div className="bg-background px-4 py-2">
-          <div className="flex gap-2">
-            {Array.from({ length: 2 }).map((_, i) => (
-              <Skeleton key={i} className="h-6 w-16 rounded-full" />
-            ))}
+        {/* SmartRail skeleton */}
+        <nav
+          className="sticky z-30 border-b border-border-subtle bg-background"
+          style={{ top: "var(--offset-mobile-primary-rail)" }}
+        >
+          <div className="overflow-x-auto no-scrollbar">
+            <div className="flex w-max min-w-full items-center gap-1.5 px-inset py-2">
+              <Skeleton className="h-10 w-20 rounded-full" />
+              <Skeleton className="h-10 w-24 rounded-full" />
+              <Skeleton className="h-10 w-28 rounded-full" />
+              <Skeleton className="h-10 w-24 rounded-full" />
+              <Skeleton className="h-10 w-24 rounded-full" />
+            </div>
           </div>
-        </div>
-        
+        </nav>
+
         {/* Product grid skeleton - matches ProductFeed compact density */}
-        <div className="pt-1 px-4">
+        <div className="mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe px-inset pt-1">
           <div className="grid grid-cols-2 gap-2 py-1">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="space-y-2">

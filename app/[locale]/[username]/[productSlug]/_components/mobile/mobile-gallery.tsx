@@ -1,16 +1,14 @@
 "use client"
 
 // =============================================================================
-// MOBILE GALLERY - Edge-to-Edge with Horizontal Thumbnail Strip
+// MOBILE GALLERY - OLX-style edge-to-edge hero with dot indicators
 // =============================================================================
-// Based on V2 demo design - the winner from our audit.
 // Key features:
-// - Full-bleed edge-to-edge hero image
-// - Horizontal thumbnail strip below (not just dots)
-// - Swipe navigation with scroll sync
-// - Floating action buttons (back, share, wishlist)
-// - Image counter overlay
-// - Fullscreen image viewer on tap
+// - Full-bleed edge-to-edge hero image (4:3 ratio)
+// - Swipe navigation with scroll snap + scroll sync
+// - Dot indicators (not numbered)
+// - Floating action buttons (back, wishlist)
+// - Lazy-loaded images with stable dimensions
 // =============================================================================
 
 import {
@@ -19,12 +17,11 @@ import {
   useRef,
   useCallback,
   useMemo,
-  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from "react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
-import { Heart, ChevronLeft, MoreHorizontal, X } from "lucide-react"
+import { Heart, ChevronLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
@@ -67,7 +64,6 @@ export function MobileGallery({
 }: MobileGalleryProps) {
   const t = useTranslations("Product")
   const [activeIndex, setActiveIndex] = useState(0)
-  const [viewerOpen, setViewerOpen] = useState(false)
   const galleryRef = useRef<HTMLDivElement>(null)
   
   const { isInWishlist, toggleWishlist } = useWishlist()
@@ -86,6 +82,8 @@ export function MobileGallery({
 
   useEffect(() => {
     setFailedImageIndexes({})
+    setActiveIndex(0)
+    galleryRef.current?.scrollTo({ left: 0 })
   }, [imageResetKey])
 
   const getImageSrc = useCallback(
@@ -103,25 +101,27 @@ export function MobileGallery({
     })
   }, [])
 
-  const openViewer = useCallback(() => {
-    setViewerOpen(true)
-  }, [])
-
-  // Sync scroll position with active index
   useEffect(() => {
     const el = galleryRef.current
     if (!el) return
-    
+
+    let rafId: number | null = null
     const handleScroll = () => {
-      const newIndex = Math.round(el.scrollLeft / el.offsetWidth)
-      if (newIndex !== activeIndex && newIndex >= 0 && newIndex < images.length) {
-        setActiveIndex(newIndex)
-      }
+      if (rafId != null) return
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null
+        const newIndex = Math.round(el.scrollLeft / el.offsetWidth)
+        if (newIndex < 0 || newIndex >= images.length) return
+        setActiveIndex((previous) => (previous === newIndex ? previous : newIndex))
+      })
     }
-    
+
     el.addEventListener("scroll", handleScroll, { passive: true })
-    return () => el.removeEventListener("scroll", handleScroll)
-  }, [activeIndex, images.length])
+    return () => {
+      el.removeEventListener("scroll", handleScroll)
+      if (rafId != null) window.cancelAnimationFrame(rafId)
+    }
+  }, [images.length])
 
   // Scroll to specific image
   const scrollToImage = useCallback((index: number) => {
@@ -137,16 +137,6 @@ export function MobileGallery({
     })
   }, [])
 
-  const handleGalleryKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLDivElement>) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault()
-        openViewer()
-      }
-    },
-    [openViewer],
-  )
-
   // Handle wishlist toggle
   const handleWishlistToggle = () => {
     if (!product) return
@@ -161,7 +151,7 @@ export function MobileGallery({
   if (!images || images.length === 0) {
     return (
       <div className={cn(
-        "w-full aspect-square bg-muted flex items-center justify-center",
+        "w-full aspect-4-3 bg-muted flex items-center justify-center",
         className
       )}>
         <span className="text-sm text-muted-foreground">{t("noImage")}</span>
@@ -229,58 +219,44 @@ export function MobileGallery({
             {overlayBadge}
           </div>
 
-          {/* Image Counter */}
+          {/* Dot Indicators */}
           {images.length > 1 && (
-            <div className="absolute bottom-3 right-3 z-20 px-2 py-1 rounded bg-surface-overlay text-overlay-text text-xs font-medium">
-              {activeIndex + 1}/{images.length}
-            </div>
-          )}
-
-          {/* Thumbnail Strip - Overlaid inside gallery (prototype pattern) */}
-          {images.length > 1 && (
-            <div className="absolute bottom-3 left-3 right-16 z-20 flex gap-1.5 overflow-x-auto scrollbar-hide">
-              {images.map((img, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    scrollToImage(i)
-                  }}
-                  className={cn(
-                    "flex-shrink-0 size-11 rounded-lg overflow-hidden border-2 transition-all",
-                    i === activeIndex 
-                      ? "border-background shadow-md" 
-                      : "border-transparent opacity-70"
-                  )}
-                  aria-label={t("viewImageNumber", { number: i + 1 })}
-                >
-                  <Image
-                    src={getImageSrc(i)}
-                    alt={getAlt(img)}
-                    width={44}
-                    height={44}
-                    className="object-cover size-full"
-                    onError={() => handleImageError(i)}
-                  />
-                </button>
-              ))}
+            <div className="absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-full bg-surface-overlay px-2 py-1">
+              <div className="flex items-center gap-1.5" aria-label={t("imagePreview")}>
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      scrollToImage(i)
+                    }}
+                    className="flex size-touch-sm items-center justify-center"
+                    aria-label={t("viewImageNumber", { number: i + 1 })}
+                    aria-current={i === activeIndex ? "true" : undefined}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        i === activeIndex ? "bg-overlay-text" : "bg-overlay-text-muted",
+                      )}
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
           {/* Swipeable Image Gallery */}
           <div
             ref={galleryRef}
-            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-            onClick={openViewer}
-            onKeyDown={handleGalleryKeyDown}
-            role="button"
-            tabIndex={0}
-            aria-label={t("viewImageNumber", { number: activeIndex + 1 })}
+            className="flex overflow-x-auto snap-x snap-mandatory overscroll-x-contain scrollbar-hide"
+            aria-label={t("imagePreview")}
           >
             {images.map((img, i) => (
               <div key={i} className="flex-none w-full snap-center">
-                <div className="relative aspect-square">
+                <div className="relative aspect-4-3">
                   <Image
                     src={getImageSrc(i)}
                     alt={getAlt(img)}
@@ -296,75 +272,6 @@ export function MobileGallery({
           </div>
         </div>
       </div>
-
-      {/* Fullscreen Image Viewer */}
-      {viewerOpen && (
-        <div className="fixed inset-0 z-60 bg-surface-gallery flex flex-col">
-          {/* Viewer Header */}
-          <div className="flex items-center justify-between p-3 relative z-10">
-            <button
-              type="button"
-              onClick={() => setViewerOpen(false)}
-              className="size-10 rounded-full bg-surface-overlay flex items-center justify-center"
-              aria-label={t("closeViewer")}
-            >
-              <X className="size-6 text-overlay-text" />
-            </button>
-            <span className="absolute left-1/2 -translate-x-1/2 text-overlay-text text-sm font-medium">
-              {activeIndex + 1} / {images.length}
-            </span>
-            <button
-              type="button"
-              className="size-10 rounded-full bg-surface-overlay flex items-center justify-center"
-              aria-label={t("moreOptions")}
-            >
-              <MoreHorizontal className="size-5 text-overlay-text" />
-            </button>
-          </div>
-
-          {/* Viewer Image */}
-          <div className="flex-1 flex items-center justify-center relative">
-            {images[activeIndex] && (
-              <Image
-                src={getImageSrc(activeIndex)}
-                alt={getAlt(images[activeIndex])}
-                fill
-                className="object-contain"
-                sizes="100vw"
-                priority
-                onError={() => handleImageError(activeIndex)}
-              />
-            )}
-          </div>
-
-          {/* Viewer Thumbnails */}
-          <div className="flex gap-2 p-4 justify-center">
-            {images.map((img, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => setActiveIndex(i)}
-                className={cn(
-                  "size-14 rounded-lg overflow-hidden transition-all",
-                  i === activeIndex 
-                    ? "ring-2 ring-gallery-ring ring-offset-2 ring-offset-gallery-ring-offset" 
-                    : "opacity-40 hover:opacity-60"
-                )}
-                aria-label={t("viewImageNumber", { number: i + 1 })}
-              >
-                <Image
-                  src={getImageSrc(i)}
-                  alt={getAlt(img)}
-                  width={56}
-                  height={56}
-                  className="object-cover size-full"
-                  onError={() => handleImageError(i)}
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </>
   )
 }

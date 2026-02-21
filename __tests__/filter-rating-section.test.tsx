@@ -5,6 +5,7 @@ import { afterEach, describe, expect, test, vi } from "vitest"
 import { FilterRatingSection } from "@/components/shared/filters/sections/filter-rating-section"
 
 vi.mock("next-intl", () => ({
+  useLocale: () => "en",
   useTranslations: () => (key: string) => {
     if (key === "andUp") return "and up"
     return key

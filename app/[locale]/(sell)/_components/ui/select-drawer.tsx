@@ -5,13 +5,7 @@ import { Check, Search as MagnifyingGlass, Plus } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-} from "@/components/ui/drawer";
+import { DrawerShell } from "@/components/shared/drawer-shell";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTranslations } from "next-intl";
 
@@ -50,6 +44,7 @@ export function SelectDrawer({
   const isBg = locale === "bg";
   const displayedOptions = displayOptions ?? (isBg && optionsBg ? optionsBg : options);
   const t = useTranslations("Sell")
+  const tCommon = useTranslations("Common")
 
   const [query, setQuery] = useState("");
 
@@ -79,15 +74,18 @@ export function SelectDrawer({
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="max-h-(--dialog-h-85vh)">
-          <DrawerHeader className="border-b border-border pb-3">
-            <DrawerTitle className="text-lg">{title}</DrawerTitle>
-            <DrawerDescription>
-              {t("selectDrawer.description")}
-            </DrawerDescription>
-          </DrawerHeader>
-
+    <DrawerShell
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      title={title}
+      titleClassName="text-lg"
+      closeLabel={tCommon("close")}
+      contentAriaLabel={title}
+      description={t("selectDrawer.description")}
+      descriptionClassName="text-sm text-muted-foreground"
+      headerClassName="border-b border-border pb-3"
+      contentClassName="max-h-(--dialog-h-85vh)"
+    >
         <div className="px-4 pb-3">
           <div className="relative">
             <MagnifyingGlass className="size-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
@@ -153,7 +151,6 @@ export function SelectDrawer({
         </ScrollArea>
 
         <div className="pb-safe" />
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { ArrowRight, Baby, Dribbble as Basketball, BookOpen as Books, Car, Monitor as Desktop, Gamepad2 as GameController, Menu as Hamburger, House, Music as MusicNotes, Palette, PawPrint, Sparkles as Sparkle, Shirt as TShirt, Wrench } from "lucide-react";
 
 
@@ -32,14 +32,12 @@ const CATEGORY_ITEMS = [
 export default function InterestsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const locale = useLocale()
   const t = useTranslations("Onboarding")
 
   const accountType = searchParams.get("type") || "personal"
   const isBusiness = accountType === "business"
   const totalSteps = isBusiness ? 5 : 4
   const currentStep = 3
-  const progress = (currentStep / totalSteps) * 100
 
   const [isPending, startTransition] = useTransition()
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
@@ -88,7 +86,7 @@ export default function InterestsPage() {
       title={t("interests.title")}
       subtitle={t("interests.subtitle")}
       stepLabel={t("common.stepLabel", { current: currentStep, total: totalSteps })}
-      progress={progress}
+      stepProgress={{ current: currentStep, total: totalSteps }}
       onBack={handleBack}
       backLabel={t("common.back")}
       footer={
@@ -109,7 +107,11 @@ export default function InterestsPage() {
       }
     >
       <div className="space-y-6">
-        <div className="flex flex-wrap gap-2 justify-center" role="group" aria-label={t("interests.title")}>
+        <div
+          className="grid grid-cols-3 gap-3"
+          role="group"
+          aria-label={t("interests.title")}
+        >
           {CATEGORY_ITEMS.map(({ key, icon }) => (
             <InterestChip
               key={key}

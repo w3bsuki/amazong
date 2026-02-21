@@ -47,6 +47,7 @@ interface CategoryNavigationProps {
   locale: string
   expandedCategories: string[]
   showAllCategories: boolean
+  getCategoryHref: (slug: string | null) => string
   onToggleShowAllCategories: () => void
   onToggleCategory: (slug: string) => void
 }
@@ -61,6 +62,7 @@ export function CategoryNavigation({
   locale,
   expandedCategories,
   showAllCategories,
+  getCategoryHref,
   onToggleShowAllCategories,
   onToggleCategory,
 }: CategoryNavigationProps) {
@@ -83,7 +85,7 @@ export function CategoryNavigation({
             <CategoryBreadcrumbTrail ancestry={ancestry} className="mb-4" />
           ) : parentCategory ? (
             <Link
-              href={`/categories/${parentCategory.slug}`}
+              href={getCategoryHref(parentCategory.slug)}
               className="text-sm text-muted-foreground hover:text-primary hover:underline min-h-11 flex items-center gap-1 mb-2"
             >
               <CaretRight size={14} className="rotate-180" />
@@ -105,7 +107,7 @@ export function CategoryNavigation({
               {validCategories.map((category) => (
                 <Link
                   key={category.id}
-                  href={`/categories/${category.slug}`}
+                  href={getCategoryHref(category.slug)}
                   className={`text-sm cursor-pointer min-h-11 flex items-center px-2 -mx-2 rounded-md transition-colors ${
                     category.id === currentCategory.id
                       ? "font-semibold text-sidebar-foreground bg-sidebar-accent"
@@ -127,7 +129,7 @@ export function CategoryNavigation({
                 {validSubcategories.map((subcategory) => (
                   <Link
                     key={subcategory.id}
-                    href={`/categories/${subcategory.slug}`}
+                    href={getCategoryHref(subcategory.slug)}
                     className="text-sm cursor-pointer text-sidebar-muted-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent min-h-11 flex items-center px-2 -mx-2 rounded-md transition-colors"
                   >
                     {getCategoryName(subcategory, locale)}
@@ -150,7 +152,7 @@ export function CategoryNavigation({
                 <div key={category.id}>
                   <div className="flex items-center justify-between group">
                     <Link
-                      href={`/categories/${category.slug}`}
+                      href={getCategoryHref(category.slug)}
                       className="text-sm cursor-pointer hover:text-sidebar-accent-foreground flex-1 min-h-11 flex items-center text-sidebar-foreground"
                     >
                       {getCategoryName(category, locale)}
@@ -184,7 +186,7 @@ export function CategoryNavigation({
                       {categorySubcategories.map((subcategory) => (
                         <Link
                           key={subcategory.id}
-                          href={`/categories/${subcategory.slug}`}
+                          href={getCategoryHref(subcategory.slug)}
                           className="text-sm cursor-pointer min-h-11 flex items-center px-2 -mx-2 rounded-md text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
                         >
                           {getCategoryName(subcategory, locale)}

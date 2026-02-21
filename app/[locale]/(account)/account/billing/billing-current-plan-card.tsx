@@ -28,7 +28,6 @@ interface BillingCurrentPlanCardProps {
   dateLocale: BillingDateLocale
   formatPrice: (price: number) => string
   getPlanName: (tier: string) => string
-  withLocale: (path: string) => string
   handleManageSubscription: () => Promise<void>
   isPortalLoading: boolean
 }
@@ -40,7 +39,6 @@ export function BillingCurrentPlanCard({
   dateLocale,
   formatPrice,
   getPlanName,
-  withLocale,
   handleManageSubscription,
   isPortalLoading,
 }: BillingCurrentPlanCardProps) {
@@ -141,7 +139,7 @@ export function BillingCurrentPlanCard({
               </Button>
             )}
             {seller.tier !== "business" && (
-              <Link href={withLocale("/account/plans")}>
+              <Link href="/account/plans">
                 <Button className="gap-1.5 w-full">
                   <ArrowUpRight className="size-4" />
                   {t.upgradePlan}

@@ -97,6 +97,24 @@ export function SearchFilters({
     [basePath, router],
   )
 
+  const getCategoryHref = useCallback(
+    (slug: string | null) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete("page")
+
+      if (slug) {
+        params.set("category", slug)
+      } else {
+        params.delete("category")
+      }
+
+      const query = params.toString()
+      const path = basePath ?? "/search"
+      return query ? `${path}?${query}` : path
+    },
+    [basePath, searchParams],
+  )
+
   const toggleCategory = useCallback((slug: string) => {
     setExpandedCategories((previous) =>
       previous.includes(slug)
@@ -215,6 +233,7 @@ export function SearchFilters({
         locale={locale}
         expandedCategories={expandedCategories}
         showAllCategories={showAllCategories}
+        getCategoryHref={getCategoryHref}
         onToggleShowAllCategories={() => setShowAllCategories((previous) => !previous)}
         onToggleCategory={toggleCategory}
       />

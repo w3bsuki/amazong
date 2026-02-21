@@ -126,6 +126,11 @@ export function AccountWishlistToolbar({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
+  const localePrefix = `/${locale}`
+  const basePathname = pathname.startsWith(localePrefix)
+    ? (pathname.slice(localePrefix.length) || "/")
+    : pathname
+
   const [query, setQuery] = useState(initialSearchQuery)
   const [categoryFilter, setCategoryFilter] = useState<string | null>(initialCategoryFilter)
   const [stockFilter, setStockFilter] = useState<StockFilter>(
@@ -171,7 +176,7 @@ export function AccountWishlistToolbar({
     else if (next.stock) params.set("stock", next.stock)
 
     const qs = params.toString()
-    return qs ? `${pathname}?${qs}` : pathname
+    return qs ? `${basePathname}?${qs}` : basePathname
   }
 
   const applyUrl = (next: WishlistUrlParams) => {

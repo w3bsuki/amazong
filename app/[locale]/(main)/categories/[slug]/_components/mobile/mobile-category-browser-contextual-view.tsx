@@ -1,14 +1,11 @@
 import type { CategoryAttribute } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/data/products"
 import {
-  CategoryOptionRail,
-  type CategoryOptionItem,
-  type SectionPathSegment,
-} from "@/components/mobile/category-nav/category-drilldown-rail"
-import {
-  MobileFilterControls,
-  type QuickAttributePill,
-} from "../../../../_components/filters/mobile-filter-controls"
+  SmartRail,
+  type SmartRailAction,
+  type SmartRailPill,
+} from "@/components/mobile/chrome/smart-rail"
+import { FilterHub } from "../../../../_components/filters/filter-hub"
 import { PageShell } from "../../../../../_components/page-shell"
 import { ProductFeed } from "./product-feed"
 import {
@@ -20,25 +17,19 @@ const MOBILE_FEED_FRAME_CLASS = "mx-auto w-full max-w-(--breakpoint-md) pb-tabba
 
 interface MobileCategoryBrowserContextualViewProps {
   locale: string
-  railActiveLabel: string | null
-  railOptions: CategoryOptionItem[]
-  onOptionSelect: (slug: string) => void
-  sectionPath: SectionPathSegment[]
-  onSectionBack: () => void
-  canOpenScopeDrawer: boolean
-  onScopeMoreClick: () => void
+  railPills: SmartRailPill[]
+  railLeadingAction?: SmartRailAction | undefined
+  railTrailingAction?: SmartRailAction | undefined
+  filterOpen: boolean
+  onFilterOpenChange: (open: boolean) => void
   navigationAriaLabel: string
-  showMoreLabel: string
   attributes: CategoryAttribute[]
   categorySlug: string
   categoryId: string | null
   railCategories: ScopeCategory[]
   activeCategoryName: string | null
   appliedSearchParams: URLSearchParams
-  quickAttributePills: QuickAttributePill[]
   onApplyFilters: (next: { queryString: string; finalPath: string }) => Promise<void>
-  onRemoveFilter: (key: string, key2?: string) => Promise<void>
-  onClearAllFilters: () => Promise<void>
   products: UIProduct[]
   hasMore: boolean
   isLoading: boolean
@@ -48,25 +39,19 @@ interface MobileCategoryBrowserContextualViewProps {
 
 export function MobileCategoryBrowserContextualView({
   locale,
-  railActiveLabel,
-  railOptions,
-  onOptionSelect,
-  sectionPath,
-  onSectionBack,
-  canOpenScopeDrawer,
-  onScopeMoreClick,
+  railPills,
+  railLeadingAction,
+  railTrailingAction,
+  filterOpen,
+  onFilterOpenChange,
   navigationAriaLabel,
-  showMoreLabel,
   attributes,
   categorySlug,
   categoryId,
   railCategories,
   activeCategoryName,
   appliedSearchParams,
-  quickAttributePills,
   onApplyFilters,
-  onRemoveFilter,
-  onClearAllFilters,
   products,
   hasMore,
   isLoading,
@@ -76,36 +61,14 @@ export function MobileCategoryBrowserContextualView({
   return (
     <PageShell variant="muted" className="w-full">
       <div className={MOBILE_FEED_FRAME_CLASS}>
-        <CategoryOptionRail
-          activeLabel={railActiveLabel}
-          sectionPath={sectionPath}
-          onSectionBack={onSectionBack}
-          options={railOptions}
-          onOptionSelect={onOptionSelect}
-          moreLabel={showMoreLabel}
-          {...(canOpenScopeDrawer ? { onMoreClick: onScopeMoreClick } : {})}
+        <SmartRail
           ariaLabel={navigationAriaLabel}
+          pills={railPills}
+          {...(railLeadingAction ? { leadingAction: railLeadingAction } : {})}
+          {...(railTrailingAction ? { trailingAction: railTrailingAction } : {})}
           stickyTop="var(--offset-mobile-primary-rail)"
           sticky={true}
-          testId="mobile-category-scope-rail"
-        />
-
-        <MobileFilterControls
-          locale={locale}
-          attributes={attributes}
-          {...(categorySlug !== "all" ? { categorySlug } : {})}
-          {...(categoryId ? { categoryId } : {})}
-          subcategories={toFilterSubcategories(railCategories)}
-          {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
-          basePath={`/categories/${categorySlug}`}
-          appliedSearchParams={appliedSearchParams}
-          quickAttributePills={quickAttributePills}
-          onApply={onApplyFilters}
-          onRemoveFilter={onRemoveFilter}
-          onClearAll={onClearAllFilters}
-          stickyTop="calc(var(--offset-mobile-primary-rail) + var(--control-compact) + var(--spacing-mobile-rail-gap))"
-          sticky={true}
-          className="z-20"
+          testId="mobile-category-smart-rail"
         />
 
         <ProductFeed
@@ -120,6 +83,22 @@ export function MobileCategoryBrowserContextualView({
           showLoadingOverlay={true}
         />
       </div>
+
+      <FilterHub
+        open={filterOpen}
+        onOpenChange={onFilterOpenChange}
+        locale={locale}
+        attributes={attributes}
+        {...(categorySlug !== "all" ? { categorySlug } : {})}
+        {...(categoryId ? { categoryId } : {})}
+        subcategories={toFilterSubcategories(railCategories)}
+        {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
+        basePath={`/categories/${categorySlug}`}
+        appliedSearchParams={appliedSearchParams}
+        onApply={onApplyFilters}
+        mode="full"
+        initialSection={null}
+      />
     </PageShell>
   )
 }

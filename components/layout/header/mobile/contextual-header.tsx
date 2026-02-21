@@ -4,6 +4,7 @@ import { ArrowLeft, Search as MagnifyingGlass } from "lucide-react";
 
 import { Link, usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
+import { cn } from "@/lib/utils"
 import { buildSearchHref } from "@/components/shared/search/overlay/search-context"
 import type { ContextualHeaderProps } from "../types"
 
@@ -19,21 +20,25 @@ import type { ContextualHeaderProps } from "../types"
  */
 export function MobileContextualHeader({
   title,
+  titleClassName,
   activeSlug,
   backHref = "/categories",
   onBack,
+  trailingActions,
   hideActions = false,
 }: ContextualHeaderProps) {
   const tCommon = useTranslations("Common")
   const pathname = usePathname()
-  const pathCategorySlug = pathname.match(/\/categories\/([^/?#]+)/)?.[1] ?? null
-  const effectiveCategorySlug = activeSlug ?? pathCategorySlug
-  const searchHref = buildSearchHref({
-    context: {
-      categorySlug: effectiveCategorySlug,
-      source: "contextual-header",
-    },
-  })
+  const shouldRenderDefaultActions = !hideActions && !trailingActions
+
+  const searchHref = shouldRenderDefaultActions
+    ? buildSearchHref({
+        context: {
+          categorySlug: activeSlug ?? pathname.match(/\/categories\/([^/?#]+)/)?.[1] ?? null,
+          source: "contextual-header",
+        },
+      })
+    : null
 
   return (
     <div className="bg-background pt-safe md:hidden">
@@ -57,21 +62,32 @@ export function MobileContextualHeader({
               <ArrowLeft className="size-6" />
             </Link>
           )}
-          <h1 className="ml-1 max-w-48 truncate text-sm font-semibold leading-tight text-foreground">
+          <h1
+            className={cn(
+              "ml-1 max-w-48 truncate text-sm font-semibold leading-tight text-foreground",
+              titleClassName,
+            )}
+          >
             {title}
           </h1>
         </div>
         {!hideActions && (
           <div className="flex items-center gap-1">
-            <Link
-              href={searchHref}
-              className="flex size-(--control-default) items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-              aria-label={tCommon("search")}
-            >
-              <MagnifyingGlass className="size-6" />
-            </Link>
-            <MobileWishlistButton />
-            <MobileCartDropdown />
+            {trailingActions ? (
+              trailingActions
+            ) : (
+              <>
+                <Link
+                  href={searchHref ?? "/search"}
+                  className="flex size-(--control-default) items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  aria-label={tCommon("search")}
+                >
+                  <MagnifyingGlass className="size-6" />
+                </Link>
+                <MobileWishlistButton />
+                <MobileCartDropdown />
+              </>
+            )}
           </div>
         )}
       </div>

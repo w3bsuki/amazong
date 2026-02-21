@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useRouter } from "@/i18n/routing"
+import { usePathname, useRouter } from "@/i18n/routing"
 import {
   DrawerBody,
 } from "@/components/ui/drawer"
@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { DrawerShell } from "@/components/shared/drawer-shell"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
+import { useHeaderOptional } from "@/components/providers/header-context"
 import { getCategoryName } from "@/lib/category-display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { getCategoryIcon } from "@/components/shared/category-icons"
@@ -178,6 +179,9 @@ export function CategoryBrowseDrawer({
   fetchChildren,
 }: CategoryBrowseDrawerProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const header = useHeaderOptional()
+  const headerState = header?.headerState ?? null
   const t = useTranslations("CategoryDrawer")
   const tCommon = useTranslations("Common")
   const {
@@ -196,6 +200,14 @@ export function CategoryBrowseDrawer({
   const { counts: categoryCounts, refetch: refetchCategoryCounts } = useCategoryCounts({ enabled: isOpen })
   const [query, setQuery] = useState("")
   const [browseTab, setBrowseTab] = useState<BrowseTab>("listings")
+
+  const homepageCategorySelect = useMemo(() => {
+    const pathWithoutLocale = pathname.replace(/^\/(en|bg)/, "") || "/"
+    const isHomepageRoute = pathWithoutLocale === "/" || pathWithoutLocale === ""
+    if (!isHomepageRoute) return null
+    if (headerState?.type !== "homepage") return null
+    return headerState.value.onCategorySelect
+  }, [headerState, pathname])
 
   // ── Sellers state ──
   const [sellers, setSellers] = useState<DrawerSeller[]>([])
@@ -281,8 +293,13 @@ export function CategoryBrowseDrawer({
 
   const handleOpenScopedCategory = useCallback((category: CategoryTreeNode) => {
     setQuery("")
+    if (homepageCategorySelect) {
+      homepageCategorySelect(category.slug)
+      close()
+      return
+    }
     openCategory(category)
-  }, [openCategory])
+  }, [close, homepageCategorySelect, openCategory])
 
   const handleNavigateToSearch = useCallback(() => {
     setQuery("")

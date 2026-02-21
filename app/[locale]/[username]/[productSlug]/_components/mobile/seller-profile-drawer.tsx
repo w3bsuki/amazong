@@ -22,20 +22,11 @@ import {
   Users,
   MessageCircle,
   Sparkles,
-  X,
 } from "lucide-react"
 import { useRouter } from "@/i18n/routing"
-import {
-  Drawer,
-  DrawerBody,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerTitle,
-} from "@/components/ui/drawer"
+import { DrawerBody, DrawerFooter } from "@/components/ui/drawer"
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import { Button } from "@/components/ui/button"
-import { IconButton } from "@/components/ui/icon-button"
 import { Badge } from "@/components/ui/badge"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
@@ -357,33 +348,20 @@ export function SellerProfileDrawer({
   if (!seller) return null
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent
-        aria-label={seller.name}
-        showHandle
-        overlayBlur="none"
-      >
-        {/* Header with close button */}
-        <div className="flex items-center justify-between px-4 pb-2 border-b border-border-subtle">
-          <DrawerTitle className="text-sm font-semibold text-foreground">
-            {t("sellerInfo")}
-          </DrawerTitle>
-          <DrawerClose asChild>
-            <IconButton
-              aria-label={t("close")}
-              variant="ghost"
-              size="icon-compact"
-              className="shrink-0 -mr-2 rounded-full hover:bg-muted touch-manipulation"
-            >
-              <X className="size-4" />
-            </IconButton>
-          </DrawerClose>
-        </div>
-        <DrawerDescription className="sr-only">
-          {t("seller.viewProfile")} - {seller.name}
-        </DrawerDescription>
-
-        {/* Scrollable body */}
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t("sellerInfo")}
+      closeLabel={t("close")}
+      contentAriaLabel={seller.name}
+      description={`${t("seller.viewProfile")} - ${seller.name}`}
+      descriptionClassName="sr-only"
+      headerClassName="px-4 pb-2 pt-3 border-border-subtle"
+      closeButtonSize="icon-compact"
+      closeButtonClassName="shrink-0 -mr-2 rounded-full text-foreground hover:bg-muted active:bg-active touch-manipulation"
+      drawerContentProps={{ showHandle: true, overlayBlur: "none" }}
+    >
+      {/* Scrollable body */}
         <DrawerBody className="space-y-4 py-4">
           {/* Profile Header */}
           <SellerHeader seller={seller} />
@@ -437,7 +415,6 @@ export function SellerProfileDrawer({
             </Button>
           </div>
         </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    </DrawerShell>
   )
 }

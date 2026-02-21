@@ -1,4 +1,7 @@
-import { createClient } from "@/lib/supabase/server"
+import "server-only"
+
+import { cacheLife, cacheTag } from "next/cache"
+import { createStaticClient } from "@/lib/supabase/server"
 
 export type MembersFilter = "all" | "sellers" | "buyers" | "business"
 
@@ -14,9 +17,14 @@ export interface MembersSearchParams {
 const PAGE_SIZE = 24
 
 export async function getMembersPageData(searchParams: MembersSearchParams) {
+  "use cache"
   const { filter = "all", sort = "active", page = "1", q } = searchParams
 
-  const supabase = await createClient()
+  cacheLife("user")
+  cacheTag("members")
+  cacheTag(`members:${filter}:${sort}:${page}:${q ?? ""}`)
+
+  const supabase = createStaticClient()
 
   const currentPage = Number.parseInt(page) || 1
   const offset = (currentPage - 1) * PAGE_SIZE

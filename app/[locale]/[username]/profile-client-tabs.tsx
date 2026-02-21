@@ -1,13 +1,12 @@
-import { ArrowRight, Package, Settings as Gear, Star, Users } from "lucide-react"
+import { ArrowRight, Package, Star } from "lucide-react"
 import type { useTranslations } from "next-intl"
 
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { UserAvatar } from "@/components/shared/user-avatar"
+import { MobileProductCard } from "@/components/shared/product/card/mobile"
 import { EmptyStateCTA } from "../_components/empty-state-cta"
-import { ProfileSettingsPanel } from "./_components/profile/profile-settings-panel"
 
 import { StarRating, formatTimeAgo } from "./profile-client.helpers"
 import type { BuyerReview, ProfileProduct, ReviewPerson, SellerReview } from "./profile-client.types"
@@ -98,7 +97,6 @@ export function buildProfileTabs({
   isHydrated,
   locale,
   tProfile,
-  signOut,
 }: {
   profile: ProfileShape
   displayName: string
@@ -112,7 +110,6 @@ export function buildProfileTabs({
   isHydrated: boolean
   locale: string
   tProfile: Translator
-  signOut: () => Promise<void>
 }): ProfileTab[] {
   return [
     ...(profile.is_seller
@@ -229,38 +226,6 @@ export function buildProfileTabs({
         </div>
       ),
     },
-    {
-      value: "followers",
-      label: tProfile("followers"),
-      icon: <Users className="size-4" />,
-      content: (
-        <div className="space-y-3 pb-4">
-          {(profile.follower_count ?? 0) > 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
-              <Users className="mx-auto mb-3 size-12" />
-              <p className="text-sm">
-                {tProfile("followersCount", { count: profile.follower_count ?? 0 })}
-              </p>
-            </div>
-          ) : (
-            <div className="py-12 text-center text-muted-foreground">
-              <Users className="mx-auto mb-3 size-12" />
-              <p>{tProfile("noFollowersYet")}</p>
-            </div>
-          )}
-        </div>
-      ),
-    },
-    ...(isOwnProfile
-      ? [
-          {
-            value: "settings",
-            label: tProfile("settings"),
-            icon: <Gear className="size-4" />,
-            content: <ProfileSettingsPanel isSeller={Boolean(profile.is_seller)} onSignOut={signOut} />,
-          },
-        ]
-      : []),
   ]
 }
 

@@ -714,6 +714,7 @@
         "orders": "Поръчки",
         "messagesLink": "Съобщения",
         "myListings": "Моите обяви",
+        "payouts": "Изплащания",
         "wishlist": "Любими",
         "settings": "Настройки",
         "recentListings": "Скорошни обяви",
@@ -733,6 +734,7 @@
         "statsRating": "Рейтинг",
         "statsSales": "Продажби",
         "sectionAccount": "Акаунт",
+        "sectionShopping": "Пазаруване",
         "sectionSelling": "Продаване",
         "sectionSettings": "Настройки",
         "createListing": "Създай обява",
@@ -949,9 +951,20 @@
     },
     "CheckoutPage": {
         "title": "Плащане",
+        "steps": {
+            "address": "Адрес",
+            "shipping": "Доставка",
+            "payment": "Плащане"
+        },
+        "stepProgress": {
+            "ariaLabel": "Прогрес на плащането",
+            "valueText": "Стъпка {current} от {total}"
+        },
         "emptyCart": "Количката ви е празна",
         "emptyCartDescription": "Добавете продукти в количката, за да продължите с плащането.",
         "continueShopping": "Продължи пазаруването",
+        "continueToShipping": "Продължи към доставка",
+        "continueToPayment": "Продължи към плащане",
         "shippingAddress": "Адрес за доставка",
         "manageAddresses": "Управление на адреси",
         "default": "По подразбиране",
@@ -990,6 +1003,7 @@
         "processing": "Обработка...",
         "proceedToPayment": "Продължи към плащане",
         "securePayment": "Сигурно плащане с SSL криптиране",
+        "paymentStepDescription": "Ще бъдете пренасочени към Stripe, за да завършите плащането сигурно.",
         "acceptCards": "Приемаме всички основни карти",
         "returnPolicy": "30-дневна политика за връщане",
         "qty": "К-во",
@@ -1315,6 +1329,7 @@
         "signIn": "Влез",
         "signUp": "Регистрирай се",
         "signOut": "Излез",
+        "continueWithGoogle": "Продължи с Google",
         "email": "Имейл",
         "emailOrPhone": "Имейл",
         "password": "Парола",
@@ -1330,6 +1345,7 @@
         "conditionsOfUse": "Условия за ползване",
         "privacyNotice": "Декларация за поверителност",
         "and": "и",
+        "or": "или",
         "help": "Помощен център",
         "copyright": "© 1996-{year}, Treido Ltd. или партньори",
         "error": "Възникна неочаквана грешка. Моля, опитай отново.",
@@ -1463,6 +1479,9 @@
             "moreDescription": "Още секции и бързи връзки в акаунта.",
             "moreOptionsAriaLabel": "Още опции"
         },
+        "mobileHub": {
+            "planBadge": "{plan} план"
+        },
         "header": {
             "overview": "Преглед на акаунта",
             "orders": "Поръчки",
@@ -1484,6 +1503,45 @@
         "orders": {
             "title": "Твоите поръчки",
             "desc": "Проследи, върни или купи отново"
+        },
+        "ordersPage": {
+            "filtersAriaLabel": "Статус на поръчките",
+            "filters": {
+                "pending": "Чакащи",
+                "shipped": "Изпратени",
+                "completed": "Завършени"
+            },
+            "searchPlaceholder": "Търси по продукт или №",
+            "summary": "{count, plural, one {# поръчка} other {# поръчки}}",
+            "empty": {
+                "title": "Няма поръчки",
+                "description": "Когато направите поръчка, тя ще се появи тук.",
+                "cta": "Към магазина"
+            },
+            "card": {
+                "viewOrder": "Виж поръчката",
+                "openOrderAriaLabel": "Отвори поръчка {id}",
+                "orderNumber": "Поръчка №{id}",
+                "itemsCount": "{count, plural, one {# артикул} other {# артикула}}",
+                "productFallbackTitle": "Продукт"
+            },
+            "drawer": {
+                "title": "Поръчка №{id}",
+                "placed": "Направена",
+                "total": "Общо",
+                "qty": "Количество",
+                "tracking": "Проследяване",
+                "viewProduct": "Виж продукта",
+                "chatWithSeller": "Чат с продавача"
+            }
+        },
+        "ordersStats": {
+            "totalOrders": "Общо поръчки",
+            "pending": "Чакащи",
+            "shipped": "Изпратени",
+            "totalSpent": "Общо похарчени",
+            "allTime": "Всички",
+            "lifetime": "От началото"
         },
         "settings": {
             "title": "Настройки",
@@ -1829,6 +1887,7 @@
         "searching": "Търсене...",
         "products": "Продукти",
         "viewAll": "Виж всички",
+        "viewAllResultsFor": "Виж всички резултати за \"{query}\"",
         "recentlyViewed": "Наскоро разгледани",
         "recentSearches": "Скорошни търсения",
         "trending": "Популярни търсения",
@@ -1906,6 +1965,10 @@
         "back": "Назад",
         "activeFilters": "Активни филтри",
         "sortBy": "Сортирай по",
+        "relevance": "Релевантност",
+        "priceAscShort": "Цена↑",
+        "priceDescShort": "Цена↓",
+        "newShort": "Нови",
         "featured": "Препоръчани",
         "priceLowHigh": "Цена: Ниска към висока",
         "priceHighLow": "Цена: Висока към ниска",
@@ -2604,6 +2667,8 @@
         "typeMessage": "Напишете вашето съобщение...",
         "send": "Изпрати",
         "attachImage": "Прикачи изображение",
+        "imageMessage": "Снимка",
+        "imageAttachmentAlt": "Споделено изображение",
         "you": "Вие",
         "unknownUser": "Неизвестен потребител",
         "closed": "Затворен",
@@ -2617,6 +2682,7 @@
         "errorStartingConversation": "Грешка при започване на разговор",
         "errorStartingConversationDescription": "Нещо се обърка. Моля, опитайте отново по-късно.",
         "back": "Назад",
+        "moreActions": "Още действия",
         "replyPrefix": "Относно",
         "timeNow": "сега",
         "timeMinutes": "{count}м",
@@ -2999,6 +3065,11 @@
         "noProductsTitle": "Нямате продукти все още",
         "noProductsDesc": "Започнете да продавате, като създадете първата си обява",
         "createListing": "Създай обява",
+        "status": {
+            "active": "Активна",
+            "draft": "Чернова",
+            "sold": "Продадена"
+        },
         "outOfStock": "Изчерпан",
         "inStock": "{count} в склад",
         "discountTooltip": "Отстъпка",
@@ -3278,6 +3349,7 @@
     },
     "Sell": {
         "metaTitle": "Продавай",
+        "createListing": "Създай обява",
         "payoutSetupRequired": "Настройте плащанията първо",
         "payoutSetupDescription": "Преди да можете да публикувате обяви за продажба, трябва да свържете банковата си сметка за получаване на плащания.",
         "setupPayouts": "Настройка на плащанията",
@@ -3328,7 +3400,24 @@
             "levelLabel": "Ниво {level}",
             "stepProgress": "Стъпка {current}/{total}"
         },
+        "stepCounter": "{current} от {total}",
+        "stepProgress": {
+            "ariaLabel": "Прогрес по стъпките",
+            "valueText": "Стъпка {current} от {total}"
+        },
+        "discardDraft": {
+            "title": "Да изхвърлите черновата?",
+            "description": "Промените ви ще бъдат загубени.",
+            "actions": {
+                "keepEditing": "Продължи редакцията",
+                "discard": "Изхвърли"
+            }
+        },
         "steps": {
+            "photos": {
+                "title": "Снимки",
+                "description": "Качете снимки, подредете ги и изберете корица"
+            },
             "what": {
                 "title": "Какво продавате?",
                 "description": "Дайте име на артикула и добавете снимка"
@@ -3496,10 +3585,16 @@
         "review": {
             "completeRequiredFieldsTitle": "Попълнете задължителните полета",
             "sections": {
+                "photos": "Снимки",
+                "details": "Детайли",
+                "category": "Категория",
                 "photosAndDetails": "Снимки и описание",
                 "categoryAndCondition": "Категория и състояние",
                 "itemSpecifics": "Детайли",
                 "priceAndShipping": "Цена и доставка"
+            },
+            "placeholders": {
+                "noPhotos": "Добавете поне една снимка"
             },
             "labels": {
                 "category": "Категория",

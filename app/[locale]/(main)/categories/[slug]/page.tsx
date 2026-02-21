@@ -2,13 +2,23 @@ import { Suspense, use } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { cacheLife, cacheTag } from "next/cache"
 
+import { routing, validateLocale } from "@/i18n/routing"
 import {
   getCategoryBySlug,
   getCategoryContext,
   getSubcategoriesForBrowse,
 } from "@/lib/data/categories"
-import { CategoryPageDynamicContent } from "./_components/category-page-dynamic-content"
+
+const PLACEHOLDER_SLUG = "__placeholder__"
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({
+    locale,
+    slug: PLACEHOLDER_SLUG,
+  }))
+}
 
 interface CategoryPageSearchParams {
   minPrice?: string
@@ -29,8 +39,29 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string; locale: string }>
 }): Promise<Metadata> {
-  const { slug, locale } = await params
+  "use cache"
+  const { slug, locale: localeParam } = await params
+  cacheLife("categories")
+  cacheTag(`category:${slug}`)
+
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+
+  const t = await getTranslations({ locale, namespace: "CategoryPage" })
+
+  if (slug.startsWith("[") || slug === PLACEHOLDER_SLUG) {
+    const tCategories = await getTranslations({ locale, namespace: "Categories" })
+    const categoryName = tCategories("title")
+
+    return {
+      title: t("metaTitle", { categoryName }),
+      description: t("metaDescription", { categoryName }),
+      openGraph: {
+        title: t("metaTitle", { categoryName }),
+        description: t("metaDescription", { categoryName }),
+      },
+    }
+  }
 
   const category = await getCategoryBySlug(slug)
 
@@ -44,8 +75,6 @@ export async function generateMetadata({
   const categoryName = locale === "bg" && category.name_bg
     ? category.name_bg
     : category.name
-
-  const t = await getTranslations({ locale, namespace: "CategoryPage" })
 
   return {
     title: t("metaTitle", { categoryName }),
@@ -65,7 +94,7 @@ export default function CategoryPage({
   searchParams: Promise<CategoryPageSearchParams>
 }) {
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <CategoryPageContent paramsPromise={paramsPromise} searchParamsPromise={searchParamsPromise} />
     </Suspense>
   )
@@ -80,6 +109,10 @@ function CategoryPageContent({
 }) {
   const { slug, locale } = use(paramsPromise)
   setRequestLocale(locale)
+
+  if (slug.startsWith("[") || slug === PLACEHOLDER_SLUG) {
+    return null
+  }
 
   const categoryContext = use(getCategoryContext(slug))
   if (!categoryContext) {
@@ -99,6 +132,7 @@ function CategoryPageContent({
     : currentCategory.name
 
   const filterableAttributes = categoryContext.attributes.filter((attribute) => attribute.is_filterable)
+  const { CategoryPageDynamicContent } = use(import("./_components/category-page-dynamic-content"))
 
   return (
     <CategoryPageDynamicContent

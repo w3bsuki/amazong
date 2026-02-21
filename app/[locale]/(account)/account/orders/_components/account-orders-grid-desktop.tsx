@@ -1,10 +1,12 @@
+"use client"
+
 import { formatDistanceToNow, type Locale } from "date-fns"
+import { useTranslations } from "next-intl"
+import { ChevronRight as IconChevronRight, MessageCircle as IconMessageCircle, Package as IconPackage } from "lucide-react"
+
 import { Link } from "@/i18n/routing"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { OrderStatusBadge } from "../../../../_components/orders/order-status-badge"
-import type { OrderItemStatus } from "@/lib/order-status"
-import { getOrderStatusFromItems } from "@/lib/order-status"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -12,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Sheet,
   SheetContent,
@@ -20,15 +23,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronRight as IconChevronRight, MessageCircle as IconMessageCircle, Package as IconPackage } from "lucide-react"
-import { BuyerOrderActions } from "./buyer-order-actions"
+import { SHIPPING_CARRIER_VALUES, getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-status"
+import { OrderStatusBadge } from "../../../../_components/orders/order-status-badge"
 import type { AccountOrdersGridServerActions, OrderRow } from "./account-orders-grid.types"
-import {
-  getProductHref,
-  getOrderGridText,
-  isOrderStatusKey,
-} from "./account-orders-grid.utils"
+import { getProductHref, isOrderStatusKey } from "./account-orders-grid.utils"
+import { BuyerOrderActions } from "./buyer-order-actions"
 import { OrderListProductThumb, OrderListStatusBadge } from "@/components/shared/order-list-item"
 import { OrderSummaryLine } from "@/components/shared/order-summary-line"
 
@@ -39,7 +38,6 @@ interface AccountOrdersGridDesktopProps {
   actions: AccountOrdersGridServerActions
   conversationMap: Map<string, string>
   formatCurrency: (value: number) => string
-  t: ReturnType<typeof getOrderGridText>
 }
 
 export function AccountOrdersGridDesktop({
@@ -49,16 +47,19 @@ export function AccountOrdersGridDesktop({
   actions,
   conversationMap,
   formatCurrency,
-  t,
 }: AccountOrdersGridDesktopProps) {
+  const tAccount = useTranslations("Account")
+  const tOrders = useTranslations("Orders")
+
   return (
     <Card className="hidden shadow-none md:block">
       <CardHeader className="pb-4">
-        <CardTitle className="text-base">{t.order}s</CardTitle>
+        <CardTitle className="text-base">{tAccount("header.orders")}</CardTitle>
         <CardDescription>
-          {orders.length} {orders.length === 1 ? t.item : t.items}
+          {tAccount("ordersPage.summary", { count: orders.length })}
         </CardDescription>
       </CardHeader>
+
       <CardContent className="p-0">
         <div className="divide-y">
           {orders.map((order) => {
@@ -69,15 +70,18 @@ export function AccountOrdersGridDesktop({
                 : "pending"
             const status = getOrderStatusFromItems(
               order.order_items.map((item) => item.status),
-              fallbackStatus
+              fallbackStatus,
             )
-            const itemCount = order.order_items.reduce(
-              (sum, i) => sum + Number(i.quantity || 0),
-              0
-            )
+
+            const statusForBadge = status === "paid" ? "processing" : status
+            const statusLabel = tOrders(`status.${statusForBadge}.label`)
+
+            const itemCount = order.order_items.reduce((sum, i) => sum + Number(i.quantity || 0), 0)
             const orderTotal = Number(order.total_amount || 0)
             const visibleItems = order.order_items.slice(0, 4)
             const remainingCount = order.order_items.length - 4
+
+            const drawerTitle = tAccount("ordersPage.drawer.title", { id: order.id.slice(0, 8) })
 
             return (
               <Sheet key={order.id}>
@@ -112,11 +116,11 @@ export function AccountOrdersGridDesktop({
                         #{order.id.slice(0, 8)}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {itemCount} {itemCount === 1 ? t.item : t.items}
+                        {tAccount("ordersPage.card.itemsCount", { count: itemCount })}
                       </p>
                     </div>
                     <div>
-                      <OrderListStatusBadge status={status} locale={locale} />
+                      <OrderListStatusBadge status={statusForBadge} label={statusLabel} />
                     </div>
                     <div className="text-sm text-muted-foreground">
                       {formatDistanceToNow(new Date(order.created_at), {
@@ -133,45 +137,42 @@ export function AccountOrdersGridDesktop({
 
                   <SheetTrigger asChild>
                     <Button variant="ghost" size="sm">
-                      {t.viewOrder}
+                      {tAccount("ordersPage.card.viewOrder")}
                       <IconChevronRight className="size-4 ml-1" />
                     </Button>
                   </SheetTrigger>
                 </div>
 
                 <SheetContent className="sm:max-w-lg">
-                  <SheetHeader className="pb-4 border-b">
+                  <SheetHeader className="pb-4 border-b border-border-subtle">
                     <SheetTitle className="flex items-center gap-2">
                       <IconPackage className="size-5" />
-                      {t.order} #{order.id.slice(0, 8)}
+                      {drawerTitle}
                     </SheetTitle>
                     <SheetDescription className="flex items-center gap-2">
-                      <OrderListStatusBadge status={status} locale={locale} />
-                      <span className="text-muted-foreground">
-                        {new Date(order.created_at).toLocaleDateString(
-                          locale,
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )}
+                      <OrderListStatusBadge status={statusForBadge} label={statusLabel} />
+                      <span className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(order.created_at), {
+                          addSuffix: true,
+                          locale: dateLocale,
+                        })}
                       </span>
                     </SheetDescription>
                   </SheetHeader>
-                  <ScrollArea className="flex-1 -mx-6 px-6 h-(--account-orders-sheet-scroll-h)">
+
+                  <ScrollArea className="h-(--dialog-h-85vh)">
                     <div className="py-6 space-y-6">
                       <div className="flex items-center justify-between p-4 rounded-lg bg-surface-subtle">
                         <div>
                           <p className="text-sm text-muted-foreground">
-                            {t.total}
+                            {tAccount("ordersPage.drawer.total")}
                           </p>
                           <p className="text-xl font-semibold tabular-nums">
                             {formatCurrency(orderTotal)}
                           </p>
                         </div>
                         <Badge variant="outline">
-                          {itemCount} {itemCount === 1 ? t.item : t.items}
+                          {tAccount("ordersPage.card.itemsCount", { count: itemCount })}
                         </Badge>
                       </div>
 
@@ -179,29 +180,31 @@ export function AccountOrdersGridDesktop({
                         {order.order_items.map((item) => {
                           const product = item.product
                           const image = product?.images?.[0] || "/placeholder.svg"
-                          const title = product?.title || (locale === "bg" ? "Продукт" : "Product")
+                          const title = product?.title || tAccount("ordersPage.card.productFallbackTitle")
                           const href = getProductHref(item)
                           const itemStatus = item.status || "pending"
+                          const carrierLabel = item.shipping_carrier
+                            ? SHIPPING_CARRIER_VALUES.includes(item.shipping_carrier as (typeof SHIPPING_CARRIER_VALUES)[number])
+                              ? tOrders(`shippingCarriers.${item.shipping_carrier}`)
+                              : item.shipping_carrier
+                            : null
 
                           return (
                             <OrderSummaryLine
                               key={item.id}
-                              className="gap-4 p-3 rounded-lg border bg-card"
+                              className="gap-4 p-3 rounded-lg border border-border-subtle bg-card"
                               thumb={{
                                 href,
                                 linkClassName: "shrink-0",
                                 imageSrc: image,
                                 alt: title,
-                                className: "size-20 rounded-lg border bg-muted",
+                                className: "size-20 rounded-lg border border-border-subtle bg-muted",
                                 imageClassName: "object-contain",
                                 sizes: "80px",
                                 fallbackClassName: "text-muted-foreground",
                               }}
                               title={
-                                <Link
-                                  href={href}
-                                  className="font-medium hover:underline line-clamp-2"
-                                >
+                                <Link href={href} className="font-medium hover:underline line-clamp-2">
                                   {title}
                                 </Link>
                               }
@@ -212,40 +215,48 @@ export function AccountOrdersGridDesktop({
                               }
                             >
                               <p className="text-sm text-muted-foreground mt-1">
-                                {t.qty}: {item.quantity}
+                                {tAccount("ordersPage.drawer.qty")}: {item.quantity}
                               </p>
+
                               {item.price_at_purchase && (
                                 <p className="text-sm font-semibold mt-2 tabular-nums">
                                   {formatCurrency(item.price_at_purchase)}
                                 </p>
                               )}
+
                               {item.tracking_number && (
-                                <div className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
-                                  <span>📍</span>
-                                  <span className="font-mono">{item.tracking_number}</span>
-                                  {item.shipping_carrier && <span>({item.shipping_carrier})</span>}
-                                </div>
+                                <p className="text-sm text-muted-foreground mt-2">
+                                  {tAccount("ordersPage.drawer.tracking")}:{" "}
+                                  <span className="font-mono">{item.tracking_number}</span>{" "}
+                                  {carrierLabel ? `(${carrierLabel})` : null}
+                                </p>
                               )}
+
                               <div className="flex items-center gap-3 mt-3">
                                 <Link
                                   href={href}
                                   className="inline-flex items-center text-sm text-primary hover:underline"
                                 >
-                                  {t.viewProduct}
+                                  {tAccount("ordersPage.drawer.viewProduct")}
                                   <IconChevronRight className="size-3 ml-0.5" />
                                 </Link>
-                                {item.seller_id && itemStatus !== "shipped" && itemStatus !== "delivered" && conversationMap.get(order.id) && (
-                                  <Link
-                                    href={`/chat/${conversationMap.get(order.id)}`}
-                                    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-                                  >
-                                    <IconMessageCircle className="size-4" />
-                                    {locale === "bg" ? "Чат" : "Chat"}
-                                  </Link>
-                                )}
+
+                                {item.seller_id &&
+                                  itemStatus !== "shipped" &&
+                                  itemStatus !== "delivered" &&
+                                  conversationMap.get(order.id) && (
+                                    <Link
+                                      href={`/chat/${conversationMap.get(order.id)}`}
+                                      className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+                                    >
+                                      <IconMessageCircle className="size-4" />
+                                      {tOrders("actions.chat")}
+                                    </Link>
+                                  )}
                               </div>
+
                               {item.seller_id && (itemStatus === "shipped" || itemStatus === "delivered") && (
-                                <div className="mt-3 pt-3 border-t">
+                                <div className="mt-3 pt-3 border-t border-border-subtle">
                                   <BuyerOrderActions
                                     orderItemId={item.id}
                                     currentStatus={itemStatus as OrderItemStatus}

@@ -318,10 +318,7 @@ export function SellingProductsList({ products, sellerUsername, locale, actions 
         getBoostTimeLeft={getBoostTimeLeft}
         isSaleActive={isSaleActive}
         getSalePercentForDisplay={getSalePercentForDisplay}
-        openDiscountDialog={openDiscountDialog}
-        onToggleStatus={handleToggleStatus}
         onDelete={handleDelete}
-        togglingId={togglingId}
         deletingId={deletingId}
       />
 

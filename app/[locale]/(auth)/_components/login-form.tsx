@@ -35,7 +35,7 @@ export function LoginForm({
 
   return (
     <AuthCard title={t("signIn")} description={t("signInDescription")}>
-      <LoginFormBody action={action} />
+      <LoginFormBody action={action} redirectPath={redirectPath ?? null} />
     </AuthCard>
   )
 }

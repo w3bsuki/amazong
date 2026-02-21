@@ -33,6 +33,19 @@ function formatDateSeparator(date: Date, tFreshness: Translator, locale: Locale)
   return format(date, "d MMM yyyy", { locale })
 }
 
+function getMessageImageUrl(message: Message): string | null {
+  if (message.message_type !== "image") return null
+
+  const candidate = (message.attachment_url || message.content || "").trim()
+  if (!candidate) return null
+
+  if (candidate.startsWith("https://") || candidate.startsWith("http://")) {
+    return candidate
+  }
+
+  return null
+}
+
 function withDateSeparators(messages: Message[]): MessageEntry[] {
   const rows: MessageEntry[] = []
   let lastDate: Date | null = null
@@ -274,20 +287,32 @@ export function ChatMessagesPane({
               </div>
             )}
 
+            {(() => {
+              const imageUrl = getMessageImageUrl(message)
+              const isImage = Boolean(imageUrl)
+              const metaTone =
+                isOwn && !isImage
+                  ? "text-primary-foreground opacity-80"
+                  : "text-muted-foreground"
+
+              return (
             <div
               className={cn(
                 "group relative max-w-(--chat-message-max-w)",
-                message.message_type === "image" ? "p-1" : "px-3 py-1.5",
-                isOwn
-                  ? "rounded-2xl rounded-br-md bg-primary text-primary-foreground"
-                  : "rounded-2xl rounded-bl-md bg-muted"
+                isImage
+                  ? "rounded-2xl bg-surface-subtle p-1 ring-1 ring-border-subtle"
+                  : "px-3 py-2",
+                !isImage &&
+                  (isOwn
+                    ? "rounded-2xl rounded-br-md bg-primary text-primary-foreground"
+                    : "rounded-2xl rounded-bl-md bg-surface-subtle text-foreground")
               )}
             >
-              {message.message_type === "image" && message.attachment_url ? (
-                <a href={message.attachment_url} target="_blank" rel="noopener noreferrer" className="block">
+              {isImage && imageUrl ? (
+                <a href={imageUrl} target="_blank" rel="noopener noreferrer" className="block">
                   <Image
-                    src={message.attachment_url}
-                    alt="Shared image"
+                    src={imageUrl}
+                    alt={t("imageAttachmentAlt")}
                     width={240}
                     height={240}
                     className="h-auto max-w-60 w-auto cursor-pointer rounded-xl object-cover transition-opacity hover:opacity-95"
@@ -295,19 +320,19 @@ export function ChatMessagesPane({
                   />
                 </a>
               ) : (
-                <p className="break-words whitespace-pre-wrap text-sm leading-snug">{message.content}</p>
+                <p className="break-words whitespace-pre-wrap text-body leading-snug">{message.content}</p>
               )}
 
               {isLastInGroup && (
                 <div className={cn("mt-1 flex items-center gap-1", isOwn ? "justify-end" : "justify-start")}>
-                  <span className={cn("text-2xs", isOwn ? "text-foreground" : "text-muted-foreground")}>
+                  <span className={cn("text-2xs", metaTone)}>
                     {format(new Date(message.created_at), "HH:mm")}
                   </span>
                   {isOwn &&
                     (message.is_read ? (
-                      <Checks size={12} className="text-foreground" />
+                      <Checks size={12} className={cn(metaTone)} />
                     ) : (
-                      <Check size={12} className="text-foreground" />
+                      <Check size={12} className={cn(metaTone)} />
                     ))}
                 </div>
               )}
@@ -322,6 +347,8 @@ export function ChatMessagesPane({
                 <Heart size={14} className="text-muted-foreground" />
               </span>
             </div>
+              )
+            })()}
           </div>
         )
       })}

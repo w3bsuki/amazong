@@ -7,7 +7,7 @@ import { MessageProvider, useMessages } from "@/components/providers/message-con
 import { ConversationList } from "./conversation-list"
 import { ChatInterfaceSkeletonInline } from "./chat-skeleton"
 import { cn } from "@/lib/utils"
-import { ArrowLeft, MessageCircle as ChatCircle, Mail as EnvelopeSimple, Search as MagnifyingGlass, PencilLine as PencilSimpleLine, ShoppingCart, Store as Storefront, Inbox as Tray } from "lucide-react";
+import { ArrowLeft, MessageCircle as ChatCircle, Mail as EnvelopeSimple, Search as MagnifyingGlass, ShoppingCart, Store as Storefront, Inbox as Tray } from "lucide-react";
 
 import { Input } from "@/components/ui/input"
 import { Link } from "@/i18n/routing"
@@ -84,7 +84,6 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
 
   const labels = {
     searchPlaceholder: t("searchPlaceholder"),
-    newMessage: t("newMessage"),
     title: t("pageTitle"),
     back: t("back"),
   }
@@ -106,27 +105,18 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
         )}
       >
         {/* Header with back button, title and search */}
-        <div className="shrink-0 p-3 lg:p-4 border-b border-border-subtle pt-safe-max-sm">
+        <div className="shrink-0 border-b border-border-subtle bg-background px-inset py-2 pt-safe-max-sm">
           {/* Title row with back button */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              {/* Back button - goes to home */}
-              <Link 
-                href="/"
-                className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors lg:hidden"
-                aria-label={labels.back}
-              >
-                <ArrowLeft size={20} />
-              </Link>
-              <h1 className="text-xl font-bold">{labels.title}</h1>
-            </div>
-            <button 
-              type="button"
-              className="flex items-center justify-center size-9 rounded-full bg-primary text-primary-foreground hover:bg-interactive-hover transition-colors"
-              aria-label={labels.newMessage}
+          <div className="flex items-center gap-2 mb-3">
+            {/* Back button - goes to home */}
+            <Link 
+              href="/"
+              className="flex items-center justify-center size-9 rounded-full hover:bg-hover active:bg-active transition-colors lg:hidden"
+              aria-label={labels.back}
             >
-              <PencilSimpleLine size={20} />
-            </button>
+              <ArrowLeft size={20} />
+            </Link>
+            <h1 className="text-lg font-semibold text-foreground">{labels.title}</h1>
           </div>
           
           {/* Search bar */}
@@ -140,14 +130,6 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
                 className="pl-9 h-10 rounded-full bg-surface-subtle border-0 focus-visible:ring-1 focus-visible:ring-ring"
               />
             </div>
-            {/* New message button - desktop only (already have it in header on mobile) */}
-            <button 
-              type="button"
-              className="hidden lg:flex shrink-0 items-center justify-center size-10 rounded-full bg-primary text-primary-foreground hover:bg-interactive-hover transition-colors"
-              aria-label={labels.newMessage}
-            >
-              <PencilSimpleLine size={20} />
-            </button>
           </div>
         </div>
 

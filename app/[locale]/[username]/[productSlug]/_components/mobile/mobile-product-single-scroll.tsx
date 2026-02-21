@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { formatDistanceToNow } from "date-fns";
 import { bg, enUS } from "date-fns/locale";
+import { Clock, MapPin } from "lucide-react";
 
 // Mobile-specific components
 import { MobileGallery } from "./mobile-gallery";
@@ -20,6 +21,8 @@ import { MobileSafetyTips, MobileReportButton } from "./mobile-trust-sections";
 import { SellerProfileDrawer } from "./seller-profile-drawer";
 
 // Shared product components
+import { VisualDrawerSurface } from "@/components/shared/visual-drawer-surface";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MetaRow, type CategorySummary } from "../pdp/meta-row";
 import { ProductHeader } from "../pdp/product-header";
 import { SpecificationsList } from "../pdp/specifications-list";
@@ -218,9 +221,9 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
       <MobileGallery images={viewModel.galleryImages} product={cartProduct} />
 
       {/* ========== CONTENT (Single Scroll) ========== */}
-      <div className="bg-card space-y-4 py-4">
-        {/* Meta Row: Category + Time/Views */}
-        <div className="px-4">
+      <VisualDrawerSurface>
+        <div className="space-y-4 px-4 pb-4">
+          {/* Meta Row: Category + Time/Views */}
           <MetaRow
             category={category}
             rootCategory={rootCategory}
@@ -228,82 +231,101 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
             viewCount={viewCount}
             locale={currentLocale}
           />
-        </div>
 
-        {/* Price + Title + Badges (compact TradeSphere pattern) */}
-        <div className="px-4">
-          <ProductHeader
-            title={product.title ?? ""}
-            condition={product.condition}
-            freeShipping={freeShipping}
-            price={displayPrice}
-            currency="EUR"
-            isNegotiable={isNegotiable}
-            locale={currentLocale}
-          />
-        </div>
+          {/* Price + Title + Location (always visible) */}
+          <div className="space-y-2">
+            <ProductHeader
+              title={product.title ?? ""}
+              condition={product.condition}
+              freeShipping={freeShipping}
+              price={displayPrice}
+              currency="EUR"
+              isNegotiable={isNegotiable}
+              locale={currentLocale}
+            />
 
-        {/* Hero Specs */}
-        {viewModel.heroSpecs.length > 0 && (
-          <div className="px-4">
-            <HeroSpecs specs={viewModel.heroSpecs.slice(0, 4)} variant="mobile" />
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="size-3.5" strokeWidth={1.5} aria-hidden="true" />
+                {product.seller_city ?? t("locationTBA")}
+              </span>
+              {timeAgo ? (
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="size-3.5" strokeWidth={1.5} aria-hidden="true" />
+                  {timeAgo}
+                </span>
+              ) : null}
+            </div>
           </div>
-        )}
 
-        {/* Specifications */}
-        <div className="px-4">
-          <SpecificationsList specifications={viewModel.itemSpecifics.details || []} />
+          {/* Hero Specs (top 4 always visible) */}
+          {viewModel.heroSpecs.length > 0 && (
+            <HeroSpecs specs={viewModel.heroSpecs.slice(0, 4)} variant="mobile" />
+          )}
         </div>
 
-        {/* Description */}
-        <div className="px-4">
-          <ProductDescription description={product.description} />
-        </div>
+        {/* Expandable sections */}
+        <Accordion type="multiple" className="px-4">
+          <AccordionItem value="specs">
+            <AccordionTrigger>{t("fullSpecifications")}</AccordionTrigger>
+            <AccordionContent>
+              <SpecificationsList specifications={viewModel.itemSpecifics.details || []} />
+            </AccordionContent>
+          </AccordionItem>
 
-        {/* Delivery Options */}
-        <div className="px-4">
-          <DeliveryOptions pickupOnly={pickupOnly} freeShipping={freeShipping} />
-        </div>
+          {product.description ? (
+            <AccordionItem value="description">
+              <AccordionTrigger>{t("description")}</AccordionTrigger>
+              <AccordionContent>
+                <ProductDescription description={product.description} />
+              </AccordionContent>
+            </AccordionItem>
+          ) : null}
 
-        {/* Shipping & Returns */}
-        <div className="px-4">
-          <ShippingReturnsInfo pickupOnly={pickupOnly} />
-        </div>
+          <AccordionItem value="delivery">
+            <AccordionTrigger>{t("delivery")}</AccordionTrigger>
+            <AccordionContent className="space-y-4">
+              <DeliveryOptions pickupOnly={pickupOnly} freeShipping={freeShipping} />
+              <ShippingReturnsInfo pickupOnly={pickupOnly} />
+            </AccordionContent>
+          </AccordionItem>
 
-        {/* Seller Preview Card (above reviews) */}
-        <div className="px-4">
-          <MobileSellerPreviewCard 
-            seller={sellerPreview} 
-            onViewProfile={() => setSellerDrawerOpen(true)}
-          />
-        </div>
+          <AccordionItem value="seller">
+            <AccordionTrigger>{t("sellerInfo")}</AccordionTrigger>
+            <AccordionContent>
+              <MobileSellerPreviewCard
+                seller={sellerPreview}
+                onViewProfile={() => setSellerDrawerOpen(true)}
+              />
+            </AccordionContent>
+          </AccordionItem>
 
-        {/* Customer Reviews */}
-        <div className="px-4 pt-2">
-          <CustomerReviewsHybrid
-            rating={Number(product.rating ?? 0)}
-            reviewCount={Number(product.review_count ?? 0)}
-            reviews={reviews}
-            productId={product.id}
-            productTitle={product.title ?? ""}
-            locale={locale}
-            {...(submitReview && { submitReview })}
-          />
-        </div>
+          <AccordionItem value="reviews">
+            <AccordionTrigger>
+              {t("reviews", { count: Number(product.review_count ?? 0) })}
+            </AccordionTrigger>
+            <AccordionContent>
+              <CustomerReviewsHybrid
+                rating={Number(product.rating ?? 0)}
+                reviewCount={Number(product.review_count ?? 0)}
+                reviews={reviews}
+                productId={product.id}
+                productTitle={product.title ?? ""}
+                locale={locale}
+                {...(submitReview && { submitReview })}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
-        {/* Safety Tips */}
-        <div className="px-4 pt-2">
+        <div className="space-y-4 px-4 pt-4">
           <MobileSafetyTips />
-        </div>
-
-        {/* Report Listing */}
-        <div className="px-4">
           <MobileReportButton onReport={handleReport} />
         </div>
-      </div>
 
-      {/* ========== SIMILAR ITEMS ========== */}
-      <SimilarItemsGrid products={relatedProducts} rootCategory={rootCategory} />
+        {/* Similar items rail */}
+        <SimilarItemsGrid products={relatedProducts} rootCategory={rootCategory} />
+      </VisualDrawerSurface>
 
       {/* ========== BOTTOM BAR ========== */}
       <MobileBottomBar

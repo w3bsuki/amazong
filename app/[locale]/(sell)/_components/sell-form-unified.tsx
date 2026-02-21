@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { CircleCheck as CheckCircle, CloudUpload as CloudArrowUp, Eye, House, Zap as Lightning, Plus, Share, LoaderCircle as SpinnerGap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { createFreshClient } from "@/lib/supabase/client";
 import { Link, validateLocale } from "@/i18n/routing";
 import { BoostDialog } from "../../_components/seller/boost-dialog";
 import { useTranslations } from "next-intl";
@@ -138,7 +138,8 @@ function SellFormContent({
     
     startTransition(async () => {
       try {
-        const supabase = createClient();
+        // Fresh client ensures we re-read auth cookies written by server actions.
+        const supabase = createFreshClient();
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) {

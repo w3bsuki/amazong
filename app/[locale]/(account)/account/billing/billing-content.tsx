@@ -44,7 +44,6 @@ export function BillingContent({
   const [isPortalLoading, setIsPortalLoading] = useState(false)
 
   const dateLocale = locale === "bg" ? bg : enUS
-  const withLocale = (path: string) => `/${locale}${path}`
 
   const t: BillingText = {
     title: tBilling("title"),
@@ -224,13 +223,13 @@ export function BillingContent({
         </div>
         {seller && (
           <div className="flex items-center gap-2">
-            <Link href={withLocale("/account/payments")}>
+            <Link href="/account/payments">
               <Button variant="outline" size="sm" className="gap-1.5">
                 <CreditCard className="size-4" />
                 {t.paymentMethods}
               </Button>
             </Link>
-            <Link href={withLocale("/account/plans")}>
+            <Link href="/account/plans">
               <Button size="sm" className="gap-1.5">
                 <Crown className="size-4" />
                 {t.viewPlans}
@@ -248,7 +247,7 @@ export function BillingContent({
             </div>
             <h2 className="text-lg font-semibold mb-2">{t.startSelling}</h2>
             <p className="text-muted-foreground text-sm max-w-md mb-4">{t.becomeSeller}</p>
-            <Link href={withLocale("/sell")}>
+            <Link href="/sell">
               <Button className="gap-1.5">
                 {t.startSelling}
                 <ArrowRight className="size-4" />
@@ -266,7 +265,6 @@ export function BillingContent({
           dateLocale={dateLocale}
           formatPrice={formatPrice}
           getPlanName={getPlanName}
-          withLocale={withLocale}
           handleManageSubscription={handleManageSubscription}
           isPortalLoading={isPortalLoading}
         />
@@ -280,7 +278,6 @@ export function BillingContent({
           isLoading={isLoading}
           dateLocale={dateLocale}
           t={t}
-          withLocale={withLocale}
           formatCurrency={formatCurrency}
           formatPrice={formatPrice}
           getStatusBadge={getStatusBadge}

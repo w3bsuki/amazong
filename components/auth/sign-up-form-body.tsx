@@ -5,6 +5,7 @@ import { useActionState, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslations } from "next-intl"
 
 import { SubmitButton } from "@/components/auth/submit-button"
+import { GoogleOAuthButton } from "@/components/auth/google-oauth-button"
 import { getPasswordStrength } from "@/lib/validation/password-strength"
 import {
   SignUpConfirmPasswordField,
@@ -52,6 +53,8 @@ export function SignUpFormBody({
   const t = useTranslations("Auth")
   const handledSuccess = useRef(false)
   const invalidInputClass = "border-destructive"
+
+  const [oauthError, setOauthError] = useState<string | null>(null)
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -136,6 +139,29 @@ export function SignUpFormBody({
 
   return (
     <div className={className}>
+      {oauthError ? (
+        <div
+          className="rounded-xl border border-destructive bg-destructive-subtle p-3 text-sm text-destructive"
+          role="alert"
+          aria-live="assertive"
+        >
+          {oauthError}
+        </div>
+      ) : null}
+
+      <div className="space-y-3" data-testid="sign-up-oauth-section">
+        <GoogleOAuthButton
+          nextPath="/onboarding"
+          onError={(message) => setOauthError(message)}
+          onNavigateAway={onNavigateAway}
+        />
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <p className="text-xs text-muted-foreground">{t("or")}</p>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+      </div>
+
       <form
         action={formAction}
         className="space-y-4"

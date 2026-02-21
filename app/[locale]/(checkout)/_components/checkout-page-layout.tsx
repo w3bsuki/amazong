@@ -1,13 +1,15 @@
-import type { ChangeEvent, ReactNode } from "react"
+import { useEffect, useRef, type ChangeEvent, type ReactNode } from "react"
 import type { CartItem } from "@/components/providers/cart-context"
 import type { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import {
   ArrowLeft,
+  ArrowRight,
   LoaderCircle as SpinnerGap,
   Lock,
   MapPin,
@@ -19,6 +21,7 @@ import {
 import { AddressSection } from "./address-section"
 import { OrderItemsSection, OrderItemsSectionDesktop } from "./order-items-section"
 import { ShippingMethodSection } from "./shipping-method-section"
+import { useCheckoutStep } from "./checkout-step-context"
 import type { NewAddressForm, SavedAddress, ShippingMethod } from "./checkout-types"
 
 type TranslationFn = ReturnType<typeof useTranslations>
@@ -57,8 +60,6 @@ type CheckoutLayoutBaseProps = {
   handleBlur: BlurFieldHandler
   errors: Partial<Record<keyof NewAddressForm, string>>
   touched: Partial<Record<keyof NewAddressForm, boolean>>
-  showAddressSelector: boolean
-  setShowAddressSelector: (value: boolean) => void
   shippingMethod: ShippingMethod
   setShippingMethod: (method: ShippingMethod) => void
   formatPrice: (price: number) => string
@@ -195,8 +196,6 @@ function CheckoutAddressCard({
   handleBlur,
   errors,
   touched,
-  showAddressSelector,
-  setShowAddressSelector,
 }: CheckoutLayoutBaseProps & { variant: CheckoutLayoutVariant }) {
   if (isAuthGateActive) return null
 
@@ -236,8 +235,6 @@ function CheckoutAddressCard({
           handleBlur={handleBlur}
           errors={errors}
           touched={touched}
-          showAddressSelector={showAddressSelector}
-          setShowAddressSelector={setShowAddressSelector}
         />
       </CardContent>
     </Card>
@@ -369,19 +366,129 @@ function CheckoutSummaryRows({
   )
 }
 
-function MobileCheckoutSummaryCard(props: CheckoutLayoutBaseProps) {
-  const { t, formatPrice, total } = props
+function MobileCheckoutOrderSummaryCard(props: CheckoutLayoutBaseProps) {
+  const { t, items, total, formatPrice } = props
 
   return (
     <Card>
+      <Accordion type="single" collapsible defaultValue="summary">
+        <AccordionItem value="summary" className="border-none">
+          <AccordionTrigger className="border-border flex items-center border-b px-4 py-3 hover:no-underline">
+            <div className="flex flex-1 items-center justify-between">
+              <span className="text-sm font-semibold">{t("orderSummary")}</span>
+              <span className="text-sm font-semibold tabular-nums">{formatPrice(total)}</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4">
+            <div className="space-y-4">
+              <OrderItemsSectionDesktop items={items} formatPrice={formatPrice} />
+
+              <div className="space-y-2 border-t border-border pt-3 text-sm">
+                <CheckoutSummaryRows variant="mobile" {...props} />
+              </div>
+
+              <div className="flex items-baseline justify-between border-t border-border pt-3">
+                <span className="text-sm font-semibold">{t("total")}</span>
+                <span className="text-price font-semibold tabular-nums">{formatPrice(total)}</span>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </Card>
+  )
+}
+
+function MobileCheckoutPaymentCard({ t }: { t: TranslationFn }) {
+  return (
+    <Card>
+      <CardHeader className="border-b">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <Lock className="size-4 text-primary" />
+          {t("steps.payment")}
+        </CardTitle>
+      </CardHeader>
       <CardContent className="space-y-2 py-4">
-        <CheckoutSummaryRows variant="mobile" {...props} />
-        <div className="mt-2 flex justify-between border-t pt-2">
-          <span className="font-semibold">{t("total")}</span>
-          <span className="text-lg font-bold">{formatPrice(total)}</span>
+        {/* TODO: requires payment logic review */}
+        <p className="text-sm text-muted-foreground">{t("paymentStepDescription")}</p>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <ShieldCheck className="size-3.5 text-success" />
+          <span>{t("buyerProtectionDescription")}</span>
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+function MobileCheckoutStepFooter(props: CheckoutLayoutBaseProps) {
+  const {
+    t,
+    tAuth,
+    authLoginHref,
+    isAuthGateActive,
+    isProcessing,
+    canCheckout,
+    total,
+    formatPrice,
+    onCheckout,
+  } = props
+
+  const { currentStep, setCurrentStep } = useCheckoutStep()
+
+  const buttonLabel =
+    currentStep === 1
+      ? t("continueToShipping")
+      : currentStep === 2
+        ? t("continueToPayment")
+        : t("completeOrder")
+
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background lg:hidden">
+      <div className="px-inset py-3 pb-safe">
+        <div className="mb-2 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          <Lock className="size-3.5 text-success" />
+          <span>{t("secureCheckout")}</span>
+          <span>•</span>
+          <ShieldCheck className="size-3.5 text-success" />
+          <span>{t("buyerProtection")}</span>
+        </div>
+
+        {isAuthGateActive ? (
+          <Button asChild size="lg" className="w-full font-semibold">
+            <Link href={authLoginHref}>
+              <Lock className="mr-2 size-4" />
+              {tAuth("signIn")} · {formatPrice(total)}
+            </Link>
+          </Button>
+        ) : currentStep === 3 ? (
+          <CheckoutActionButton
+            t={t}
+            tAuth={tAuth}
+            authLoginHref={authLoginHref}
+            isAuthGateActive={false}
+            isProcessing={isProcessing}
+            canCheckout={canCheckout}
+            onCheckout={onCheckout}
+            nonProcessingLabel={
+              <>
+                {t("completeOrder")} · {formatPrice(total)}
+              </>
+            }
+          />
+        ) : (
+          <Button
+            type="button"
+            size="lg"
+            className="w-full font-semibold"
+            disabled={currentStep === 1 && !canCheckout}
+            onClick={() => setCurrentStep((currentStep + 1) as 1 | 2 | 3)}
+          >
+            {buttonLabel} · {formatPrice(total)}
+            <ArrowRight className="ml-2 size-4" />
+          </Button>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -442,91 +549,45 @@ function DesktopCheckoutSummaryCard(props: CheckoutLayoutBaseProps) {
 }
 
 export function MobileCheckoutLayout(props: CheckoutLayoutBaseProps) {
-  const { t, checkoutNotice } = props
+  const { t, checkoutNotice, isAuthGateActive } = props
+  const { currentStep, setCurrentStep } = useCheckoutStep()
+  const hasSteppedOnce = useRef(false)
+
+  useEffect(() => {
+    if (isAuthGateActive) setCurrentStep(1)
+  }, [isAuthGateActive, setCurrentStep])
+
+  useEffect(() => {
+    if (!hasSteppedOnce.current) {
+      hasSteppedOnce.current = true
+      return
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [currentStep])
+
+  const stepContent =
+    currentStep === 1 ? (
+      <CheckoutAddressCard variant="mobile" {...props} />
+    ) : currentStep === 2 ? (
+      <CheckoutShippingMethodCard variant="mobile" {...props} />
+    ) : (
+      <MobileCheckoutPaymentCard t={t} />
+    )
 
   return (
     <div className="lg:hidden pb-safe">
       <h1 className="sr-only">{t("title")}</h1>
 
-      <div className="space-y-3 p-4">
+      <div className="space-y-3 px-inset pt-4">
         {checkoutNotice && <CheckoutNoticeCard checkoutNotice={checkoutNotice} t={t} mobile />}
 
-        <CheckoutAddressCard variant="mobile" {...props} />
-        <CheckoutShippingMethodCard variant="mobile" {...props} />
-        <CheckoutOrderItemsCard variant="mobile" {...props} />
-        <MobileCheckoutSummaryCard {...props} />
+        {stepContent}
+        <MobileCheckoutOrderSummaryCard {...props} />
 
-        <div className="flex items-center justify-center gap-4 py-1 text-2xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Lock className="size-3" />
-            {t("securePayment")}
-          </span>
-          <span className="flex items-center gap-1">
-            <ShieldCheck className="size-3" />
-            {t("buyerProtection")}
-          </span>
-        </div>
-
-        <div className="h-20" aria-hidden="true" />
+        <div className="h-28" aria-hidden="true" />
       </div>
-    </div>
-  )
-}
 
-export function MobileStickyCheckoutFooter({
-  t,
-  tAuth,
-  authLoginHref,
-  isAuthGateActive,
-  isProcessing,
-  canCheckout,
-  total,
-  formatPrice,
-  onCheckout,
-  isAtBottom,
-}: {
-  t: TranslationFn
-  tAuth: TranslationFn
-  authLoginHref: string
-  isAuthGateActive: boolean
-  isProcessing: boolean
-  canCheckout: boolean
-  total: number
-  formatPrice: (price: number) => string
-  onCheckout: () => void
-  isAtBottom: boolean
-}) {
-  return (
-    <div
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background motion-safe:transition-transform motion-safe:duration-300 motion-reduce:transition-none lg:hidden",
-        isAtBottom ? "translate-y-full" : "translate-y-0"
-      )}
-    >
-      <div className="px-4 py-3 pb-safe">
-        <div className="mb-2 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <Lock className="size-3.5 text-success" />
-          <span>{t("secureCheckout")}</span>
-          <span>•</span>
-          <ShieldCheck className="size-3.5 text-success" />
-          <span>{t("buyerProtection")}</span>
-        </div>
-
-        <CheckoutActionButton
-          t={t}
-          tAuth={tAuth}
-          authLoginHref={authLoginHref}
-          isAuthGateActive={isAuthGateActive}
-          isProcessing={isProcessing}
-          canCheckout={canCheckout}
-          onCheckout={onCheckout}
-          nonProcessingLabel={
-            <>
-              {t("completeOrder")} · {formatPrice(total)}
-            </>
-          }
-        />
-      </div>
+      <MobileCheckoutStepFooter {...props} />
     </div>
   )
 }

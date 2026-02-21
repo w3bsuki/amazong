@@ -1,7 +1,8 @@
 import { Link } from "@/i18n/routing"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChevronRight as IconChevronRight } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 export const metadata = {
@@ -32,7 +33,7 @@ export default async function AccountSettingsPage({
   ]
 
   return (
-    <div className="grid gap-4">
+    <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold tracking-tight">{t("settings.title")}</h1>
 
       {sp.email_changed === "true" && (
@@ -42,18 +43,19 @@ export default async function AccountSettingsPage({
         </Alert>
       )}
 
-      <Card>
+      <Card className="rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-base">{t("settings.title")}</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-2">
+        <CardContent className="flex flex-col divide-y divide-border px-0 py-0">
           {links.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-md border bg-card px-3 py-2 text-sm hover:bg-hover active:bg-active transition-colors"
+              className="flex w-full items-center justify-between gap-2 px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 first:rounded-t-2xl last:rounded-b-2xl"
             >
-              {item.label}
+              <span className="truncate">{item.label}</span>
+              <IconChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
             </Link>
           ))}
         </CardContent>

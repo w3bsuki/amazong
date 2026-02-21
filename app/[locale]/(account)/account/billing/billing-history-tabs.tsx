@@ -30,7 +30,6 @@ interface BillingHistoryTabsProps {
   isLoading: boolean
   dateLocale: BillingDateLocale
   t: BillingText
-  withLocale: (path: string) => string
   formatCurrency: (amount: number, currency?: string) => string
   formatPrice: (price: number) => string
   getStatusBadge: BillingStatusBadge
@@ -43,7 +42,6 @@ export function BillingHistoryTabs({
   isLoading,
   dateLocale,
   t,
-  withLocale,
   formatCurrency,
   formatPrice,
   getStatusBadge,
@@ -194,7 +192,7 @@ export function BillingHistoryTabs({
               <CardTitle className="text-base">{t.boostPurchases}</CardTitle>
               <CardDescription>{t.noBoostsDescription}</CardDescription>
             </div>
-            <Link href={withLocale("/account/selling")}>
+            <Link href="/account/selling">
               <Button size="sm" className="gap-1.5">
                 <Lightning className="size-4" />
                 {t.boostProduct}
@@ -207,7 +205,7 @@ export function BillingHistoryTabs({
                 <Lightning className="size-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground">{t.noBoosts}</p>
                 <p className="text-sm text-muted-foreground mt-1">{t.boostHint}</p>
-                <Link href={withLocale("/account/selling")} className="mt-4 inline-block">
+                <Link href="/account/selling" className="mt-4 inline-block">
                   <Button variant="outline" size="sm" className="gap-1.5">
                     <Lightning className="size-4" />
                     {t.boostProduct}

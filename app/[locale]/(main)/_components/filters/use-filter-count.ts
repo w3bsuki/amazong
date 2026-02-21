@@ -19,6 +19,8 @@ interface FilterCountParams {
     availability?: "instock" | null
     deals?: boolean | null
     verified?: boolean | null
+    city?: string | null
+    nearby?: boolean | null
     attributes?: Record<string, string | string[]>
   }
 }
@@ -45,6 +47,8 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
   const availability = params.filters?.availability
   const deals = params.filters?.deals
   const verified = params.filters?.verified
+  const city = params.filters?.city
+  const nearby = params.filters?.nearby
   const attributes = params.filters?.attributes
   const hasFilters = params.filters !== undefined
 
@@ -149,6 +153,12 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
       if (verified !== undefined) {
         filterParams.verified = verified
       }
+      if (city !== undefined) {
+        filterParams.city = city
+      }
+      if (nearby !== undefined) {
+        filterParams.nearby = nearby
+      }
       if (attributes !== undefined) {
         filterParams.attributes = attributes
       }
@@ -176,6 +186,8 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
     availability,
     deals,
     verified,
+    city,
+    nearby,
     attributes,
     hasFilters,
     attributesKey,
@@ -183,4 +195,3 @@ export function useFilterCount(params: FilterCountParams): UseFilterCountResult 
 
   return { count, isLoading, error }
 }
-

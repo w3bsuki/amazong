@@ -148,7 +148,7 @@ export function buildProfileActions({
   if (isOwnProfile) {
     return (
       <>
-        <Link href="/account/profile" className="w-full min-w-0 sm:flex-1">
+        <Link href="/account/profile" className="flex-1 min-w-0">
           <Button className="w-full min-w-0 rounded-xl">
             <PencilSimple className="size-4" />
             <span className="truncate">{tProfile("editProfile")}</span>
@@ -177,11 +177,11 @@ export function buildProfileActions({
           locale={locale}
           variant="default"
           size="default"
-          className="w-full rounded-xl sm:flex-1"
+          className="flex-1 min-w-0 rounded-xl"
         />
       ) : null}
       {!isOwnProfile && (
-        <Link href={`/chat?to=${profile.id}`} className="w-full min-w-0 sm:flex-1">
+        <Link href={`/chat?to=${profile.id}`} className="flex-1 min-w-0">
           <Button variant="secondary" className="w-full min-w-0 gap-2 rounded-xl">
             <ChatCircle className="size-4" />
             <span className="truncate">{tSeller("message")}</span>

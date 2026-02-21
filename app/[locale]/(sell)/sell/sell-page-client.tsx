@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { Link } from "@/i18n/routing";
-import { createClient } from "@/lib/supabase/client";
+import { createFreshClient } from "@/lib/supabase/client";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { AuthGateCard } from "../../_components/auth/auth-gate-card";
@@ -63,7 +63,7 @@ function SellGateLayout({ children }: { children: ReactNode }) {
         hasUnsavedChanges={false}
         onSaveDraft={() => {}}
         currentStep={1}
-        totalSteps={4}
+        totalSteps={5}
       />
       {children}
     </div>
@@ -97,17 +97,17 @@ export function SellPageClient({
       return;
     }
 
-    const supabase = createClient();
+    // Fresh client ensures we re-read auth cookies written by server actions.
+    const supabase = createFreshClient();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: string, session: { user?: { id: string; email?: string } } | null) => {
-      const currentUser = session?.user ?? null;
+    const hydrateFromUser = async (currentUser: { id: string; email?: string } | null) => {
       setUser(
         currentUser
           ? {
-            id: currentUser.id,
-            ...(currentUser.email ? { email: currentUser.email } : {}),
-          }
-          : null
+              id: currentUser.id,
+              ...(currentUser.email ? { email: currentUser.email } : {}),
+            }
+          : null,
       );
 
       if (currentUser && !seller) {
@@ -148,28 +148,40 @@ export function SellPageClient({
         setNeedsOnboarding(false);
         setPayoutStatus(null);
       }
+    };
+
+    // Explicitly hydrate once on mount. Relying only on onAuthStateChange can miss initial sessions.
+    const hydrateInitialUser = async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        const currentUser = data.user ? { id: data.user.id, ...(data.user.email ? { email: data.user.email } : {}) } : null;
+        await hydrateFromUser(currentUser);
+      } finally {
+        setIsAuthChecking(false);
+      }
+    };
+
+    void hydrateInitialUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: string, session: { user?: { id: string; email?: string } } | null) => {
+      const currentUser = session?.user ?? null;
+      await hydrateFromUser(currentUser);
 
       setIsAuthChecking(false);
     });
 
-    // Fallback timeout
-    const timeout = setTimeout(() => {
-      setIsAuthChecking(false);
-    }, 2000);
-
     return () => {
       subscription.unsubscribe();
-      clearTimeout(timeout);
     };
   }, [initialUser, seller, t]);
 
-  // Loading state while checking auth - but show SignInPrompt immediately for guests
-  if (isAuthChecking && initialUser) {
+  // Loading state while checking auth
+  if (isAuthChecking) {
     return <SellFormSkeleton />;
   }
 
-  // Not logged in - show sign in prompt (render immediately for guests)
-  if (!user || (!initialUser && isAuthChecking)) {
+  // Not logged in - show sign in prompt
+  if (!user) {
     return (
       <SellGateLayout>
         <div className="flex-1 flex flex-col justify-center overflow-y-auto">

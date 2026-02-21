@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react"
 import { useRouter } from "@/i18n/routing"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { ArrowRight, Check, Globe, MapPin, LoaderCircle as SpinnerGap, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
@@ -27,7 +27,6 @@ function slugify(text: string): string {
 
 export default function BusinessProfilePage() {
   const router = useRouter()
-  const locale = useLocale()
   const t = useTranslations("Onboarding")
 
   const [isPending, startTransition] = useTransition()
@@ -138,7 +137,7 @@ export default function BusinessProfilePage() {
       title={t("businessProfile.title")}
       subtitle={t("businessProfile.subtitle")}
       stepLabel={t("common.stepLabel", { current: 2, total: 5 })}
-      progress={40}
+      stepProgress={{ current: 2, total: 5 }}
       onBack={handleBack}
       backLabel={t("common.back")}
       footer={

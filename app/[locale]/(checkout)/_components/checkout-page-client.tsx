@@ -17,10 +17,10 @@ import {
 import {
   DesktopCheckoutLayout,
   MobileCheckoutLayout,
-  MobileStickyCheckoutFooter,
 } from "./checkout-page-layout"
 import { buildCheckoutNotice, getCheckoutErrorKind, type CheckoutErrorKind } from "./checkout-page-notice"
 import { useCheckoutAddressForm } from "./use-checkout-address-form"
+import { useCheckoutStep } from "./checkout-step-context"
 
 type CreateCheckoutSessionAction = (
   items: CartItem[],
@@ -36,6 +36,7 @@ export default function CheckoutPageClient({
   createCheckoutSessionAction: CreateCheckoutSessionAction
   getCheckoutFeeQuoteAction: GetCheckoutFeeQuoteAction
 }) {
+  const { setCurrentStep } = useCheckoutStep()
   const { items, totalItems, subtotal, isReady: isCartReady } = useCart()
   const locale = useLocale()
   const t = useTranslations("CheckoutPage")
@@ -51,9 +52,6 @@ export default function CheckoutPageClient({
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [checkoutError, setCheckoutError] = useState<CheckoutErrorKind>(null)
-
-  const [showAddressSelector, setShowAddressSelector] = useState(false)
-  const [isAtBottom, setIsAtBottom] = useState(false)
 
   const fetchSavedAddresses = useCallback(async () => {
     const supabase = createClient()
@@ -93,8 +91,9 @@ export default function CheckoutPageClient({
 
   useEffect(() => {
     setMounted(true)
+    setCurrentStep(1)
     fetchSavedAddresses()
-  }, [fetchSavedAddresses])
+  }, [fetchSavedAddresses, setCurrentStep])
 
   useEffect(() => {
     let cancelled = false
@@ -114,19 +113,6 @@ export default function CheckoutPageClient({
       cancelled = true
     }
   }, [getCheckoutFeeQuoteAction, items])
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY
-      const windowHeight = window.innerHeight
-      const docHeight = document.documentElement.scrollHeight
-      const scrolledToBottom = scrollTop + windowHeight >= docHeight - 100
-      setIsAtBottom(scrolledToBottom)
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
 
   const shippingCost = SHIPPING_COSTS[shippingMethod]
   const tax = subtotal * 0.1
@@ -247,8 +233,6 @@ export default function CheckoutPageClient({
     handleBlur,
     errors,
     touched,
-    showAddressSelector,
-    setShowAddressSelector,
     shippingMethod,
     setShippingMethod,
     formatPrice,
@@ -267,19 +251,6 @@ export default function CheckoutPageClient({
   return (
     <div>
       <MobileCheckoutLayout {...checkoutLayoutProps} />
-
-      <MobileStickyCheckoutFooter
-        t={t}
-        tAuth={tAuth}
-        authLoginHref={authLoginHref}
-        isAuthGateActive={isAuthGateActive}
-        isProcessing={isProcessing}
-        canCheckout={canCheckout}
-        total={total}
-        formatPrice={formatPrice}
-        onCheckout={handleCheckout}
-        isAtBottom={isAtBottom}
-      />
 
       <DesktopCheckoutLayout {...checkoutLayoutProps} />
     </div>

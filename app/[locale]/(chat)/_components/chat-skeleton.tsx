@@ -17,8 +17,8 @@ function ChatInterfaceSkeletonBase({ variant }: { variant: "full" | "inline" }) 
       <div
         className={
           isFull
-            ? "shrink-0 border-b border-border-subtle px-4 py-3 pt-safe-max-sm"
-            : "shrink-0 border-b border-border-subtle px-4 py-3"
+            ? "shrink-0 border-b border-border-subtle px-inset py-2 pt-safe-max-sm"
+            : "shrink-0 border-b border-border-subtle px-inset py-2"
         }
       >
         <div className="flex items-center gap-3">
@@ -30,7 +30,7 @@ function ChatInterfaceSkeletonBase({ variant }: { variant: "full" | "inline" }) 
         </div>
       </div>
       {/* Messages area skeleton */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-inset py-3 space-y-4">
         <div className="flex items-end gap-2">
           <Skeleton className="size-7 rounded-full shrink-0" />
           <Skeleton className="h-12 w-48 rounded-md rounded-bl-md" />
@@ -50,8 +50,8 @@ function ChatInterfaceSkeletonBase({ variant }: { variant: "full" | "inline" }) 
       <div
         className={
           isFull
-            ? "shrink-0 border-t border-border-subtle p-3 pb-safe-max-sm"
-            : "shrink-0 border-t border-border-subtle p-3"
+            ? "shrink-0 border-t border-border-subtle px-inset py-2 pb-safe-max-sm"
+            : "shrink-0 border-t border-border-subtle px-inset py-2"
         }
       >
         <Skeleton className="h-11 w-full rounded-full" />

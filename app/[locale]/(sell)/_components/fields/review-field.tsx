@@ -163,18 +163,17 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
         </div>
       )}
 
-      {/* Photos & Details */}
+      {/* Photos */}
       <ReviewSection
-        title={tSell("review.sections.photosAndDetails")}
+        title={tSell("review.sections.photos")}
         icon={Camera}
-        isComplete={hasPhotos && hasTitle}
+        isComplete={hasPhotos}
         onEdit={() => handleEdit(1)}
         editLabel={tCommon("edit")}
       >
-        {/* Photo preview */}
-        {hasPhotos && (
-          <div className="flex gap-2 mb-3 overflow-x-auto pb-1 -mx-1 px-1">
-            {images.slice(0, 5).map((img, idx) => (
+        {hasPhotos ? (
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+            {images.slice(0, 6).map((img, idx) => (
               <div
                 key={idx}
                 className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-muted"
@@ -188,38 +187,68 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
                 />
                 {idx === 0 && (
                   <div className="absolute bottom-0 inset-x-0 bg-surface-overlay py-0.5 text-center">
-                    <span className="text-2xs text-overlay-text font-bold uppercase tracking-wider">{tSell("photos.cover")}</span>
+                    <span className="text-2xs text-overlay-text font-bold uppercase tracking-wider">
+                      {tSell("photos.cover")}
+                    </span>
                   </div>
                 )}
               </div>
             ))}
-            {images.length > 5 && (
+            {images.length > 6 && (
               <div className="w-14 h-14 rounded-lg bg-muted flex items-center justify-center shrink-0">
                 <span className="text-xs font-bold text-muted-foreground">
-                  +{images.length - 5}
+                  +{images.length - 6}
                 </span>
               </div>
             )}
           </div>
-        )}
-
-        {/* Title */}
-        <p className="font-bold text-base line-clamp-2 leading-tight">{title || "-"}</p>
-        
-        {/* Description */}
-        {description && (
-          <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">
-            {description}
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            {tSell("review.placeholders.noPhotos")}
           </p>
         )}
       </ReviewSection>
 
-      {/* Category & Condition */}
+      {/* Details */}
       <ReviewSection
-        title={tSell("review.sections.categoryAndCondition")}
-        icon={FolderOpen}
-        isComplete={hasCategory && hasCondition}
+        title={tSell("review.sections.details")}
+        icon={Package}
+        isComplete={hasTitle && hasDescription && hasCondition}
         onEdit={() => handleEdit(2)}
+        editLabel={tCommon("edit")}
+      >
+        <div className="space-y-3">
+          <div>
+            <p className="text-xs text-muted-foreground">{tSell("fields.title.label")}</p>
+            <p className="font-bold text-base line-clamp-2 leading-tight">{title || "-"}</p>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <Package className="size-4 text-muted-foreground mt-0.5" />
+            <div>
+              <p className="text-xs text-muted-foreground">{tSell("review.labels.condition")}</p>
+              <p className="text-sm font-medium">{conditionLabel || "-"}</p>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs text-muted-foreground">{tSell("fields.description.label")}</p>
+            <p className={cn(
+              "text-sm leading-relaxed whitespace-pre-wrap line-clamp-4",
+              description ? "text-foreground" : "text-muted-foreground"
+            )}>
+              {description?.trim() ? description.trim() : "-"}
+            </p>
+          </div>
+        </div>
+      </ReviewSection>
+
+      {/* Category */}
+      <ReviewSection
+        title={tSell("review.sections.category")}
+        icon={FolderOpen}
+        isComplete={hasCategory}
+        onEdit={() => handleEdit(3)}
         editLabel={tCommon("edit")}
       >
         <div className="space-y-3">
@@ -232,66 +261,44 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
             </div>
           </div>
 
-          {/* Condition */}
-          <div className="flex items-start gap-2">
-            <Package className="size-4 text-muted-foreground mt-0.5" />
-            <div>
-              <p className="text-xs text-muted-foreground">{tSell("review.labels.condition")}</p>
-              <p className="text-sm font-medium">{conditionLabel || "-"}</p>
+          {/* Brand */}
+          {brandName && (
+            <div className="flex items-start gap-2">
+              <Tag className="size-4 text-muted-foreground mt-0.5" />
+              <div>
+                <p className="text-xs text-muted-foreground">{tSell("review.labels.brand")}</p>
+                <p className="text-sm font-medium">{brandName}</p>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Attributes */}
+          {attributes && attributes.length > 0 && (
+            <div className={brandName ? "pt-2 border-t border-border" : ""}>
+              <p className="text-xs text-muted-foreground mb-2">
+                {tSell("review.labels.attributes")}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {attributes.map((attr, idx) => (
+                  <span
+                    key={idx}
+                    className="px-2 py-1 rounded-md bg-muted text-xs"
+                  >
+                    {attr.name}: {attr.value}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </ReviewSection>
-
-      {/* Item Specifics (Brand + Attributes) */}
-      {(brandName || (attributes && attributes.length > 0)) && (
-        <ReviewSection
-          title={tSell("review.sections.itemSpecifics")}
-          icon={Tag}
-          isComplete={true}
-          onEdit={() => handleEdit(2)}
-          editLabel={tCommon("edit")}
-        >
-          <div className="space-y-3">
-            {/* Brand */}
-            {brandName && (
-              <div className="flex items-start gap-2">
-                <Tag className="size-4 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="text-xs text-muted-foreground">{tSell("review.labels.brand")}</p>
-                  <p className="text-sm font-medium">{brandName}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Attributes */}
-            {attributes && attributes.length > 0 && (
-              <div className={brandName ? "pt-2 border-t border-border" : ""}>
-                <p className="text-xs text-muted-foreground mb-2">
-                  {tSell("review.labels.attributes")}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {attributes.map((attr, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-1 rounded-md bg-muted text-xs"
-                    >
-                      {attr.name}: {attr.value}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </ReviewSection>
-      )}
 
       {/* Pricing & Shipping */}
       <ReviewSection
         title={tSell("review.sections.priceAndShipping")}
         icon={CurrencyDollar}
         isComplete={hasPrice}
-        onEdit={() => handleEdit(3)}
+        onEdit={() => handleEdit(4)}
         editLabel={tCommon("edit")}
       >
         <div className="space-y-3">

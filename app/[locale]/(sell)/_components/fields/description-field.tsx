@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller } from "react-hook-form";
-import { List, AlignLeft as TextAlignLeft, Bold as TextB, Italic as TextItalic } from "lucide-react";
+import { AlignLeft as TextAlignLeft } from "lucide-react";
 
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
@@ -102,34 +102,8 @@ export function DescriptionField({
                 )}
               />
 
-              {/* Toolbar */}
-              <div className="flex items-center justify-between border-t border-border-subtle bg-surface-subtle px-4 py-2">
-                <div className="flex gap-1">
-                   <button
-                     type="button"
-                     className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-                     title={tSell("fields.description.toolbar.boldTitle")}
-                     aria-label={tSell("fields.description.toolbar.boldAriaLabel")}
-                   >
-                     <TextB className="size-3.5" />
-                   </button>
-                   <button
-                     type="button"
-                     className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-                     title={tSell("fields.description.toolbar.italicTitle")}
-                     aria-label={tSell("fields.description.toolbar.italicAriaLabel")}
-                   >
-                     <TextItalic className="size-3.5" />
-                   </button>
-                   <button
-                     type="button"
-                     className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-                     title={tSell("fields.description.toolbar.listTitle")}
-                     aria-label={tSell("fields.description.toolbar.listAriaLabel")}
-                   >
-                     <List className="size-3.5" />
-                   </button>
-                 </div>
+              {/* Footer - character count */}
+              <div className="flex items-center justify-end border-t border-border-subtle bg-surface-subtle px-4 py-2">
                 <span
                   className={cn(
                     "text-2xs font-bold tabular-nums uppercase tracking-widest",

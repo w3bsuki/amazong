@@ -1,5 +1,4 @@
 import { Link } from "@/i18n/routing"
-import type { MinimalHeaderProps } from "../types"
 
 /**
  * Desktop Minimal Header
@@ -8,7 +7,7 @@ import type { MinimalHeaderProps } from "../types"
  * 
  * Used for: Auth pages, checkout (desktop only)
  */
-export function DesktopMinimalHeader({}: MinimalHeaderProps) {
+export function DesktopMinimalHeader() {
   return (
     <div className="hidden md:block bg-header-bg border-b border-header-border">
       <div className="container h-16 flex items-center justify-center">

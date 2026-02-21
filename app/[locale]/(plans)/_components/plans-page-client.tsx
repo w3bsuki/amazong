@@ -177,14 +177,6 @@ export default function PlansPageClient(props: {
 
         <section
           ref={(el) => {
-            sectionRefs.current.features = el
-          }}
-        >
-          <PlansFeaturesSection t={t} />
-        </section>
-
-        <section
-          ref={(el) => {
             sectionRefs.current.comparison = el
           }}
         >
@@ -195,6 +187,14 @@ export default function PlansPageClient(props: {
             t={t}
             formatPrice={formatPriceForLocale}
           />
+        </section>
+
+        <section
+          ref={(el) => {
+            sectionRefs.current.features = el
+          }}
+        >
+          <PlansFeaturesSection t={t} />
         </section>
 
         <section

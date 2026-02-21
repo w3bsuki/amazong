@@ -25,7 +25,7 @@ type SearchQuery = {
 export async function searchProducts(
   supabase: ReturnType<typeof createStaticClient>,
   query: string,
-  categoryIds: string[] | null,
+  categoryId: string | null,
   filters: SearchProductFilters,
   page: number = 1,
   limit: number = ITEMS_PER_PAGE,
@@ -33,53 +33,60 @@ export async function searchProducts(
 ): Promise<{ products: Product[]; total: number }> {
   const offset = (page - 1) * limit
   const nowIso = new Date().toISOString()
+  const normalizedQuery = query.trim()
   const dealsOnly = filters.deals === "true"
   const promotedOnly = filters.promoted === "true"
+  const verifiedOnly = filters.verified === "true"
 
   const buildCountBase = () => {
-    const base = dealsOnly
-      ? supabase.from("deal_products")
-      : supabase.from("products")
+    const select = verifiedOnly
+      ? "id, profiles!products_seller_id_fkey(is_verified_business)"
+      : "id"
 
-    return base.select(
-      "id, profiles!products_seller_id_fkey(is_verified_business,account_type)",
-      { count: "exact", head: true }
-    ) as unknown as SearchQuery
+    return supabase
+      .from("products")
+      .select(select, { count: "exact", head: true }) as unknown as SearchQuery
   }
 
   const buildDbBase = () => {
-    const base = dealsOnly
-      ? supabase.from("deal_products")
-      : supabase.from("products")
-
-    return base.select(
-      "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,is_boosted,boost_expires_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),categories:categories!products_category_id_fkey(slug)"
+    return supabase.from("products").select(
+      "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,is_boosted,boost_expires_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
     ) as unknown as SearchQuery
   }
 
   const applyFilters = (q: SearchQuery) => {
     let next = q
 
+    // Public browsing surfaces must not show non-active listings.
+    // Temporary legacy allowance: status can be NULL for older rows.
+    next = next.or("status.eq.active,status.is.null")
+
     if (shippingFilter) next = next.or(shippingFilter)
 
-    if (categoryIds && categoryIds.length > 0) next = next.in("category_id", categoryIds)
+    if (categoryId) next = next.contains("category_ancestors", [categoryId])
+
+    // Deals filter (align with /api/products/count semantics; view lacks some filter columns like seller_city).
+    if (dealsOnly) next = next.or("and(is_on_sale.eq.true,sale_percent.gt.0),list_price.not.is.null")
 
     next = applySharedProductFilters(next, filters)
 
+    const normalizedCity = filters.city?.trim().toLowerCase()
+    const city =
+      normalizedCity && normalizedCity !== "undefined" && normalizedCity !== "null"
+        ? normalizedCity
+        : null
+
     if (filters.nearby === "true") {
-      const normalizedCity = filters.city?.trim().toLowerCase()
-      const targetCity =
-        normalizedCity && normalizedCity !== "undefined" && normalizedCity !== "null"
-          ? normalizedCity
-          : "sofia"
-      next = next.ilike("seller_city", targetCity)
+      next = next.ilike("seller_city", city ?? "sofia")
+    } else if (city) {
+      next = next.ilike("seller_city", city)
     }
 
     // Verified sellers (business verification)
     if (filters.verified === "true") next = next.eq("profiles.is_verified_business", true)
 
-    if (query) {
-      next = next.or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+    if (normalizedQuery) {
+      next = next.or(`title.ilike.%${normalizedQuery}%,description.ilike.%${normalizedQuery}%`)
     }
 
     return next
@@ -158,11 +165,7 @@ export async function searchProducts(
           categoriesValue && typeof categoriesValue === "object" && !Array.isArray(categoriesValue)
             ? (categoriesValue as Record<string, unknown>).slug
             : null
-        const categories =
-          typeof categoriesSlug === "string" && categoriesSlug.length > 0
-            ? { slug: categoriesSlug }
-            : null
-
+        void categoriesSlug
         const tags = Array.isArray(p.tags)
           ? p.tags.filter((t): t is string => typeof t === "string" && t.length > 0)
           : []
@@ -181,7 +184,6 @@ export async function searchProducts(
           slug,
           is_boosted: isBoostActiveNow({ is_boosted: isBoostedFlag, boost_expires_at: boostExpiresAt }),
           profiles,
-          categories,
         }
 
         return product

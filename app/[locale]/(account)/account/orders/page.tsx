@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { getOrderConversation } from "../../../../actions/orders-reads"
 import { canBuyerRateSeller } from "../../../../actions/orders-rating"
 import { requestOrderCancellation, reportOrderIssue } from "../../../../actions/orders-support"
@@ -62,21 +63,37 @@ const matchesQuery = (order: OrderRow, query: string) => {
   })
 }
 
-const isOpenStatus = (status: OrderStatus | null) =>
-  status === "pending" ||
-  status === "processing" ||
-  status === "shipped" ||
-  status === "paid"
+type StatusFilterKey = "all" | "pending" | "shipped" | "completed"
 
-const matchesStatus = (order: OrderRow, statusFilter: string) => {
-  const s = (order.status || "pending") as OrderStatus
+const normalizeStatusFilter = (value: string): StatusFilterKey => {
+  switch (value) {
+    case "pending":
+    case "shipped":
+    case "completed":
+      return value
+    case "all":
+    default:
+      return "all"
+  }
+}
+
+const getStatusForFilter = (order: OrderRow): OrderStatus => {
+  const raw = (order.fulfillment_status || order.status || "pending") as OrderStatus
+  return raw || "pending"
+}
+
+const isPendingStatus = (status: OrderStatus) =>
+  status === "pending" || status === "processing" || status === "paid"
+
+const matchesStatus = (order: OrderRow, statusFilter: StatusFilterKey) => {
+  const s = getStatusForFilter(order)
   switch (statusFilter) {
-    case "open":
-      return isOpenStatus(s)
-    case "delivered":
+    case "pending":
+      return isPendingStatus(s)
+    case "shipped":
+      return s === "shipped"
+    case "completed":
       return s === "delivered"
-    case "cancelled":
-      return s === "cancelled"
     case "all":
     default:
       return true
@@ -91,9 +108,10 @@ export const metadata = {
 export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Account" })
   const sp = (await searchParams) || {}
   const query = (sp.q || "").trim()
-  const statusFilter = (sp.status || "all").trim()
+  const statusFilter = normalizeStatusFilter((sp.status || "all").trim())
   const supabase = await createClient()
 
   if (!supabase) {
@@ -174,24 +192,26 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
   // Calculate stats
   const stats = {
     total: allOrders.length,
-    pending: allOrders.filter((o) => isOpenStatus((o.status || "pending") as OrderStatus)).length,
-    delivered: allOrders.filter((o) => o.status === "delivered").length,
-    cancelled: allOrders.filter((o) => o.status === "cancelled").length,
+    pending: allOrders.filter((o) => matchesStatus(o, "pending")).length,
+    shipped: allOrders.filter((o) => matchesStatus(o, "shipped")).length,
+    completed: allOrders.filter((o) => matchesStatus(o, "completed")).length,
     totalSpend: allOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0),
   }
 
   const counts = {
     all: allOrders.length,
-    open: stats.pending,
-    delivered: stats.delivered,
-    cancelled: stats.cancelled,
+    pending: stats.pending,
+    shipped: stats.shipped,
+    completed: stats.completed,
   }
 
   return (
     <div className="flex flex-col gap-4 md:gap-4">
-      <h1 className="sr-only">{locale === "bg" ? "Поръчки" : "Orders"}</h1>
+      <h1 className="sr-only">{t("header.orders")}</h1>
 
-      <AccountOrdersStats stats={stats} locale={locale} />
+      <div className="hidden md:block">
+        <AccountOrdersStats stats={stats} locale={locale} />
+      </div>
 
       {/* Toolbar with Tabs and Search */}
       <AccountOrdersToolbar

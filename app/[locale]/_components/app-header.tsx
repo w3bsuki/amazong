@@ -13,7 +13,6 @@
 // - homepage:   Homepage (inline search + category pills on mobile)
 // - product:    Product pages (back + seller + share on mobile)
 // - contextual: Category browsing (back + title; scope pills render in page content)
-// - minimal:    Auth/checkout (just logo)
 // =============================================================================
 
 import {
@@ -26,24 +25,17 @@ import {
   MobileContextualHeader,
 } from "@/components/layout/header/mobile/contextual-header"
 import {
-  MobileProfileHeader,
-} from "@/components/layout/header/mobile/profile-header"
-import {
-  MobileMinimalHeader,
-} from "@/components/layout/header/mobile/minimal-header"
-import {
   DesktopStandardHeader,
 } from "@/components/layout/header/desktop/standard-header"
-import {
-  DesktopMinimalHeader,
-} from "@/components/layout/header/desktop/minimal-header"
 import { MobileSearchOverlay } from "./search/mobile-search-overlay"
 import { useHeaderOptional } from "@/components/providers/header-context"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
 import { cn } from "@/lib/utils"
+import { IconButton } from "@/components/ui/icon-button"
 import { useEffect, useRef, useState } from "react"
-import { useRouter, usePathname } from "@/i18n/routing"
-import { useLocale } from "next-intl"
+import { Link, useRouter, usePathname } from "@/i18n/routing"
+import { useLocale, useTranslations } from "next-intl"
+import { MessageCircle as ChatCircle, Share as Export, Settings as Gear } from "lucide-react"
 import type { User } from "@supabase/supabase-js"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu"
@@ -116,6 +108,7 @@ export type { HeaderVariant } from "@/components/layout/header/types"
 
 type RouteConfig = {
   variant: HeaderVariant
+  profileUsername?: string
 }
 
 function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): RouteConfig {
@@ -142,9 +135,9 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
     return { variant: "contextual" }
   }
 
-  // Search: reuse the homepage mobile header (inline search) to avoid the legacy "search bar under header" layout
+  // Search: contextual header (Phase 4 mobile search revamp)
   if (pathWithoutLocale.startsWith("/search")) {
-    return { variant: "homepage" }
+    return { variant: "contextual" }
   }
 
   // Sellers directory uses the shopping-style mobile header.
@@ -161,9 +154,9 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
     return { variant: "product" }
   }
   
-  // Profile pages: /{username} (1 segment, not a known route) - use profile header
+  // Profile pages: /{username} (1 segment, not a known route) - use contextual header with profile actions
   if (segments.length === 1 && segments[0] && !knownRoutes.includes(segments[0])) {
-    return { variant: "profile" }
+    return { variant: "contextual", profileUsername: segments[0] }
   }
   
   // Default for everything else
@@ -210,6 +203,7 @@ export function AppHeader({
   const [isHydrated, setIsHydrated] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
   const locale = useLocale()
+  const tProfile = useTranslations("ProfilePage")
   const router = useRouter()
   const pathname = usePathname()
   
@@ -224,11 +218,13 @@ export function AppHeader({
   // Auto-detect route config from pathname
   const routeConfig = detectRouteConfig(pathname, explicitVariant)
   const variant = routeConfig.variant
+  const profileUsernameFromRoute = routeConfig.profileUsername ?? null
 
   // Merge props with context values (context takes precedence for dynamic state)
   const effectiveHomepageCategory = homepageHeaderState?.activeCategory ?? activeCategory
   const effectiveHomepageCategorySelect = homepageHeaderState?.onCategorySelect ?? onCategorySelect
   const effectiveHomepageSearchOpen = homepageHeaderState?.onSearchOpen ?? onSearchOpen
+  const effectiveHomepageContextLabel = homepageHeaderState?.contextLabel
   
   // Avoid hydration mismatch when other client boundaries update HeaderProvider state
   // before the header boundary itself hydrates (e.g., ProductHeaderSync on PDP).
@@ -254,9 +250,7 @@ export function AppHeader({
   // Profile header context (for profile pages)
   const effectiveProfileDisplayName = profileHeaderState?.displayName ?? null
   const effectiveProfileUsername = profileHeaderState?.username ?? null
-  const effectiveProfileAvatarUrl = profileHeaderState?.avatarUrl ?? null
   const effectiveProfileIsOwn = profileHeaderState?.isOwnProfile ?? false
-  const effectiveProfileIsFollowing = profileHeaderState?.isFollowing ?? false
   const effectiveProfileSellerId = profileHeaderState?.sellerId ?? null
 
   // Mark header as hydrated for E2E tests
@@ -311,8 +305,74 @@ export function AppHeader({
       activeCategory={effectiveHomepageCategory}
       onCategorySelect={effectiveHomepageCategorySelect}
       onSearchOpen={handleSearchOpen}
+      {...(effectiveHomepageContextLabel ? { contextLabel: effectiveHomepageContextLabel } : {})}
       locale={locale}
     />
+  )
+
+  const handleShareProfile = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : ""
+    if (!url) return
+
+    const title =
+      effectiveProfileDisplayName ||
+      effectiveProfileUsername ||
+      profileUsernameFromRoute ||
+      tProfile("profile")
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          url,
+        })
+        return
+      } catch {
+        // User cancelled or share failed - silently ignore
+      }
+    }
+
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      await navigator.clipboard.writeText(url)
+    }
+  }
+
+  const profileMobileActions = (
+    <>
+      <IconButton
+        type="button"
+        variant="ghost"
+        className="text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
+        aria-label={tProfile("share")}
+        onClick={handleShareProfile}
+      >
+        <Export className="size-icon-sm" />
+      </IconButton>
+
+      {effectiveProfileIsOwn ? (
+        <IconButton
+          asChild
+          variant="ghost"
+          className="text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
+          aria-label={tProfile("settings")}
+        >
+          <Link href="/account">
+            <Gear className="size-icon-sm" />
+          </Link>
+        </IconButton>
+      ) : effectiveProfileSellerId ? (
+        <IconButton
+          asChild
+          variant="ghost"
+          className="text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
+          aria-label={tProfile("message")}
+        >
+          <Link href={`/chat?to=${effectiveProfileSellerId}`}>
+            <ChatCircle className="size-icon-sm" />
+          </Link>
+        </IconButton>
+      ) : null}
+    </>
   )
 
   const renderMobileHeader = () => {
@@ -336,40 +396,29 @@ export function AppHeader({
             locale={locale}
           />
         )
-      case "profile":
-        return (
-          <MobileProfileHeader
-            user={effectiveUser}
-            categories={categories}
-            userStats={userStats}
-            displayName={effectiveProfileDisplayName}
-            username={effectiveProfileUsername}
-            avatarUrl={effectiveProfileAvatarUrl}
-            isOwnProfile={effectiveProfileIsOwn}
-            isFollowing={effectiveProfileIsFollowing}
-            sellerId={effectiveProfileSellerId}
-            onBack={() => router.back()}
-            locale={locale}
-          />
-        )
-      case "contextual":
+      case "contextual": {
+        const isProfileHeader = Boolean(profileUsernameFromRoute)
+        const title = isProfileHeader
+          ? effectiveProfileDisplayName ?? effectiveProfileUsername ?? profileUsernameFromRoute ?? tProfile("profile")
+          : effectiveContextualTitle
+
         return (
           <MobileContextualHeader
             user={effectiveUser}
             categories={categories}
             userStats={userStats}
-            title={effectiveContextualTitle}
+            title={title}
             activeSlug={effectiveContextualActiveSlug}
-            backHref={effectiveContextualBackHref}
-            onBack={effectiveContextualBack}
+            backHref={isProfileHeader ? "/" : effectiveContextualBackHref}
+            onBack={isProfileHeader ? () => router.back() : effectiveContextualBack}
             subcategories={effectiveContextualSubcategories}
             onSubcategoryClick={effectiveContextualSubcategoryClick}
+            trailingActions={isProfileHeader ? profileMobileActions : undefined}
             hideActions={effectiveContextualHideActions}
             locale={locale}
           />
         )
-      case "minimal":
-        return <MobileMinimalHeader locale={locale} />
+      }
       default:
         // Fallback to homepage header (inline search + pills)
         return homepageMobileHeader
@@ -381,8 +430,6 @@ export function AppHeader({
   // ==========================================================================
 
   const renderDesktopHeader = () => {
-    // Minimal shows simplified desktop header
-    if (variant === "minimal") return <DesktopMinimalHeader locale={locale} />
     // Homepage, contextual, and default use standard desktop layout
     return <DesktopStandardHeader user={effectiveUser} locale={locale} />
   }

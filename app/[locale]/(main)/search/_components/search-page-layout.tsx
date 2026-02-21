@@ -1,11 +1,9 @@
 import { Link } from "@/i18n/routing"
-import { CategoryPillRail, type CategoryPillRailItem } from "@/components/mobile/category-nav/category-pill-rail"
 import { ProductGrid, type ProductGridProduct } from "@/components/grid/product-grid"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { SearchFilters } from "./filters/search-filters"
 import { SearchHeader } from "./search-header"
 import { DesktopFilters } from "./desktop-filters"
-import { MobileFilterControls } from "../../_components/filters/mobile-filter-controls"
 import { FilterChips } from "../../_components/filters/filter-chips"
 import { SortSelect } from "../../_components/search-controls/sort-select"
 import { SearchPagination } from "../../_components/search-controls/search-pagination"
@@ -14,6 +12,8 @@ import { DesktopShell } from "../../_components/layout/desktop-shell.server"
 import { PageShell } from "../../../_components/page-shell"
 import { MobileSellerFilterControls } from "./mobile-seller-filter-controls"
 import { SellerResultsList } from "./seller-results-list"
+import { MobileSearchSmartRail } from "./mobile-search-smart-rail"
+import { SearchHeaderSync } from "./search-header-sync"
 import type { BrowseMode, Category, SellerResultCard } from "../_lib/types"
 
 type Translate = (key: string, values?: Record<string, string | number | Date>) => string
@@ -31,7 +31,6 @@ interface SearchPageLayoutProps {
   categoryIdForFilters?: string | undefined
   categoryName?: string | undefined
   filterableAttributes: CategoryAttribute[]
-  userZone: string | null
   gridProducts: ProductGridProduct[]
   productsCount: number
   sellers: SellerResultCard[]
@@ -40,10 +39,8 @@ interface SearchPageLayoutProps {
   totalResults: number
   modeListingsHref: string
   modeSellersHref: string
-  railItems: CategoryPillRailItem[]
   itemsPerPage: number
   t: Translate
-  tCategories: Translate
 }
 
 export function SearchPageLayout({
@@ -59,7 +56,6 @@ export function SearchPageLayout({
   categoryIdForFilters,
   categoryName,
   filterableAttributes,
-  userZone,
   gridProducts,
   productsCount,
   sellers,
@@ -68,10 +64,8 @@ export function SearchPageLayout({
   totalResults,
   modeListingsHref,
   modeSellersHref,
-  railItems,
   itemsPerPage,
   t,
-  tCategories,
 }: SearchPageLayoutProps) {
   const sidebarContent = (
     <div className="bg-sidebar rounded-lg p-4">
@@ -116,79 +110,37 @@ export function SearchPageLayout({
   return (
     <>
       <PageShell variant="muted" className="lg:hidden overflow-x-hidden">
-        <div className="container overflow-x-hidden py-4">
-          {searchHeader}
+        <SearchHeaderSync query={query} categorySlug={currentCategory?.slug ?? categorySlug} />
 
-          <CategoryPillRail
-            items={railItems}
-            ariaLabel={tCategories("navigationAriaLabel")}
-            stickyTop="var(--offset-mobile-primary-rail)"
-            sticky={true}
-            moreLabel={tCategories("showMore")}
-            testId="mobile-search-category-rail"
+        {browseMode === "listings" ? (
+          <MobileSearchSmartRail
+            locale={locale}
+            query={query}
+            sellersHref={modeSellersHref}
+            {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
+            {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
+            {...(categoryName ? { categoryName } : {})}
+            attributes={filterableAttributes}
+            subcategories={subcategories.map((c) => ({
+              id: c.id,
+              name: c.name,
+              name_bg: c.name_bg,
+              slug: c.slug,
+            }))}
           />
+        ) : (
+          <MobileSellerFilterControls basePath="/search" listingsHref={modeListingsHref} className="mb-2" />
+        )}
 
+        <div className="container overflow-x-hidden pb-4 pt-2">
           {browseMode === "listings" ? (
             <>
-              <MobileFilterControls
-                locale={locale}
-                {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
-                {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
-                {...(query ? { searchQuery: query } : {})}
-                attributes={filterableAttributes}
-                subcategories={subcategories.map((c) => ({
-                  id: c.id,
-                  name: c.name,
-                  name_bg: c.name_bg,
-                  slug: c.slug,
-                }))}
-                {...(categoryName ? { categoryName } : {})}
-                {...(currentCategory
-                  ? {
-                      currentCategory: {
-                        name: categoryName ?? currentCategory.name,
-                        slug: currentCategory.slug,
-                      },
-                    }
-                  : {})}
-                basePath="/search"
-                stickyTop="var(--offset-mobile-secondary-rail)"
-                sticky={true}
-                userZone={userZone}
-                sellersHref={modeSellersHref}
-                className="mb-3 z-20"
-              />
-
-              <div className="mb-4 flex items-center justify-between rounded-lg bg-surface-subtle px-3 py-2.5 text-sm text-muted-foreground sm:hidden">
-                <span>
-                  <span className="font-semibold text-foreground">{totalProducts}</span>{" "}
-                  {totalProducts === 1 ? t("product") : t("products")}
-                </span>
-                {currentCategory && (
-                  <span className="rounded-full bg-selected px-2 py-0.5 text-xs font-medium text-primary">
-                    {categoryName}
-                  </span>
-                )}
-              </div>
-
               <ProductGrid products={gridProducts} viewMode="grid" preset="mobile-feed" density="compact" />
 
               {productsCount === 0 && emptyStateCTA("mt-8")}
             </>
           ) : (
             <>
-              <MobileSellerFilterControls basePath="/search" listingsHref={modeListingsHref} className="mb-3" />
-
-              <div className="mb-4 flex items-center justify-between rounded-lg bg-surface-subtle px-3 py-2.5 text-sm text-muted-foreground sm:hidden">
-                <span>
-                  <span className="font-semibold text-foreground">{totalSellers}</span>{" "}
-                  {t("sellersFound")}
-                </span>
-                <span className="rounded-full bg-selected px-2 py-0.5 text-xs font-medium text-primary">
-                  {t("sellersMode")}
-                </span>
-              </div>
-
               {sellerResultsList}
             </>
           )}
@@ -235,7 +187,11 @@ export function SearchPageLayout({
                 <SortSelect />
               </div>
               <div className="flex items-center gap-2">
-                <DesktopFilters />
+                <DesktopFilters
+                  attributes={filterableAttributes}
+                  {...(categorySlug ? { categorySlug } : {})}
+                  {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
+                />
               </div>
               <p className="ml-auto whitespace-nowrap text-sm text-muted-foreground">
                 <span className="font-semibold text-foreground">{totalProducts}</span>

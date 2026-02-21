@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import type { User } from "@supabase/supabase-js"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu"
@@ -6,7 +7,7 @@ import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu"
 // Header Types
 // =============================================================================
 
-export type HeaderVariant = "default" | "homepage" | "product" | "contextual" | "profile" | "minimal"
+export type HeaderVariant = "default" | "homepage" | "product" | "contextual"
 
 export interface BaseHeaderProps {
   /** Authenticated user */
@@ -26,6 +27,8 @@ export interface HomepageHeaderProps extends BaseHeaderProps {
   onCategorySelect?: ((slug: string) => void) | undefined
   /** Callback to open search overlay */
   onSearchOpen?: (() => void) | undefined
+  /** Optional context chip label rendered inside the search pill. */
+  contextLabel?: string | undefined
 }
 
 export interface ProductHeaderProps extends BaseHeaderProps {
@@ -48,9 +51,11 @@ export interface ProductHeaderProps extends BaseHeaderProps {
 }
 
 export interface ContextualHeaderProps extends BaseHeaderProps {
-  /** Title for contextual header (category name) */
-  title?: string | undefined
-  /** Active category slug (used for subtle active pill highlight during instant navigation). */
+  /** Title for contextual header */
+  title?: ReactNode | undefined
+  /** Optional title class override */
+  titleClassName?: string | undefined
+  /** Active category slug (used for search context). */
   activeSlug?: string | undefined
   /** Back href for contextual header */
   backHref?: string | undefined
@@ -60,28 +65,9 @@ export interface ContextualHeaderProps extends BaseHeaderProps {
   subcategories?: CategoryTreeNode[] | undefined
   /** Callback when subcategory pill is clicked */
   onSubcategoryClick?: ((cat: CategoryTreeNode) => void) | undefined
-  /** Hide search/wishlist/cart actions (for assistant page) */
+  /** Optional trailing actions (replaces the default search/wishlist/cart cluster). */
+  trailingActions?: ReactNode | undefined
+  /** Hide the entire trailing actions area. */
   hideActions?: boolean | undefined
 }
 
-export interface ProfileHeaderProps extends BaseHeaderProps {
-  /** Display name for profile header */
-  displayName?: string | null | undefined
-  /** Username for profile (@ handle) */
-  username?: string | null | undefined
-  /** Avatar URL for profile */
-  avatarUrl?: string | null | undefined
-  /** Whether viewing own profile */
-  isOwnProfile: boolean
-  /** Whether current user is following this profile */
-  isFollowing?: boolean | undefined
-  /** Seller ID for follow action */
-  sellerId?: string | null | undefined
-  /** Router for back navigation */
-  onBack: () => void
-}
-
-export interface MinimalHeaderProps {
-  /** Locale for translations */
-  locale: string
-}

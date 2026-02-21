@@ -8,6 +8,8 @@ import { AccountChartLazy } from "./_components/account-chart-lazy"
 import { AccountRecentActivity } from "./_components/account-recent-activity"
 import { AccountBadges } from "./_components/account-badges"
 import { SubscriptionBenefitsCard } from "./_components/subscription-benefits-card"
+import { MobileAccountHub } from "./_components/mobile-account-hub"
+import { Bell, ChartLine, CircleDollarSign, CreditCard, Heart, Lock, MapPin, Package, Store } from "lucide-react"
 
 interface AccountPageProps {
   params: Promise<{
@@ -30,6 +32,10 @@ export default async function AccountPage({ params }: AccountPageProps) {
   const locale = localeParam === "bg" ? "bg" : "en"
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: "Account" })
+  const tAccountDrawer = await getTranslations({ locale, namespace: "AccountDrawer" })
+  const tProfileSettings = await getTranslations({ locale, namespace: "ProfileSettings" })
+  const tCommon = await getTranslations({ locale, namespace: "Common" })
+  const tSidebarMenu = await getTranslations({ locale, namespace: "SidebarMenu" })
   const supabase = await createClient()
 
   if (!supabase) {
@@ -52,7 +58,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
     supabase.from('messages').select('id, is_read', { count: 'exact' }).eq('sender_id', user.id).neq('sender_id', user.id),
     supabase.from('order_items').select('id, order_id, price_at_purchase, quantity, product_id', { count: 'exact' }).eq('seller_id', user.id).limit(5),
     // Profile with subscription benefits
-    supabase.from('profiles').select('username, account_type, tier, boosts_allocated, boosts_remaining, boosts_reset_at').eq('id', user.id).single(),
+    supabase.from('profiles').select('username, display_name, avatar_url, business_name, account_type, tier, boosts_allocated, boosts_remaining, boosts_reset_at').eq('id', user.id).single(),
     // Active subscription
     supabase.from('subscriptions').select('status, expires_at, auto_renew, plan_type').eq('seller_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
   ])
@@ -133,51 +139,160 @@ export default async function AccountPage({ params }: AccountPageProps) {
     }
   })
 
+  const displayName =
+    profile?.display_name?.trim() ||
+    profile?.business_name?.trim() ||
+    profile?.username ||
+    user.email?.split("@")[0] ||
+    t("header.myAccount")
+
+  const tierForBadge = subscription?.status === "active"
+    ? (subscription.plan_type ?? profile?.tier ?? "free")
+    : (profile?.tier ?? "free")
+  const tierName = t("subscriptionBenefitsCard.tierName", { tier: tierForBadge })
+  const planBadgeLabel = t("mobileHub.planBadge", { plan: tierName })
+  const planBadgeTone = subscription?.status === "active" ? "info" : "muted"
+
   return (
-    <div className="flex flex-col gap-4">
+    <>
       <h1 className="sr-only">{t("header.overview")}</h1>
-      
-      {/* Hero card with revenue & key stats */}
-      <AccountHeroCard totals={totals} locale={locale} />
-      
-      {/* Quick action buttons */}
-      <AccountStatsCards totals={totals} locale={locale} />
-      
-      {/* Subscription benefits - show if user is a seller */}
-      {profile?.tier && (
-        <SubscriptionBenefitsCard
-          locale={locale}
-          tier={profile.tier}
-          accountType={(profile.account_type === 'business' ? 'business' : 'personal') as 'personal' | 'business'}
-          maxListings={plan?.max_listings ?? 30}
-          boostsIncluded={plan?.boosts_included ?? profile.boosts_allocated ?? 0}
-          prioritySupport={plan?.priority_support ?? false}
-          analyticsAccess={plan?.analytics_access ?? 'none'}
-          badgeType={plan?.badge_type ?? null}
-          activeListings={productCount}
-          boostsRemaining={profile.boosts_remaining ?? 0}
-          boostsResetAt={profile.boosts_reset_at ?? null}
-          expiresAt={subscription?.expires_at ?? null}
-          isActive={subscription?.status === 'active'}
-          isCancelled={subscription?.status === 'active' && subscription?.auto_renew === false}
+
+      {/* Mobile hub (iOS Settings style) */}
+      <div className="md:hidden">
+        <MobileAccountHub
+          displayName={displayName}
+          username={profile?.username ?? null}
+          avatarUrl={profile?.avatar_url ?? null}
+          editProfileLabel={tProfileSettings("editProfile")}
+          signOutLabel={tAccountDrawer("signOut")}
+          signOutDialogTitle={tSidebarMenu("signOutTitle")}
+          signOutDialogDescription={tSidebarMenu("signOutDescription")}
+          signOutCancelLabel={tCommon("cancel")}
+          signOutConfirmLabel={tSidebarMenu("confirmSignOut")}
+          planBadgeLabel={planBadgeLabel}
+          planBadgeTone={planBadgeTone}
+          sections={[
+            {
+              label: tAccountDrawer("sectionShopping"),
+              items: [
+                {
+                  href: "/account/orders",
+                  icon: Package,
+                  label: t("header.orders"),
+                  badge:
+                    pendingOrders > 0
+                      ? String(pendingOrders)
+                      : totalOrders > 0
+                        ? String(totalOrders)
+                        : null,
+                  badgeTone: pendingOrders > 0 ? "warning" : "muted",
+                },
+                {
+                  href: "/account/wishlist",
+                  icon: Heart,
+                  label: t("header.wishlist"),
+                  badge: wishlistCount > 0 ? String(wishlistCount) : null,
+                  badgeTone: "muted",
+                },
+                {
+                  href: "/account/payments",
+                  icon: CreditCard,
+                  label: t("header.payments"),
+                },
+              ],
+            },
+            {
+              label: tAccountDrawer("sectionSelling"),
+              items: [
+                {
+                  href: "/account/selling",
+                  icon: Store,
+                  label: tAccountDrawer("myListings"),
+                  badge: productCount > 0 ? String(productCount) : null,
+                  badgeTone: "muted",
+                },
+                {
+                  href: "/account/sales",
+                  icon: ChartLine,
+                  label: t("header.sales"),
+                  badge: totalSales > 0 ? String(totalSales) : null,
+                  badgeTone: "muted",
+                },
+                {
+                  href: "/account/billing",
+                  icon: CircleDollarSign,
+                  label: tAccountDrawer("payouts"),
+                },
+              ],
+            },
+            {
+              label: tAccountDrawer("sectionSettings"),
+              items: [
+                {
+                  href: "/account/addresses",
+                  icon: MapPin,
+                  label: t("header.addresses"),
+                },
+                {
+                  href: "/account/notifications",
+                  icon: Bell,
+                  label: t("header.notifications"),
+                },
+                {
+                  href: "/account/security",
+                  icon: Lock,
+                  label: t("header.security"),
+                },
+              ],
+            },
+          ]}
         />
-      )}
-      
-      {/* User badges */}
-      <AccountBadges locale={locale} />
-      
-      {/* Chart - desktop only */}
-      <div className="hidden sm:block">
-        <AccountChartLazy locale={locale} />
       </div>
-      
-      {/* Recent activity sections */}
-      <AccountRecentActivity 
-        orders={recentOrders}
-        products={recentProducts}
-        sales={recentSales}
-        locale={locale}
-      />
-    </div>
+
+      {/* Desktop dashboard */}
+      <div className="hidden md:flex flex-col gap-4">
+        {/* Hero card with revenue & key stats */}
+        <AccountHeroCard totals={totals} locale={locale} />
+
+        {/* Quick action buttons */}
+        <AccountStatsCards totals={totals} locale={locale} />
+
+        {/* Subscription benefits - show if user is a seller */}
+        {profile?.tier && (
+          <SubscriptionBenefitsCard
+            locale={locale}
+            tier={profile.tier}
+            accountType={(profile.account_type === 'business' ? 'business' : 'personal') as 'personal' | 'business'}
+            maxListings={plan?.max_listings ?? 30}
+            boostsIncluded={plan?.boosts_included ?? profile.boosts_allocated ?? 0}
+            prioritySupport={plan?.priority_support ?? false}
+            analyticsAccess={plan?.analytics_access ?? 'none'}
+            badgeType={plan?.badge_type ?? null}
+            activeListings={productCount}
+            boostsRemaining={profile.boosts_remaining ?? 0}
+            boostsResetAt={profile.boosts_reset_at ?? null}
+            expiresAt={subscription?.expires_at ?? null}
+            isActive={subscription?.status === 'active'}
+            isCancelled={subscription?.status === 'active' && subscription?.auto_renew === false}
+          />
+        )}
+
+        {/* User badges */}
+        <AccountBadges locale={locale} />
+
+        {/* Chart - desktop only */}
+        <div className="hidden sm:block">
+          <AccountChartLazy locale={locale} />
+        </div>
+
+        {/* Recent activity sections */}
+        <AccountRecentActivity
+          orders={recentOrders}
+          products={recentProducts}
+          sales={recentSales}
+          locale={locale}
+        />
+      </div>
+    </>
   )
 }

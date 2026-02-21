@@ -8,6 +8,7 @@ export interface HomepageHeaderState {
   onCategorySelect: (slug: string) => void
   onSearchOpen: () => void
   categories: CategoryTreeNode[]
+  contextLabel?: string
 }
 
 export interface ContextualHeaderState {
@@ -79,4 +80,3 @@ export function useHeader() {
 export function useHeaderOptional() {
   return useContext(HeaderContext)
 }
-
