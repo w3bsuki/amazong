@@ -31,7 +31,6 @@ export function MobileHomepageHeader({
         <SidebarMenu
           user={user}
           {...(userStats && { userStats })}
-          triggerClassName="-mr-1"
         />
         <Link href="/" className="shrink-0 rounded-sm tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
           <span className="text-lg font-extrabold tracking-tight text-foreground">treido<span className="text-primary">.</span></span>
