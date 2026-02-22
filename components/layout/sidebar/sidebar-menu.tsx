@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {
-  List,
+  Menu,
   LogOut as SignOut,
   LoaderCircle as SpinnerGap,
 } from "lucide-react"
@@ -81,13 +81,15 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
     return (
       <span
         className={cn(
-          "inline-flex size-(--control-default) items-center justify-center rounded-lg text-foreground touch-manipulation tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none cursor-pointer hover:bg-hover active:bg-active [&_svg]:size-6",
+          "group inline-flex size-(--control-default) items-center justify-center rounded-full text-foreground touch-manipulation tap-transparent cursor-pointer",
           triggerClassName
         )}
         aria-hidden="true"
         data-testid="mobile-menu-trigger"
       >
-        <List />
+        <span className="flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active">
+          <Menu className="size-icon-sm" />
+        </span>
       </span>
     )
   }
@@ -105,13 +107,15 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
           variant="ghost"
           size="icon"
           className={cn(
-            "size-(--control-default) rounded-lg text-foreground touch-manipulation tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring [&_svg]:size-6",
+            "group size-(--control-default) rounded-full p-0 text-foreground touch-manipulation tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
             triggerClassName
           )}
           aria-label={t("title")}
           data-testid="mobile-menu-trigger"
         >
-          <List />
+          <span className="flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active">
+            <Menu className="size-icon-sm" />
+          </span>
         </Button>
       </DrawerTrigger>
 

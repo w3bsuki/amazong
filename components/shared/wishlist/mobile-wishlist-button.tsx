@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Heart } from "lucide-react";
+import { Heart } from "lucide-react"
 
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useTranslations } from "next-intl"
@@ -22,11 +22,14 @@ export function MobileWishlistButton() {
     return (
       <span
         role="button"
-        className="relative flex size-touch-md cursor-pointer items-center justify-center rounded-md p-0 tap-transparent transition-colors hover:bg-header-hover active:bg-header-active touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        className="group relative flex size-(--control-default) cursor-pointer items-center justify-center rounded-full p-0 text-header-text touch-manipulation tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={tNav("wishlist")}
       >
-        <span className="relative" aria-hidden="true">
-          <Heart className="size-icon-header text-header-text" />
+        <span
+          className="relative flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active"
+          aria-hidden="true"
+        >
+          <Heart className="size-icon-sm text-header-text" />
         </span>
       </span>
     )
@@ -34,15 +37,18 @@ export function MobileWishlistButton() {
 
   return (
     <button
-      className="relative flex size-touch-md appearance-none items-center justify-center rounded-md border-0 bg-transparent p-0 tap-transparent transition-colors hover:bg-header-hover active:bg-header-active touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+      className="group relative flex size-(--control-default) appearance-none items-center justify-center rounded-full p-0 text-header-text touch-manipulation tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
       aria-label={tNav("wishlist")}
       aria-haspopup={enabledDrawers.wishlist ? "dialog" : undefined}
       onClick={() => {
         if (enabledDrawers.wishlist) openDrawer("wishlist")
       }}
     >
-      <span className="relative" aria-hidden="true">
-        <Heart className="size-icon-header text-header-text" />
+      <span
+        className="relative flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active"
+        aria-hidden="true"
+      >
+        <Heart className="size-icon-sm text-header-text" />
         {totalItems > 0 && (
           <CountBadge
             count={totalItems}

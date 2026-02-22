@@ -1,6 +1,6 @@
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
-import { ArrowLeft, Search as MagnifyingGlass } from "lucide-react";
+import { ArrowLeft, Search as MagnifyingGlass } from "lucide-react"
 
 import { Link, usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -49,18 +49,22 @@ export function MobileContextualHeader({
             <button
               type="button"
               onClick={onBack}
-              className="flex size-(--control-default) -ml-1 shrink-0 items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              className="group flex size-(--control-default) -ml-1 shrink-0 items-center justify-center rounded-full p-0 text-foreground touch-manipulation tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               aria-label={tCommon("back")}
             >
-              <ArrowLeft className="size-6" />
+              <span className="flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active">
+                <ArrowLeft className="size-(--size-icon)" />
+              </span>
             </button>
           ) : (
             <Link
               href={backHref}
-              className="flex size-(--control-default) -ml-1 shrink-0 items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              className="group flex size-(--control-default) -ml-1 shrink-0 items-center justify-center rounded-full p-0 text-foreground touch-manipulation tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               aria-label={tCommon("back")}
             >
-              <ArrowLeft className="size-6" />
+              <span className="flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active">
+                <ArrowLeft className="size-(--size-icon)" />
+              </span>
             </Link>
           )}
           {expandTitle ? (
@@ -86,10 +90,12 @@ export function MobileContextualHeader({
               <>
                 <Link
                   href={searchHref ?? "/search"}
-                  className="flex size-(--control-default) items-center justify-center rounded-full tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  className="group flex size-(--control-default) items-center justify-center rounded-full p-0 text-foreground touch-manipulation tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   aria-label={tCommon("search")}
                 >
-                  <MagnifyingGlass className="size-6" />
+                  <span className="flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active">
+                    <MagnifyingGlass className="size-(--size-icon)" />
+                  </span>
                 </Link>
                 <MobileWishlistButton />
                 <MobileCartDropdown />

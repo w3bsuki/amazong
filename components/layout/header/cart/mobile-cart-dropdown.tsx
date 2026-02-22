@@ -1,5 +1,4 @@
-import { ShoppingCart } from "lucide-react";
-
+import { ShoppingCart } from "lucide-react"
 
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -20,7 +19,7 @@ export function MobileCartDropdown() {
   return (
     <button
       type="button"
-      className="relative flex size-touch-md appearance-none items-center justify-center rounded-md border-0 bg-transparent touch-manipulation tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-header-hover active:bg-header-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+      className="group relative flex size-(--control-default) appearance-none items-center justify-center rounded-full p-0 text-header-text touch-manipulation tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
       aria-label={cartAriaLabel}
       aria-haspopup={enabledDrawers.cart ? "dialog" : undefined}
       onClick={() => {
@@ -31,8 +30,11 @@ export function MobileCartDropdown() {
         router.push("/cart")
       }}
     >
-      <span className="relative" aria-hidden="true">
-        <ShoppingCart className="size-icon-header text-header-text" />
+      <span
+        className="relative flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active"
+        aria-hidden="true"
+      >
+        <ShoppingCart className="size-icon-sm text-header-text" />
         {displayItems > 0 && (
           <CountBadge
             count={displayItems}
