@@ -20,14 +20,6 @@ export const emailSchema = z
     { message: "errors.emailInvalid" }
   )
 
-export const passwordSchema = z
-  .string()
-  .min(1, { message: "errors.passwordRequired" })
-  .min(8, { message: "errors.passwordMin" })
-  .max(72, { message: "errors.passwordMax" })
-  .regex(/[a-zA-Z]/, { message: "errors.passwordLetter" })
-  .regex(/[0-9]/, { message: "errors.passwordNumber" })
-
 // Username validation schema
 const usernameSchema = createUsernameSchema({
   min: "errors.usernameMin",

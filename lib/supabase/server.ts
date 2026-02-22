@@ -91,10 +91,12 @@ export function createRouteHandlerClient(request: NextRequest) {
 export function createStaticClient(): SupabaseClient<Database> {
   const { url, anonKey } = getPublicSupabaseEnv()
   return createSupabaseClient<Database>(url, anonKey, {
-    // Use fetchWithoutTimeout for cached queries - AbortController signals
-    // interfere with RSC streaming in Next.js cache layer, causing
-    // "Connection closed" errors on Vercel serverless.
-    global: { fetch: fetchWithoutTimeout },
+    // Default behavior:
+    // - Production: no AbortController timeouts (known to interfere with RSC streaming in Next.js cache layer on Vercel)
+    // - Dev/test: enforce timeouts to avoid multi-minute hangs when Supabase is unreachable
+    global: {
+      fetch: process.env.NODE_ENV === "production" ? fetchWithoutTimeout : fetchWithTimeout,
+    },
   })
 }
 

@@ -103,7 +103,7 @@ export function ProductFeed({
   }, [hasMore, isLoading, onLoadMore, products.length])
 
   return (
-    <div className="pt-1">
+    <div className="pt-2">
       <div role="status" aria-live="polite" className="sr-only">
         {categoryAnnouncement}
       </div>

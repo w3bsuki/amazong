@@ -77,7 +77,7 @@ export async function getSellerOrders(
       ...item,
       created_at: item.order?.created_at ?? new Date().toISOString(),
       buyer: (() => {
-        if (!item.order?.user_id) return undefined
+        if (!item.order?.user_id) return
 
         const base = buyersMap.get(item.order.user_id)
         const shippingAddress = item.order?.shipping_address

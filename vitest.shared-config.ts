@@ -76,12 +76,10 @@ export const baseCoverageConfig = {
     'lib/view-models/**', // View models with DB queries
     'lib/sell/**', // Sell form schema - Zod schemas already covered
     'lib/category-icons.tsx', // React component with icons
-    'lib/category-tree.ts', // Complex tree utils
     'lib/env.ts', // Env var getters - require process.env
     'lib/logger.ts', // Logger - side effects
     'lib/image-compression.ts', // Image compression - requires canvas
     'lib/bulgarian-cities.ts', // Static data
-    'lib/category-display.ts', // Static display utils
     'hooks/use-geo-welcome.ts', // Complex with Supabase + cookies
   ],
   thresholds: {

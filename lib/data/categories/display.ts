@@ -1,11 +1,6 @@
-export type CategoryDisplay = {
-  id: string
-  name: string
-  name_bg: string | null
-  slug: string
-  image_url?: string | null
-  icon?: string | null
-}
+import type { CategoryDisplay } from "./types"
+
+export type { CategoryDisplay }
 
 export function getCategoryName(category: CategoryDisplay, locale: string): string {
   if (locale === "bg" && category.name_bg) return category.name_bg
@@ -15,3 +10,4 @@ export function getCategoryName(category: CategoryDisplay, locale: string): stri
 export function getCategorySlugKey(slug: string): string {
   return slug.replaceAll("-", "_")
 }
+

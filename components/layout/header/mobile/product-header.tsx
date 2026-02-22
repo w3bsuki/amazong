@@ -76,7 +76,7 @@ export function MobileProductHeader({
         "sticky top-0 z-50 border-b border-border-subtle bg-background pt-safe md:hidden"
       )}
     >
-      <div className="flex h-(--control-primary) items-center px-1">
+      <div className="flex h-(--control-primary) items-center px-2">
         {/* Back Button - Large touch target */}
         <IconButton
           type="button"

@@ -40,7 +40,7 @@ function ChatBottomTabs({
 
   return (
     <div className="shrink-0 border-t border-border-subtle bg-background pb-safe lg:hidden">
-      <div className="flex items-center justify-around h-14">
+        <div className="flex items-center justify-around h-(--spacing-bottom-nav)">
         {tabs.map((tab) => {
           const Icon = tab.icon
           const isActive = activeFilter === tab.id

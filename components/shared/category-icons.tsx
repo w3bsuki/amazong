@@ -1,7 +1,7 @@
 /**
  * Category Icons — React icon rendering for category slugs.
  *
- * Color/tone utilities live in `lib/category-colors.ts` (pure, no React).
+ * Color/tone utilities live in `lib/data/categories/colors.ts` (pure, no React).
  * This file provides the React-based `getCategoryIcon()` renderer
  * that maps slugs to Lucide icons.
  *

@@ -106,19 +106,22 @@ const parsedBase = new URL(rawBaseURL)
 const isLocalHost =
   parsedBase.hostname === 'localhost' || parsedBase.hostname === '127.0.0.1'
 const defaultPort = latchedPort
-  ? parseInt(latchedPort, 10)
-  : parseInt(parsedBase.port || '3000', 10)
+  ? Number.parseInt(latchedPort, 10)
+  : Number.parseInt(parsedBase.port || '3000', 10)
 
 // Auto-pick logic: find a free port if conditions are met
 let finalPort = defaultPort
 let didAutoPickPort = false
 
-if (!reuseExistingServer && !explicitBaseURL && !latchedBaseURL && isLocalHost) {
-  // Check if the default port is in use
-  if (isPortInUse(defaultPort)) {
-    finalPort = findFreePort(defaultPort + 1)
-    didAutoPickPort = true
-  }
+if (
+  !reuseExistingServer &&
+  !explicitBaseURL &&
+  !latchedBaseURL &&
+  isLocalHost &&
+  isPortInUse(defaultPort)
+) {
+  finalPort = findFreePort(defaultPort + 1)
+  didAutoPickPort = true
 }
 
 // Construct the final baseURL

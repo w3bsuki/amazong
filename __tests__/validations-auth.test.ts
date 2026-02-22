@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
   emailSchema,
-  passwordSchema,
   loginSchema,
   signUpSchema,
   getPasswordStrength,
@@ -48,47 +47,6 @@ describe('lib/validation/auth', () => {
     it('rejects whitespace-only string', () => {
       const result = emailSchema.safeParse('   ')
       expect(result.success).toBe(false)
-    })
-  })
-  
-  describe('passwordSchema', () => {
-    it('accepts valid passwords', () => {
-      const validPasswords = [
-        'Password1',
-        'test1234',
-        'MyP4ssw0rd!',
-        '12345678a',
-        'abcdefgh1'
-      ]
-      
-      for (const password of validPasswords) {
-        const result = passwordSchema.safeParse(password)
-        expect(result.success, `${password} should be valid`).toBe(true)
-      }
-    })
-    
-    it('rejects passwords shorter than 8 characters', () => {
-      const result = passwordSchema.safeParse('Pass1')
-      expect(result.success).toBe(false)
-      if (!result.success) {
-        expect(result.error.issues[0].message).toBe('errors.passwordMin')
-      }
-    })
-    
-    it('rejects passwords without letters', () => {
-      const result = passwordSchema.safeParse('12345678')
-      expect(result.success).toBe(false)
-      if (!result.success) {
-        expect(result.error.issues.some(e => e.message === 'errors.passwordLetter')).toBe(true)
-      }
-    })
-    
-    it('rejects passwords without numbers', () => {
-      const result = passwordSchema.safeParse('abcdefgh')
-      expect(result.success).toBe(false)
-      if (!result.success) {
-        expect(result.error.issues.some(e => e.message === 'errors.passwordNumber')).toBe(true)
-      }
     })
   })
   

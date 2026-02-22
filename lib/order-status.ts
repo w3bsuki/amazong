@@ -36,22 +36,6 @@ export function canSellerUpdateStatus(currentStatus: OrderItemStatus): boolean {
   return ["pending", "received", "processing", "shipped"].includes(currentStatus)
 }
 
-const ORDER_STATUS_TRANSITIONS: Record<OrderItemStatus, OrderItemStatus[]> = {
-  pending: ["received"],
-  received: ["processing"],
-  processing: ["shipped"],
-  shipped: ["delivered"],
-  delivered: [],
-  cancelled: [],
-}
-
-/**
- * Returns available next statuses for manual seller transitions.
- */
-export function getNextStatusOptions(currentStatus: OrderItemStatus): OrderItemStatus[] {
-  return ORDER_STATUS_TRANSITIONS[currentStatus] ?? []
-}
-
 export const SHIPPING_CARRIER_VALUES = [
   "speedy",
   "econt",

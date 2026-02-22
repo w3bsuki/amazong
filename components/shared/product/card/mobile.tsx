@@ -153,7 +153,7 @@ export function MobileProductCard({
         </>
       }
     >
-      <CardContent className="flex flex-col gap-1 p-2 pt-2">
+      <CardContent className="flex flex-col gap-1.5 p-2">
         {rootCategoryLabel && (
           <MarketplaceBadge
             data-slot="category"
@@ -188,7 +188,7 @@ export function MobileProductCard({
                 </span>
               )}
             </span>
-            <span className="min-w-0 flex-1 truncate text-xs font-medium text-foreground">{sellerNameLabel}</span>
+            <span className="min-w-0 flex-1 truncate text-2xs font-medium text-foreground">{sellerNameLabel}</span>
           </div>
         )}
 

@@ -271,7 +271,7 @@ export function MobileSearchOverlay({
                   <button
                     type="button"
                     onClick={handleClearInput}
-                    className="absolute right-2 top-1/2 flex size-touch-xs -translate-y-1/2 items-center justify-center rounded-full bg-muted text-foreground transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active"
+                    className="absolute right-2 top-1/2 flex size-(--control-compact) -translate-y-1/2 items-center justify-center rounded-full bg-muted text-foreground transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active"
                     aria-label={tSearch("clear")}
                     data-vaul-no-drag
                   >

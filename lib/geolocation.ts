@@ -8,7 +8,7 @@
  */
 
 // Country code to display name mapping
-export const COUNTRY_NAMES: Record<string, string> = {
+const COUNTRY_NAMES: Record<string, string> = {
     US: "United States",
     GB: "United Kingdom",
     CA: "Canada",
@@ -52,7 +52,7 @@ export const COUNTRY_NAMES: Record<string, string> = {
 }
 
 // Bulgarian names for countries
-export const COUNTRY_NAMES_BG: Record<string, string> = {
+const COUNTRY_NAMES_BG: Record<string, string> = {
     US: "САЩ",
     GB: "Великобритания",
     CA: "Канада",
@@ -95,45 +95,6 @@ export const COUNTRY_NAMES_BG: Record<string, string> = {
     NO: "Норвегия",
 }
 
-// Shipping zone definitions
-export const SHIPPING_ZONES = {
-    BG: {
-        code: 'BG',
-        name: 'Bulgaria Only',
-        name_bg: 'Само България',
-        countries: ['BG'],
-    },
-    EU: {
-        code: 'EU',
-        name: 'Europe',
-        name_bg: 'Европа',
-        countries: [
-            'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 
-            'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 
-            'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB', 'CH', 'NO'
-        ],
-    },
-    WW: {
-        code: 'WW',
-        name: 'Worldwide',
-        name_bg: 'Целият свят',
-        countries: [], // Empty means all countries
-    },
-} as const
-
-export type ShippingZoneCode = keyof typeof SHIPPING_ZONES
-
-// Map country codes to their shipping zones (what zone are they IN)
-export const COUNTRY_TO_ZONE: Record<string, ShippingZoneCode> = {
-    BG: 'BG',
-    // EU countries
-    AT: 'EU', BE: 'EU', HR: 'EU', CY: 'EU', CZ: 'EU', DK: 'EU', 
-    EE: 'EU', FI: 'EU', FR: 'EU', DE: 'EU', GR: 'EU', HU: 'EU', 
-    IE: 'EU', IT: 'EU', LV: 'EU', LT: 'EU', LU: 'EU', MT: 'EU', 
-    NL: 'EU', PL: 'EU', PT: 'EU', RO: 'EU', SK: 'EU', SI: 'EU', 
-    ES: 'EU', SE: 'EU', GB: 'EU', CH: 'EU', NO: 'EU',
-}
-
 /**
  * Get localized country name
  */
@@ -145,32 +106,3 @@ export function getCountryName(code: string, locale: string = 'en'): string {
     return COUNTRY_NAMES[upperCode] || code
 }
 
-/**
- * Get the shipping zone for a country
- * @returns The zone code (BG, EU, or WW)
- */
-export function getZoneForCountry(countryCode: string): ShippingZoneCode {
-    return COUNTRY_TO_ZONE[countryCode.toUpperCase()] || 'WW'
-}
-
-/**
- * Get compatible shipping zones for filtering products
- * 
- * For a user in Bulgaria: show BG, EU, and WW products
- * For a user in Germany: show EU and WW products  
- * For a user in USA: show only WW products
- */
-export function getCompatibleZones(userCountryCode: string): ShippingZoneCode[] {
-    const userZone = getZoneForCountry(userCountryCode)
-    
-    if (userZone === 'BG') {
-        return ['BG', 'EU', 'WW'] // Bulgaria sees all products
-    }
-    
-    if (userZone === 'EU') {
-        return ['EU', 'WW'] // EU sees EU and Worldwide products
-    }
-     
-     return ['WW'] // Rest of world sees only Worldwide products
- }
- 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { getCategoryColor, resolveCategoryTone } from '@/lib/category-colors'
+import { getCategoryColor, resolveCategoryTone } from "@/lib/data/categories/colors"
 
 describe('resolveCategoryTone', () => {
   test('maps root meta slugs to all tone', () => {

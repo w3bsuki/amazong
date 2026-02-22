@@ -13,7 +13,7 @@ import { DrawerShell } from "@/components/shared/drawer-shell"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
 import { useHeaderOptional } from "@/components/providers/header-context"
-import { getCategoryName } from "@/lib/category-display"
+import { getCategoryName } from "@/lib/data/categories/display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { getCategoryIcon } from "@/components/shared/category-icons"
 import {
@@ -23,7 +23,7 @@ import {
 import { ArrowLeft, ChevronRight as CaretRight, Search as MagnifyingGlass, Star, X } from "lucide-react"
 
 import { useTranslations } from "next-intl"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
 
 // =============================================================================
 // Types

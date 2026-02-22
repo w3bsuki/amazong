@@ -92,11 +92,24 @@ refactor/          → Just domain 6 (blocked) + CURRENT.md
 
 | What | Status |
 |------|--------|
-| **Phase** | Orchestrator system live. Docs cleaned up. First full audit pending. |
-| **TASKS.md** | Restructured as single task queue |
+| **Phase** | Mobile UX revamp (phases 0-9) SHIPPED. Code cleanup SHIPPED. Polish pass in progress. |
+| **Mobile revamp** | Phases 0-7 verified green. Phases 8-9 (checkout + polish) executed. SmartRail, DrawerShell, VisualDrawerSurface, MobileStepProgress — all live. 3-header model (homepage, contextual, product). |
+| **Code cleanup** | Dead files deleted (7/9 — 2 on do-not-touch list). Category consolidation done (compat shims). Test `any` types cleaned. Unused deps NOT yet verified (knip crashed). |
+| **UI polish** | `docs/MOBILE-POLISH-2026.md` created — 11 sections of spacing/gap/token fixes. Execution pending or in-progress by Opus agent. |
 | **Launch blockers** | 4 open (Stripe idempotency, refund flow, env separation, password protection) |
-| **Refactor** | Domains 1-5, 7 done. Domain 6 blocked (auth/payment sensitive). |
-| **Next** | Run full mobile + desktop Playwright audit of localhost:3000 |
+| **Broken areas** | Search, sell flow, account settings — flagged in TASKS.md, unresolved |
+| **Dead code remaining** | `category-pill-rail.tsx` (dead, was on do-not-touch list). `home-browse-options-sheet.tsx` already deleted. |
+| **Next** | Wait for UI polish agent to finish → visual audit on localhost:3000 → next Codex prompt |
+
+## Recent Session Log (2026-02-21)
+
+- Audited mobile revamp phases 0-7: ALL PASS (typecheck, lint, styles:gate, test:unit)
+- Created `docs/MOBILE-POLISH-2026.md` — 11 sections of mechanical spacing/gap fixes
+- Created `docs/CODE-CLEANUP-2026.md` — 6 sections of dead code/consolidation work
+- Ran parallel agents: Terminal 1 (UI polish), Terminal 2 (code cleanup)
+- Both agents completed. Gates pass. 252 files changed across both workstreams.
+- Codex went beyond scope on cleanup — also did doc restructuring, feature work, search overhaul
+- Unused deps (knip Section 3) incomplete — knip crashed on devDeps report
 
 ---
 

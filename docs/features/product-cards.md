@@ -20,7 +20,7 @@ mobile grid, desktop grid, mini (compact), list view, and dropdown preview.
 ## How it works
 - Cards are Server Components by default (data passed as props)
 - Each variant has its own file but shares types from `types.ts`
-- Price formatting uses `lib/format-price.ts` and `lib/currency.ts`
+- Price formatting uses `lib/price.ts`
 - Images use `normalize-image-url.ts` for Supabase Storage URLs
 - Quick view trigger opens drawer (mobile) or dialog (desktop)
 
@@ -34,7 +34,7 @@ mobile grid, desktop grid, mini (compact), list view, and dropdown preview.
 ## Dependencies
 - `components/shared/product/quick-view/` for quick view integration
 - Wishlist functionality from `app/actions/` + hooks
-- Price formatting from `lib/format-price.ts`
+- Price formatting from `lib/price.ts`
 
 ## Last modified
 - 2026-02-16: Documented during docs system creation

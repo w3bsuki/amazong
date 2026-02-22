@@ -188,11 +188,14 @@ export async function requestOrderCancellation(
 
     try {
       const admin = createAdminClient()
+      const cancellationBody = reason
+        ? `A buyer has cancelled their order: ${reason}`
+        : "A buyer has cancelled their order"
       const { error: notifyError } = await admin.from("notifications").insert({
         user_id: orderItem.seller_id,
         type: "order_status",
         title: "Order Cancellation Request",
-        body: `A buyer has cancelled their order${reason ? `: ${reason}` : ""}`,
+        body: cancellationBody,
         data: {
           order_item_id: parsedOrderItemId.data,
           order_id: orderItem.order.id,

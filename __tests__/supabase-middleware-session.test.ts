@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest'
+import type { NextRequest } from "next/server"
 
 import { updateSession } from '@/lib/supabase/middleware'
 
@@ -47,7 +48,7 @@ describe('supabase middleware updateSession', () => {
         headers: new Headers(),
       }
 
-      const response = await updateSession(request as any)
+      const response = await updateSession(request as unknown as NextRequest)
       const location = response.headers.get('location')
 
       expect(response.status).toBeGreaterThanOrEqual(300)

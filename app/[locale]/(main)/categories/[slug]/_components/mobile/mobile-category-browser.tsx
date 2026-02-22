@@ -1,5 +1,5 @@
 import { useLocale } from "next-intl"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { MobileCategoryBrowserContextual } from "./mobile-category-browser-contextual"

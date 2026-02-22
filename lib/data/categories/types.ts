@@ -2,6 +2,21 @@ import type { AttributeType, CategoryAttribute } from "@/lib/types/categories"
 
 export type { AttributeType, CategoryAttribute }
 
+export type CategoryDisplay = {
+  id: string
+  name: string
+  name_bg: string | null
+  slug: string
+  image_url?: string | null
+  icon?: string | null
+}
+
+export type CategoryTreeNode = CategoryDisplay & {
+  parent_id?: string | null
+  display_order?: number | null
+  children?: CategoryTreeNode[]
+}
+
 export interface Category {
   id: string
   name: string

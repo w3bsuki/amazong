@@ -22,12 +22,12 @@ Desktop has a sidebar filter panel; mobile uses a bottom sheet drawer for filter
 ## Conventions
 - Filters always reflect URL state (single source of truth)
 - No client-side data fetching for initial results (server-rendered)
-- Price range uses `lib/format-price.ts` for display
-- Category tree from `lib/data/` cached fetchers
+- Price range uses `lib/price.ts` for display
+- Category tree from `lib/data/categories/` cached fetchers
 
 ## Dependencies
 - Product card components (`components/shared/product/card/`)
-- Category tree data (`lib/data/`, `lib/category-tree.ts`)
+- Category tree data (`lib/data/categories/`)
 - URL utilities (`lib/url-utils.ts`)
 
 ## Last modified

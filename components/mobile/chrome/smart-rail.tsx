@@ -77,7 +77,7 @@ export function SmartRail({
     <nav
       aria-label={ariaLabel}
       className={cn(
-        "bg-background border-b border-border-subtle",
+        "bg-background border-b border-border-subtle py-2",
         sticky && "sticky z-30",
         className,
       )}
@@ -85,7 +85,7 @@ export function SmartRail({
       {...(testId ? { "data-testid": testId } : {})}
     >
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex w-max min-w-full items-center gap-1.5 px-inset">
+        <div className="flex w-max min-w-full items-center gap-2 px-inset">
           {leadingAction && (
             <>
               {leadingAction.href ? (

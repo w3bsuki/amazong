@@ -7,6 +7,13 @@ import { getShippingRegion } from '@/lib/shipping';
 // Create the i18n routing handler
 const handleI18nRouting = createMiddleware(routing);
 
+function normalizeCountry(code: string) {
+  const upper = code.toUpperCase();
+  if (upper === 'UK') return 'GB';
+  if (upper === 'WW') return 'BG';
+  return upper;
+}
+
 /**
  * Next.js 16 Proxy (renamed from middleware)
  * Handles i18n routing, geo-detection, and session management
@@ -33,7 +40,7 @@ export default async function proxy(request: NextRequest) {
   overrideList.add('x-pathname');
   response.headers.set(
     'x-middleware-override-headers',
-    Array.from(overrideList).join(',')
+    [...overrideList].join(',')
   );
   response.headers.set('x-middleware-request-x-pathname', request.nextUrl.pathname);
 
@@ -47,14 +54,6 @@ export default async function proxy(request: NextRequest) {
     request.headers.get('cf-ipcountry') ||
     request.headers.get('x-country-code') ||
     'BG'; // Default to Bulgaria for local development
-
-  // Normalize legacy/alternate values
-  const normalizeCountry = (code: string) => {
-    const upper = code.toUpperCase();
-    if (upper === 'UK') return 'GB';
-    if (upper === 'WW') return 'BG';
-    return upper;
-  };
 
   const countryCode = normalizeCountry(existingCountryRaw || detectedCountryRaw);
   const shippingRegion = existingZone || getShippingRegion(countryCode);

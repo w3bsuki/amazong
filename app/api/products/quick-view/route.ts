@@ -32,8 +32,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "not_found" }, { status: 404 })
     }
 
-    const imagesFromProductImages = (product.product_images ?? [])
-      .slice()
+    const imagesFromProductImages = [...(product.product_images ?? [])]
       .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
       .map((img) => img.image_url)
       .filter((url): url is string => typeof url === "string" && url.length > 0)

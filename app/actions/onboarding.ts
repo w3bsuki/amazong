@@ -68,8 +68,7 @@ export async function completePostSignupOnboarding(
     location,
     socialLinks,
     avatarType,
-  avatarVariant,
-  avatarPalette,
+    avatarPalette,
   } = parsed.data
 
   // Verify the user is authenticated and matches

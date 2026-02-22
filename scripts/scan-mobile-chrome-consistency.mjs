@@ -7,7 +7,6 @@ const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1
 const targetFiles = [
   "components/ui/mobile-bottom-nav.tsx",
   "components/mobile/chrome/mobile-control-recipes.ts",
-  "components/mobile/category-nav/category-pill-rail.tsx",
   "components/mobile/category-nav/filter-sort-bar.tsx",
   "components/layout/header/mobile/homepage-header.tsx",
   "components/layout/header/mobile/contextual-header.tsx",
@@ -16,7 +15,6 @@ const targetFiles = [
   "components/layout/header/mobile/minimal-header.tsx",
   "app/[locale]/_components/mobile-tab-bar.tsx",
   "app/[locale]/(main)/_lib/mobile-rail-class-recipes.ts",
-  "app/[locale]/(main)/search/_components/mobile-browse-mode-switch.tsx",
   "app/[locale]/(main)/_components/filters/mobile-filter-controls.tsx",
   "app/[locale]/(main)/search/_components/mobile-seller-filter-controls.tsx",
   "app/[locale]/(account)/account/_components/account-header.tsx",
@@ -73,9 +71,7 @@ const checks = [
     id: "rail-height-hardcoded",
     files: [
       "components/mobile/chrome/mobile-control-recipes.ts",
-      "components/mobile/category-nav/category-pill-rail.tsx",
       "components/mobile/category-nav/filter-sort-bar.tsx",
-      "app/[locale]/(main)/search/_components/mobile-browse-mode-switch.tsx",
       "app/[locale]/(main)/_components/filters/mobile-filter-controls.tsx",
       "app/[locale]/(main)/search/_components/mobile-seller-filter-controls.tsx",
     ],

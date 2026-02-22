@@ -1,6 +1,6 @@
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
-import { getCategoryName } from "@/lib/category-display"
+import { getCategoryName } from "@/lib/data/categories/display"
 import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
 
 import type { ProductCardData } from "./types"

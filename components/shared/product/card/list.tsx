@@ -1,17 +1,15 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Card } from "@/components/ui/card"
 import { getConditionBadgeVariant, getConditionKey } from "@/components/shared/product/_lib/condition"
 import { computeBadgeSpecsClient, shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
-import { getCategoryName } from "@/lib/category-display"
+import { getCategoryName } from "@/lib/data/categories/display"
 import { ProductCardActions } from "./actions"
 import { ProductCardPrice } from "./price"
 import { FreshnessIndicator } from "../freshness-indicator"
 import { VerifiedSellerBadge } from "../verified-seller-badge"
-import { MapPin, ShieldCheck, Truck } from "lucide-react";
+import { MapPin, ShieldCheck, Truck } from "lucide-react"
 
 import Image from "next/image"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"

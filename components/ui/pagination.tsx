@@ -1,10 +1,6 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  MoreHorizontalIcon,
-} from "lucide-react"
+import { MoreHorizontalIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants, type Button } from "@/components/ui/button"
@@ -69,73 +65,6 @@ function PaginationLink({
   )
 }
 
-function PaginationPrevious({
-  className,
-  label,
-  ariaLabel,
-  ...props
-}: React.ComponentProps<typeof PaginationLink> & {
-  label: string
-  ariaLabel?: string
-}) {
-  return (
-    <PaginationNav
-      direction="previous"
-      className={className}
-      label={label}
-      {...(ariaLabel ? { ariaLabel } : {})}
-      {...props}
-    />
-  )
-}
-
-function PaginationNext({
-  className,
-  label,
-  ariaLabel,
-  ...props
-}: React.ComponentProps<typeof PaginationLink> & {
-  label: string
-  ariaLabel?: string
-}) {
-  return (
-    <PaginationNav
-      direction="next"
-      className={className}
-      label={label}
-      {...(ariaLabel ? { ariaLabel } : {})}
-      {...props}
-    />
-  )
-}
-
-function PaginationNav({
-  direction,
-  className,
-  label,
-  ariaLabel,
-  ...props
-}: React.ComponentProps<typeof PaginationLink> & {
-  direction: "previous" | "next"
-  label: string
-  ariaLabel?: string
-}) {
-  const isPrevious = direction === "previous"
-
-  return (
-    <PaginationLink
-      aria-label={ariaLabel ?? label}
-      size="default"
-      className={cn("gap-1 px-2.5", isPrevious ? "sm:pl-2.5" : "sm:pr-2.5", className)}
-      {...props}
-    >
-      {isPrevious ? <ChevronLeftIcon /> : null}
-      <span className="hidden sm:block">{label}</span>
-      {isPrevious ? null : <ChevronRightIcon />}
-    </PaginationLink>
-  )
-}
-
 function PaginationEllipsis({
   className,
   label,
@@ -161,7 +90,5 @@ export {
   PaginationContent,
   PaginationLink,
   PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
   PaginationEllipsis,
 }

@@ -201,7 +201,7 @@ function extractTags(message: string): string[] {
     .filter((w) => !/^\\d/.test(w));
 
   // de-dupe
-  return Array.from(new Set(words)).slice(0, 6);
+  return [...new Set(words)].slice(0, 6);
 }
 
 serve(async (req) => {
@@ -215,7 +215,7 @@ serve(async (req) => {
     let body: unknown = {};
     try {
       body = await req.json();
-    } catch (e) {
+    } catch {
       return new Response(
         JSON.stringify({
           error: "invalid_json",
@@ -565,7 +565,7 @@ Guidance:
     return new Response(JSON.stringify(parsedResponse), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (error) {
+  } catch {
     console.error("Error in ai-shopping-assistant");
     return new Response(
       JSON.stringify({

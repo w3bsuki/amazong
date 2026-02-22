@@ -202,7 +202,7 @@ export function MobileBottomBar({
         className
       )}
     >
-      <div className="px-3 py-2.5 max-w-lg mx-auto">
+      <div className="px-inset py-2.5 max-w-lg mx-auto">
         <div className="flex gap-2">
           {renderButtons()}
         </div>

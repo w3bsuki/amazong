@@ -28,7 +28,7 @@ export function MobileHomeFeed({
 }: MobileHomeFeedProps) {
   return (
     <>
-      <section data-testid="home-v4-feed" className="pt-1">
+      <section data-testid="home-v4-feed" className="pt-2">
         {products.length > 0 ? (
           <>
             <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-inset pb-1">
@@ -39,7 +39,7 @@ export function MobileHomeFeed({
             <div ref={loadMoreRef} data-testid="home-v4-load-more" className="h-10" />
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center px-6 py-14">
+          <div className="flex flex-col items-center justify-center px-inset py-14">
             <p className="text-sm text-muted-foreground">{tMobile("feed.empty.all")}</p>
             <button
               type="button"
@@ -53,7 +53,7 @@ export function MobileHomeFeed({
       </section>
 
       {isLoading && (
-        <div className="px-3 pb-2">
+        <div className="px-inset pb-2">
           <div className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
             <p className="text-xs text-muted-foreground">{tMobile("feed.loading")}</p>
           </div>
@@ -61,7 +61,7 @@ export function MobileHomeFeed({
       )}
 
       {error && (
-        <div className="px-3 pb-2">
+        <div className="px-inset pb-2">
           <div className="flex items-center justify-between gap-2 rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
             <p className="text-xs text-muted-foreground">{tMobile("feed.error")}</p>
             <button

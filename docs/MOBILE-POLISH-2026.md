@@ -113,9 +113,7 @@
 **Goal:** All drawers using DrawerShell should have consistent option list spacing.
 
 ### 5a. Home browse options sheet
-**File:** `app/[locale]/(main)/_components/mobile/home-browse-options-sheet.tsx`
-
-- Already uses `space-y-1.5` for options. Good — no change.
+**Status:** Removed (unused component)
 
 ### 5b. Home city picker sheet
 **File:** `app/[locale]/(main)/_components/mobile/home-city-picker-sheet.tsx`

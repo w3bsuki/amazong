@@ -2,25 +2,29 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { ChevronLeft, SlidersHorizontal } from "lucide-react"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/routing"
 import { useHeader } from "@/components/providers/header-context"
 import { useInstantCategoryBrowse } from "./use-instant-category-browse"
-import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
+import { getCategoryName, getCategorySlugKey } from "@/lib/data/categories/display"
 import type { SmartRailAction, SmartRailPill } from "@/components/mobile/chrome/smart-rail"
 import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
 import { MobileCategoryBrowserContextualView } from "./mobile-category-browser-contextual-view"
-import type { SectionPathSegment } from "@/components/mobile/category-nav/category-drilldown-rail"
 import {
   toScopedCategoryList,
   type ScopeCategory,
 } from "./mobile-category-browser-contextual-utils"
 
 type Category = CategoryTreeNode
+
+interface SectionPathSegment {
+  slug: string
+  label: string
+}
 
 interface MobileCategoryBrowserContextualProps {
   locale: string

@@ -9,6 +9,8 @@ import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interru
 import { logger } from "@/lib/logger"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 
+const noStoreHeaders = { "Cache-Control": "private, no-store" } as const
+
 const AssistantChatRequestSchema = z.object({
   messages: z.array(z.any()).max(50),
   locale: z.enum(["en", "bg"]).optional(),
@@ -55,14 +57,14 @@ export async function POST(request: NextRequest) {
   if (!user) {
     return json(
       { error: { code: "UNAUTHORIZED" } },
-      { status: 401, headers: { "Cache-Control": "private, no-store" } },
+      { status: 401, headers: noStoreHeaders },
     )
   }
 
   if (!isAiAssistantEnabled()) {
     return json(
       { error: { code: "AI_DISABLED" } },
-      { status: 503, headers: { "Cache-Control": "private, no-store" } },
+      { status: 503, headers: noStoreHeaders },
     )
   }
 
@@ -72,7 +74,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return json(
         { error: { code: "BAD_REQUEST" } },
-        { status: 400, headers: { "Cache-Control": "private, no-store" } },
+        { status: 400, headers: noStoreHeaders },
       )
     }
 
@@ -96,7 +98,6 @@ export async function POST(request: NextRequest) {
 
     // Try primary model first, fallback to Groq on rate limit
     let model = getAiChatModel()
-    let usedFallback = false
 
     try {
       const result = streamText({
@@ -107,15 +108,12 @@ export async function POST(request: NextRequest) {
       })
 
       return result.toUIMessageStreamResponse({
-        headers: {
-          "Cache-Control": "private, no-store",
-        },
+        headers: noStoreHeaders,
       })
     } catch (primaryError) {
       // If rate limited and fallback is available, try fallback
       if (isRateLimitError(primaryError) && getGroqApiKey()) {
         logger.warn("[AI Assistant] Primary model rate limited, trying fallback")
-        usedFallback = true
         model = getAiFallbackModel()
 
         const result = streamText({
@@ -127,7 +125,7 @@ export async function POST(request: NextRequest) {
 
         return result.toUIMessageStreamResponse({
           headers: {
-            "Cache-Control": "private, no-store",
+            ...noStoreHeaders,
             "X-AI-Fallback": "true",
           },
         })
@@ -140,7 +138,7 @@ export async function POST(request: NextRequest) {
     logger.error("[AI Assistant] chat route error", error)
     return json(
       { error: { code: "INTERNAL" } },
-      { status: 500, headers: { "Cache-Control": "private, no-store" } },
+      { status: 500, headers: noStoreHeaders },
     )
   }
 }
@@ -152,7 +150,7 @@ export async function GET() {
       status: 405,
       headers: {
         Allow: "POST",
-        "Cache-Control": "private, no-store",
+        ...noStoreHeaders,
       },
     },
   )

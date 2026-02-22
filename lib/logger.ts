@@ -68,10 +68,37 @@ export function logEvent(level: LogLevel, event: string, meta?: LogMeta) {
 }
 
 export function logError(event: string, err: unknown, meta?: LogMeta) {
-  const errorPayload: Record<string, JsonValue> =
-    err instanceof Error
-      ? { name: err.name, message: err.message }
-      : { name: typeof err, message: String(err) }
+  let errorPayload: Record<string, JsonValue>
+
+  if (err instanceof Error) {
+    errorPayload = { name: err.name, message: err.message }
+  } else if (isPlainObject(err)) {
+    const record = err as Record<string, unknown>
+
+    const message =
+      typeof record.message === "string"
+        ? record.message
+        : typeof record.error === "string"
+          ? record.error
+          : "[object Object]"
+
+    const code = typeof record.code === "string" || typeof record.code === "number" ? String(record.code) : undefined
+    const status = typeof record.status === "number" ? record.status : undefined
+    const details = typeof record.details === "string" ? record.details : undefined
+    const hint = typeof record.hint === "string" ? record.hint : undefined
+
+    errorPayload = {
+      name: "object",
+      message,
+      ...(code ? { code } : {}),
+      ...(status ? { status } : {}),
+      ...(details ? { details } : {}),
+      ...(hint ? { hint } : {}),
+      data: toSafeJson(err),
+    }
+  } else {
+    errorPayload = { name: typeof err, message: String(err) }
+  }
 
   emit("error", {
     ts: new Date().toISOString(),

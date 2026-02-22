@@ -3,7 +3,7 @@
 // Centralized functions for generating SEO-friendly product URLs
 // =============================================================================
 
-export interface ProductUrlParams {
+interface ProductUrlParams {
   id?: string
   slug?: string | null
   username?: string | null
@@ -45,42 +45,4 @@ export function getProductUrl(product: ProductUrlParams): string {
 
   // If we can't build any safe URL, fail closed.
   return '#'
-}
-
-/**
- * Generates an absolute product URL with locale prefix.
- * 
- * @param product - Product data
- * @param locale - Locale code (e.g., 'en', 'bg')
- * @returns Full URL path with locale (e.g., '/en/john-store/blue-widget')
- */
-export function getProductUrlWithLocale(product: ProductUrlParams, locale: string): string {
-  return `/${locale}${getProductUrl(product)}`
-}
-
-/**
- * Generates an absolute product URL. Falls back to locale-prefixed relative URL when base is missing.
- */
-export function getAbsoluteProductUrl(
-  product: ProductUrlParams,
-  locale: string,
-  baseUrl?: string,
-): string {
-  const path = getProductUrlWithLocale(product, locale)
-  if (!baseUrl) return path
-  return `${baseUrl.replace(/\/$/, '')}${path}`
-}
-
-/**
- * Generates seller profile URL.
- */
-export function getSellerUrl(username: string): string {
-  return `/${username}`
-}
-
-/**
- * Generates locale-prefixed seller profile URL.
- */
-export function getSellerUrlWithLocale(username: string, locale: string): string {
-  return `/${locale}${getSellerUrl(username)}`
 }

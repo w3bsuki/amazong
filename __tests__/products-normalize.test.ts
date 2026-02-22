@@ -1,17 +1,5 @@
-import { beforeAll, describe, expect, test, vi } from "vitest"
-
-// `lib/data/products.ts` is a server-only module; for these pure helpers we can safely
-// mock Next.js' guard in unit tests.
-vi.mock("server-only", () => ({}))
-
-let normalizeProductRow: typeof import("@/lib/data/products").normalizeProductRow
-let toUI: typeof import("@/lib/data/products").toUI
-
-beforeAll(async () => {
-  const mod = await import("@/lib/data/products")
-  normalizeProductRow = mod.normalizeProductRow
-  toUI = mod.toUI
-})
+import { describe, expect, test } from "vitest"
+import { normalizeProductRow, toUI } from "@/lib/data/products/normalize"
 
 describe("normalizeProductRow", () => {
   test("preserves free_shipping so UI mapping stays consistent", () => {

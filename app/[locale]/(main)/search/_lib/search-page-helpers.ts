@@ -71,21 +71,6 @@ export function buildModeHref(params: URLSearchParams, mode: BrowseMode): string
   return queryString ? `/search?${queryString}` : "/search"
 }
 
-export function buildCategoryHref(
-  params: URLSearchParams,
-  mode: BrowseMode,
-  categorySlug: string | null
-): string {
-  const next = normalizeModeParams(params, mode)
-  if (categorySlug) {
-    next.set("category", categorySlug)
-  } else {
-    next.delete("category")
-  }
-  const queryString = next.toString()
-  return queryString ? `/search?${queryString}` : "/search"
-}
-
 export function extractAttributeFilters(
   searchParams: Record<string, string | string[] | undefined>
 ): Record<string, string | string[]> {

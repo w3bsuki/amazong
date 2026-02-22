@@ -282,12 +282,12 @@ function SellFormContent({
 
             {/* Product preview card - cleaner */}
             {firstImageUrl && (
-              <div className="bg-surface-subtle rounded-md p-4 border border-border-subtle">
+              <div className="bg-surface-subtle rounded-xl border border-border-subtle p-4">
                 <div className="flex items-center gap-4">
                   <img 
                     src={firstImageUrl} 
                     alt={productTitle}
-                    className="w-20 h-20 rounded-md object-cover"
+                    className="w-20 h-20 rounded-xl object-cover"
                   />
                   <div className="flex-1 text-left min-w-0">
                     <p className="font-bold text-base truncate">{productTitle}</p>
@@ -301,7 +301,7 @@ function SellFormContent({
 
             {/* Action buttons - cleaner, more professional */}
             <div className="space-y-4 pt-4">
-              <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-interactive-hover text-base font-semibold rounded-md">
+              <Button asChild className="w-full h-(--control-primary) gap-2 bg-primary hover:bg-interactive-hover text-base font-semibold rounded-md">
                 <Link href={createdProductHref || "/"}>
                   <Eye className="size-5" />
                   {tSell("success.viewListing")}
@@ -315,7 +315,7 @@ function SellFormContent({
                     product={{ id: productId, title: productTitle, is_boosted: false, boost_expires_at: null }}
                     locale={locale}
                     trigger={
-                      <Button variant="outline" className="w-full h-12 gap-2 rounded-md font-semibold">
+                      <Button variant="outline" className="w-full h-(--control-primary) gap-2 rounded-md font-semibold">
                         <Lightning className="size-5 text-primary" />
                         {tBoost("title")}
                       </Button>
@@ -328,7 +328,7 @@ function SellFormContent({
               <div className="grid grid-cols-2 gap-4">
                 <Button
                   variant="outline"
-                  className="h-12 gap-2 rounded-md font-medium"
+                  className="h-(--control-primary) gap-2 rounded-md font-medium"
                   onClick={() => {
                     const shareLocale = locale === "bg" ? "bg" : "en";
                     if (navigator.share) {
@@ -354,7 +354,7 @@ function SellFormContent({
 
                 <Button
                   variant="outline"
-                  className="h-12 gap-2 rounded-md font-medium"
+                  className="h-(--control-primary) gap-2 rounded-md font-medium"
                   onClick={handleNewListing}
                 >
                   <Plus className="size-5" />
@@ -365,7 +365,7 @@ function SellFormContent({
               <Button
                 variant="ghost"
                 asChild
-                className="w-full h-12 gap-2 text-muted-foreground hover:text-foreground rounded-md"
+                className="w-full h-(--control-primary) gap-2 text-muted-foreground hover:text-foreground rounded-md"
               >
                 <Link href="/">
                   <House className="size-5" />

@@ -3,13 +3,13 @@
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { EmptyStateCTA } from "../../_components/empty-state-cta"
-import { getCategoryName } from "@/lib/category-display"
+import { getCategoryName } from "@/lib/data/categories/display"
 import { FeedToolbar } from "@/components/desktop/feed-toolbar"
 import { CompactCategorySidebar } from "./desktop/category-sidebar"
 import { FiltersSidebar } from "./desktop/filters-sidebar"
 import { ProductGridSkeleton } from "./desktop/product-grid-skeleton"
 import { PromotedSection } from "./desktop/promoted-section"
-import { DesktopShell, DesktopShellSkeleton } from "./layout/desktop-shell"
+import { DesktopShell } from "./layout/desktop-shell"
 import { ProductGrid } from "@/components/grid/product-grid"
 import { SubcategoryCircles } from "./category/subcategory-circles"
 import { useDesktopHomeController } from "./desktop/use-desktop-home-controller"
@@ -215,8 +215,4 @@ export function DesktopHome({
       </div>
     </DesktopShell>
   )
-}
-
-export function DesktopHomeSkeleton() {
-  return <DesktopShellSkeleton showSidebar sidebarItems={15} contentRows={16} />
 }

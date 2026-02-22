@@ -43,7 +43,7 @@ export function ChatInterfaceHeader({
   isBlocking: boolean
 }) {
   return (
-    <div className="shrink-0 border-b border-border-subtle bg-background px-inset py-2 pt-safe-max-xs">
+    <div className="shrink-0 border-b border-border-subtle bg-background px-inset py-2 pt-safe-max-sm">
       <div className="flex min-h-touch-lg items-center gap-2">
         {onBack && (
           <button

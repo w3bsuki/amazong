@@ -3,8 +3,8 @@
 import * as React from "react"
 import { useState, useEffect, useMemo } from "react"
 import { cn } from "@/lib/utils"
-import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryName } from "@/lib/category-display"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
+import { getCategoryName } from "@/lib/data/categories/display"
 import { getCategoryIcon } from "../category/category-icons"
 import { ArrowLeft, ChevronDown as CaretDown, ChevronRight as CaretRight, ChevronUp as CaretUp, LayoutGrid as SquaresFour, X } from "lucide-react";
 

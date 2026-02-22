@@ -1,12 +1,13 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { ArrowLeft, SlidersHorizontal as FiltersIcon } from "lucide-react"
+import { ArrowLeft, ChevronRight, SlidersHorizontal as FiltersIcon } from "lucide-react"
+import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import type { UIProduct } from "@/lib/types/products"
 import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
-import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
+import { getCategoryName, getCategorySlugKey } from "@/lib/data/categories/display"
 import { useHeader } from "@/components/providers/header-context"
 import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
 import {
@@ -79,7 +80,6 @@ export function MobileHome({
     activeCategory,
     activeSubcategories,
     activeSubcategory,
-    activeL2Categories,
   } = useMobileHomeCategoryNav({
     categories,
     activeCategorySlug,
@@ -121,17 +121,6 @@ export function MobileHome({
     })
   }, [locale, tCategories])
 
-  const activeCategoryLabel = activeCategory ? getCategoryLabel(activeCategory) : null
-  const activeSubcategoryLabel = activeSubcategory ? getCategoryLabel(activeSubcategory) : null
-  const activeL2Category = activeL2Categories.find((category) => category.slug === activeL2Slug) ?? null
-  const activeL2Label = activeL2Category ? getCategoryLabel(activeL2Category) : null
-
-  const headerContextLabel = useMemo(() => {
-    return activeL2Label
-      ?? activeSubcategoryLabel
-      ?? activeCategoryLabel
-  }, [activeCategoryLabel, activeL2Label, activeSubcategoryLabel])
-
   const handlePrimaryTab = useCallback((slug: string | null) => {
     setActiveCategorySlug(slug)
     setActiveSubcategorySlug(null)
@@ -150,10 +139,9 @@ export function MobileHome({
         onCategorySelect: handleHeaderCategorySelect,
         onSearchOpen: () => setSearchOpen(true),
         categories,
-        ...(headerContextLabel ? { contextLabel: headerContextLabel } : {}),
       },
     })
-  }, [activeCategorySlug, categories, handleHeaderCategorySelect, headerContextLabel, setHeaderState])
+  }, [activeCategorySlug, categories, handleHeaderCategorySelect, setHeaderState])
 
   const handleScopeSelect = useCallback((nextScope: HomeDiscoveryScope) => {
     if (nextScope === "nearby" && !city) {
@@ -243,11 +231,11 @@ export function MobileHome({
 
     return [
       {
-        id: "view",
-        label: tV4("actions.view"),
+        id: "all",
+        label: tV4("actions.all"),
         active: activeSubcategorySlug === null,
         onSelect: () => handleSubcategoryPill(null),
-        testId: "home-v4-subcategory-view",
+        testId: "home-v4-subcategory-all",
       },
       ...activeSubcategories.map((subcategory) => ({
         id: subcategory.slug,
@@ -288,6 +276,22 @@ export function MobileHome({
           stickyTop="var(--offset-mobile-primary-rail)"
           testId="home-v4-smart-rail"
         />
+
+        {/* Section header — visible when a category is active */}
+        {activeCategorySlug && activeCategory && (
+          <div className="flex items-center justify-between px-inset pt-2.5 pb-1">
+            <h2 className="min-w-0 truncate text-sm font-semibold text-foreground">
+              {getCategoryLabel(activeSubcategory ?? activeCategory)}
+            </h2>
+            <Link
+              href={`/categories/${(activeSubcategory ?? activeCategory).slug}`}
+              className="inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-muted-foreground tap-transparent transition-colors duration-fast ease-smooth hover:text-foreground active:text-foreground"
+            >
+              {tV4("actions.seeAll")}
+              <ChevronRight size={14} aria-hidden="true" />
+            </Link>
+          </div>
+        )}
 
         <MobileHomeFeed
           products={products}

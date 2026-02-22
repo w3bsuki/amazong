@@ -38,7 +38,20 @@ export type CategoryTone =
 const categoryToneRules: Array<{ tone: Exclude<CategoryTone, "all">; keys: string[] }> = [
   {
     tone: "tech",
-    keys: ["electronic", "computer", "laptop", "phone", "tablet", "monitor", "desktop", "software", "smart-home", "camera", "audio", "tv"],
+    keys: [
+      "electronic",
+      "computer",
+      "laptop",
+      "phone",
+      "tablet",
+      "monitor",
+      "desktop",
+      "software",
+      "smart-home",
+      "camera",
+      "audio",
+      "tv",
+    ],
   },
   {
     tone: "fashion",
@@ -196,3 +209,4 @@ export function resolveCategoryTone(slug: string): CategoryTone {
 export function getCategoryColor(slug: string): CategoryColorScheme {
   return categoryColors[resolveCategoryTone(slug)]
 }
+

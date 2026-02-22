@@ -6,7 +6,7 @@ import { z } from "zod"
 
 function isProbablyJunkTitle(title: string): boolean {
   const trimmed = title.trim()
-  const compact = trimmed.replace(/\s+/g, "")
+  const compact = trimmed.replaceAll(/\s+/g, "")
 
   if (compact.length < 5) return true
   if (/^\d+$/.test(compact)) return true
@@ -193,8 +193,7 @@ export async function revalidateProductCaches(params: {
     tags.push(`products:type:${type}`)
   }
 
-  for (const tag of [...new Set(tags)]) {
+  for (const tag of new Set(tags)) {
     revalidateTag(tag, "max")
   }
 }
-

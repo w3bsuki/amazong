@@ -1,4 +1,25 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
+import type { NextRequest } from "next/server"
+
+type ProxyRequest = {
+  nextUrl: { pathname: string }
+  cookies: {
+    get: (name: string) => { value: string } | undefined
+  }
+  headers: {
+    get: (name: string) => string | null
+  }
+}
+
+type ProxyCookieSetEntry = { name: string; value: string; options: unknown }
+
+type ProxyResponse = {
+  headers: Headers
+  cookies: {
+    set: (name: string, value: string, options: unknown) => void
+  }
+  __cookiesSet: ProxyCookieSetEntry[]
+}
 
 const mocks = vi.hoisted(() => {
   return {
@@ -23,7 +44,7 @@ function makeRequest(input: {
   pathname: string
   cookies?: Record<string, string>
   headers?: Record<string, string>
-}) {
+}): ProxyRequest {
   const cookies = input.cookies ?? {}
   const headers = Object.fromEntries(
     Object.entries(input.headers ?? {}).map(([k, v]) => [k.toLowerCase(), v])
@@ -42,12 +63,12 @@ function makeRequest(input: {
         return headers[name.toLowerCase()] ?? null
       },
     },
-  } as any
+  }
 }
 
-function makeResponse() {
+function makeResponse(): ProxyResponse {
   const headers = new Headers()
-  const cookiesSet: Array<{ name: string; value: string; options: unknown }> = []
+  const cookiesSet: ProxyCookieSetEntry[] = []
 
   return {
     headers,
@@ -57,7 +78,7 @@ function makeResponse() {
       },
     },
     __cookiesSet: cookiesSet,
-  } as any
+  }
 }
 
 describe('proxy middleware', () => {
@@ -80,12 +101,12 @@ describe('proxy middleware', () => {
       headers: { 'x-vercel-ip-country': 'BG' },
     })
 
-    const res = await proxy(req)
+    const res = (await proxy(req as unknown as NextRequest)) as ProxyResponse
 
     expect(res.headers.get('x-middleware-request-x-pathname')).toBe('/bg')
     expect(res.headers.get('x-middleware-override-headers')).toContain('x-pathname')
 
-    const cookiesSet = (res as any).__cookiesSet as Array<{ name: string; value: string }>
+    const cookiesSet = res.__cookiesSet
     expect(cookiesSet.find((c) => c.name === 'user-country')?.value).toBe('BG')
     expect(cookiesSet.find((c) => c.name === 'user-zone')?.value).toBeTruthy()
 
@@ -105,8 +126,8 @@ describe('proxy middleware', () => {
       headers: { 'x-vercel-ip-country': 'UK' },
     })
 
-    const res = await proxy(req)
-    const cookiesSet = (res as any).__cookiesSet as Array<{ name: string; value: string }>
+    const res = (await proxy(req as unknown as NextRequest)) as ProxyResponse
+    const cookiesSet = res.__cookiesSet
     expect(cookiesSet.find((c) => c.name === 'user-country')?.value).toBe('GB')
   })
 
@@ -124,8 +145,8 @@ describe('proxy middleware', () => {
       headers: { 'x-vercel-ip-country': 'BG' },
     })
 
-    const res = await proxy(req)
-    const cookiesSet = (res as any).__cookiesSet as Array<{ name: string; value: string }>
+    const res = (await proxy(req as unknown as NextRequest)) as ProxyResponse
+    const cookiesSet = res.__cookiesSet
 
     expect(cookiesSet.find((c) => c.name === 'user-country')).toBeUndefined()
     expect(cookiesSet.find((c) => c.name === 'user-zone')).toBeUndefined()

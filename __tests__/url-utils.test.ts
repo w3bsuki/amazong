@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  getAbsoluteProductUrl,
   getProductUrl,
-  getProductUrlWithLocale,
-  getSellerUrl,
-  getSellerUrlWithLocale,
 } from '@/lib/url-utils'
 
 describe('lib/url-utils', () => {
@@ -27,18 +23,4 @@ describe('lib/url-utils', () => {
     expect(getProductUrl({})).toBe('#')
   })
 
-  it('adds locale prefix', () => {
-    expect(getProductUrlWithLocale({ id: '123', username: 'john' }, 'en')).toBe('/en/john/123')
-  })
-
-  it('builds absolute URL with baseUrl override', () => {
-    expect(getAbsoluteProductUrl({ id: '123', username: 'john' }, 'en', 'https://example.com')).toBe(
-      'https://example.com/en/john/123'
-    )
-  })
-
-  it('builds seller URLs', () => {
-    expect(getSellerUrl('john')).toBe('/john')
-    expect(getSellerUrlWithLocale('john', 'en')).toBe('/en/john')
-  })
 })

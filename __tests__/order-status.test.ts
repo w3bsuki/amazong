@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
   canSellerUpdateStatus,
-  getNextStatusOptions,
   getOrderStatusFromItems,
   SHIPPING_CARRIER_VALUES,
 } from '@/lib/order-status'
@@ -43,38 +42,6 @@ describe('lib/order-status', () => {
     it('returns false for terminal statuses', () => {
       expect(canSellerUpdateStatus('delivered')).toBe(false)
       expect(canSellerUpdateStatus('cancelled')).toBe(false)
-    })
-  })
-
-  describe('getNextStatusOptions', () => {
-    it('returns correct next options for pending', () => {
-      const options = getNextStatusOptions('pending')
-      expect(options).toContain('received')
-    })
-
-    it('returns correct next options for received', () => {
-      const options = getNextStatusOptions('received')
-      expect(options).toContain('processing')
-    })
-
-    it('returns correct next options for processing', () => {
-      const options = getNextStatusOptions('processing')
-      expect(options).toContain('shipped')
-    })
-
-    it('returns correct next options for shipped', () => {
-      const options = getNextStatusOptions('shipped')
-      expect(options).toContain('delivered')
-    })
-
-    it('returns empty array for delivered (no next status)', () => {
-      const options = getNextStatusOptions('delivered')
-      expect(options).toEqual([])
-    })
-
-    it('returns empty array for cancelled', () => {
-      const options = getNextStatusOptions('cancelled')
-      expect(options).toEqual([])
     })
   })
 

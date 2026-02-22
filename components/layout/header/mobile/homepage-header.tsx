@@ -1,8 +1,7 @@
 import { SidebarMenu } from "@/components/layout/sidebar/sidebar-menu"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
-import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
-import { ChevronDown, Search as MagnifyingGlass } from "lucide-react"
+import { Search as MagnifyingGlass } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
@@ -22,16 +21,13 @@ export function MobileHomepageHeader({
   user,
   userStats,
   onSearchOpen,
-  contextLabel,
 }: HomepageHeaderProps) {
   const tNav = useTranslations("Navigation")
-  const tV4 = useTranslations("Home.mobile.v4")
   const searchPlaceholder = tNav("searchPlaceholderShort")
-  const categoryDrawer = useCategoryDrawerOptional()
 
   return (
     <div className="bg-background pt-safe md:hidden">
-      <div className="flex h-(--control-default) items-center gap-0.5 px-0">
+      <div className="flex h-(--control-primary) items-center gap-0.5 border-b border-border-subtle px-2">
         <SidebarMenu user={user} {...(userStats && { userStats })} triggerClassName="-mr-2" />
         <Link href="/" className="shrink-0 rounded-sm tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
           <span className="text-xl font-extrabold tracking-tight text-foreground">treido<span className="text-primary">.</span></span>
@@ -45,20 +41,6 @@ export function MobileHomepageHeader({
             )}
           >
             <MagnifyingGlass size={16} className="shrink-0 text-foreground" aria-hidden="true" />
-
-            {contextLabel && (
-              <button
-                type="button"
-                onClick={() => categoryDrawer?.openRoot()}
-                className="inline-flex min-h-(--control-compact) items-center gap-1 rounded-full border border-border-subtle bg-background px-2.5 text-xs font-semibold text-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                aria-label={tV4("actions.openCategories")}
-                aria-haspopup="dialog"
-                data-testid="mobile-home-header-context-chip"
-              >
-                <span className="max-w-32 truncate">{contextLabel}</span>
-                <ChevronDown size={14} className="shrink-0 text-muted-foreground" aria-hidden="true" />
-              </button>
-            )}
 
             <button
               type="button"

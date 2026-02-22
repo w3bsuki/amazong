@@ -14,7 +14,7 @@ export const metadata = {
 }
 
 export default async function FollowingPage({ params }: FollowingPageProps) {
-  const { locale, t, supabase, user } = await requireAccountPageContext(params)
+  const { t, supabase, user } = await requireAccountPageContext(params)
 
   // Fetch followed sellers (without join - relations not working in types)
   const { data: followedSellers, count } = await supabase

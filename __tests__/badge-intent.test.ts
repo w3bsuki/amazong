@@ -2,7 +2,6 @@ import { describe, expect, test } from 'vitest'
 
 import {
   getListingOverlayBadgeVariants,
-  getSellerVerificationBadgeVariant,
 } from '@/lib/ui/badge-intent'
 
 describe('getListingOverlayBadgeVariants', () => {
@@ -50,34 +49,5 @@ describe('getListingOverlayBadgeVariants', () => {
         minDiscountPercent: 10,
       }),
     ).toEqual([])
-  })
-})
-
-describe('getSellerVerificationBadgeVariant', () => {
-  test('returns null for unverified sellers', () => {
-    expect(
-      getSellerVerificationBadgeVariant({
-        isVerified: false,
-        isBusiness: true,
-      }),
-    ).toBeNull()
-  })
-
-  test('returns business verification variant for verified business sellers', () => {
-    expect(
-      getSellerVerificationBadgeVariant({
-        isVerified: true,
-        isBusiness: true,
-      }),
-    ).toBe('verified-business')
-  })
-
-  test('returns personal verification variant for verified non-business sellers', () => {
-    expect(
-      getSellerVerificationBadgeVariant({
-        isVerified: true,
-        isBusiness: false,
-      }),
-    ).toBe('verified-personal')
   })
 })

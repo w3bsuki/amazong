@@ -186,7 +186,6 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
   // Handle report (placeholder)
   const handleReport = () => {
     // NOTE (BACKLOG-008): Implement report modal/flow.
-    console.log("Report listing:", product.id);
   };
 
   const pickupOnly = product.pickup_only ?? false;

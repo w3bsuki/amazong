@@ -42,14 +42,6 @@ export function formatCurrencyAmount(
   }).format(amount)
 }
 
-export function getCurrencyCode(): string {
-  return BASE_CURRENCY
-}
-
-export function getCurrencySymbol(): string {
-  return "€"
-}
-
 export function formatPrice(
   amount: number,
   options: {
@@ -84,28 +76,4 @@ export function hasDiscount(originalPrice: number | null | undefined, currentPri
 export function getDiscountPercentage(originalPrice: number, currentPrice: number): number {
   if (originalPrice <= 0) return 0
   return Math.round((1 - currentPrice / originalPrice) * 100)
-}
-
-export function formatPriceRange(minPrice: number, maxPrice: number, locale = "en"): string {
-  return `${formatPrice(minPrice, { locale })} - ${formatPrice(maxPrice, { locale })}`
-}
-
-interface FormattedDiscount {
-  percentage: number
-  amountSaved: number
-  originalFormatted: string
-  currentFormatted: string
-}
-
-export function formatDiscount(
-  currentPrice: number,
-  originalPrice: number,
-  locale = "en",
-): FormattedDiscount {
-  return {
-    percentage: getDiscountPercentage(originalPrice, currentPrice),
-    amountSaved: Math.max(0, originalPrice - currentPrice),
-    originalFormatted: formatPrice(originalPrice, { locale }),
-    currentFormatted: formatPrice(currentPrice, { locale }),
-  }
 }

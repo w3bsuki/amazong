@@ -4,19 +4,19 @@ import { useMemo, useState } from "react"
 import { Search as MagnifyingGlass } from "lucide-react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryName, getCategorySlugKey } from "@/lib/category-display"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
+import { getCategoryName, getCategorySlugKey } from "@/lib/data/categories/display"
 import { getCategoryIcon } from "@/components/shared/category-icons"
 import { Input } from "@/components/ui/input"
 import { useTranslations } from "next-intl"
 
 const CATEGORY_CARD_CLASS =
-  "group flex flex-col items-center justify-center gap-2 rounded-2xl border border-border-subtle bg-background p-4 text-center tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+  "group flex flex-col items-center justify-center gap-2 rounded-xl border border-border-subtle bg-background p-4 text-center tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 
 function CategoryIconTile({ slug }: { slug: string }) {
   return (
     <span
-      className="inline-flex size-12 items-center justify-center rounded-2xl bg-accent text-primary"
+      className="inline-flex size-12 items-center justify-center rounded-xl bg-accent text-primary"
       aria-hidden="true"
     >
       {getCategoryIcon(slug, { size: 24 })}
@@ -108,4 +108,3 @@ export function CategoryIconGrid({ locale, categories, className, testId }: Cate
 }
 
 export type { CategoryIconGridProps }
-

@@ -84,7 +84,7 @@ export function HomeCityPickerSheet({
         />
 
         <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             {cityOptions.length === 0 && (
               <p className="px-2 py-3 text-sm text-muted-foreground">
                 {tMobile("feed.chooseCityNoResults")}

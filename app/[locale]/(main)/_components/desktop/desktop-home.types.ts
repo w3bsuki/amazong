@@ -1,4 +1,4 @@
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
 
 export interface DesktopHomeProduct {
   id: string

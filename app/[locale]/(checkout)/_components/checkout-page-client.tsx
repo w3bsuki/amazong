@@ -199,7 +199,7 @@ export default function CheckoutPageClient({
   // Empty cart state
   if (items.length === 0) {
     return (
-      <div className="min-h-96 flex items-center justify-center px-3">
+      <div className="min-h-96 flex items-center justify-center px-inset">
         <div className="text-center">
           <div className="size-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
             <ShoppingCart className="size-6 text-muted-foreground" />

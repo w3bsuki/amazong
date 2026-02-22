@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+import type { CategoryTreeNode } from "@/lib/data/categories/types"
 
 // =============================================================================
 // Types

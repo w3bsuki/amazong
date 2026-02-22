@@ -2,38 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   formatPrice,
   formatPriceParts,
-  getCurrencyCode,
-  getCurrencySymbol,
 } from '@/lib/price'
 
 describe('lib/price (currency surface)', () => {
-  describe('getCurrencySymbol', () => {
-    it('returns € for English locale', () => {
-      expect(getCurrencySymbol('en')).toBe('€')
-    })
-
-    it('returns € for Bulgarian locale', () => {
-      expect(getCurrencySymbol('bg')).toBe('€')
-    })
-
-    it('returns € for unknown locale (fallback)', () => {
-      expect(getCurrencySymbol('fr')).toBe('€')
-      expect(getCurrencySymbol('de')).toBe('€')
-      expect(getCurrencySymbol('')).toBe('€')
-    })
-  })
-
-  describe('getCurrencyCode', () => {
-    it('returns EUR for all supported locales', () => {
-      expect(getCurrencyCode('en')).toBe('EUR')
-      expect(getCurrencyCode('bg')).toBe('EUR')
-    })
-
-    it('returns EUR for unknown locale (fallback)', () => {
-      expect(getCurrencyCode('unknown')).toBe('EUR')
-    })
-  })
-
   describe('formatPrice', () => {
     it('formats price in English locale (Irish English EUR format)', () => {
       const result = formatPrice(29.99, { locale: 'en' })
