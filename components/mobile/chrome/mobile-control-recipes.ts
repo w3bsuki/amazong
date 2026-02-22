@@ -1,13 +1,13 @@
 import { cn } from "@/lib/utils"
 
 const MOBILE_QUICK_PILL_BASE_CLASS =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full min-h-(--control-compact) px-3.5 text-compact leading-none tap-transparent motion-safe:transition-all motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-const MOBILE_QUICK_PILL_ACTIVE_CLASS = "bg-foreground text-background font-semibold shadow-sm"
+  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full min-h-(--control-compact) px-3 text-compact leading-none tap-transparent motion-safe:transition-all motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+const MOBILE_QUICK_PILL_ACTIVE_CLASS = "bg-foreground text-background font-semibold"
 const MOBILE_QUICK_PILL_INACTIVE_CLASS =
-  "bg-surface-subtle text-muted-foreground font-medium hover:text-foreground hover:bg-hover"
+  "bg-surface-subtle text-foreground font-medium hover:bg-hover"
 
 export const MOBILE_ACTION_CHIP_CLASS =
-  "inline-flex shrink-0 min-h-(--control-compact) px-3.5 items-center gap-1.5 rounded-full border border-border-subtle bg-surface-subtle text-compact font-semibold leading-none text-foreground tap-transparent motion-safe:transition-all motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+  "inline-flex shrink-0 min-h-(--control-compact) px-3 items-center gap-2 rounded-full bg-surface-subtle text-compact font-medium leading-none text-foreground tap-transparent motion-safe:transition-all motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
 
 export const MOBILE_SEGMENTED_CONTAINER_CLASS =
   "grid grid-cols-2 rounded-full border border-border-subtle bg-surface-subtle p-0.5"

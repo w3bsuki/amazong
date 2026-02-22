@@ -77,7 +77,7 @@ export function SmartRail({
     <nav
       aria-label={ariaLabel}
       className={cn(
-        "bg-background border-b border-border-subtle py-2",
+        "bg-background border-b border-border-subtle py-1",
         sticky && "sticky z-30",
         className,
       )}
