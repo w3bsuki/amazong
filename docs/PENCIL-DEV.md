@@ -342,7 +342,7 @@ Frames use a flexbox-style layout system. **This is how you avoid manual positio
   "width": 375, "height": 812,
   "layout": "vertical",
   "clip": true,
-  "fill": "$surface-page"
+  "fill": "$--surface-page"
 }
 ```
 
@@ -356,8 +356,7 @@ Frames use a flexbox-style layout system. **This is how you avoid manual positio
   "padding": 16,
   "gap": 12,
   "cornerRadius": 12,
-  "fill": "$surface-card",
-  "effect": { "type": "shadow", "shadowType": "outer", "offset": { "x": 0, "y": 1 }, "blur": 3, "color": "#0000000D" }
+  "fill": "$--surface-card"
 }
 ```
 
