@@ -81,6 +81,16 @@
 - [ ] **BACKLOG-005:** Verify product data sanity — no test/dummy listings
   - Done: audit shows only real listings, categories make sense
 
+## Mobile UI/UX Perfection Pass
+
+> Full codebase audit + rework to make mobile (375px) feel polished, consistent, and premium.
+
+- [ ] **MOBILE-001:** Full mobile UI/UX audit and alignment pass
+  - Context: `docs/DESIGN.md`, `docs/STACK.md`, `docs/features/product-cards.md`
+  - Scope: every mobile-visible route and component at 375px viewport
+  - See: `docs/MOBILE-UX-PERFECTION.md` for detailed spec and audit checklist
+  - Done: all acceptance criteria in the spec doc are met, `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit` pass
+
 ## Audit Queue
 
 > Tasks will be added here after each Playwright visual/functional audit.
