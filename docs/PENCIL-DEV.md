@@ -778,7 +778,7 @@ For each screen task:
 Run through this before marking any screen as done:
 
 ### Structure
-- [ ] Screen uses the correct base template (`ref` instance, not a copy)
+- [ ] Screen uses the correct base template (copied from `Templates (M375)`; don’t build screens from scratch)
 - [ ] Components are `ref` instances of shared primitives
 - [ ] Frame naming follows `M375 / <route> / <short title>`
 

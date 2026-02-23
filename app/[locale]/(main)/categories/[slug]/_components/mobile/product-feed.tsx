@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef } from "react"
 import type { UIProduct } from "@/lib/data/products"
-import { ProductGrid, ProductGridSkeleton, type ProductGridProduct } from "@/components/shared/product/product-grid"
+import { ProductGridSkeleton, type ProductGridProduct } from "@/components/shared/product/product-grid"
+import { AnimatedProductGrid } from "@/components/shared/product/animated-product-grid"
 import { EmptyStateCTA } from "../../../../../_components/empty-state-cta"
 import { useTranslations } from "next-intl"
 
@@ -16,6 +17,7 @@ export interface ProductFeedProps {
   activeCategoryName: string | null
   onLoadMore: () => void
   showLoadingOverlay?: boolean
+  gridBatchKey?: string
 }
 
 function EndOfResults({ label }: { label: string }) {
@@ -64,11 +66,10 @@ export function ProductFeed({
   hasMore,
   isLoading,
   activeSlug,
-  locale: _locale,
-  isAllTab: _isAllTab,
   activeCategoryName,
   onLoadMore,
   showLoadingOverlay = false,
+  gridBatchKey,
 }: ProductFeedProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const tFeed = useTranslations("ProductFeed")
@@ -79,6 +80,9 @@ export function ProductFeed({
 
   const loadingLabel = tFeed("loadingProducts")
   const showInlineRefreshSkeleton = showLoadingOverlay && isLoading && products.length > 0
+  const resolvedGridBatchKey = gridBatchKey ?? activeSlug
+  const contentState = isLoading && products.length === 0 ? "loading" : products.length === 0 ? "empty" : "results"
+  const contentPresenceKey = `${activeSlug}:${contentState}`
 
   const gridProducts = useMemo(() => products.map(mapToGridProduct), [products])
 
@@ -109,29 +113,31 @@ export function ProductFeed({
       </div>
 
       <div aria-busy={isLoading} aria-label={isLoading ? loadingLabel : undefined} className="relative">
-        {products.length === 0 && !isLoading ? (
-          <EmptyStateCTA
-            variant="no-listings"
-            {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
-          />
-        ) : isLoading && products.length === 0 ? (
-          <ProductGridSkeleton count={6} density="compact" preset="mobile-feed" />
-        ) : (
-          <>
-            <ProductGrid
-              key={activeSlug}
-              products={gridProducts}
-              viewMode="grid"
-              density="compact"
-              preset="mobile-feed"
-              className="py-1 transition-colors duration-200"
+        <div key={contentPresenceKey} className="motion-safe:animate-content-fade-in">
+          {products.length === 0 && !isLoading ? (
+            <EmptyStateCTA
+              variant="no-listings"
+              {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
             />
+          ) : isLoading && products.length === 0 ? (
+            <ProductGridSkeleton count={6} density="compact" preset="mobile-feed" />
+          ) : (
+            <>
+              <AnimatedProductGrid
+                products={gridProducts}
+                viewMode="grid"
+                density="compact"
+                preset="mobile-feed"
+                className="py-1 transition-colors duration-200"
+                batchKey={resolvedGridBatchKey}
+              />
 
-            {showInlineRefreshSkeleton && (
-              <ProductGridSkeleton count={2} density="compact" preset="mobile-feed" />
-            )}
-          </>
-        )}
+              {showInlineRefreshSkeleton && (
+                <ProductGridSkeleton count={2} density="compact" preset="mobile-feed" />
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       <div ref={loadMoreRef} className="py-3">

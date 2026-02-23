@@ -27,7 +27,7 @@ import { MobileStepProgress } from "@/components/mobile/chrome/mobile-step-progr
 
 const pageVariants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? 100 : -100,
+    x: direction > 0 ? 60 : -60,
     opacity: 0,
   }),
   center: {
@@ -35,7 +35,7 @@ const pageVariants = {
     opacity: 1,
   },
   exit: (direction: number) => ({
-    x: direction < 0 ? 100 : -100,
+    x: direction < 0 ? 60 : -60,
     opacity: 0,
   }),
 };

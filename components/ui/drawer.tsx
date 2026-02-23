@@ -119,7 +119,7 @@ function DrawerOverlay({
     <DrawerPrimitive.Overlay
       data-slot="drawer-overlay"
       className={cn(
-        "fixed inset-0 z-60 bg-overlay-dark",
+        "fixed inset-0 z-60 bg-overlay-dark will-change-opacity",
         blurClasses[blur],
         className
       )}
@@ -319,7 +319,7 @@ function DrawerBody({ className, noDrag = false, ...props }: DrawerBodyProps) {
       data-slot="drawer-body"
       {...(noDrag && { "data-vaul-no-drag": true })}
       className={cn(
-        "min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y px-4 py-3",
+        "min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y px-4 py-3 motion-safe:animate-drawer-content-in",
         className
       )}
       {...props}

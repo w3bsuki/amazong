@@ -393,15 +393,94 @@
   scrollbar-width: none;
 }
 
-/* ===== OVERLAY / SCROLL LOCK STABILITY ===== */
-/* react-remove-scroll-bar locks scroll using `margin-right` to compensate for
-   the removed scrollbar width. That changes the body layout width, which can
-   shift centered rails/pills (e.g. Home) when drawers/sheets open.
+/* ===== MOTION UTILITIES ===== */
+@keyframes fade-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 
-   Prefer padding-based compensation instead to keep the page width stable. */
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawer-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes badge-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes content-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@utility animate-fade-up-in {
+  animation: fade-up-in 250ms ease-out both;
+}
+
+@utility animate-drawer-content-in {
+  animation: drawer-content-in var(--duration-normal) var(--ease-smooth) both;
+}
+
+@utility animate-badge-pop {
+  animation: badge-pop 200ms ease-out both;
+}
+
+@utility animate-content-fade-in {
+  animation: content-fade-in 200ms ease-out both;
+}
+
+/* ===== OVERLAY / SCROLL LOCK STABILITY ===== */
+/* We already reserve scrollbar space globally via `html { scrollbar-gutter: stable; }`.
+   Keep scroll-lock compensation at zero to avoid drawer-open layout jumps. */
 :root body[data-scroll-locked] {
   margin-right: 0 !important;
-  padding-right: var(--removed-body-scroll-bar-size, 0px) !important;
+  padding-right: 0 !important;
+}
+
+/* Experimental Next.js ViewTransition root animation tuning */
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--duration-normal);
+    animation-timing-function: var(--ease-smooth);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @supports (view-transition-name: none) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.01ms;
+      animation-timing-function: linear;
+    }
+  }
 }
 
 /* Vaul (Drawer) ships with a 500ms default transition which feels sluggish
@@ -409,12 +488,12 @@
    motion tokens while preserving Vaul's easing/physics. */
 @media (prefers-reduced-motion: no-preference) {
   :root [data-vaul-drawer]:not(.vaul-dragging) {
-    transition-duration: var(--duration-slow) !important;
-    animation-duration: var(--duration-slow) !important;
+    transition-duration: var(--duration-normal) !important;
+    animation-duration: var(--duration-normal) !important;
   }
 
   :root [data-vaul-overlay] {
-    transition-duration: var(--duration-slow) !important;
-    animation-duration: var(--duration-slow) !important;
+    transition-duration: var(--duration-normal) !important;
+    animation-duration: var(--duration-normal) !important;
   }
 }

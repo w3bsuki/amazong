@@ -78,6 +78,7 @@ export function MobileCategoryBrowserContextualView({
               hasMore={hasMore}
               isLoading={isLoading}
               activeSlug={activeSlug}
+              gridBatchKey={`${activeSlug}|${appliedSearchParams.toString()}`}
               locale={locale}
               isAllTab={false}
               activeCategoryName={activeCategoryName}

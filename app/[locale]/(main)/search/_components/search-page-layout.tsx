@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/routing"
-import { ProductGrid, type ProductGridProduct } from "@/components/shared/product/product-grid"
+import { type ProductGridProduct } from "@/components/shared/product/product-grid"
+import { AnimatedProductGrid } from "@/components/shared/product/animated-product-grid"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { SearchFilters } from "./filters/search-filters"
 import { SearchHeader } from "./search-header"
@@ -14,6 +15,7 @@ import { MobileSellerFilterControls } from "./mobile-seller-filter-controls"
 import { SellerResultsList } from "./seller-results-list"
 import { MobileSearchSmartRail } from "./mobile-search-smart-rail"
 import { SearchHeaderSync } from "./search-header-sync"
+import { SearchResultsTransition } from "./search-results-transition"
 import type { BrowseMode, Category, SellerResultCard } from "../_lib/types"
 
 type Translate = (key: string, values?: Record<string, string | number | Date>) => string
@@ -67,6 +69,9 @@ export function SearchPageLayout({
   itemsPerPage,
   t,
 }: SearchPageLayoutProps) {
+  const listingsBatchKey = `${query}|${categorySlug ?? "all"}|${currentPage}|${gridProducts.map((product) => product.id).join("|")}`
+  const listingsTransitionKey = `${query}|${categorySlug ?? "all"}|${currentPage}`
+
   const sidebarContent = (
     <div className="bg-sidebar rounded-lg p-4">
       <SearchFilters
@@ -134,11 +139,17 @@ export function SearchPageLayout({
 
         <div className="mx-auto w-full max-w-(--breakpoint-md) overflow-x-hidden px-inset pb-tabbar-safe pt-2">
           {browseMode === "listings" ? (
-            <>
-              <ProductGrid products={gridProducts} viewMode="grid" preset="mobile-feed" density="compact" />
+            <SearchResultsTransition transitionKey={listingsTransitionKey}>
+              <AnimatedProductGrid
+                products={gridProducts}
+                viewMode="grid"
+                preset="mobile-feed"
+                density="compact"
+                batchKey={listingsBatchKey}
+              />
 
               {productsCount === 0 && emptyStateCTA("mt-8")}
-            </>
+            </SearchResultsTransition>
           ) : (
             <>
               {sellerResultsList}
@@ -212,11 +223,13 @@ export function SearchPageLayout({
             </div>
 
             <div>
-              {productsCount === 0 ? (
-                emptyStateCTA("mt-4")
-              ) : (
-                <ProductGrid products={gridProducts} viewMode="grid" />
-              )}
+              <SearchResultsTransition transitionKey={listingsTransitionKey}>
+                {productsCount === 0 ? (
+                  emptyStateCTA("mt-4")
+                ) : (
+                  <AnimatedProductGrid products={gridProducts} viewMode="grid" batchKey={listingsBatchKey} />
+                )}
+              </SearchResultsTransition>
             </div>
           </>
         ) : (

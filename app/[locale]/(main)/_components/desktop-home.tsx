@@ -10,7 +10,7 @@ import { FiltersSidebar } from "./desktop/filters-sidebar"
 import { ProductGridSkeleton } from "./desktop/product-grid-skeleton"
 import { PromotedSection } from "./desktop/promoted-section"
 import { DesktopShell } from "./layout/desktop-shell"
-import { ProductGrid } from "@/components/shared/product/product-grid"
+import { AnimatedProductGrid } from "@/components/shared/product/animated-product-grid"
 import { SubcategoryCircles } from "./category/subcategory-circles"
 import { useDesktopHomeController } from "./desktop/use-desktop-home-controller"
 import type { DesktopHomeProps } from "./desktop/desktop-home.types"
@@ -74,6 +74,8 @@ export function DesktopHome({
       )}
     </>
   )
+
+  const gridBatchKey = `${activeTab}|${activeCategorySlug ?? "all"}|${filters.toString()}|${viewMode}`
 
   return (
     <DesktopShell
@@ -191,9 +193,10 @@ export function DesktopHome({
           />
         ) : (
           <>
-            <ProductGrid
+            <AnimatedProductGrid
               products={finalGridProducts}
               viewMode={viewMode}
+              batchKey={gridBatchKey}
             />
 
             {hasMore && (

@@ -95,7 +95,7 @@
 
 > Framer Motion animations + structural improvements. Second Codex pass after MOBILE-001.
 
-- [ ] **MOTION-001:** Motion & structure pass — Framer Motion polish + code improvements
+- [x] **MOTION-001:** Motion & structure pass — Framer Motion polish + code improvements
   - Context: `docs/MOTION-STRUCTURE-SPEC.md`, `docs/DESIGN.md`, `docs/STACK.md`
   - Scope: MotionConfig provider, product grid stagger, drawer content entrance, category tab transitions, badge animations, sell flow improvement, CSS animation utilities
   - See: `docs/MOTION-STRUCTURE-SPEC.md` for full spec (Parts 1-8)

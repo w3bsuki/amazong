@@ -128,7 +128,7 @@ SSR streaming for initial loads. Skeleton screens for async client content — s
 ### Layout Tokens
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--spacing-bottom-nav` | 3.25rem | Tab bar height |
+| `--spacing-bottom-nav` | 4rem (64px) | Tab bar height |
 | `--page-inset-mobile/tablet/desktop` | 8/12/16px | Page edge padding |
 | `--sidebar-width` | 17.5rem | Desktop sidebar |
 | `--product-card-min-w` | 12.5rem | Min card width |

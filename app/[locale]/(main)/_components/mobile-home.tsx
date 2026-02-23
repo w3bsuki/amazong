@@ -59,10 +59,10 @@ export function MobileHome({
     activeL2Slug,
     setActiveL2Slug,
     filters,
+    filtersKey,
     setFilters,
     city,
     setCity,
-    nearby,
     setNearby,
     products,
     isLoading,
@@ -183,6 +183,15 @@ export function MobileHome({
   }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug, setScope, setNearby, setFilters])
 
   const railAriaLabel = tV4("quickJump.label")
+  const feedTransitionState = isLoading && products.length === 0 ? "loading" : products.length === 0 ? "empty" : "results"
+  const feedTransitionKey = [
+    scope,
+    activeCategorySlug ?? "all",
+    activeSubcategorySlug ?? "all",
+    activeL2Slug ?? "all",
+    filtersKey,
+    feedTransitionState,
+  ].join("|")
 
   const railLeadingAction: SmartRailAction | undefined = activeCategorySlug
     ? {
@@ -293,16 +302,18 @@ export function MobileHome({
           </div>
         )}
 
-        <MobileHomeFeed
-          products={products}
-          isLoading={isLoading}
-          error={error}
-          loadMoreRef={loadMoreRef}
-          tMobile={tMobile}
-          tV4={tV4}
-          onResetAll={handleResetAll}
-          onRetry={retry}
-        />
+        <div key={feedTransitionKey} className="motion-safe:animate-content-fade-in">
+          <MobileHomeFeed
+            products={products}
+            isLoading={isLoading}
+            error={error}
+            loadMoreRef={loadMoreRef}
+            tMobile={tMobile}
+            tV4={tV4}
+            onResetAll={handleResetAll}
+            onRetry={retry}
+          />
+        </div>
       </div>
 
       <FilterHub

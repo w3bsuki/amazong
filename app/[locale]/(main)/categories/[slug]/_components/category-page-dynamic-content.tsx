@@ -3,7 +3,8 @@ import { notFound } from "next/navigation"
 
 import { createStaticClient } from "@/lib/supabase/server"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
-import { ProductGrid, type ProductGridProduct } from "@/components/shared/product/product-grid"
+import { type ProductGridProduct } from "@/components/shared/product/product-grid"
+import { AnimatedProductGrid } from "@/components/shared/product/animated-product-grid"
 import { EmptyStateCTA } from "../../../../_components/empty-state-cta"
 import { searchProducts } from "../_lib/search-products"
 import { SearchPagination } from "../../../_components/search-controls/search-pagination"
@@ -111,6 +112,7 @@ export function CategoryPageDynamicContent({
 
   const products = result.products
   const totalProducts = result.total
+  const desktopGridBatchKey = products.map((product) => product.id).join("|") || `${slug}-${currentPage}`
 
   const mobileInitialProducts: UIProduct[] = products.map((product): UIProduct => ({
     id: product.id,
@@ -191,7 +193,7 @@ export function CategoryPageDynamicContent({
           {products.length === 0 ? (
             <EmptyStateCTA variant="no-category" categoryName={categoryName} className="mt-4" />
           ) : (
-            <ProductGrid
+            <AnimatedProductGrid
               products={products.map((product): ProductGridProduct => ({
                 id: product.id,
                 title: product.title,
@@ -216,6 +218,7 @@ export function CategoryPageDynamicContent({
                 tags: product.tags ?? [],
               }))}
               viewMode="grid"
+              batchKey={desktopGridBatchKey}
             />
           )}
         </div>

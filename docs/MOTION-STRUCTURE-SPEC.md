@@ -26,7 +26,7 @@
 
 Create a motion config wrapper that auto-respects `prefers-reduced-motion`:
 
-- [ ] Create `components/providers/motion-provider.tsx`:
+- [x] Create `components/providers/motion-provider.tsx`:
   ```tsx
   "use client"
   import { MotionConfig } from "framer-motion"
@@ -39,9 +39,9 @@ Create a motion config wrapper that auto-respects `prefers-reduced-motion`:
     )
   }
   ```
-- [ ] Add `<MotionProvider>` to the app's provider tree (find the main providers wrapper, add it there)
-- [ ] This means ALL `motion.*` components automatically respect reduced motion — no per-component checks needed
-- [ ] The existing `prefers-reduced-motion` check in `stepper-wrapper.tsx` can stay (it's a JS check for conditional rendering, different from CSS-only)
+- [x] Add `<MotionProvider>` to the app's provider tree (find the main providers wrapper, add it there)
+- [x] This means ALL `motion.*` components automatically respect reduced motion — no per-component checks needed
+- [x] The existing `prefers-reduced-motion` check in `stepper-wrapper.tsx` can stay (it's a JS check for conditional rendering, different from CSS-only)
 
 ---
 
@@ -49,7 +49,7 @@ Create a motion config wrapper that auto-respects `prefers-reduced-motion`:
 
 The main visual payoff. When a product grid appears (homepage feed, category page, search results), cards fade-in with a subtle stagger.
 
-- [ ] Create `components/shared/product/animated-product-grid.tsx` — a thin wrapper around the existing `ProductGrid`:
+- [x] Create `components/shared/product/animated-product-grid.tsx` — a thin wrapper around the existing `ProductGrid`:
   ```tsx
   "use client"
   import { motion, AnimatePresence } from "framer-motion"
@@ -72,11 +72,11 @@ The main visual payoff. When a product grid appears (homepage feed, category pag
     },
   }
   ```
-- [ ] Wrap grid items in `motion.div` with these variants
-- [ ] Use `AnimatePresence` so cards animate out when switching categories/filters
-- [ ] The stagger should only apply to newly loaded cards, not cards already visible (use a key based on the data batch)
-- [ ] Apply to: homepage feed grid, category page grid, search results grid
-- [ ] Do NOT apply to: PDP related products (too small), cart items, account lists
+- [x] Wrap grid items in `motion.div` with these variants
+- [x] Use `AnimatePresence` so cards animate out when switching categories/filters
+- [x] The stagger should only apply to newly loaded cards, not cards already visible (use a key based on the data batch)
+- [x] Apply to: homepage feed grid, category page grid, search results grid
+- [x] Do NOT apply to: PDP related products (too small), cart items, account lists
 
 ---
 
@@ -84,8 +84,8 @@ The main visual payoff. When a product grid appears (homepage feed, category pag
 
 When a drawer opens, the content inside should have a subtle fade-in (after the drawer itself finishes its Vaul slide-up).
 
-- [ ] In `DrawerBody`, add a subtle content fade-in:
-  - The content (`children`) should fade from `opacity: 0` → `opacity: 1` with a 100ms delay (so the drawer slide completes first)
+- [x] In `DrawerBody`, add a subtle content fade-in:
+  - The content (`children`) fades from `opacity: 0` → `opacity: 1` with fast tokenized timing and no extra delay
   - Duration: 200ms ease-out
   - This is a CSS animation, NOT Framer Motion (to avoid conflict with Vaul):
     ```css
@@ -94,9 +94,9 @@ When a drawer opens, the content inside should have a subtle fade-in (after the 
       to { opacity: 1; transform: translateY(0); }
     }
     ```
-  - Apply via `animate-drawer-content-in` utility class with `animation-delay: 100ms`
+  - Apply via `animate-drawer-content-in` utility class (no delay, fast tokenized timing)
   - Wrap in `motion-safe:` so it respects reduced motion
-- [ ] Do NOT touch the drawer's slide/drag animation — that's Vaul
+- [x] Do NOT touch the drawer's slide/drag animation — that's Vaul
 
 ---
 
@@ -104,16 +104,16 @@ When a drawer opens, the content inside should have a subtle fade-in (after the 
 
 When the user taps a different category pill on the SmartRail, the product grid should cross-fade:
 
-- [ ] Wrap the `ProductFeed` content area in `AnimatePresence mode="wait"`:
+- [x] Wrap the `ProductFeed` content area in `AnimatePresence mode="wait"`:
   - Key on `activeSlug` (already available)
   - Enter: `opacity: 0` → `opacity: 1`, 200ms
   - Exit: `opacity: 0`, 150ms
   - No Y movement (just fade — the grid is in the same position)
-- [ ] Apply to:
+- [x] Apply to:
   - Homepage category switching (in `mobile-home.tsx`)
   - Category page sub-category switching (in `mobile-category-browser-contextual.tsx`)
   - Search results when query changes
-- [ ] Ensure loading skeletons participate in the animation (fade in as placeholder, fade out when real content arrives)
+- [x] Ensure loading skeletons participate in the animation (fade in as placeholder, fade out when real content arrives)
 
 ---
 
@@ -121,12 +121,12 @@ When the user taps a different category pill on the SmartRail, the product grid 
 
 Small scale+fade on badges/chips when they appear:
 
-- [ ] In badge/chip components, add entrance animation when they mount:
+- [x] In badge/chip components, add entrance animation when they mount:
   - Scale from 0.92 → 1.0 + opacity 0 → 1
   - Duration: 200ms, ease-out
   - This applies to: `MarketplaceBadge`, `Badge` (when used for dynamic status like "Free Shipping", discount badges)
-- [ ] Only animate on dynamic appearance (not on static page load). Add the animation only when badges are inside a `motion` parent that's animating
-- [ ] Keep it CSS-based for simplicity:
+- [x] Only animate on dynamic appearance (not on static page load). Add the animation only when badges are inside a `motion` parent that's animating
+- [x] Keep it CSS-based for simplicity:
   ```css
   @keyframes badge-pop {
     from { opacity: 0; transform: scale(0.92); }
@@ -140,9 +140,9 @@ Small scale+fade on badges/chips when they appear:
 
 The sell flow already uses Framer Motion with direction-aware slide transitions. Keep it but improve:
 
-- [ ] The existing `pageVariants` in `stepper-wrapper.tsx` use `x: 100` / `x: -100` — this is pixels. On mobile, 100px feels jarring. Reduce to `x: 60` or use percentage `x: "20%"` for a smoother feel
-- [ ] The spring transition `stiffness: 300, damping: 30` is good. Keep it
-- [ ] Verify the existing `prefersReducedMotion` check still works correctly (should skip animation entirely)
+- [x] The existing `pageVariants` in `stepper-wrapper.tsx` use `x: 100` / `x: -100` — this is pixels. On mobile, 100px feels jarring. Reduce to `x: 60` or use percentage `x: "20%"` for a smoother feel
+- [x] The spring transition `stiffness: 300, damping: 30` is good. Keep it
+- [x] Verify the existing `prefersReducedMotion` check still works correctly (should skip animation entirely)
 
 ---
 
@@ -150,12 +150,12 @@ The sell flow already uses Framer Motion with direction-aware slide transitions.
 
 While adding motion, also clean up these structural issues:
 
-- [ ] `MobileBottomBar` (`app/[locale]/[username]/[productSlug]/_components/mobile/mobile-bottom-bar.tsx`): 
+- [x] `MobileBottomBar` (`app/[locale]/[username]/[productSlug]/_components/mobile/mobile-bottom-bar.tsx`): 
   - Already fixed price formatter in MOBILE-001. Verify it uses `formatPrice` from `lib/price.ts`
   - Remove the inline `formatPrice` function if it still exists
-- [ ] `stepper-wrapper.tsx`: The `prefersReducedMotion` state + useEffect can be replaced by the `MotionConfig reducedMotion="user"` from Part 1. But it's also doing a conditional render (skip `AnimatePresence` entirely) — that's actually MORE accessible. Keep both: MotionConfig as global safety net, local check for full skip
-- [ ] Verify all existing `motion-reduce:` CSS classes still work alongside `MotionConfig`— they should, they're independent
-- [ ] Any `from "framer-motion"` import should be consistent across files (not mixed with `"motion/react"` — we use `"framer-motion"` everywhere)
+- [x] `stepper-wrapper.tsx`: The `prefersReducedMotion` state + useEffect can be replaced by the `MotionConfig reducedMotion="user"` from Part 1. But it's also doing a conditional render (skip `AnimatePresence` entirely) — that's actually MORE accessible. Keep both: MotionConfig as global safety net, local check for full skip
+- [x] Verify all existing `motion-reduce:` CSS classes still work alongside `MotionConfig`— they should, they're independent
+- [x] Any `from "framer-motion"` import should be consistent across files (not mixed with `"motion/react"` — we use `"framer-motion"` everywhere)
 
 ---
 
@@ -189,9 +189,9 @@ Add these animation utilities to `app/utilities.css`:
 }
 ```
 
-- [ ] Add these to `app/utilities.css`
-- [ ] Register as Tailwind utilities: `animate-fade-up-in`, `animate-drawer-content-in`, `animate-badge-pop`, `animate-content-fade-in`
-- [ ] All wrapped in `motion-safe:` when used — or applied via Framer Motion which handles it via MotionConfig
+- [x] Add these to `app/utilities.css`
+- [x] Register as Tailwind utilities: `animate-fade-up-in`, `animate-drawer-content-in`, `animate-badge-pop`, `animate-content-fade-in`
+- [x] All wrapped in `motion-safe:` when used — or applied via Framer Motion which handles it via MotionConfig
 
 ---
 

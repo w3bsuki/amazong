@@ -59,6 +59,124 @@ const gridColumnClasses = {
   compact: ["grid-cols-2", "sm:grid-cols-3", "md:grid-cols-4", "lg:grid-cols-5", "xl:grid-cols-6"],
 } as const
 
+export function getProductGridItemsClassName({
+  viewMode,
+  density,
+  className,
+}: {
+  viewMode: ViewMode
+  density: "normal" | "compact"
+  className: string | undefined
+}) {
+  return cn(
+    viewMode === "list"
+      ? "flex flex-col gap-2"
+      : ["grid gap-(--product-grid-gap)", ...gridColumnClasses[density]],
+    className
+  )
+}
+
+interface ProductGridItemProps {
+  product: ProductGridProduct
+  index: number
+  viewMode: ViewMode
+  preset: ProductGridPreset
+}
+
+export function ProductGridItem({
+  product,
+  index,
+  viewMode,
+  preset,
+}: ProductGridItemProps) {
+  const username = product.storeSlug ?? product.username ?? null
+
+  if (viewMode === "list") {
+    return (
+      <ProductCardList
+        id={product.id}
+        title={product.title}
+        price={product.price}
+        originalPrice={product.listPrice ?? product.originalPrice ?? null}
+        image={product.image}
+        createdAt={product.createdAt ?? null}
+        slug={product.slug ?? null}
+        username={username}
+        sellerId={product.sellerId ?? null}
+        sellerName={product.sellerName ?? undefined}
+        sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+        sellerVerified={Boolean(product.sellerVerified)}
+        location={product.location}
+        condition={product.condition}
+        freeShipping={product.freeShipping ?? false}
+        isBoosted={Boolean(product.isBoosted)}
+        {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+      />
+    )
+  }
+
+  if (preset === "desktop") {
+    return (
+      <DesktopProductCard
+        id={product.id}
+        title={product.title}
+        price={product.price}
+        originalPrice={product.listPrice ?? product.originalPrice ?? null}
+        isOnSale={Boolean(product.isOnSale)}
+        salePercent={product.salePercent ?? 0}
+        createdAt={product.createdAt ?? null}
+        image={product.image}
+        rating={product.rating ?? 0}
+        reviews={product.reviews ?? 0}
+        soldCount={product.soldCount ?? 0}
+        slug={product.slug ?? null}
+        username={username}
+        sellerId={product.sellerId ?? null}
+        sellerName={product.sellerName ?? undefined}
+        sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+        sellerVerified={Boolean(product.sellerVerified)}
+        freeShipping={product.freeShipping ?? false}
+        location={product.location}
+        condition={product.condition}
+        isBoosted={Boolean(product.isBoosted)}
+        boostExpiresAt={product.boostExpiresAt ?? null}
+        index={index}
+        {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
+        {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
+        {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+      />
+    )
+  }
+
+  return (
+    <MobileProductCard
+      id={product.id}
+      title={product.title}
+      price={product.price}
+      originalPrice={product.listPrice ?? product.originalPrice ?? null}
+      salePercent={product.salePercent ?? 0}
+      createdAt={product.createdAt ?? null}
+      image={product.image}
+      rating={product.rating ?? 0}
+      reviews={product.reviews ?? 0}
+      slug={product.slug ?? null}
+      username={username}
+      sellerId={product.sellerId ?? null}
+      sellerName={product.sellerName ?? undefined}
+      sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+      sellerVerified={Boolean(product.sellerVerified)}
+      condition={product.condition}
+      location={product.location}
+      isBoosted={Boolean(product.isBoosted)}
+      boostExpiresAt={product.boostExpiresAt ?? null}
+      index={index}
+      layout={preset === "mobile-rail" ? "rail" : "feed"}
+      {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
+      {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+    />
+  )
+}
+
 export function ProductGrid({
   products,
   viewMode = "grid",
@@ -85,97 +203,18 @@ export function ProductGrid({
       tabIndex={-1}
     >
       <div
-        className={cn(
-          viewMode === "list"
-            ? "flex flex-col gap-2"
-            : ["grid gap-(--product-grid-gap)", ...gridColumnClasses[density]],
-          className
-        )}
+        className={getProductGridItemsClassName({ viewMode, density, className })}
       >
-        {products.map((product, index) => {
-          const username = product.storeSlug ?? product.username ?? null
-
-          return (
-            <div key={product.id} role="listitem">
-              {viewMode === "list" ? (
-                <ProductCardList
-                  id={product.id}
-                  title={product.title}
-                  price={product.price}
-                  originalPrice={product.listPrice ?? product.originalPrice ?? null}
-                  image={product.image}
-                  createdAt={product.createdAt ?? null}
-                  slug={product.slug ?? null}
-                  username={username}
-                  sellerId={product.sellerId ?? null}
-                  sellerName={product.sellerName ?? undefined}
-                  sellerAvatarUrl={product.sellerAvatarUrl ?? null}
-                  sellerVerified={Boolean(product.sellerVerified)}
-                  location={product.location}
-                  condition={product.condition}
-                  freeShipping={product.freeShipping ?? false}
-                  isBoosted={Boolean(product.isBoosted)}
-                  {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-                />
-              ) : preset === "desktop" ? (
-                <DesktopProductCard
-                  id={product.id}
-                  title={product.title}
-                  price={product.price}
-                  originalPrice={product.listPrice ?? product.originalPrice ?? null}
-                  isOnSale={Boolean(product.isOnSale)}
-                  salePercent={product.salePercent ?? 0}
-                  createdAt={product.createdAt ?? null}
-                  image={product.image}
-                  rating={product.rating ?? 0}
-                  reviews={product.reviews ?? 0}
-                  soldCount={product.soldCount ?? 0}
-                  slug={product.slug ?? null}
-                  username={username}
-                  sellerId={product.sellerId ?? null}
-                  sellerName={product.sellerName ?? undefined}
-                  sellerAvatarUrl={product.sellerAvatarUrl ?? null}
-                  sellerVerified={Boolean(product.sellerVerified)}
-                  freeShipping={product.freeShipping ?? false}
-                  location={product.location}
-                  condition={product.condition}
-                  isBoosted={Boolean(product.isBoosted)}
-                  boostExpiresAt={product.boostExpiresAt ?? null}
-                  index={index}
-                  {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
-                  {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
-                  {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-                />
-              ) : (
-                <MobileProductCard
-                  id={product.id}
-                  title={product.title}
-                  price={product.price}
-                  originalPrice={product.listPrice ?? product.originalPrice ?? null}
-                  salePercent={product.salePercent ?? 0}
-                  createdAt={product.createdAt ?? null}
-                  image={product.image}
-                  rating={product.rating ?? 0}
-                  reviews={product.reviews ?? 0}
-                  slug={product.slug ?? null}
-                  username={username}
-                  sellerId={product.sellerId ?? null}
-                  sellerName={product.sellerName ?? undefined}
-                  sellerAvatarUrl={product.sellerAvatarUrl ?? null}
-                  sellerVerified={Boolean(product.sellerVerified)}
-                  condition={product.condition}
-                  location={product.location}
-                  isBoosted={Boolean(product.isBoosted)}
-                  boostExpiresAt={product.boostExpiresAt ?? null}
-                  index={index}
-                  layout={preset === "mobile-rail" ? "rail" : "feed"}
-                  {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
-                  {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
-                />
-              )}
-            </div>
-          )
-        })}
+        {products.map((product, index) => (
+          <div key={product.id} role="listitem">
+            <ProductGridItem
+              product={product}
+              index={index}
+              viewMode={viewMode}
+              preset={preset}
+            />
+          </div>
+        ))}
       </div>
     </div>
   )

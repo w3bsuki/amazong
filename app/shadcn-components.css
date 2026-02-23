@@ -17,7 +17,9 @@
 
 [data-slot="drawer-content"] {
   overscroll-behavior: contain;
-  contain: paint;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Drawer body scroll containment - prevents scroll leaking to parent */

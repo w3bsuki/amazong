@@ -34,9 +34,16 @@ Read this file (~100 lines) + one doc for your task area. Only add more for comp
 | A specific feature | `docs/features/<feature>.md` |
 | Why a pattern or decision exists | `docs/DECISIONS.md` |
 | What to work on | `TASKS.md` |
+| Plans, pricing, subscriptions | `docs/business/plans-pricing.md` |
+| Revenue, monetization, fees | `docs/business/monetization.md` |
+| Launch strategy, go-to-market | `docs/business/go-to-market.md` |
+| Competitive landscape | `docs/business/competitors.md` |
+| Success metrics and KPIs | `docs/business/metrics-kpis.md` |
+| Legal, GDPR, compliance | `docs/business/legal-compliance.md` |
 
 Feature docs: auth, bottom-nav, checkout-payments, header, product-cards, search-filters, sell-flow.
-Agent personas (optional): `docs/agents/` — ui-engineer, backend-engineer, researcher, reviewer, refactorer.
+Business docs: plans-pricing, monetization, go-to-market, competitors, metrics-kpis, legal-compliance.
+Agent personas: `docs/agents/` — business-strategist, marketing-manager, finance-analyst, operations-manager.
 
 ---
 
@@ -90,4 +97,4 @@ pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit
 
 If you changed files referenced in a doc, verify the doc is still accurate.
 
-*Last updated: 2026-02-21*
+*Last updated: 2026-02-23*

@@ -10,6 +10,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const isE2E = process.env.NEXT_PUBLIC_E2E === 'true'
 const isProduction = process.env.NODE_ENV === 'production'
+const enableViewTransition = process.env.NEXT_EXPERIMENTAL_VIEW_TRANSITION === 'true'
 
 const nextConfig: NextConfig = {
   // ============================================
@@ -133,6 +134,8 @@ const nextConfig: NextConfig = {
       : {}),
     // Auto-generate .d.ts for loaded env vars (IntelliSense in editor)
     typedEnv: true,
+    // Trial only: Next marks this experimental; keep it opt-in per environment.
+    viewTransition: enableViewTransition,
   },
 
   // Compression for production builds

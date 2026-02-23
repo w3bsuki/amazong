@@ -4,7 +4,7 @@ import { PageShell } from "../../_components/page-shell"
 export default function SearchLoading() {
   return (
     <PageShell variant="muted">
-      <div className="flex flex-col lg:flex-row container px-0!">
+      <div className="motion-safe:animate-content-fade-in flex flex-col lg:flex-row container px-0!">
         {/* Sidebar Skeleton - Hidden on mobile */}
         <aside className="w-64 hidden lg:block shrink-0 border-r border-sidebar-border bg-sidebar">
           <div className="sticky top-0 p-4 space-y-5 max-h-screen overflow-y-auto">
