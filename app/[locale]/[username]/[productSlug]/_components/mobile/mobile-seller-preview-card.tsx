@@ -116,7 +116,7 @@ export function MobileSellerPreviewCard({
         
         <Button
           variant="default"
-          size="sm"
+          size="default"
           className="ml-auto"
           onClick={onViewProfile}
         >

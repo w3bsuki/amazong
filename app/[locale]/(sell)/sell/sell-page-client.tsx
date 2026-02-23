@@ -43,7 +43,7 @@ function SellSignInPrompt() {
   const tSell = useTranslations("Sell")
 
   return (
-    <div className="container-content py-6 sm:py-8 lg:py-16 flex justify-center">
+    <div className="mx-auto flex w-full max-w-(--container-header) justify-center px-inset py-6 sm:py-8 lg:py-16">
       <AuthGateCard
         title={tSelling("signInToSell")}
         description={tSell("startSellingBanner.compact.subtitle")}
@@ -197,7 +197,7 @@ export function SellPageClient({
   if (needsOnboarding && user && username) {
     return (
       <SellGateLayout>
-        <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto py-8 px-4 text-center">
+        <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto px-inset py-8 text-center">
           <div className="max-w-md space-y-4">
             <h2 className="text-2xl font-bold text-foreground">
               {t("gates.completeAccountSetup.title")}
@@ -222,7 +222,7 @@ export function SellPageClient({
     return (
       <SellGateLayout>
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
-          <div className="container-narrow text-center space-y-4">
+          <div className="mx-auto w-full max-w-3xl px-inset text-center space-y-4">
             <h2 className="text-2xl font-bold">
               {t("gates.setUpUsername.title")}
             </h2>

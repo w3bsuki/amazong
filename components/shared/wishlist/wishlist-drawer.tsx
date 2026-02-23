@@ -7,13 +7,14 @@ import {
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
 import { Link } from "@/i18n/routing"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useCart } from "@/components/providers/cart-context"
 import { DrawerShell } from "@/components/shared/drawer-shell"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { formatPrice as formatCurrencyPrice } from "@/lib/price"
 
 interface WishlistDrawerProps {
   open: boolean
@@ -21,18 +22,12 @@ interface WishlistDrawerProps {
   className?: string
 }
 
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(price)
-}
-
 export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawerProps) {
   const [mounted, setMounted] = useState(false)
   const { items, isLoading, removeFromWishlist, totalItems } = useWishlist()
   const { addToCart } = useCart()
   const t = useTranslations("Wishlist")
+  const locale = useLocale()
 
   useEffect(() => {
     setMounted(true)
@@ -69,7 +64,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
       contentClassName={className}
       headerClassName="pb-1.5 pt-0 border-b border-border text-left"
       closeButtonClassName="text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted"
-      closeButtonSize="icon-compact"
+      closeButtonSize="icon-default"
       closeIconSize={20}
     >
 
@@ -134,7 +129,9 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
                     >
                       {item.title}
                     </Link>
-                    <p className="mt-auto pt-1 text-sm font-semibold tabular-nums text-price">{formatPrice(item.price)}</p>
+                    <p className="mt-auto pt-1 text-sm font-semibold tabular-nums text-price">
+                      {formatCurrencyPrice(item.price, { locale })}
+                    </p>
                   </div>
 
                   <div className="flex flex-col items-end justify-between">
@@ -142,7 +139,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
                       data-vaul-no-drag
                       onClick={() => handleMoveToCart(item)}
                       variant="ghost"
-                      size="icon-compact"
+                      size="icon-default"
                       className="text-foreground hover:bg-muted active:bg-muted"
                       aria-label={t("add")}
                     >
@@ -155,7 +152,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
                         toast.success(t("removed"))
                       }}
                       variant="ghost"
-                      size="icon-compact"
+                      size="icon-default"
                       className="text-muted-foreground hover:text-destructive hover:bg-destructive-subtle active:bg-destructive-subtle"
                       aria-label={t("remove")}
                     >

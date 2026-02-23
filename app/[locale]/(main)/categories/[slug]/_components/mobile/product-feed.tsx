@@ -65,7 +65,7 @@ export function ProductFeed({
   isLoading,
   activeSlug,
   locale: _locale,
-  isAllTab,
+  isAllTab: _isAllTab,
   activeCategoryName,
   onLoadMore,
   showLoadingOverlay = false,
@@ -103,7 +103,7 @@ export function ProductFeed({
   }, [hasMore, isLoading, onLoadMore, products.length])
 
   return (
-    <div className="pt-2">
+    <div className="px-inset pt-2">
       <div role="status" aria-live="polite" className="sr-only">
         {categoryAnnouncement}
       </div>
@@ -111,7 +111,7 @@ export function ProductFeed({
       <div aria-busy={isLoading} aria-label={isLoading ? loadingLabel : undefined} className="relative">
         {products.length === 0 && !isLoading ? (
           <EmptyStateCTA
-            variant={isAllTab ? "no-listings" : "no-category"}
+            variant="no-listings"
             {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
           />
         ) : isLoading && products.length === 0 ? (

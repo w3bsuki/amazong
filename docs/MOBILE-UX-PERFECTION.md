@@ -25,10 +25,10 @@ The quick view drawer uses **inline actions** (Buy Now + Add to Cart inside the 
 
 **Keep:** Inline actions pattern. No `DrawerFooter` for quick view.
 **Improve:**
-- [ ] Ensure actions section has consistent spacing: `pt-1 pb-safe-max` on the actions container
-- [ ] Verify the "View full page" link has a ≥ 44px touch target height
-- [ ] Image gallery in quick view should have smooth gesture-based swiping (currently using `QuickViewImageGallery`)
-- [ ] Close button (X) should be 44px touch target minimum
+- [x] Ensure actions section has consistent spacing: `pt-1 pb-safe-max` on the actions container
+- [x] Verify the "View full page" link has a ≥ 44px touch target height
+- [x] Image gallery in quick view should have smooth gesture-based swiping (currently using `QuickViewImageGallery`)
+- [x] Close button (X) should be 44px touch target minimum
 
 ### Drawer Animation
 **Do NOT add Framer Motion to drawer animations.** Vaul handles spring-based physics natively (drag-to-dismiss, snap points, velocity-aware). Adding Framer Motion would:
@@ -44,9 +44,9 @@ The quick view drawer uses **inline actions** (Buy Now + Add to Cart inside the 
 - These are OPTIONAL polish — only add if time allows, after core work is done
 
 ### `DrawerShell` consistency
-- [ ] Verify all drawers use `DrawerShell` (not raw Vaul primitives)
-- [ ] Verify all drawers have: drag handle, proper `aria-label`, `rounded-t-2xl`, `border-t border-border`
-- [ ] Cart drawer, account drawer, category browse drawer, filter hub — all consistent
+- [x] Verify all drawers use `DrawerShell` (not raw Vaul primitives)
+- [x] Verify all drawers have: drag handle, proper `aria-label`, `rounded-t-2xl`, `border-t border-border`
+- [x] Cart drawer, account drawer, category browse drawer, filter hub — all consistent
 
 ---
 
@@ -56,13 +56,13 @@ The PDP uses `VisualDrawerSurface` to create an iOS-style "content slides over g
 
 **Keep:** `VisualDrawerSurface` pattern, `MobileBottomBar` fixed bar, Accordion sections.
 **Improve:**
-- [ ] `MobileBottomBar` should respect the tab bar: when the tab bar is visible, bottom bar sits above it. Currently `pb-safe` only handles safe area, not tab bar overlap
-- [ ] Price formatting in `MobileBottomBar` should use the shared `formatPrice` from `lib/price.ts`, not an inline formatter
-- [ ] Accordion triggers should be 48px min-height (`--control-primary`) for easy touch
-- [ ] Space between gallery bottom and VisualDrawerSurface should be consistent (currently `-mt-4` overlap — verify this looks clean with all image sizes)
-- [ ] Hero specs pills should have consistent padding and touch targets
-- [ ] Seller preview card should be visually consistent with other cards in the system
-- [ ] Related/similar products grid at bottom should use the same card + spacing as the homepage feed
+- [x] `MobileBottomBar` should respect the tab bar: when the tab bar is visible, bottom bar sits above it. Currently `pb-safe` only handles safe area, not tab bar overlap
+- [x] Price formatting in `MobileBottomBar` should use the shared `formatPrice` from `lib/price.ts`, not an inline formatter
+- [x] Accordion triggers should be 48px min-height (`--control-primary`) for easy touch
+- [x] Space between gallery bottom and VisualDrawerSurface should be consistent (currently `-mt-4` overlap — verify this looks clean with all image sizes)
+- [x] Hero specs pills should have consistent padding and touch targets
+- [x] Seller preview card should be visually consistent with other cards in the system
+- [x] Related/similar products grid at bottom should use the same card + spacing as the homepage feed
 
 ---
 
@@ -71,14 +71,14 @@ The PDP uses `VisualDrawerSurface` to create an iOS-style "content slides over g
 The category page currently uses `SmartRail` + `ProductFeed` in a flat layout. It's functional but feels flat compared to the PDP's elevated surface treatment.
 
 **Improve:**
-- [ ] Add visual hierarchy: the `SmartRail` acts as navigation chrome, the product grid should feel like the main content surface. Consider using `PageShell variant="muted"` as background with the grid area having a subtle surface treatment
-- [ ] Product cards in the category grid should be identical to homepage feed cards (same density, same spacing, same hover/active states)
-- [ ] The subcategory pill rail should have clear active states: active pill gets `bg-foreground text-background` (inverted) vs. inactive `bg-surface-subtle text-foreground`
-- [ ] Filter button (SlidersHorizontal icon) in SmartRail should show active filter count badge
-- [ ] Empty state should be consistent with homepage empty state styling
-- [ ] Infinite scroll trigger zone should be generous (200px rootMargin — currently correct)
-- [ ] Loading skeletons should match the exact card layout shape (currently `ProductGridSkeleton`)
-- [ ] End-of-results indicator should be subtle and consistent
+- [x] Add visual hierarchy: the `SmartRail` acts as navigation chrome, the product grid should feel like the main content surface. Consider using `PageShell variant="muted"` as background with the grid area having a subtle surface treatment
+- [x] Product cards in the category grid should be identical to homepage feed cards (same density, same spacing, same hover/active states)
+- [x] The subcategory pill rail should have clear active states: active pill gets `bg-foreground text-background` (inverted) vs. inactive `bg-surface-subtle text-foreground`
+- [x] Filter button (SlidersHorizontal icon) in SmartRail should show active filter count badge
+- [x] Empty state should be consistent with homepage empty state styling
+- [x] Infinite scroll trigger zone should be generous (200px rootMargin — currently correct)
+- [x] Loading skeletons should match the exact card layout shape (currently `ProductGridSkeleton`)
+- [x] End-of-results indicator should be subtle and consistent
 
 ---
 
@@ -87,13 +87,13 @@ The category page currently uses `SmartRail` + `ProductFeed` in a flat layout. I
 The homepage is the best reference for what "good" looks like. Preserve its patterns.
 
 **Audit:**
-- [ ] Verify 2-column grid with `gap-(--spacing-home-card-gap)` is consistent
-- [ ] Cards use `MobileProductCard` with `layout="feed"` — this is the canonical mobile card
-- [ ] SmartRail on homepage with category pills + filter action — verify active states match category page
-- [ ] City picker integration works smoothly (sheet opens, selection applies)
-- [ ] Infinite scroll with `loadMoreRef` triggers at right distance
-- [ ] Error/empty state styling is consistent with design system
-- [ ] Skeleton loading matches card shape
+- [x] Verify 2-column grid with `gap-(--spacing-home-card-gap)` is consistent
+- [x] Cards use `MobileProductCard` with `layout="feed"` — this is the canonical mobile card
+- [x] SmartRail on homepage with category pills + filter action — verify active states match category page
+- [x] City picker integration works smoothly (sheet opens, selection applies)
+- [x] Infinite scroll with `loadMoreRef` triggers at right distance
+- [x] Error/empty state styling is consistent with design system
+- [x] Skeleton loading matches card shape
 
 ---
 
@@ -111,14 +111,14 @@ Every mobile surface should use the same spacing vocabulary:
 | Card internal padding | `p-0` (image) + `px-2 py-2` (info) | Inside product cards |
 
 **Audit across all mobile routes:**
-- [ ] Homepage: spacing consistent with table above
-- [ ] Category page: same grid gap as homepage
-- [ ] Search results: same grid gap as homepage
-- [ ] PDP: section spacing consistent
-- [ ] Cart page: consistent item spacing
-- [ ] Account pages: consistent list spacing
-- [ ] Auth pages: form spacing consistent
-- [ ] Sell flow pages: form spacing consistent
+- [x] Homepage: spacing consistent with table above
+- [x] Category page: same grid gap as homepage
+- [x] Search results: same grid gap as homepage
+- [x] PDP: section spacing consistent
+- [x] Cart page: consistent item spacing
+- [x] Account pages: consistent list spacing
+- [x] Auth pages: form spacing consistent
+- [x] Sell flow pages: form spacing consistent
 
 ---
 
@@ -126,26 +126,26 @@ Every mobile surface should use the same spacing vocabulary:
 
 Every interactive element on mobile must be ≥ 44px in at least one dimension:
 
-- [ ] All buttons: ≥ 44px height (use `size="default"` or `size="primary"`)
-- [ ] All icon buttons: ≥ 44px (use `size="icon-default"`)
-- [ ] Nav tabs in bottom tab bar: ≥ 44px touch area
-- [ ] SmartRail pills: ≥ 36px height (`--control-compact`) — acceptable for horizontal pills
-- [ ] Accordion triggers: ≥ 48px height
-- [ ] Drawer drag handle area: ≥ 20px vertical touch zone
-- [ ] List items (settings, addresses, orders): ≥ 48px row height
-- [ ] Form inputs: 16px font-size minimum (prevents iOS zoom)
-- [ ] Links in body text: have enough padding/margin to be distinguishable tap targets
+- [x] All buttons: ≥ 44px height (use `size="default"` or `size="primary"`)
+- [x] All icon buttons: ≥ 44px (use `size="icon-default"`)
+- [x] Nav tabs in bottom tab bar: ≥ 44px touch area
+- [x] SmartRail pills: ≥ 36px height (`--control-compact`) — acceptable for horizontal pills
+- [x] Accordion triggers: ≥ 48px height
+- [x] Drawer drag handle area: ≥ 20px vertical touch zone
+- [x] List items (settings, addresses, orders): ≥ 48px row height
+- [x] Form inputs: 16px font-size minimum (prevents iOS zoom)
+- [x] Links in body text: have enough padding/margin to be distinguishable tap targets
 
 ---
 
 ## 7. Dark Mode Verification
 
-- [ ] All mobile surfaces render correctly in `.dark` class
-- [ ] `bg-surface-elevated` is distinguishable from `bg-background` in dark mode
-- [ ] Borders (`border-border`, `border-border-subtle`) are visible but not heavy in dark mode
-- [ ] Text contrast meets WCAG AA on all surfaces
-- [ ] Product card images don't flash white during load
-- [ ] Skeleton shimmer effect works in dark mode
+- [x] All mobile surfaces render correctly in `.dark` class
+- [x] `bg-surface-elevated` is distinguishable from `bg-background` in dark mode
+- [x] Borders (`border-border`, `border-border-subtle`) are visible but not heavy in dark mode
+- [x] Text contrast meets WCAG AA on all surfaces
+- [x] Product card images don't flash white during load
+- [x] Skeleton shimmer effect works in dark mode
 
 ---
 
@@ -169,16 +169,16 @@ Use existing tools:
 
 ## 9. Component Consistency Checklist
 
-- [ ] All product cards on mobile use `MobileProductCard` (not custom one-offs)
-- [ ] All drawers use `DrawerShell` wrapper
-- [ ] All page backgrounds use `PageShell` with appropriate variant
-- [ ] All empty states use `EmptyStateCTA` component
-- [ ] All loading states use `ProductGridSkeleton` for grids, `Skeleton` for individual elements
-- [ ] All forms use `Field` / `FieldLabel` / `FieldError` pattern
-- [ ] All navigation uses `Link` / `redirect` from `@/i18n/routing`
-- [ ] No raw `<a>` tags or `next/link` imports
-- [ ] All icons from `lucide-react`, consistent sizing per context (16px compact, 20px default, 24px hero)
-- [ ] Price displays use `formatPrice` from `lib/price.ts`
+- [x] All product cards on mobile use `MobileProductCard` (not custom one-offs)
+- [x] All drawers use `DrawerShell` wrapper
+- [x] All page backgrounds use `PageShell` with appropriate variant
+- [x] All empty states use `EmptyStateCTA` component
+- [x] All loading states use `ProductGridSkeleton` for grids, `Skeleton` for individual elements
+- [x] All forms use `Field` / `FieldLabel` / `FieldError` pattern
+- [x] All navigation uses `Link` / `redirect` from `@/i18n/routing`
+- [x] No raw `<a>` tags or `next/link` imports
+- [x] All icons from `lucide-react`, consistent sizing per context (16px compact, 20px default, 24px hero)
+- [x] Price displays use `formatPrice` from `lib/price.ts`
 
 ---
 
@@ -186,17 +186,17 @@ Use existing tools:
 
 For each route, verify: correct header variant, proper spacing, touch targets, dark mode, consistent components.
 
-- [ ] `/` — Homepage (mobile home feed + smart rail + category nav)
-- [ ] `/categories` — Category index (if exists)
-- [ ] `/categories/[slug]` — Category detail (smart rail + product feed)
-- [ ] `/search` — Search results (search controls + product grid)
-- [ ] `/[username]/[productSlug]` — PDP (gallery + VisualDrawerSurface + bottom bar)
-- [ ] `/cart` — Cart page (item list + summary)
-- [ ] `/checkout/*` — Checkout flow (multi-step)
-- [ ] `/account/*` — Account settings, orders, addresses, wishlist
-- [ ] `/sell/*` — Sell flow (form + image upload)
-- [ ] `/chat` — Messages (if exists)
-- [ ] Auth pages: `/login`, `/register`, `/forgot-password`
+- [x] `/` — Homepage (mobile home feed + smart rail + category nav)
+- [x] `/categories` — Category index (if exists)
+- [x] `/categories/[slug]` — Category detail (smart rail + product feed)
+- [x] `/search` — Search results (search controls + product grid)
+- [x] `/[username]/[productSlug]` — PDP (gallery + VisualDrawerSurface + bottom bar)
+- [x] `/cart` — Cart page (item list + summary)
+- [x] `/checkout/*` — Checkout flow (multi-step)
+- [x] `/account/*` — Account settings, orders, addresses, wishlist
+- [x] `/sell/*` — Sell flow (form + image upload)
+- [x] `/chat` — Messages (if exists)
+- [x] Auth pages: `/login`, `/register`, `/forgot-password`
 
 ---
 

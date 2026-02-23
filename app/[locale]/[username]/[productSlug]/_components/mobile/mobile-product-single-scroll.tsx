@@ -221,7 +221,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
 
       {/* ========== CONTENT (Single Scroll) ========== */}
       <VisualDrawerSurface>
-        <div className="space-y-4 px-4 pb-4">
+        <div className="space-y-4 px-inset pb-4">
           {/* Meta Row: Category + Time/Views */}
           <MetaRow
             category={category}
@@ -264,9 +264,9 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
         </div>
 
         {/* Expandable sections */}
-        <Accordion type="multiple" className="px-4">
+        <Accordion type="multiple" className="px-inset">
           <AccordionItem value="specs">
-            <AccordionTrigger>{t("fullSpecifications")}</AccordionTrigger>
+            <AccordionTrigger className="min-h-(--control-primary)">{t("fullSpecifications")}</AccordionTrigger>
             <AccordionContent>
               <SpecificationsList specifications={viewModel.itemSpecifics.details || []} />
             </AccordionContent>
@@ -274,7 +274,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
 
           {product.description ? (
             <AccordionItem value="description">
-              <AccordionTrigger>{t("description")}</AccordionTrigger>
+              <AccordionTrigger className="min-h-(--control-primary)">{t("description")}</AccordionTrigger>
               <AccordionContent>
                 <ProductDescription description={product.description} />
               </AccordionContent>
@@ -282,7 +282,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
           ) : null}
 
           <AccordionItem value="delivery">
-            <AccordionTrigger>{t("delivery")}</AccordionTrigger>
+            <AccordionTrigger className="min-h-(--control-primary)">{t("delivery")}</AccordionTrigger>
             <AccordionContent className="space-y-4">
               <DeliveryOptions pickupOnly={pickupOnly} freeShipping={freeShipping} />
               <ShippingReturnsInfo pickupOnly={pickupOnly} />
@@ -290,7 +290,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
           </AccordionItem>
 
           <AccordionItem value="seller">
-            <AccordionTrigger>{t("sellerInfo")}</AccordionTrigger>
+            <AccordionTrigger className="min-h-(--control-primary)">{t("sellerInfo")}</AccordionTrigger>
             <AccordionContent>
               <MobileSellerPreviewCard
                 seller={sellerPreview}
@@ -300,7 +300,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
           </AccordionItem>
 
           <AccordionItem value="reviews">
-            <AccordionTrigger>
+            <AccordionTrigger className="min-h-(--control-primary)">
               {t("reviews", { count: Number(product.review_count ?? 0) })}
             </AccordionTrigger>
             <AccordionContent>
@@ -317,7 +317,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
           </AccordionItem>
         </Accordion>
 
-        <div className="space-y-4 px-4 pt-4">
+        <div className="space-y-4 px-inset pt-4">
           <MobileSafetyTips />
           <MobileReportButton onReport={handleReport} />
         </div>

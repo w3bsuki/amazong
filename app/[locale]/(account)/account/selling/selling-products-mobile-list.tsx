@@ -157,7 +157,7 @@ export function SellingProductsMobileList({
                         trigger={
                           <Button
                             variant="ghost"
-                            size="icon-sm"
+                            size="icon-default"
                             className={cn(
                               boostExpired ? "text-muted-foreground hover:text-primary" : "text-primary",
                               "hover:bg-hover",
@@ -171,7 +171,7 @@ export function SellingProductsMobileList({
                       />
                     )}
 
-                    <Button asChild variant="ghost" size="icon-sm" aria-label={t("editSrOnly")}>
+                    <Button asChild variant="ghost" size="icon-default" aria-label={t("editSrOnly")}>
                       <Link href={`/account/selling/${product.id}/edit`}>
                         <Pencil className="size-4" aria-hidden="true" />
                       </Link>
@@ -181,7 +181,7 @@ export function SellingProductsMobileList({
                       <AlertDialogTrigger asChild>
                         <Button
                           variant="ghost"
-                          size="icon-sm"
+                          size="icon-default"
                           className="text-destructive hover:bg-destructive-subtle"
                           disabled={deletingId === product.id}
                           aria-label={t("deleteSrOnly")}

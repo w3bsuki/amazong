@@ -85,7 +85,7 @@
 
 > Full codebase audit + rework to make mobile (375px) feel polished, consistent, and premium.
 
-- [ ] **MOBILE-001:** Full mobile UI/UX audit and alignment pass
+- [x] **MOBILE-001:** Full mobile UI/UX audit and alignment pass
   - Context: `docs/DESIGN.md`, `docs/STACK.md`, `docs/features/product-cards.md`
   - Scope: every mobile-visible route and component at 375px viewport
   - See: `docs/MOBILE-UX-PERFECTION.md` for detailed spec and audit checklist

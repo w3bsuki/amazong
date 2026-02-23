@@ -18,7 +18,7 @@ export function AuthCard({
   showLogo = true,
 }: AuthCardProps) {
   return (
-    <div className="min-h-dvh flex items-center justify-center px-4 py-6 pt-safe-max-sm pb-safe-max">
+    <div className="min-h-dvh flex items-center justify-center px-inset py-6 pt-safe-max-sm pb-safe-max">
       <div className="w-full max-w-sm space-y-4">
         {showLogo ? (
           <Link

@@ -16,6 +16,7 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useNormalizedImageSrc } from "@/hooks/use-normalized-image-src"
 import { getProductUrl } from "@/lib/url-utils"
+import { formatPrice as formatCurrencyPrice } from "@/lib/price"
 
 interface CartDrawerProps {
   open: boolean
@@ -62,11 +63,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const locale = useLocale()
 
   const formatPrice = useCallback(
-    (price: number) =>
-      new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
-        style: "currency",
-        currency: "EUR",
-      }).format(price),
+    (price: number) => formatCurrencyPrice(price, { locale }),
     [locale]
   )
 

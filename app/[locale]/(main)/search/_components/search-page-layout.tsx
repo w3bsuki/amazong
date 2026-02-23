@@ -132,7 +132,7 @@ export function SearchPageLayout({
           <MobileSellerFilterControls basePath="/search" listingsHref={modeListingsHref} className="mb-2" />
         )}
 
-        <div className="container overflow-x-hidden pb-4 pt-2">
+        <div className="mx-auto w-full max-w-(--breakpoint-md) overflow-x-hidden px-inset pb-tabbar-safe pt-2">
           {browseMode === "listings" ? (
             <>
               <ProductGrid products={gridProducts} viewMode="grid" preset="mobile-feed" density="compact" />

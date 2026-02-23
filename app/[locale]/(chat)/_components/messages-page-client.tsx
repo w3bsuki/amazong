@@ -111,7 +111,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
             {/* Back button - goes to home */}
             <Link 
               href="/"
-              className="flex items-center justify-center size-9 rounded-full hover:bg-hover active:bg-active transition-colors lg:hidden"
+              className="flex size-(--control-default) items-center justify-center rounded-full transition-colors hover:bg-hover active:bg-active lg:hidden"
               aria-label={labels.back}
             >
               <ArrowLeft size={20} />
@@ -127,7 +127,7 @@ function MessagesContent({ actions }: { actions: ChatInterfaceServerActions }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={labels.searchPlaceholder}
-                className="pl-9 h-10 rounded-full bg-surface-subtle border-0 focus-visible:ring-1 focus-visible:ring-ring"
+                className="h-(--control-default) rounded-full border-0 bg-surface-subtle pl-9 focus-visible:ring-1 focus-visible:ring-ring"
               />
             </div>
           </div>

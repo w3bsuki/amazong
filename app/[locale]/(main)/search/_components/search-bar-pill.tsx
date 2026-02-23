@@ -18,7 +18,7 @@ export function SearchBarPill({ query }: SearchBarPillProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center gap-2 rounded-full border border-border-subtle bg-surface-subtle px-3 py-1.5 text-left tap-transparent active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        className="flex min-h-(--control-default) w-full items-center gap-2 rounded-full border border-border-subtle bg-surface-subtle px-3 text-left tap-transparent active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={t("search")}
       >
         <MagnifyingGlass className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />

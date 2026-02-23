@@ -16,9 +16,11 @@ import { MessageCircle, ShoppingCart, Phone, Calendar, User } from "lucide-react
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/components/providers/cart-context"
-import { useRouter } from "@/i18n/routing"
+import { usePathname, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import type { CategoryType } from "@/lib/utils/category-type"
+import { formatPrice } from "@/lib/price"
+import { getMobileTabBarRouteState } from "@/lib/navigation/mobile-tab-bar"
 
 export interface MobileBottomBarProps {
   categoryType: CategoryType
@@ -58,18 +60,11 @@ export function MobileBottomBar({
 }: MobileBottomBarProps) {
   const t = useTranslations("Product")
   const locale = useLocale()
+  const pathname = usePathname()
   const router = useRouter()
   const { addToCart } = useCart()
-
-  // Price formatting
-  const currency = product.currency || "EUR"
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: currency === "BGN" ? 0 : 2,
-      maximumFractionDigits: currency === "BGN" ? 0 : 2,
-    }).format(p)
+  const routeState = getMobileTabBarRouteState(pathname)
+  const isTabBarVisible = !routeState.shouldHideTabBar
 
   // Navigate to chat
   const handleChat = () => {
@@ -186,7 +181,7 @@ export function MobileBottomBar({
               onClick={handleAddToCart}
             >
               <ShoppingCart className="size-5" />
-              <span>{t("add")} · {formatPrice(product.price)}</span>
+              <span>{t("add")} · {formatPrice(product.price, { locale })}</span>
             </Button>
           </>
         )
@@ -196,9 +191,10 @@ export function MobileBottomBar({
   return (
     <div
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50",
+        "fixed inset-x-0 z-50",
         "border-t border-border bg-background",
         "pb-safe",
+        isTabBarVisible ? "bottom-tabbar-offset" : "bottom-0",
         className
       )}
     >

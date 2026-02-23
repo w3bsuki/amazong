@@ -72,7 +72,7 @@ export function AccountLayoutContent({
       <SidebarInset>
         <AccountHeader />
         <div className="flex flex-1 flex-col bg-background min-h-0">
-          <div className="@container/main flex flex-1 flex-col gap-4 px-3 py-(--spacing-section-gap) pb-tabbar-safe md:px-6 md:py-6 md:pb-6">
+          <div className="@container/main flex flex-1 flex-col gap-4 px-inset py-(--spacing-section-gap) pb-tabbar-safe md:px-6 md:py-6 md:pb-6">
             {children}
           </div>
         </div>

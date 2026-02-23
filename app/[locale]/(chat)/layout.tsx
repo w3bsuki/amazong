@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { routing, validateLocale } from "@/i18n/routing";
 import { CommerceProviders } from "../_providers/commerce-providers";
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider";
+import { PageShell } from "../_components/page-shell";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -34,9 +35,9 @@ export default async function ChatLayout({
     return (
         <FullRouteIntlProvider locale={locale}>
             <CommerceProviders>
-                <div className="fixed inset-0 flex w-full bg-background overflow-hidden">
+                <PageShell variant="default" className="fixed inset-0 flex w-full overflow-hidden">
                     {children}
-                </div>
+                </PageShell>
             </CommerceProviders>
         </FullRouteIntlProvider>
     );

@@ -1,7 +1,10 @@
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { ChevronRight } from "lucide-react"
 import { Link } from "@/i18n/routing"
-import { ProductMiniCard } from "@/components/shared/product/card/mini"
+import {
+  ProductGrid,
+  type ProductGridProduct,
+} from "@/components/shared/product/product-grid"
 import type { CategorySummary } from "./meta-row"
 
 interface SimilarProduct {
@@ -28,19 +31,27 @@ export function SimilarItemsGrid({
   rootCategory,
   maxItems = 10,
 }: SimilarItemsGridProps) {
-  const locale = useLocale()
   const t = useTranslations("Product")
 
   if (!products || products.length === 0) return null
 
+  const gridProducts: ProductGridProduct[] = products.slice(0, maxItems).map((item) => ({
+    id: item.id,
+    title: item.title,
+    price: item.price,
+    image: item.image ?? "/placeholder.svg",
+    slug: item.slug ?? null,
+    storeSlug: item.storeSlug ?? null,
+  }))
+
   return (
-    <section className="mt-4 border-t border-border pt-4">
-      <div className="flex items-center justify-between px-4">
+    <section className="mt-4 space-y-3 border-t border-border pt-4">
+      <div className="flex items-center justify-between px-inset">
         <h2 className="font-semibold text-foreground">{t("similarItems")}</h2>
         {rootCategory?.slug && (
           <Link
             href={`/categories/${rootCategory.slug}`}
-            className="flex items-center gap-0.5 text-sm font-medium text-primary"
+            className="inline-flex min-h-(--control-default) items-center gap-0.5 text-sm font-medium text-primary"
           >
             {t("viewAll")}
             <ChevronRight className="size-4" />
@@ -48,23 +59,13 @@ export function SimilarItemsGrid({
         )}
       </div>
 
-      <div className="scrollbar-hide mt-3 flex gap-3 overflow-x-auto px-4 pb-4 snap-x snap-mandatory">
-        {products.slice(0, maxItems).map((item) => {
-          const productHref = item.storeSlug ? `/${item.storeSlug}/${item.slug || item.id}` : null
-          return (
-            <div key={item.id} className="shrink-0 snap-start">
-              <ProductMiniCard
-                id={item.id}
-                title={item.title}
-                price={item.price}
-                image={item.image}
-                href={productHref}
-                locale={locale}
-                className="w-40"
-              />
-            </div>
-          )
-        })}
+      <div className="px-inset pb-4">
+        <ProductGrid
+          products={gridProducts}
+          viewMode="grid"
+          preset="mobile-feed"
+          density="compact"
+        />
       </div>
     </section>
   )

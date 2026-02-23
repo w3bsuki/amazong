@@ -101,7 +101,7 @@ export function QuickViewImageGallery({
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon-compact"
+                  size="icon-default"
                   onClick={(e) => { e.stopPropagation(); prevImage() }}
                   className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background hover:bg-hover active:bg-active"
                   aria-label={tProduct("previousImage")}
@@ -111,7 +111,7 @@ export function QuickViewImageGallery({
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon-compact"
+                  size="icon-default"
                   onClick={(e) => { e.stopPropagation(); nextImage() }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background hover:bg-hover active:bg-active"
                   aria-label={tProduct("nextImage")}
@@ -195,7 +195,7 @@ export function QuickViewImageGallery({
             <Button
               type="button"
               variant="ghost"
-              size="icon-compact"
+              size="icon-default"
               onClick={(e) => { e.stopPropagation(); prevImage() }}
               className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground touch-manipulation hover:bg-hover active:bg-active"
               aria-label={tProduct("previousImage")}
@@ -205,7 +205,7 @@ export function QuickViewImageGallery({
             <Button
               type="button"
               variant="ghost"
-              size="icon-compact"
+              size="icon-default"
               onClick={(e) => { e.stopPropagation(); nextImage() }}
               className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-border-subtle bg-background text-foreground touch-manipulation hover:bg-hover active:bg-active"
               aria-label={tProduct("nextImage")}

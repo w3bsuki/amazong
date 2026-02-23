@@ -57,7 +57,7 @@ export function ProductQuickViewMobileContent({
             <IconButton
               type="button"
               variant="ghost"
-              size="icon-compact"
+              size="icon-default"
               onClick={onCopyLink}
               aria-label={tModal("copyLink")}
               disabled={!shareEnabled}
@@ -68,7 +68,7 @@ export function ProductQuickViewMobileContent({
             <IconButton
               type="button"
               variant="ghost"
-              size="icon-compact"
+              size="icon-default"
               onClick={onToggleWishlist}
               aria-label={inWishlist ? tProduct("removeFromWatchlist") : tProduct("addToWatchlist")}
               disabled={wishlistPending}
@@ -83,7 +83,7 @@ export function ProductQuickViewMobileContent({
             <IconButton
               type="button"
               variant="ghost"
-              size="icon-compact"
+              size="icon-default"
               onClick={() => onRequestClose?.()}
               aria-label={tDrawers("close")}
               className="text-muted-foreground hover:text-foreground"
@@ -95,7 +95,7 @@ export function ProductQuickViewMobileContent({
       </div>
 
       {/* Content — image, info, actions — all inline, no scroll needed */}
-      <div className="space-y-2.5 px-4 py-3 pb-safe-max">
+      <div className="space-y-2.5 px-4 py-3">
         <QuickViewImageGallery
           images={allImages}
           title={titleText}
@@ -157,7 +157,7 @@ export function ProductQuickViewMobileContent({
         </div>
 
         {/* Actions — inline, not a sticky footer */}
-        <div className="grid grid-cols-2 gap-2 pt-0.5">
+        <div className="grid grid-cols-2 gap-2 pt-1 pb-safe-max">
           <Button
             type="button"
             variant="default"
@@ -185,7 +185,7 @@ export function ProductQuickViewMobileContent({
         <button
           type="button"
           onClick={onNavigateToProduct}
-          className="flex w-full items-center justify-center gap-1 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground active:text-foreground"
+          className="flex min-h-(--control-default) w-full items-center justify-center gap-1 rounded-lg text-sm font-medium text-muted-foreground transition-colors hover:text-foreground active:text-foreground"
         >
           {tModal("viewFullPage")}
           <ChevronRight size={14} />

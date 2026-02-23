@@ -95,11 +95,11 @@ function CheckoutNoticeCard({
             <p className="text-sm font-medium text-foreground">{checkoutNotice.title}</p>
             <p className="mt-1 text-sm text-muted-foreground">{checkoutNotice.description}</p>
             <div className="mt-3 flex items-center gap-2">
-              <Button asChild size="sm" className="flex-1">
+              <Button asChild size="default" className="flex-1">
                 <Link href={checkoutNotice.primaryAction.href}>{checkoutNotice.primaryAction.label}</Link>
               </Button>
               {checkoutNotice.showSecondaryCartAction && (
-                <Button asChild size="sm" variant="secondary" className="flex-1">
+                <Button asChild size="default" variant="secondary" className="flex-1">
                   <Link href="/cart">{t("backToCart")}</Link>
                 </Button>
               )}
@@ -121,11 +121,11 @@ function CheckoutNoticeCard({
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Button asChild size="sm">
+          <Button asChild size="default">
             <Link href={checkoutNotice.primaryAction.href}>{checkoutNotice.primaryAction.label}</Link>
           </Button>
           {checkoutNotice.showSecondaryCartAction && (
-            <Button asChild size="sm" variant="secondary">
+            <Button asChild size="default" variant="secondary">
               <Link href="/cart">{t("backToCart")}</Link>
             </Button>
           )}

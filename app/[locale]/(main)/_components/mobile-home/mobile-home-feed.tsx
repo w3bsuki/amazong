@@ -1,6 +1,8 @@
 import type { RefObject } from "react"
 
 import type { UIProduct } from "@/lib/types/products"
+import { ProductGridSkeleton } from "@/components/shared/product/product-grid"
+import { EmptyStateCTA } from "../../../_components/empty-state-cta"
 import { MobileHomeProductCard } from "./mobile-home-product-card"
 
 type Translate = (key: string, values?: Record<string, string | number | Date>) => string
@@ -39,12 +41,12 @@ export function MobileHomeFeed({
             <div ref={loadMoreRef} data-testid="home-v4-load-more" className="h-10" />
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center px-inset py-14">
-            <p className="text-sm text-muted-foreground">{tMobile("feed.empty.all")}</p>
+          <div className="px-inset py-6">
+            <EmptyStateCTA variant="no-listings" showCTA={false} className="px-0 py-10" />
             <button
               type="button"
               onClick={onResetAll}
-              className="mt-3 inline-flex min-h-(--control-default) items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-xs font-semibold text-foreground tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
+              className="mx-auto inline-flex min-h-(--control-default) items-center rounded-full border border-border-subtle bg-surface-subtle px-3 text-xs font-semibold text-foreground tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
             >
               {tV4("actions.reset")}
             </button>
@@ -54,9 +56,7 @@ export function MobileHomeFeed({
 
       {isLoading && (
         <div className="px-inset pb-2">
-          <div className="rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
-            <p className="text-xs text-muted-foreground">{tMobile("feed.loading")}</p>
-          </div>
+          <ProductGridSkeleton count={2} density="compact" preset="mobile-feed" />
         </div>
       )}
 

@@ -1,8 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import { Link } from "@/i18n/routing"
-import { ArrowRight, CircleCheck as CheckCircle, Heart, Minus, Package, Plus, ShieldCheck, ShoppingCart, Trash, Truck } from "lucide-react";
+import { Link, usePathname } from "@/i18n/routing"
+import { ArrowRight, CircleCheck as CheckCircle, Heart, Minus, Package, Plus, ShieldCheck, Trash, Truck } from "lucide-react";
 
 import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,9 @@ import { IconButton } from "@/components/ui/icon-button"
 import { Separator } from "@/components/ui/separator"
 import { ProductMiniCard } from "@/components/shared/product/card/mini"
 import { useNormalizedImageSrc } from "@/hooks/use-normalized-image-src"
+import { EmptyStateCTA } from "../../../_components/empty-state-cta"
+import { getMobileTabBarRouteState } from "@/lib/navigation/mobile-tab-bar"
+import { cn } from "@/lib/utils"
 
 type Translate = (key: string, values?: Record<string, string | number | Date>) => string
 
@@ -75,7 +78,7 @@ export function CartEmptyState({
 }) {
   return (
     <div className="bg-secondary/30 min-h-(--page-section-min-h-lg) pt-14 lg:pt-0">
-      <div className="container py-6">
+      <div className="px-inset py-6 lg:container">
         <AppBreadcrumb
           items={breadcrumbPresets(tBreadcrumbs).cart}
           ariaLabel={tBreadcrumbs("ariaLabel")}
@@ -83,27 +86,18 @@ export function CartEmptyState({
           className="hidden lg:flex"
         />
 
-        <div className="mt-8 lg:mt-12 max-w-md mx-auto text-center">
-          <div className="size-24 bg-surface-subtle rounded-full flex items-center justify-center mx-auto mb-6">
-            <ShoppingCart className="size-10 text-muted-foreground" />
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight mb-2">{t("emptyTitle")}</h1>
-          <p className="text-muted-foreground mb-8">{t("emptyDescription")}</p>
-          <div className="flex flex-col gap-3">
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full h-12 font-medium"
-            >
-              <Link href="/">
-                {t("continueShopping")}
-                <ArrowRight className="size-4 ml-2" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="rounded-full h-12">
-              <Link href="/todays-deals">{t("viewDeals")}</Link>
-            </Button>
-          </div>
+        <div className="mx-auto mt-8 max-w-md lg:mt-12">
+          <EmptyStateCTA
+            variant="no-listings"
+            title={t("emptyTitle")}
+            description={t("emptyDescription")}
+            ctaHref="/"
+            ctaLabel={t("continueShopping")}
+            className="px-0 py-0"
+          />
+          <Button asChild variant="outline" size="default" className="mt-3 w-full rounded-full">
+            <Link href="/todays-deals">{t("viewDeals")}</Link>
+          </Button>
         </div>
 
         {recentlyViewedLoaded && recentItems.length > 0 && (
@@ -324,9 +318,18 @@ export function CartMobileFooter({
   handleCheckout: () => void
   t: Translate
 }) {
+  const pathname = usePathname()
+  const routeState = getMobileTabBarRouteState(pathname)
+  const isTabBarVisible = !routeState.shouldHideTabBar
+
   return (
-    <div className="fixed bottom-0 inset-x-0 bg-background border-t border-border z-40 lg:hidden pb-safe">
-      <div className="flex items-center gap-3 px-4 py-3">
+    <div
+      className={cn(
+        "fixed inset-x-0 z-40 border-t border-border bg-background pb-safe lg:hidden",
+        isTabBarVisible ? "bottom-tabbar-offset" : "bottom-0"
+      )}
+    >
+      <div className="flex items-center gap-3 px-inset py-3">
         <div className="flex-1 min-w-0">
           <p className="text-xs text-muted-foreground mb-0.5">
             {t("totalLabel")}

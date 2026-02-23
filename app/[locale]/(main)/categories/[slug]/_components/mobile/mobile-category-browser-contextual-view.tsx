@@ -71,17 +71,21 @@ export function MobileCategoryBrowserContextualView({
           testId="mobile-category-scope-rail"
         />
 
-        <ProductFeed
-          products={products}
-          hasMore={hasMore}
-          isLoading={isLoading}
-          activeSlug={activeSlug}
-          locale={locale}
-          isAllTab={false}
-          activeCategoryName={activeCategoryName}
-          onLoadMore={onLoadMore}
-          showLoadingOverlay={true}
-        />
+        <div className="px-inset pt-2">
+          <div className="overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated">
+            <ProductFeed
+              products={products}
+              hasMore={hasMore}
+              isLoading={isLoading}
+              activeSlug={activeSlug}
+              locale={locale}
+              isAllTab={false}
+              activeCategoryName={activeCategoryName}
+              onLoadMore={onLoadMore}
+              showLoadingOverlay={true}
+            />
+          </div>
+        </div>
       </div>
 
       <FilterHub

@@ -3,6 +3,7 @@ import { Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge";
 import { getConditionBadgeVariant, getConditionKey } from "@/components/shared/product/condition";
+import { formatPrice } from "@/lib/price";
 
 interface ProductHeaderProps {
   title: string;
@@ -23,26 +24,17 @@ export function ProductHeader({
   condition,
   freeShipping,
   price,
-  currency,
   isNegotiable,
   locale,
 }: ProductHeaderProps) {
   const t = useTranslations("Product");
-
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: currency === "BGN" ? 0 : 2,
-      maximumFractionDigits: currency === "BGN" ? 0 : 2,
-    }).format(p);
 
   return (
     <div className="space-y-1.5">
       {/* Price first (most important) */}
       {price > 0 && (
         <div className="flex items-center gap-2">
-          <p className="text-2xl font-bold text-foreground">{formatPrice(price)}</p>
+          <p className="text-2xl font-bold text-foreground">{formatPrice(price, { locale })}</p>
           {isNegotiable && (
             <Badge variant="default">{t("negotiable")}</Badge>
           )}

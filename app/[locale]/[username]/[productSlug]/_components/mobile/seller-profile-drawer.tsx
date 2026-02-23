@@ -301,7 +301,7 @@ function SellerListings({
       </h3>
 
       {/* Horizontal scroll of products */}
-      <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 hide-scrollbar">
+      <div className="-mx-inset flex gap-2 overflow-x-auto px-inset pb-2 hide-scrollbar">
         {products.slice(0, 8).map((product) => (
           <SellerProductCard key={product.id} product={product} />
         ))}
@@ -356,8 +356,8 @@ export function SellerProfileDrawer({
       contentAriaLabel={seller.name}
       description={`${t("seller.viewProfile")} - ${seller.name}`}
       descriptionClassName="sr-only"
-      headerClassName="px-4 pb-2 pt-3 border-border-subtle"
-      closeButtonSize="icon-compact"
+      headerClassName="border-border-subtle px-inset pb-2 pt-3"
+      closeButtonSize="icon-default"
       closeButtonClassName="shrink-0 -mr-2 rounded-full text-foreground hover:bg-muted active:bg-active touch-manipulation"
       drawerContentProps={{ showHandle: true, overlayBlur: "none" }}
     >
@@ -382,7 +382,7 @@ export function SellerProfileDrawer({
           {seller.username && (
             <Button
               variant="ghost"
-              size="sm"
+              size="default"
               className="w-full justify-center text-sm text-primary"
               onClick={handleViewFullProfile}
             >
@@ -397,7 +397,7 @@ export function SellerProfileDrawer({
           <div className="flex gap-2">
             <Button
               variant={isFollowing ? "secondary" : "outline"}
-              size="sm"
+              size="default"
               className="flex-1 gap-1.5"
               onClick={handleFollow}
             >
@@ -406,7 +406,7 @@ export function SellerProfileDrawer({
             </Button>
             <Button
               variant="default"
-              size="sm"
+              size="default"
               className="flex-1 gap-1.5"
               onClick={handleChat}
             >

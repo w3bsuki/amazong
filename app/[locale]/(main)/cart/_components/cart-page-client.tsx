@@ -10,6 +10,7 @@ import { PageShell } from "../../../_components/page-shell"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { useHeaderOptional } from "@/components/providers/header-context"
 import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
+import { formatPrice as formatCurrencyPrice } from "@/lib/price"
 import {
   CartEmptyState,
   CartItemsList,
@@ -48,13 +49,7 @@ export default function CartPageClient() {
     router.push("/checkout")
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
-      style: "currency",
-      currency: "EUR",
-      minimumFractionDigits: 2,
-    }).format(price)
-  }
+  const formatPrice = (price: number) => formatCurrencyPrice(price, { locale })
 
   const getProductUrl = (item: {
     id: string
@@ -95,7 +90,7 @@ export default function CartPageClient() {
 
   return (
     <PageShell variant="muted" className="pb-32 pt-14 lg:pb-12 lg:pt-0">
-      <div className="container py-4 lg:py-6">
+      <div className="px-inset py-4 lg:container lg:py-6">
         <AppBreadcrumb
           items={breadcrumbPresets(tBreadcrumbs).cart}
           ariaLabel={tBreadcrumbs("ariaLabel")}

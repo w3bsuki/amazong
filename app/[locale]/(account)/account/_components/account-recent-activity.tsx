@@ -8,6 +8,8 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Package as IconPackage, Image as IconPhoto, ShoppingBag as IconShoppingBag } from "lucide-react";
 import { ActivityListShell, ActivitySectionHeader } from "@/components/shared/activity-feed"
+import { formatPrice } from "@/lib/price"
+import { EmptyStateCTA } from "../../../_components/empty-state-cta"
 
 
 interface RecentOrder {
@@ -61,13 +63,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
     return formatDistanceToNow(new Date(value), { addSuffix: withSuffix, locale: dateLocale })
   }
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 2,
-    }).format(value)
-  }
+  const formatCurrency = (value: number) => formatPrice(value, { locale })
 
   const getStatusColor = (status: string | null) => {
     switch (status) {
@@ -126,16 +122,13 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       <div>
         <ActivitySectionHeader title={t.recentOrders} href="/account/orders" actionLabel={t.viewAll} />
         {orders.length === 0 ? (
-          <div className="rounded-md bg-card border border-border p-4 text-center">
-            <div className="flex size-14 mx-auto items-center justify-center rounded-md bg-muted border border-border mb-3">
-              <IconPackage className="size-6 text-muted-foreground" />
-            </div>
-            <p className="text-sm text-muted-foreground">{t.noOrders}</p>
+          <div className="rounded-md border border-border bg-card">
+            <EmptyStateCTA variant="no-orders" showCTA={false} className="px-4 py-10" />
           </div>
         ) : (
           <>
             {/* Mobile: Horizontal scroll cards */}
-            <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
+            <div className="md:hidden -mx-inset px-inset overflow-x-auto no-scrollbar">
               <div className="flex gap-3 pb-2 w-max">
                 {orders.slice(0, 5).map((order) => {
                   const getProductImage = (products: { images?: string[] } | { images?: string[] }[] | null): string | undefined => {
@@ -261,7 +254,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
           <ActivitySectionHeader title={t.myProducts} href="/account/selling" actionLabel={t.viewAll} />
 
           {/* Mobile: Horizontal scroll cards */}
-          <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
+          <div className="md:hidden -mx-inset px-inset overflow-x-auto no-scrollbar">
             <div className="flex gap-3 pb-2 w-max">
               {products.slice(0, 5).map((product) => (
                 <Link
