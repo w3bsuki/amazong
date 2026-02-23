@@ -91,6 +91,17 @@
   - See: `docs/MOBILE-UX-PERFECTION.md` for detailed spec and audit checklist
   - Done: all acceptance criteria in the spec doc are met, `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit` pass
 
+## Motion & Structure Pass
+
+> Framer Motion animations + structural improvements. Second Codex pass after MOBILE-001.
+
+- [ ] **MOTION-001:** Motion & structure pass — Framer Motion polish + code improvements
+  - Context: `docs/MOTION-STRUCTURE-SPEC.md`, `docs/DESIGN.md`, `docs/STACK.md`
+  - Scope: MotionConfig provider, product grid stagger, drawer content entrance, category tab transitions, badge animations, sell flow improvement, CSS animation utilities
+  - See: `docs/MOTION-STRUCTURE-SPEC.md` for full spec (Parts 1-8)
+  - Done: all checkboxes in the spec doc are checked, `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit` pass
+  - NOT in scope: auth, payments, DB, drawer drag/slide, route transitions, new dependencies
+
 ## Audit Queue
 
 > Tasks will be added here after each Playwright visual/functional audit.
@@ -119,4 +130,4 @@ Read AGENTS.md. Then do task BACKLOG-003 from TASKS.md.
 
 ---
 
-*Last updated: 2026-02-21*
+*Last updated: 2026-02-23*
