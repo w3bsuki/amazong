@@ -62,13 +62,11 @@ export function buildPendingFiltersFromSearchParams({
 
   for (const attr of attributes) {
     const attrKey = getCategoryAttributeKey(attr)
-    const values = Array.from(
-      new Set([
+    const values = [...new Set([
         ...searchParams.getAll(`attr_${attrKey}`),
         // Backward compatibility for legacy links that used raw attribute names.
         ...searchParams.getAll(`attr_${attr.name}`),
-      ])
-    ).filter((value) => Boolean(value))
+      ])].filter((value) => Boolean(value))
 
     if (values.length > 0) {
       pending.attributes[attrKey] = values

@@ -2,166 +2,32 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { usePathname, useRouter } from "@/i18n/routing"
-import {
-  DrawerBody,
-} from "@/components/ui/drawer"
-import { Skeleton } from "@/components/ui/skeleton"
+import { DrawerBody } from "@/components/ui/drawer"
 import { IconButton } from "@/components/ui/icon-button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { DrawerShell } from "@/components/shared/drawer-shell"
-import { UserAvatar } from "@/components/shared/user-avatar"
 import { useCategoryDrawer } from "@/components/mobile/category-nav/category-drawer-context"
 import { useHeaderOptional } from "@/components/providers/header-context"
 import { getCategoryName } from "@/lib/data/categories/display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
-import { getCategoryIcon } from "@/components/shared/category-icons"
 import {
   MOBILE_SEGMENTED_CONTAINER_CLASS,
   getMobileSegmentedTriggerClass,
 } from "@/components/mobile/chrome/mobile-control-recipes"
-import { ArrowLeft, ChevronRight as CaretRight, Search as MagnifyingGlass, Star, X } from "lucide-react"
+import { ArrowLeft, Search as MagnifyingGlass, X } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
 
-// =============================================================================
-// Types
-// =============================================================================
+import { CategoryBrowseDrawerListingsTab } from "./category-browse-drawer/category-browse-drawer-listings-tab"
+import { CategoryBrowseDrawerSellersTab } from "./category-browse-drawer/category-browse-drawer-sellers-tab"
+import type {
+  BrowseTab,
+  CategoryBrowseDrawerProps,
+  DrawerSeller,
+} from "./category-browse-drawer/category-browse-drawer.types"
 
-type BrowseTab = "listings" | "sellers"
-
-interface DrawerSeller {
-  id: string
-  username: string | null
-  store_name: string
-  description: string | null
-  verified: boolean
-  product_count: number
-  total_rating: number | null
-  avatar_url: string | null
-}
-
-export interface CategoryBrowseDrawerProps {
-  /** Locale for name display */
-  locale: string
-  /** Callback to fetch children lazily */
-  fetchChildren?: (parentId: string) => Promise<CategoryTreeNode[]>
-}
-
-// =============================================================================
-// Shared styles
-// =============================================================================
-
-/** Full-width row item for subcategory lists (drilled-in view) */
-const SUBCATEGORY_ROW =
-  "flex w-full min-h-(--spacing-touch-md) items-center justify-between gap-2 rounded-xl border px-3.5 text-left text-sm font-medium tap-transparent transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-const SUBCATEGORY_ROW_DEFAULT =
-  "border-border-subtle bg-background text-foreground hover:bg-hover active:bg-active"
-
-/** Compact action chip for quick links */
-const ACTION_CHIP =
-  "inline-flex shrink-0 min-h-(--control-compact) items-center gap-1.5 rounded-full border border-border-subtle bg-surface-subtle px-3 text-xs font-semibold leading-none text-foreground tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover hover:border-border active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
-
-// =============================================================================
-// Subcomponents
-// =============================================================================
-
-/** Icon circle — clean monochromatic brand style (accent bg + primary icon) */
-function CategoryIconCircle({ slug }: { slug: string }) {
-  return (
-    <span
-      className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-primary"
-      aria-hidden="true"
-    >
-      {getCategoryIcon(slug, { size: 20 })}
-    </span>
-  )
-}
-
-/** 2-col grid cell for a root category */
-function CategoryGridCell({
-  category,
-  locale,
-  count,
-  onClick,
-}: {
-  category: CategoryTreeNode
-  locale: string
-  count?: number | undefined
-  onClick: () => void
-}) {
-  const name = getCategoryName(category, locale)
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex items-center gap-2.5 rounded-xl border border-border-subtle bg-background p-2.5 text-left tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-    >
-      <CategoryIconCircle slug={category.slug} />
-      <div className="min-w-0 flex-1">
-        <span className="block truncate text-xs font-semibold leading-tight text-foreground">
-          {name}
-        </span>
-        {typeof count === "number" && (
-          <span className="mt-0.5 block text-2xs text-muted-foreground">
-            {count.toLocaleString(locale)}
-          </span>
-        )}
-      </div>
-    </button>
-  )
-}
-
-/** Compact seller card for the sellers tab */
-function SellerDrawerCard({
-  seller,
-  onClick,
-  verifiedLabel,
-  listingsLabel,
-}: {
-  seller: DrawerSeller
-  onClick: () => void
-  verifiedLabel: string
-  listingsLabel: string
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex w-full items-center gap-2.5 rounded-xl border border-border-subtle bg-background p-2.5 text-left tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
-    >
-      <UserAvatar
-        name={seller.store_name}
-        avatarUrl={seller.avatar_url}
-        className="size-10 shrink-0"
-        fallbackClassName="text-xs font-semibold"
-      />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <span className="truncate text-sm font-semibold text-foreground">
-            {seller.store_name}
-          </span>
-          {seller.verified && (
-            <Badge variant="success-subtle" className="shrink-0">
-              {verifiedLabel}
-            </Badge>
-          )}
-        </div>
-        <div className="mt-0.5 flex items-center gap-2.5 text-2xs text-muted-foreground">
-          <span>{seller.product_count} {listingsLabel}</span>
-          {seller.total_rating != null && (
-            <span className="inline-flex items-center gap-0.5">
-              <Star size={10} className="fill-current text-rating" />
-              {seller.total_rating.toFixed(1)}
-            </span>
-          )}
-        </div>
-      </div>
-      <CaretRight size={16} className="shrink-0 text-muted-foreground" aria-hidden="true" />
-    </button>
-  )
-}
+export type { CategoryBrowseDrawerProps } from "./category-browse-drawer/category-browse-drawer.types"
 
 // =============================================================================
 // Component
@@ -459,156 +325,38 @@ export function CategoryBrowseDrawer({
     >
       <DrawerBody className="px-inset py-3">
         {browseTab === "sellers" ? (
-          /* ============================================ */
-          /* Sellers tab                                  */
-          /* ============================================ */
-          <>
-            {sellersLoading ? (
-              <div className="space-y-2">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-2.5 rounded-xl border border-border-subtle bg-background p-2.5"
-                  >
-                    <Skeleton className="size-10 shrink-0 rounded-full" />
-                    <div className="flex-1 space-y-1.5">
-                      <Skeleton className="h-3.5 w-28" />
-                      <Skeleton className="h-2.5 w-20" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : filteredSellers.length > 0 ? (
-              <div className="space-y-1.5">
-                {filteredSellers.map((seller) => (
-                  <SellerDrawerCard
-                    key={seller.id}
-                    seller={seller}
-                    onClick={() => handleNavigateToSeller(seller)}
-                    verifiedLabel={t("verified")}
-                    listingsLabel={t("listings")}
-                  />
-                ))}
-
-                {/* View all sellers link */}
-                <button
-                  type="button"
-                  onClick={handleNavigateToSellers}
-                  className={`${SUBCATEGORY_ROW} mt-2 border-foreground bg-foreground text-background`}
-                >
-                  <span className="min-w-0 flex-1 truncate">
-                    {t("viewAllSellers")}
-                  </span>
-                  <CaretRight size={16} className="shrink-0 opacity-60" aria-hidden="true" />
-                </button>
-              </div>
-            ) : (
-              <div className="py-8 text-center">
-                <p className="text-sm text-muted-foreground">
-                  {normalizedQuery ? t("noMatches") : t("noSellers")}
-                </p>
-              </div>
-            )}
-          </>
+          <CategoryBrowseDrawerSellersTab
+            normalizedQuery={normalizedQuery}
+            sellersLoading={sellersLoading}
+            filteredSellers={filteredSellers}
+            onNavigateToSeller={handleNavigateToSeller}
+            onNavigateToSellers={handleNavigateToSellers}
+            verifiedLabel={t("verified")}
+            listingsLabel={t("listings")}
+            viewAllSellersLabel={t("viewAllSellers")}
+            noMatchesLabel={t("noMatches")}
+            noSellersLabel={t("noSellers")}
+          />
         ) : (
-          /* ============================================ */
-          /* Listings (categories) tab                    */
-          /* ============================================ */
-          <>
-            {/* Quick action chips — root view only, no active search */}
-            {isAtRoot && !normalizedQuery && (
-              <div className="mb-3 flex items-center gap-2">
-                <button type="button" onClick={handleNavigateToSearch} className={ACTION_CHIP}>
-                  {t("allListings")}
-                </button>
-                <button type="button" onClick={handleNavigateToCategories} className={ACTION_CHIP}>
-                  {t("categories")}
-                </button>
-              </div>
-            )}
-
-            {/* Loading skeleton */}
-            {isLoading ? (
-              <div className="grid grid-cols-2 gap-2">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-2.5 rounded-xl border border-border-subtle bg-background p-2.5"
-                  >
-                    <Skeleton className="size-10 rounded-xl" />
-                    <div className="flex-1 space-y-1.5">
-                      <Skeleton className="h-3 w-16" />
-                      <Skeleton className="h-2 w-10" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : isAtRoot ? (
-              /* Root view — 2-column category grid */
-              <div className="grid grid-cols-2 gap-2">
-                {filteredListItems.map((cat) => (
-                  <CategoryGridCell
-                    key={cat.id}
-                    category={cat}
-                    locale={locale}
-                    count={categoryCounts[cat.slug]}
-                    onClick={() => handleOpenScopedCategory(cat)}
-                  />
-                ))}
-              </div>
-            ) : (
-              /* Drilled view — subcategory list */
-              <div className="space-y-1.5">
-                {/* "See all in X" primary CTA */}
-                {rootCategory && (
-                  <button
-                    type="button"
-                    onClick={() => handleNavigateToCategory(rootCategory.slug)}
-                    className={`${SUBCATEGORY_ROW} border-foreground bg-foreground text-background`}
-                  >
-                    <span className="min-w-0 flex-1 truncate">
-                      {seeAllCategoryLabel}
-                    </span>
-                  </button>
-                )}
-
-                {filteredListItems.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => handleNavigateToCategory(cat.slug)}
-                    className={`${SUBCATEGORY_ROW} ${SUBCATEGORY_ROW_DEFAULT}`}
-                  >
-                    <span className="min-w-0 flex-1 truncate">
-                      {getCategoryName(cat, locale)}
-                    </span>
-                    <CaretRight size={16} className="shrink-0 text-muted-foreground" aria-hidden="true" />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Empty state */}
-            {!isLoading && filteredListItems.length === 0 && (
-              <div className="py-8 text-center">
-                <p className="text-sm text-muted-foreground">
-                  {normalizedQuery ? t("noMatches") : rootCategory ? t("noSubcategories") : t("noCategories")}
-                </p>
-              </div>
-            )}
-
-            {/* Footer quick nav — drilled view only */}
-            {!isAtRoot && (
-              <div className="mt-3 border-t border-border-subtle pt-3">
-                <div className="flex items-center gap-2">
-                  <button type="button" onClick={handleNavigateToCategories} className={ACTION_CHIP}>
-                    <span className="truncate">{t("categories")}</span>
-                    <CaretRight size={14} className="shrink-0 text-muted-foreground" aria-hidden="true" />
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
+          <CategoryBrowseDrawerListingsTab
+            locale={locale}
+            isAtRoot={isAtRoot}
+            normalizedQuery={normalizedQuery}
+            isLoading={isLoading}
+            filteredListItems={filteredListItems}
+            categoryCounts={categoryCounts}
+            rootCategory={rootCategory}
+            seeAllCategoryLabel={seeAllCategoryLabel}
+            onNavigateToSearch={handleNavigateToSearch}
+            onNavigateToCategories={handleNavigateToCategories}
+            onNavigateToCategory={handleNavigateToCategory}
+            onOpenScopedCategory={handleOpenScopedCategory}
+            allListingsLabel={t("allListings")}
+            categoriesLabel={t("categories")}
+            noMatchesLabel={t("noMatches")}
+            noSubcategoriesLabel={t("noSubcategories")}
+            noCategoriesLabel={t("noCategories")}
+          />
         )}
       </DrawerBody>
     </DrawerShell>

@@ -57,24 +57,24 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto -mx-6">
+    <div className="overflow-x-auto -mx-3 md:-mx-6">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="pl-6">{t("sales.table.headers.product")}</TableHead>
+            <TableHead className="pl-3 md:pl-6">{t("sales.table.headers.product")}</TableHead>
             <TableHead>{t("sales.table.headers.buyer")}</TableHead>
             <TableHead className="text-right">{t("sales.table.headers.quantity")}</TableHead>
             <TableHead className="text-right">{t("sales.table.headers.revenue")}</TableHead>
             <TableHead>{t("sales.table.headers.status")}</TableHead>
             <TableHead>{t("sales.table.headers.date")}</TableHead>
-            <TableHead className="pr-6 text-right">{t("sales.table.headers.actions")}</TableHead>
+            <TableHead className="pr-3 md:pr-6 text-right">{t("sales.table.headers.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sales.map((sale) => (
             <TableRow key={sale.id}>
               {/* Product */}
-              <TableCell className="pl-6">
+              <TableCell className="pl-3 md:pl-6">
                 <div className="flex items-center gap-3">
                   <div className="relative size-12 rounded-lg overflow-hidden bg-muted shrink-0">
                     {sale.product?.images?.[0] && sale.product.images[0].startsWith("http") ? (
@@ -161,7 +161,7 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
               </TableCell>
 
               {/* Actions */}
-              <TableCell className="pr-6 text-right">
+              <TableCell className="pr-3 md:pr-6 text-right">
                 <Button asChild variant="ghost" size="sm">
                   <Link href={`/account/orders/${sale.order_id}`}>
                     <Eye className="size-4 mr-1.5" />

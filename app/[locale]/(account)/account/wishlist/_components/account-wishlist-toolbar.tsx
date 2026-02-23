@@ -3,30 +3,21 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
-import { Check as IconCheck, ChevronDown as IconChevronDown, Filter as IconFilter, Package as IconPackage, PackageX as IconPackageOff, Search as IconSearch, X as IconX } from "lucide-react";
 
 import { cn } from "@/lib/utils"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
-export type WishlistCategory = {
-  id: string
-  name: string
-  slug: string
-  count: number
-}
+import { DesktopResultCount } from "./account-wishlist-toolbar/desktop-result-count"
+import { DesktopWishlistToolbar } from "./account-wishlist-toolbar/desktop-wishlist-toolbar"
+import { MobileActiveFiltersSummary } from "./account-wishlist-toolbar/mobile-active-filters-summary"
+import { MobileWishlistToolbar } from "./account-wishlist-toolbar/mobile-wishlist-toolbar"
+import type {
+  StockFilter,
+  WishlistCategory,
+  WishlistToolbarLabels,
+  WishlistUrlParams,
+} from "./account-wishlist-toolbar/account-wishlist-toolbar.types"
 
-type StockFilter = "all" | "in-stock" | "out-of-stock"
-
-type WishlistUrlParams = { q?: string | null; category?: string | null; stock?: StockFilter | null }
+export type { WishlistCategory } from "./account-wishlist-toolbar/account-wishlist-toolbar.types"
 
 interface AccountWishlistToolbarProps {
   locale: string
@@ -37,78 +28,6 @@ interface AccountWishlistToolbarProps {
   totalItems: number
   filteredCount: number
   className?: string
-}
-
-function WishlistSearchClearButton({
-  ariaLabel,
-  onClick,
-}: {
-  ariaLabel: string
-  onClick: () => void
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-      aria-label={ariaLabel}
-    >
-      <IconX className="size-4" />
-    </button>
-  )
-}
-
-function StockFilterDropdownContent({
-  widthClassName,
-  labels,
-  stockFilter,
-  query,
-  categoryFilter,
-  setStockFilter,
-  applyUrl,
-}: {
-  widthClassName: string
-  labels: { all: string; inStock: string; outOfStock: string }
-  stockFilter: StockFilter
-  query: string
-  categoryFilter: string | null
-  setStockFilter: (next: StockFilter) => void
-  applyUrl: (next: WishlistUrlParams) => void
-}) {
-  return (
-    <DropdownMenuContent align="end" className={widthClassName}>
-      <DropdownMenuItem
-        onClick={() => {
-          setStockFilter("all")
-          applyUrl({ q: query, category: categoryFilter, stock: "all" })
-        }}
-      >
-        <span className="flex-1">{labels.all}</span>
-        {stockFilter === "all" && <IconCheck className="size-4 text-primary" />}
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem
-        onClick={() => {
-          setStockFilter("in-stock")
-          applyUrl({ q: query, category: categoryFilter, stock: "in-stock" })
-        }}
-      >
-        <IconPackage className="size-4 mr-2 text-success" />
-        <span className="flex-1">{labels.inStock}</span>
-        {stockFilter === "in-stock" && <IconCheck className="size-4 text-primary" />}
-      </DropdownMenuItem>
-      <DropdownMenuItem
-        onClick={() => {
-          setStockFilter("out-of-stock")
-          applyUrl({ q: query, category: categoryFilter, stock: "out-of-stock" })
-        }}
-      >
-        <IconPackageOff className="size-4 mr-2 text-warning" />
-        <span className="flex-1">{labels.outOfStock}</span>
-        {stockFilter === "out-of-stock" && <IconCheck className="size-4 text-primary" />}
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  )
 }
 
 export function AccountWishlistToolbar({
@@ -128,7 +47,7 @@ export function AccountWishlistToolbar({
 
   const localePrefix = `/${locale}`
   const basePathname = pathname.startsWith(localePrefix)
-    ? (pathname.slice(localePrefix.length) || "/")
+    ? pathname.slice(localePrefix.length) || "/"
     : pathname
 
   const [query, setQuery] = useState(initialSearchQuery)
@@ -140,7 +59,7 @@ export function AccountWishlistToolbar({
   const didMount = useRef(false)
 
   const labels = useMemo(
-    () => ({
+    (): WishlistToolbarLabels => ({
       all: locale === "bg" ? "Всички" : "All",
       allCategories: locale === "bg" ? "Всички категории" : "All Categories",
       search: locale === "bg" ? "Търсене" : "Search",
@@ -225,7 +144,7 @@ export function AccountWishlistToolbar({
   }, [initialStockFilter])
 
   const hasActiveFilters = categoryFilter || stockFilter !== "all" || query.trim()
-  const selectedCategory = categories.find(c => c.slug === categoryFilter)
+  const selectedCategory = categories.find((c) => c.slug === categoryFilter)
 
   const clearAllFilters = () => {
     setQuery("")
@@ -236,315 +155,63 @@ export function AccountWishlistToolbar({
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      {/* Mobile: Compact horizontal scrollable category chips + filter dropdown */}
-      <div className="flex flex-col gap-3 sm:hidden">
-        {/* Search bar */}
-        <div className="relative">
-          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={labels.searchPlaceholder}
-            className="pl-9 pr-9 h-10 rounded-full bg-surface-subtle border-border-subtle"
-            aria-label={labels.search}
-          />
-          {query && (
-            <WishlistSearchClearButton
-              ariaLabel={locale === "bg" ? "Изчисти търсенето" : "Clear search"}
-              onClick={() => {
-                setQuery("")
-                applyUrl({ q: null, category: categoryFilter, stock: stockFilter })
-              }}
-            />
-          )}
-          {isPending && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin rounded-full border-2 border-border border-t-transparent" />
-          )}
-        </div>
+      <MobileWishlistToolbar
+        locale={locale}
+        labels={labels}
+        categories={categories}
+        totalItems={totalItems}
+        query={query}
+        setQuery={setQuery}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        stockFilter={stockFilter}
+        setStockFilter={setStockFilter}
+        isPending={isPending}
+        applyUrl={applyUrl}
+      />
 
-        {/* Category chips + Stock filter */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
-          {/* All button */}
-          <button
-            type="button"
-            onClick={() => {
-              setCategoryFilter(null)
-              applyUrl({ q: query, category: null, stock: stockFilter })
-            }}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
-                !categoryFilter
-                  ? "bg-foreground text-background shadow-sm"
-                  : "bg-background border border-border-subtle text-foreground hover:bg-hover"
-              )}
-              aria-pressed={!categoryFilter}
-            >
-              {labels.all}
-              <span className={cn(
-                "text-xs tabular-nums",
-                !categoryFilter ? "text-background/80" : "text-muted-foreground"
-              )}>
-                {totalItems}
-              </span>
-            </button>
+      <DesktopWishlistToolbar
+        locale={locale}
+        labels={labels}
+        categories={categories}
+        totalItems={totalItems}
+        selectedCategory={selectedCategory}
+        query={query}
+        setQuery={setQuery}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        stockFilter={stockFilter}
+        setStockFilter={setStockFilter}
+        isPending={isPending}
+        hasActiveFilters={Boolean(hasActiveFilters)}
+        clearAllFilters={clearAllFilters}
+        applyUrl={applyUrl}
+      />
 
-          {/* Category chips */}
-          {categories.map((cat) => (
-            <button
-              key={cat.slug}
-              type="button"
-              onClick={() => {
-                const newCat = categoryFilter === cat.slug ? null : cat.slug
-                setCategoryFilter(newCat)
-                applyUrl({ q: query, category: newCat, stock: stockFilter })
-              }}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
-                categoryFilter === cat.slug
-                  ? "bg-foreground text-background shadow-sm"
-                  : "bg-background border border-border-subtle text-foreground hover:bg-hover"
-              )}
-              aria-pressed={categoryFilter === cat.slug}
-            >
-              {cat.name}
-              <span className={cn(
-                "text-xs tabular-nums",
-                categoryFilter === cat.slug ? "text-background/80" : "text-muted-foreground"
-              )}>
-                {cat.count}
-              </span>
-            </button>
-          ))}
-
-          {/* Stock filter dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
-                  stockFilter !== "all"
-                    ? stockFilter === "in-stock"
-                      ? "bg-success text-primary-foreground shadow-sm"
-                      : "bg-warning text-foreground shadow-sm"
-                    : "bg-background border border-border-subtle text-foreground hover:bg-hover"
-                )}
-                aria-label={labels.stock}
-                aria-pressed={stockFilter !== "all"}
-              >
-                {stockFilter === "in-stock" ? (
-                  <IconPackage className="size-3.5" />
-                ) : stockFilter === "out-of-stock" ? (
-                  <IconPackageOff className="size-3.5" />
-                ) : (
-                  <IconFilter className="size-3.5" />
-                )}
-                {stockFilter === "all" ? labels.stock : stockFilter === "in-stock" ? labels.inStock : labels.outOfStock}
-                <IconChevronDown className="size-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <StockFilterDropdownContent
-              widthClassName="w-40"
-              labels={labels}
-              stockFilter={stockFilter}
-              query={query}
-              categoryFilter={categoryFilter}
-              setStockFilter={setStockFilter}
-              applyUrl={applyUrl}
-            />
-          </DropdownMenu>
-        </div>
-      </div>
-
-      {/* Desktop: Full toolbar with search, category dropdown, and stock filter */}
-      <div className="hidden sm:flex items-center gap-3">
-        {/* Search */}
-        <div className="relative flex-1 max-w-sm">
-          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={labels.searchPlaceholder}
-            className="pl-9 pr-9"
-            aria-label={labels.search}
-          />
-          {query && (
-            <WishlistSearchClearButton
-              ariaLabel={locale === "bg" ? "Изчисти търсенето" : "Clear search"}
-              onClick={() => {
-                setQuery("")
-                applyUrl({ q: null, category: categoryFilter, stock: stockFilter })
-              }}
-            />
-          )}
-          {isPending && !query && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin rounded-full border-2 border-border border-t-transparent" />
-          )}
-        </div>
-
-        {/* Category dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="gap-2">
-              {selectedCategory ? (
-                <>
-                  {selectedCategory.name}
-                  <Badge variant="secondary" className="ml-1">
-                    {selectedCategory.count}
-                  </Badge>
-                </>
-              ) : (
-                labels.allCategories
-              )}
-              <IconChevronDown className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuItem
-              onClick={() => {
-                setCategoryFilter(null)
-                applyUrl({ q: query, category: null, stock: stockFilter })
-              }}
-            >
-              <span className="flex-1">{labels.allCategories}</span>
-              <span className="text-muted-foreground text-xs tabular-nums">{totalItems}</span>
-              {!categoryFilter && <IconCheck className="size-4 ml-2 text-primary" />}
-            </DropdownMenuItem>
-            {categories.length > 0 && <DropdownMenuSeparator />}
-            {categories.map((cat) => (
-              <DropdownMenuItem
-                key={cat.slug}
-                onClick={() => {
-                  setCategoryFilter(cat.slug)
-                  applyUrl({ q: query, category: cat.slug, stock: stockFilter })
-                }}
-              >
-                <span className="flex-1">{cat.name}</span>
-                <span className="text-muted-foreground text-xs tabular-nums">{cat.count}</span>
-                {categoryFilter === cat.slug && <IconCheck className="size-4 ml-2 text-primary" />}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Stock filter */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant={stockFilter !== "all" ? "default" : "outline"}
-              className={cn(
-                "gap-2",
-                stockFilter === "in-stock" && "bg-success hover:bg-success/90",
-                stockFilter === "out-of-stock" && "bg-warning hover:bg-warning/90"
-              )}
-            >
-              {stockFilter === "in-stock" ? (
-                <IconPackage className="size-4" />
-              ) : stockFilter === "out-of-stock" ? (
-                <IconPackageOff className="size-4" />
-              ) : (
-                <IconFilter className="size-4" />
-              )}
-              {stockFilter === "all" ? labels.stock : stockFilter === "in-stock" ? labels.inStock : labels.outOfStock}
-              <IconChevronDown className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <StockFilterDropdownContent
-            widthClassName="w-44"
-            labels={labels}
-            stockFilter={stockFilter}
-            query={query}
-            categoryFilter={categoryFilter}
-            setStockFilter={setStockFilter}
-            applyUrl={applyUrl}
-          />
-        </DropdownMenu>
-
-        {/* Clear filters */}
-        {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearAllFilters}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <IconX className="size-4 mr-1" />
-            {labels.clearFilters}
-          </Button>
-        )}
-      </div>
-
-      {/* Active filters summary (mobile) */}
       {hasActiveFilters && (
-        <div className="flex items-center gap-2 sm:hidden flex-wrap">
-          <span className="text-xs text-muted-foreground">{labels.filter}:</span>
-            {selectedCategory && (
-              <Badge
-                variant="secondary"
-                className="gap-1 bg-selected text-primary"
-              >
-                {selectedCategory.name}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCategoryFilter(null)
-                  applyUrl({ q: query, category: null, stock: stockFilter })
-                }}
-                className="hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-                aria-label={locale === "bg" ? "Премахни филтъра за категория" : "Remove category filter"}
-              >
-                <IconX className="size-3" />
-              </button>
-            </Badge>
-          )}
-          {stockFilter !== "all" && (
-            <Badge
-              variant="secondary"
-              className={cn(
-                "gap-1",
-                stockFilter === "in-stock"
-                  ? "bg-success/10 text-success"
-                  : "bg-warning/10 text-warning"
-              )}
-            >
-              {stockFilter === "in-stock" ? labels.inStock : labels.outOfStock}
-              <button
-                type="button"
-                onClick={() => {
-                  setStockFilter("all")
-                  applyUrl({ q: query, category: categoryFilter, stock: "all" })
-                }}
-                className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-                aria-label={locale === "bg" ? "Премахни филтъра за наличност" : "Remove stock filter"}
-              >
-                <IconX className="size-3" />
-              </button>
-            </Badge>
-          )}
-          {/* Result count */}
-          {filteredCount !== totalItems && (
-            <span className="text-xs text-muted-foreground">
-              {filteredCount} {locale === "bg" ? "от" : "of"} {totalItems}
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={clearAllFilters}
-            className="text-xs text-muted-foreground hover:text-foreground ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-          >
-            {labels.clearFilters}
-          </button>
-        </div>
+        <MobileActiveFiltersSummary
+          locale={locale}
+          labels={labels}
+          selectedCategory={selectedCategory}
+          query={query}
+          categoryFilter={categoryFilter}
+          setCategoryFilter={setCategoryFilter}
+          stockFilter={stockFilter}
+          setStockFilter={setStockFilter}
+          totalItems={totalItems}
+          filteredCount={filteredCount}
+          clearAllFilters={clearAllFilters}
+          applyUrl={applyUrl}
+        />
       )}
 
-      {/* Desktop: Result count when filtering */}
       {hasActiveFilters && filteredCount !== totalItems && (
-        <div className="hidden sm:flex items-center text-sm text-muted-foreground">
-          {locale === "bg" 
-            ? `Показани ${filteredCount} от ${totalItems} артикула`
-            : `Showing ${filteredCount} of ${totalItems} items`
-          }
-        </div>
+        <DesktopResultCount
+          locale={locale}
+          filteredCount={filteredCount}
+          totalItems={totalItems}
+          itemsLabel={labels.items}
+        />
       )}
     </div>
   )

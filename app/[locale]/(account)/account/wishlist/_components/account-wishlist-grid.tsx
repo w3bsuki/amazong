@@ -1,35 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
-import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { getProductUrl } from "@/lib/url-utils"
 import { toast } from "sonner"
-import {
-  ArrowRight,
-  Eye,
-  Heart,
-  Heart as IconHeart,
-  Tag as IconTag,
-  Package,
-  ShoppingCart,
-  Trash,
-  CircleX as XCircle,
-} from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import {
-  DrawerBody,
-  DrawerFooter,
-} from "@/components/ui/drawer"
-import { DrawerShell } from "@/components/shared/drawer-shell"
-import { Separator } from "@/components/ui/separator"
+
 import { useCart } from "@/components/providers/cart-context"
 import { createClient } from "@/lib/supabase/client"
-import { cn } from "@/lib/utils"
 import type { AccountWishlistGridProps, WishlistItem } from "./account-wishlist.types"
+
+import type { WishlistGridLabels } from "./account-wishlist-grid/account-wishlist-grid.types"
+import { WishlistAddAllButtons } from "./account-wishlist-grid/wishlist-add-all-buttons"
+import { WishlistDesktopGrid } from "./account-wishlist-grid/wishlist-desktop-grid"
+import { WishlistEmptyState } from "./account-wishlist-grid/wishlist-empty-state"
+import { WishlistMobileGrid } from "./account-wishlist-grid/wishlist-mobile-grid"
 
 export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlistGridProps) {
   const t = useTranslations("Wishlist")
@@ -45,7 +28,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
 
   const handleMoveToCart = async (item: WishlistItem) => {
     if (item.stock <= 0) {
-      toast.error(locale === 'bg' ? 'Продуктът е изчерпан' : 'Product is out of stock')
+      toast.error(locale === "bg" ? "Продуктът е изчерпан" : "Product is out of stock")
       return
     }
 
@@ -58,7 +41,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
     })
 
     await handleRemove(item.product_id)
-    toast.success(locale === 'bg' ? 'Преместено в количката' : 'Moved to cart')
+    toast.success(locale === "bg" ? "Преместено в количката" : "Moved to cart")
     setSelectedItem(null)
   }
 
@@ -72,31 +55,31 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
       } = await supabase.auth.getUser()
 
       if (!user) {
-        toast.error(locale === 'bg' ? 'Моля, влезте в профила си' : 'Please sign in')
+        toast.error(locale === "bg" ? "Моля, влезте в профила си" : "Please sign in")
         return
       }
 
       const { error } = await supabase
-        .from('wishlists')
+        .from("wishlists")
         .delete()
-        .eq('user_id', user.id)
-        .eq('product_id', productId)
+        .eq("user_id", user.id)
+        .eq("product_id", productId)
 
       if (error) throw error
       onRemove(productId)
-      toast.success(locale === 'bg' ? 'Премахнато от любими' : 'Removed from wishlist')
+      toast.success(locale === "bg" ? "Премахнато от любими" : "Removed from wishlist")
     } catch (error) {
-      console.error('Error removing from wishlist:', error)
-      toast.error(locale === 'bg' ? 'Грешка при премахване' : 'Failed to remove')
+      console.error("Error removing from wishlist:", error)
+      toast.error(locale === "bg" ? "Грешка при премахване" : "Failed to remove")
     } finally {
       setRemovingId(null)
     }
   }
 
   const handleAddAllToCart = () => {
-    const inStockItems = items.filter(item => item.stock > 0)
+    const inStockItems = items.filter((item) => item.stock > 0)
     if (inStockItems.length === 0) {
-      toast.error(locale === 'bg' ? 'Няма налични продукти' : 'No items in stock')
+      toast.error(locale === "bg" ? "Няма налични продукти" : "No items in stock")
       return
     }
 
@@ -110,13 +93,13 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
       })
     })
     toast.success(
-      locale === 'bg'
+      locale === "bg"
         ? `Добавени ${inStockItems.length} артикула в количката`
         : `Added ${inStockItems.length} items to cart`
     )
   }
 
-  const labels = {
+  const labels: WishlistGridLabels = {
     addedOn: locale === "bg" ? "Добавено на" : "Added on",
     price: locale === "bg" ? "Цена" : "Price",
     availability: locale === "bg" ? "Наличност" : "Availability",
@@ -130,385 +113,41 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
 
   if (items.length === 0) {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-muted border border-border mb-4">
-            <Heart className="size-8 text-destructive" />
-          </div>
-          <h3 className="font-semibold text-lg">{t("empty")}</h3>
-          <p className="text-muted-foreground text-sm mt-1 max-w-sm">
-            {t("emptyDescription")}
-          </p>
-          <Button asChild className="mt-6">
-            <Link href="/search">
-              {t("startShopping")}
-              <ArrowRight className="size-4 ml-2" />
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <WishlistEmptyState
+        title={t("empty")}
+        description={t("emptyDescription")}
+        startShoppingLabel={t("startShopping")}
+      />
     )
   }
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 pb-20 md:hidden md:pb-0">
-        {items.map((item) => (
-          <div key={item.id}>
-            <div
-              onClick={() => setSelectedItem(item)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault()
-                  setSelectedItem(item)
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label={locale === "bg" ? `Отвори ${item.title}` : `Open ${item.title}`}
-              aria-haspopup="dialog"
-              aria-expanded={selectedItem?.id === item.id}
-              className="flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors active:bg-active text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              {/* Product Image */}
-              <div className="relative aspect-square w-full overflow-hidden bg-card">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  className={cn(
-                    "object-cover",
-                    item.stock <= 0 && "opacity-60 grayscale-30"
-                  )}
-                  sizes="(max-width: 768px) 50vw, 200px"
-                />
-                {/* Stock indicator badge */}
-                {item.stock > 0 ? (
-                  <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-success">
-                    <Package className="size-3.5 text-primary-foreground" />
-                  </div>
-                ) : (
-                  <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-warning">
-                    <XCircle className="size-3 text-foreground" />
-                    <span className="text-2xs font-semibold text-foreground">{labels.outOfStock}</span>
-                  </div>
-                )}
-                {/* Category badge */}
-                {item.category_name && (
-                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-surface-overlay">
-                    <span className="text-2xs font-medium text-overlay-text">{item.category_name}</span>
-                  </div>
-                )}
-                {/* Quick add to cart button overlay */}
-                {item.stock > 0 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleMoveToCart(item)
-                    }}
-                    aria-label={locale === "bg" ? `Добави ${item.title} в количката` : `Add ${item.title} to cart`}
-                    className="absolute bottom-2 right-2 flex size-11 items-center justify-center rounded-full bg-foreground"
-                  >
-                    <ShoppingCart className="size-4 text-overlay-text" />
-                  </button>
-                )}
-              </div>
+      <WishlistMobileGrid
+        items={items}
+        locale={locale}
+        labels={labels}
+        selectedItem={selectedItem}
+        setSelectedItem={setSelectedItem}
+        removingId={removingId}
+        formatCurrency={formatCurrency}
+        formatDate={formatDate}
+        handleMoveToCart={handleMoveToCart}
+        handleRemove={handleRemove}
+      />
 
-              {/* Product Info */}
-              <div className="flex flex-col p-3 flex-1">
-                <p className="text-sm font-medium text-foreground line-clamp-2 leading-tight mb-2">
-                  {item.title}
-                </p>
-                <div className="mt-auto flex items-center justify-between">
-                  <p className={cn(
-                    "text-base font-bold",
-                    item.stock > 0
-                      ? "text-foreground"
-                      : "text-muted-foreground line-through"
-                  )}>
-                    {formatCurrency(item.price)}
-                  </p>
-                  {/* Remove button */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleRemove(item.product_id)
-                    }}
-                    disabled={removingId === item.product_id}
-                    aria-label={locale === "bg" ? `Премахни ${item.title}` : `Remove ${item.title}`}
-                    className="flex size-11 items-center justify-center rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive-subtle transition-colors"
-                  >
-                    <Trash className="size-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
+      <WishlistDesktopGrid
+        items={items}
+        locale={locale}
+        labels={labels}
+        removingId={removingId}
+        formatCurrency={formatCurrency}
+        formatDate={formatDate}
+        handleMoveToCart={handleMoveToCart}
+        handleRemove={handleRemove}
+      />
 
-            {/* Detail Drawer */}
-            <DrawerShell
-              open={selectedItem?.id === item.id}
-              onOpenChange={(open) => !open && setSelectedItem(null)}
-              title={item.title}
-              titleClassName="line-clamp-2 text-lg"
-              closeLabel={locale === "bg" ? "Затвори" : "Close"}
-              contentAriaLabel={item.title}
-              description={
-                <>
-                  {labels.addedOn} {formatDate(item.created_at)}
-                  {item.category_name && (
-                    <>
-                      <span className="text-muted-foreground">•</span>
-                      <Badge variant="outline" className="text-xs">
-                        <IconTag className="size-3 mr-1" />
-                        {item.category_name}
-                      </Badge>
-                    </>
-                  )}
-                </>
-              }
-              descriptionClassName="flex items-center gap-2 flex-wrap"
-              headerClassName="border-b border-border bg-background text-left"
-              contentClassName="max-h-(--dialog-h-85vh) rounded-t-2xl gap-0 overflow-hidden"
-            >
-
-              <DrawerBody className="px-4 py-4">
-                <div className="relative mx-auto aspect-square w-full max-w-60 overflow-hidden rounded-xl bg-muted">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-
-                <div className="mt-6 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">{labels.price}</span>
-                    <span className="text-2xl font-bold text-foreground">{formatCurrency(item.price)}</span>
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">{labels.availability}</span>
-                    {item.stock > 0 ? (
-                      <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
-                        <Package className="size-3 mr-1" />
-                        {item.stock} {labels.inStock}
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
-                        <XCircle className="size-3 mr-1" />
-                        {labels.outOfStock}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </DrawerBody>
-
-              <DrawerFooter className="flex-col gap-2 sm:flex-col border-t border-border bg-background pb-safe-max">
-                <Button
-                  onClick={() => handleMoveToCart(item)}
-                  disabled={item.stock <= 0}
-                  className="w-full h-12 text-base"
-                >
-                  <ShoppingCart className="size-5 mr-2" />
-                  {labels.moveToCart}
-                </Button>
-                <div className="flex gap-2 w-full">
-                  <Button
-                    variant="outline"
-                    asChild
-                    className="flex-1 h-11"
-                  >
-                    <Link
-                      href={getProductUrl({
-                        id: item.product_id,
-                        slug: item.slug ?? null,
-                        username: item.username ?? null,
-                      })}
-                    >
-                      <Eye className="size-4 mr-2" />
-                      {labels.viewProduct}
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      handleRemove(item.product_id)
-                      setSelectedItem(null)
-                    }}
-                    disabled={removingId === item.product_id}
-                    className="text-destructive hover:text-destructive h-11 px-4"
-                    aria-label={locale === "bg" ? `Премахни ${item.title}` : `Remove ${item.title}`}
-                  >
-                    <Trash className="size-4" />
-                  </Button>
-                </div>
-              </DrawerFooter>
-            </DrawerShell>
-          </div>
-        ))}
-      </div>
-
-      {/* Desktop: Beautiful card grid with hover effects */}
-      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="group relative flex flex-col rounded-md bg-card border border-border overflow-hidden transition-colors hover:border-hover-border"
-          >
-            {/* Product Image */}
-            <div className="relative aspect-square w-full overflow-hidden bg-card">
-              <Image
-                src={item.image}
-                alt={item.title}
-                fill
-                className={cn(
-                  "object-cover",
-                  item.stock <= 0 && "opacity-60 grayscale-30"
-                )}
-                sizes="(max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-              />
-
-              <Link
-                href={getProductUrl({
-                  id: item.product_id,
-                  slug: item.slug ?? null,
-                  username: item.username ?? null,
-                })}
-                className="absolute inset-0 z-10"
-                aria-label={locale === "bg" ? `Виж ${item.title}` : `View ${item.title}`}
-              />
-
-              {/* Stock indicator */}
-              {item.stock > 0 ? (
-                <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success">
-                  <Package className="size-3.5 text-primary-foreground" />
-                  <span className="text-xs font-semibold text-primary-foreground">{item.stock}</span>
-                </div>
-              ) : (
-                <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning">
-                  <XCircle className="size-3.5 text-foreground" />
-                  <span className="text-xs font-semibold text-foreground">{labels.outOfStock}</span>
-                </div>
-              )}
-              {/* Category badge */}
-              {item.category_name && (
-                <div className="absolute bottom-3 left-3 z-20 px-2.5 py-1 rounded-full bg-surface-overlay">
-                  <span className="text-xs font-medium text-overlay-text">{item.category_name}</span>
-                </div>
-              )}
-              {/* Hover overlay with quick actions */}
-              <div className="absolute inset-0 z-20 bg-surface-overlay opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    className="bg-background text-foreground hover:bg-muted"
-                    asChild
-                  >
-                    <Link
-                      href={getProductUrl({
-                        id: item.product_id,
-                        slug: item.slug ?? null,
-                        username: item.username ?? null,
-                      })}
-                    >
-                      <Eye className="size-4 mr-1.5" />
-                      {labels.viewProduct}
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Product Info */}
-            <div className="flex flex-col p-4 flex-1">
-              <Link
-                href={getProductUrl({
-                  id: item.product_id,
-                  slug: item.slug ?? null,
-                  username: item.username ?? null,
-                })}
-                className="text-sm font-medium text-foreground line-clamp-2 leading-tight hover:text-primary transition-colors mb-2"
-              >
-                {item.title}
-              </Link>
-
-              <div className="mt-auto space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className={cn(
-                    "text-lg font-bold",
-                    item.stock > 0
-                      ? "text-foreground"
-                      : "text-muted-foreground line-through"
-                  )}>
-                    {formatCurrency(item.price)}
-                  </p>
-                  <span className="text-xs text-muted-foreground">
-                    {formatDate(item.created_at)}
-                  </span>
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleMoveToCart(item)}
-                    disabled={item.stock <= 0}
-                    className="flex-1"
-                  >
-                    <ShoppingCart className="size-4 mr-1.5" />
-                    {labels.moveToCart}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleRemove(item.product_id)}
-                    disabled={removingId === item.product_id}
-                    className="text-destructive hover:text-destructive hover:bg-destructive-subtle"
-                    aria-label={locale === "bg" ? `Премахни ${item.title}` : `Remove ${item.title}`}
-                  >
-                    <Trash className="size-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Wishlist heart indicator */}
-            <div className="absolute top-3 left-3 flex size-8 items-center justify-center rounded-full bg-background">
-              <IconHeart className="size-4 text-destructive fill-destructive" />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Add All to Cart Button (Desktop only) */}
-      {items.some(item => item.stock > 0) && (
-        <div className="hidden md:flex justify-end pt-4">
-          <Button
-            variant="outline"
-            onClick={handleAddAllToCart}
-            className="border-border-subtle hover:bg-hover active:bg-active"
-          >
-            <ShoppingCart className="size-4 mr-2" />
-            {labels.addAllToCart} ({items.filter(i => i.stock > 0).length})
-          </Button>
-        </div>
-      )}
-
-      {/* Mobile: Floating Add All button */}
-      {items.some(item => item.stock > 0) && items.length > 2 && (
-        <div className="fixed bottom-tabbar-offset left-4 right-4 z-40 md:hidden">
-          <Button
-            onClick={handleAddAllToCart}
-            className="w-full h-12 rounded-full"
-          >
-            <ShoppingCart className="size-5 mr-2" />
-            {labels.addAllToCart} ({items.filter(i => i.stock > 0).length})
-          </Button>
-        </div>
-      )}
+      <WishlistAddAllButtons items={items} labels={labels} handleAddAllToCart={handleAddAllToCart} />
     </>
   )
 }

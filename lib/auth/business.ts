@@ -569,7 +569,7 @@ export async function getBusinessProducts(
       for (const row of (titleMatches.data || []) as Array<{ id: string }>) ids.add(row.id)
       for (const row of (privateMatches.data || []) as Array<{ product_id: string }>) ids.add(row.product_id)
 
-      const matchedIds = Array.from(ids)
+      const matchedIds = [...ids]
       if (matchedIds.length === 0) {
         return { products: [], total: 0, page, limit, totalPages: 0, error: null }
       }
@@ -676,8 +676,8 @@ export async function getBusinessOrders(
   const { data, count, error } = await query
 
   // Fetch related orders and products
-  const orderIds = Array.from(new Set((data || []).map((i) => i.order_id).filter(Boolean)))
-  const productIds = Array.from(new Set((data || []).map((i) => i.product_id).filter(Boolean)))
+  const orderIds = [...new Set((data || []).map((i) => i.order_id).filter(Boolean))]
+  const productIds = [...new Set((data || []).map((i) => i.product_id).filter(Boolean))]
   let orders: OrderRecord[] = []
   let products: ProductRecord[] = []
   if (orderIds.length) {
@@ -700,7 +700,7 @@ export async function getBusinessOrders(
     }))
   }
   // Fetch users for orders
-  const userIds = Array.from(new Set((orders || []).map((o) => o.user_id).filter(Boolean)))
+  const userIds = [...new Set((orders || []).map((o) => o.user_id).filter(Boolean))]
   let users: UserRecord[] = []
   if (userIds.length) {
     const { data: u } = await supabase.from('profiles').select('id, full_name').in('id', userIds)

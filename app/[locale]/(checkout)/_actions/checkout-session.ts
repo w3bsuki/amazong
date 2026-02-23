@@ -91,7 +91,7 @@ export async function createCheckoutSession(
       return { ok: false, error: "No products found for checkout" }
     }
 
-    const firstEntry = Array.from(itemsBySeller.entries())[0]
+    const firstEntry = [...itemsBySeller.entries()][0]
     if (!firstEntry) {
       return { ok: false, error: "No products found for checkout" }
     }

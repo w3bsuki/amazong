@@ -2,7 +2,7 @@ import React from "react"
 import { cleanup, fireEvent, render } from "@testing-library/react"
 import { afterEach, describe, expect, test, vi } from "vitest"
 
-import { FilterRatingSection } from "@/components/shared/filters/sections/filter-rating-section"
+import { FilterRatingSection } from "@/components/shared/filters/filter-rating-section"
 
 vi.mock("next-intl", () => ({
   useLocale: () => "en",

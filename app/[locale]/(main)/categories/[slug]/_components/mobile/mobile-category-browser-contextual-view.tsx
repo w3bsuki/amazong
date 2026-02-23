@@ -68,7 +68,7 @@ export function MobileCategoryBrowserContextualView({
           {...(railTrailingAction ? { trailingAction: railTrailingAction } : {})}
           stickyTop="var(--offset-mobile-primary-rail)"
           sticky={true}
-          testId="mobile-category-smart-rail"
+          testId="mobile-category-scope-rail"
         />
 
         <ProductFeed

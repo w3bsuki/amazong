@@ -16,7 +16,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { useProductSearch } from "@/hooks/use-product-search"
 
-import { buildSearchHref } from "@/components/shared/search/overlay/search-context"
+import { buildSearchHref } from "@/components/shared/search/search-context"
 import { getProductUrl } from "@/lib/url-utils"
 import { DesktopSearchPopoverPanel } from "./desktop-search-popover-panel"
 

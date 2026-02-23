@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 
 import { createStaticClient } from "@/lib/supabase/server"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
-import { ProductGrid, type ProductGridProduct } from "@/components/grid/product-grid"
+import { ProductGrid, type ProductGridProduct } from "@/components/shared/product/product-grid"
 import { EmptyStateCTA } from "../../../../_components/empty-state-cta"
 import { searchProducts } from "../_lib/search-products"
 import { SearchPagination } from "../../../_components/search-controls/search-pagination"

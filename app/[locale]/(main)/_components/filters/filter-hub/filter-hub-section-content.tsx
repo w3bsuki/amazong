@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react"
 
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { FilterCheckboxItem } from "@/components/shared/filters/controls/filter-checkbox-item"
-import { FilterRatingSection } from "@/components/shared/filters/sections/filter-rating-section"
+import { FilterRatingSection } from "@/components/shared/filters/filter-rating-section"
 import { getCategoryAttributeKey, getCategoryAttributeOptions } from "@/lib/filters/category-attribute"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { FilterAttributeSectionContent } from "../shared/sections/filter-attribute-section-content"

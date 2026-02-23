@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { trackDrawerClose, trackDrawerOpen } from "@/components/providers/_lib/analytics-drawer"
+import { trackDrawerClose, trackDrawerOpen } from "@/components/providers/analytics-drawer"
 import { getEnabledDrawers, isDrawerSystemEnabled } from "@/lib/feature-flags"
 import type { ProductCardData } from "@/components/shared/product/card/types"
 

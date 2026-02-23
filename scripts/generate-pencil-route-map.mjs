@@ -122,7 +122,7 @@ lines.push("# Pencil Route Map (Generated)");
 lines.push("");
 lines.push(`Generated: ${date}`);
 lines.push(`Source: \`designs/route-inventory.json\``);
-lines.push(`Design (Pencil): \`designs/treido-screens-2026.pen\``);
+lines.push(`Design (Pencil): \`designs/treido.pen\``);
 lines.push("");
 lines.push("## Templates");
 for (const t of templateList) lines.push(`- ${t}`);

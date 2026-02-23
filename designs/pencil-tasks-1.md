@@ -1,7 +1,7 @@
 # Pencil Tasks 1 — Commerce Screens
 
-Work in: `designs/treido-commerce-screens.pen`  
-Reference: `designs/treido-design-system-2026.pen`
+Work in: `designs/treido.pen`  
+Reference: `Templates (M375)` + `Gold Components / Primitives (2026)` (inside the same file)
 
 Per task: create screen (`batch_design`) → verify (`get_screenshot`) → check the box.
 

@@ -24,11 +24,11 @@ import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { useProductSearch } from "@/hooks/use-product-search"
-import { buildSearchHref, type SearchLaunchContext } from "@/components/shared/search/overlay/search-context"
+import { buildSearchHref, type SearchLaunchContext } from "@/components/shared/search/search-context"
 import { getProductUrl } from "@/lib/url-utils"
 
 const SearchAiChat = dynamic(
-  () => import("@/components/shared/search/ai/search-ai-chat").then((mod) => mod.SearchAiChat),
+  () => import("@/components/shared/search/search-ai-chat").then((mod) => mod.SearchAiChat),
   {
     ssr: false,
     loading: () => <div className="h-full animate-pulse bg-muted" />,
@@ -137,7 +137,7 @@ export function MobileSearchOverlay({
 
   // Focus input when opened
   React.useEffect(() => {
-    if (!isOpen) return undefined
+    if (!isOpen) return
 
     const timer = setTimeout(() => {
       inputRef.current?.focus()

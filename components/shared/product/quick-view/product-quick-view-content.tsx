@@ -2,7 +2,7 @@ import * as React from "react"
 import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
 
-import { getConditionKey } from "@/components/shared/product/_lib/condition"
+import { getConditionKey } from "@/components/shared/product/condition"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { formatPrice, getDiscountPercentage, hasDiscount as checkHasDiscount } from "@/lib/price"

@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 
 const SearchAiChat = dynamic(
-  () => import("@/components/shared/search/ai/search-ai-chat").then((mod) => mod.SearchAiChat),
+  () => import("@/components/shared/search/search-ai-chat").then((mod) => mod.SearchAiChat),
   {
     ssr: false,
     loading: () => <div className="h-96 animate-pulse rounded-lg bg-muted" />,

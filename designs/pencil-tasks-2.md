@@ -1,7 +1,7 @@
 # Pencil Tasks 2 — User Screens
 
-Work in: `designs/treido-user-screens.pen`  
-Reference: `designs/treido-design-system-2026.pen`
+Work in: `designs/treido.pen`  
+Reference: `Templates (M375)` + `Gold Components / Primitives (2026)` (inside the same file)
 
 Per task: create screen (`batch_design`) → verify (`get_screenshot`) → check the box.
 

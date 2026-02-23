@@ -24,6 +24,18 @@ Playwright (`playwright.config.ts`). Custom runner: `scripts/run-playwright.mjs`
 - `e2e/seller-routes.spec.ts` — seller-specific routes
 - Reuse existing dev server: `REUSE_EXISTING_SERVER=true BASE_URL=http://127.0.0.1:3000`
 
+#### Authenticated E2E (local)
+Some Playwright specs require a real authenticated session. Provide credentials via env vars (never commit secrets):
+- `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` (preferred)
+- `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` (legacy)
+
+Example (PowerShell):
+```powershell
+$env:E2E_USER_EMAIL = "user@example.com"
+$env:E2E_USER_PASSWORD = "your-password"
+pnpm -s test:e2e:smoke
+```
+
 ---
 
 ## Test Directories
@@ -125,4 +137,4 @@ pnpm -s test:e2e:smoke         # E2E smoke tests
 
 ---
 
-*Last verified: 2026-02-21*
+*Last verified: 2026-02-22*

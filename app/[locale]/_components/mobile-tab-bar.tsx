@@ -15,7 +15,7 @@ import {
   MobileBottomNavLabel,
   MobileBottomNavList,
   MobileBottomNavRoot,
-} from "@/components/ui/mobile-bottom-nav"
+} from "@/components/mobile/chrome/mobile-bottom-nav"
 import { useTranslations } from "next-intl"
 import { useMessages } from "@/components/providers/message-context"
 import { useDrawer } from "@/components/providers/drawer-context"

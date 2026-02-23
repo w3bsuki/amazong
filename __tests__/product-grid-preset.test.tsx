@@ -27,7 +27,7 @@ vi.mock("@/components/shared/product/card/list", () => ({
   ProductCardList: ({ id }: { id: string }) => <div data-testid={`list-${id}`}>list-{id}</div>,
 }))
 
-import { ProductGrid } from "@/components/grid/product-grid"
+import { ProductGrid } from "@/components/shared/product/product-grid"
 
 afterEach(() => {
   cleanup()

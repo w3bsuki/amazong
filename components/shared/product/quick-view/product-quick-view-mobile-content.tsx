@@ -8,7 +8,7 @@ import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { IconButton } from "@/components/ui/icon-button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { getConditionBadgeVariant } from "@/components/shared/product/_lib/condition"
+import { getConditionBadgeVariant } from "@/components/shared/product/condition"
 
 import type { ProductQuickViewViewProps } from "./product-quick-view-content"
 import { QuickViewImageGallery } from "./quick-view-image-gallery"

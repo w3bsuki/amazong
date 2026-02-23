@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/routing"
-import { ProductGrid, type ProductGridProduct } from "@/components/grid/product-grid"
+import { ProductGrid, type ProductGridProduct } from "@/components/shared/product/product-grid"
 import type { CategoryAttribute } from "@/lib/data/categories"
 import { SearchFilters } from "./filters/search-filters"
 import { SearchHeader } from "./search-header"

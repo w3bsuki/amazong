@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLine, CreditCard as IconCreditCard, Crown as IconCrown, Ellipsis as IconDots, Heart as IconHeart, Lock as IconLock, MapPin as IconMapPin, MessageCircle as IconMessage, Package as IconPackage, Receipt as IconReceipt, User as IconUser, type LucideIcon } from "lucide-react";
+import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLine, CreditCard as IconCreditCard, Crown as IconCrown, Ellipsis as IconDots, Heart as IconHeart, Lock as IconLock, MapPin as IconMapPin, MessageCircle as IconMessage, Package as IconPackage, Receipt as IconReceipt, Settings as IconSettings, User as IconUser, type LucideIcon } from "lucide-react";
 
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -62,6 +62,11 @@ export function AccountTabBar() {
       label: t("header.profile"),
       href: "/account/profile",
       icon: IconUser,
+    },
+    {
+      label: t("settings.title"),
+      href: "/account/settings",
+      icon: IconSettings,
     },
     {
       label: t("header.security"),

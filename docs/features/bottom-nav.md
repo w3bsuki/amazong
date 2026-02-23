@@ -5,7 +5,7 @@ Fixed bottom navigation bar on mobile with 5 tabs: Home, Categories, Sell (core 
 Hidden on `md:` breakpoint and above (desktop uses header navigation instead).
 
 ## Key files
-- `components/ui/mobile-bottom-nav.tsx` — shadcn-style primitives (Root, Dock, List, Item, CoreAction, Label)
+- `components/mobile/chrome/mobile-bottom-nav.tsx` — shadcn-style primitives (Root, Dock, List, Item, CoreAction, Label)
 - `app/[locale]/_components/mobile-tab-bar.tsx` — composed tab bar with route logic, icons, badges
 - `lib/navigation/mobile-tab-bar.ts` — route detection for active state and hide logic
 

@@ -3,7 +3,7 @@ import { RecentlyViewedTracker } from "./pdp/recently-viewed-tracker";
 import { SellerProductsGrid } from "./pdp/seller-products-grid";
 import { CustomerReviewsHybrid } from "./pdp/customer-reviews-hybrid";
 
-import { CategoryBadge } from "@/components/shared/product/pdp/category-badge";
+import { CategoryBadge } from "@/components/shared/product/category-badge";
 import { TrustBadges } from "./pdp/trust-badges";
 import { ProductSocialProof } from "./pdp/product-social-proof";
 import { FreshnessIndicator } from "@/components/shared/product/freshness-indicator";
@@ -11,7 +11,7 @@ import { ViewTracker } from "./pdp/view-tracker";
 import { ProductHeaderSync } from "./pdp/product-header-sync";
 import { Star } from "lucide-react";
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge";
-import { getConditionBadgeVariant, getConditionKey } from "@/components/shared/product/_lib/condition";
+import { getConditionBadgeVariant, getConditionKey } from "@/components/shared/product/condition";
 
 import { DesktopGallery } from "./desktop/desktop-gallery";
 import { DesktopBuyBox } from "./desktop/desktop-buy-box";

@@ -155,7 +155,7 @@ function collectTagsForRequest(body: RevalidateRequest): string[] {
     addTag(out, oldCategoryId ? `attrs:category:${oldCategoryId}` : null)
   }
 
-  return Array.from(out).slice(0, MAX_TAGS_PER_REQUEST)
+  return [...out].slice(0, MAX_TAGS_PER_REQUEST)
 }
 
 function buildFingerprint(body: RevalidateRequest, tags: string[]): string {

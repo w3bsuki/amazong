@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react"
 import type { UIProduct } from "@/lib/data/products"
-import { ProductGrid, ProductGridSkeleton, type ProductGridProduct } from "@/components/grid/product-grid"
+import { ProductGrid, ProductGridSkeleton, type ProductGridProduct } from "@/components/shared/product/product-grid"
 import { EmptyStateCTA } from "../../../../../_components/empty-state-cta"
 import { useTranslations } from "next-intl"
 

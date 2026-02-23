@@ -86,7 +86,7 @@ export function BillingHistoryTabs({
                 <p className="text-sm text-muted-foreground mt-1">{t.noBillingYet}</p>
               </div>
             ) : (
-              <div className="overflow-x-auto -mx-6 px-6">
+              <div className="overflow-x-auto -mx-3 px-3 md:-mx-6 md:px-6">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -213,7 +213,7 @@ export function BillingHistoryTabs({
                 </Link>
               </div>
             ) : (
-              <div className="overflow-x-auto -mx-6 px-6">
+              <div className="overflow-x-auto -mx-3 px-3 md:-mx-6 md:px-6">
                 <Table>
                   <TableHeader>
                     <TableRow>

@@ -1,4 +1,4 @@
-import { SimplePageLoading } from "@/components/shared/loading/simple-page-loading"
+import { SimplePageLoading } from "@/components/shared/simple-page-loading"
 
 export default function Loading() {
   return <SimplePageLoading />

@@ -124,7 +124,7 @@ export async function createConnectAccount(params: {
 }): Promise<Stripe.Account> {
   const { email, sellerId, country = "BG", accountType = "personal" } = params
 
-  const account = await stripe.accounts.create({
+  return await stripe.accounts.create({
     type: "express",
     country,
     email,
@@ -137,8 +137,6 @@ export async function createConnectAccount(params: {
       seller_id: sellerId,
     },
   })
-
-  return account
 }
 
 /**
@@ -152,14 +150,12 @@ export async function createAccountLink(params: {
 }): Promise<Stripe.AccountLink> {
   const { accountId, refreshUrl, returnUrl } = params
 
-  const accountLink = await stripe.accountLinks.create({
+  return await stripe.accountLinks.create({
     account: accountId,
     refresh_url: refreshUrl,
     return_url: returnUrl,
     type: "account_onboarding",
   })
-
-  return accountLink
 }
 
 /**

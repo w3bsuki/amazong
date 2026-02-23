@@ -14,12 +14,10 @@ import {
   Store as Storefront,
   User,
 } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
 
 import { DrawerBody } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
@@ -32,197 +30,17 @@ import { createClient } from "@/lib/supabase/client"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { cn } from "@/lib/utils"
 
-// =============================================================================
-// Types
-// =============================================================================
+import { AccountDrawerSkeleton } from "./account-drawer/account-drawer-skeleton"
+import { MENU_GROUP_CLASS, MENU_ROW_CLASS } from "./account-drawer/account-drawer.styles"
+import { MenuSection } from "./account-drawer/account-drawer-menu-section"
+import type {
+  AccountDrawerProps,
+  AccountStats,
+  MenuItem,
+  SellerStats,
+  UserProfile,
+} from "./account-drawer/account-drawer.types"
 
-interface AccountDrawerProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
-
-interface UserProfile {
-  display_name: string | null
-  avatar_url: string | null
-  business_name: string | null
-  username: string | null
-}
-
-interface SellerStats {
-  average_rating: number | null
-  total_sales: number | null
-}
-
-interface AccountStats {
-  pendingOrders: number
-  activeListings: number
-}
-
-type MenuBadgeTone = "destructive" | "warning" | "muted"
-
-interface MenuItem {
-  href: string
-  icon: LucideIcon
-  label: string
-  badge?: string | null
-  badgeTone?: MenuBadgeTone
-}
-
-// =============================================================================
-// Shared styles
-// =============================================================================
-
-/** Grouped card container — iOS Settings pattern */
-const MENU_GROUP_CLASS =
-  "overflow-hidden rounded-2xl border border-border-subtle bg-background"
-
-/** Single menu row inside a grouped card */
-const MENU_ROW_CLASS = cn(
-  "flex min-h-(--spacing-touch-md) w-full items-center gap-3 px-4 text-left",
-  "tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth)",
-  "hover:bg-hover active:bg-active",
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset",
-)
-
-// =============================================================================
-// Subcomponents
-// =============================================================================
-
-/** Bare icon — lightweight neutral style, accent only where needed */
-function MenuIcon({ icon: Icon }: { icon: LucideIcon }) {
-  return <Icon size={20} className="shrink-0 text-muted-foreground" aria-hidden="true" />
-}
-
-/** Single menu row inside a grouped card */
-function MenuRow({
-  item,
-  onClick,
-  showSeparator,
-}: {
-  item: MenuItem
-  onClick?: (() => void) | undefined
-  showSeparator?: boolean | undefined
-}) {
-  return (
-    <>
-      <Link
-        href={item.href}
-        onClick={onClick}
-        data-testid="account-drawer-quick-link"
-        className={MENU_ROW_CLASS}
-      >
-        <MenuIcon icon={item.icon} />
-        <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-          {item.label}
-        </span>
-        <div className="flex shrink-0 items-center gap-2">
-          {item.badge ? (
-            <Badge
-              variant={
-                item.badgeTone === "destructive"
-                  ? "critical-subtle"
-                  : item.badgeTone === "warning"
-                    ? "warning-subtle"
-                    : "neutral-subtle"
-              }
-              size="compact"
-            >
-              {item.badge}
-            </Badge>
-          ) : null}
-          <CaretRight size={16} className="text-muted-foreground" aria-hidden="true" />
-        </div>
-      </Link>
-      {showSeparator && <Separator className="ml-11" />}
-    </>
-  )
-}
-
-/** Section label above menu groups */
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 className="px-1 pb-1.5 text-2xs font-semibold uppercase tracking-wider text-muted-foreground">
-      {children}
-    </h3>
-  )
-}
-
-/** Grouped menu section  — label + card with rows separated by inset dividers */
-function MenuSection({
-  label,
-  items,
-  onItemClick,
-}: {
-  label: string
-  items: MenuItem[]
-  onItemClick?: () => void
-}) {
-  return (
-    <div>
-      <SectionLabel>{label}</SectionLabel>
-      <div className={MENU_GROUP_CLASS}>
-        {items.map((item, i) => (
-          <MenuRow
-            key={item.href}
-            item={item}
-            onClick={onItemClick}
-            showSeparator={i < items.length - 1}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-/** Skeleton for loading state — matches grouped-card layout shape */
-function AccountDrawerSkeleton() {
-  return (
-    <DrawerBody className="px-inset py-4 pb-6">
-      {/* Profile skeleton */}
-      <div className={MENU_GROUP_CLASS}>
-        <div className="flex items-center gap-3.5 p-4">
-          <Skeleton className="size-14 shrink-0 rounded-full" />
-          <div className="min-w-0 flex-1 space-y-2">
-            <Skeleton className="h-4 w-28" />
-            <Skeleton className="h-3 w-20" />
-            <Skeleton className="h-3 w-36" />
-          </div>
-        </div>
-      </div>
-      {/* Stats skeleton */}
-      <div className={cn(MENU_GROUP_CLASS, "mt-3")}>
-        <div className="grid grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className={cn("flex flex-col items-center gap-1.5 py-3", i > 0 && "border-l border-border-subtle")}>
-              <Skeleton className="h-5 w-8" />
-              <Skeleton className="h-3 w-10" />
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Menu group skeleton */}
-      <div className={cn(MENU_GROUP_CLASS, "mt-4")}>
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className={cn("flex items-center gap-3 px-4 py-3", i > 0 && "border-t border-border-subtle")}>
-            <Skeleton className="size-5 shrink-0 rounded" />
-            <Skeleton className="h-3.5 w-24" />
-          </div>
-        ))}
-      </div>
-      <div className={cn(MENU_GROUP_CLASS, "mt-3")}>
-        {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className={cn("flex items-center gap-3 px-4 py-3", i > 0 && "border-t border-border-subtle")}>
-            <Skeleton className="size-5 shrink-0 rounded" />
-            <Skeleton className="h-3.5 w-20" />
-          </div>
-        ))}
-      </div>
-    </DrawerBody>
-  )
-}
-
-// =============================================================================
-// Component
 // =============================================================================
 
 /**

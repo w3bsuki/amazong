@@ -4,9 +4,8 @@ This folder is the source of truth for Treido’s **mobile-first screen designs*
 
 ## Files
 
-- `designs/treido-design-system-2026.pen` — templates + reference patterns (do not treat as “done screens”).
-- `designs/treido-commerce-screens.pen` — **commerce** route screens (browse → PDP → cart → checkout + public pages).
-- `designs/treido-user-screens.pen` — **user** route screens (auth, onboarding, account, sell, chat, admin/dashboard placeholders).
+- `designs/treido.pen` — **the** canonical Treido Pencil file (components, templates, screens, explorations).
+- `designs/archive/*.pen` — legacy snapshots kept for reference only (do not edit).
 
 Task lists:
 - `designs/pencil-tasks-1.md` — commerce screens (execute top→bottom).
@@ -40,7 +39,7 @@ Route inventory + mapping:
 ## Workflow (how to execute tasks)
 
 For each checkbox task (top to bottom):
-1. Create the screen in the target `.pen` file via `batch_design` (usually copy a template, then update the title/labels).
+1. Create the screen in `designs/treido.pen` via `batch_design` (usually copy a template, then update the title/labels).
 2. Verify with `get_screenshot` (catch clipped content, misalignment, or missing titles).
 3. Check the task box in the `.md` file.
 

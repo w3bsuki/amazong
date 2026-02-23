@@ -5,7 +5,7 @@ const projectRoot = process.cwd();
 const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1";
 
 const targetFiles = [
-  "components/ui/mobile-bottom-nav.tsx",
+  "components/mobile/chrome/mobile-bottom-nav.tsx",
   "components/mobile/chrome/mobile-control-recipes.ts",
   "components/mobile/category-nav/filter-sort-bar.tsx",
   "components/layout/header/mobile/homepage-header.tsx",
@@ -32,7 +32,7 @@ const targetFiles = [
 const checks = [
   {
     id: "bottom-nav-glass",
-    files: ["components/ui/mobile-bottom-nav.tsx"],
+    files: ["components/mobile/chrome/mobile-bottom-nav.tsx"],
     regex: /\b(?:backdrop-blur(?:-[a-z]+)?|bg-surface-glass)\b/g,
     message: "Use a flat semantic bottom nav surface; avoid glass/blur treatment.",
   },

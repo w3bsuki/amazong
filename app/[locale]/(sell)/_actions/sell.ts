@@ -102,13 +102,11 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
   // Keep `condition` in JSONB too, so filters/hero specs can rely on a single key.
   const attributesJson: Record<string, string> = {}
 
-  const attributeIds = Array.from(
-    new Set(
+  const attributeIds = [...new Set(
       (form.attributes || [])
         .map((attr) => attr.attributeId)
         .filter((id): id is string => typeof id === "string" && id.length > 0),
-    ),
-  )
+    )]
 
   const attributeKeyById = new Map<string, string>()
   if (attributeIds.length > 0) {

@@ -83,14 +83,14 @@ async function callGeminiDirect(params: {
 }
 
 function parseNumberLike(input: string): number | null {
-  const cleaned = input.trim().toLowerCase().replace(/[,\\s]/g, "");
+  const cleaned = input.trim().toLowerCase().replaceAll(/[,\\s]/g, "");
   const kMatch = cleaned.match(/^\\$?(\\d+(?:\\.\\d+)?)k$/);
   if (kMatch) {
     const value = Number(kMatch[1]);
     return Number.isFinite(value) ? Math.round(value * 1000) : null;
   }
 
-  const digits = cleaned.replace(/[^0-9.]/g, "");
+  const digits = cleaned.replaceAll(/[^0-9.]/g, "");
   if (!digits) return null;
   const value = Number(digits);
   return Number.isFinite(value) ? Math.round(value) : null;
@@ -139,13 +139,13 @@ function resolveCategorySlug(
     if (!slug && !name) continue;
     if (
       slug &&
-      new RegExp(`\\b${slug.replace(/[-/\\^$*+?.()|[\\]{}]/g, "\\\\$&")}\\b`, "i").test(text)
+      new RegExp(`\\b${slug.replaceAll(/[-/\\^$*+?.()|[\\]{}]/g, "\\\\$&")}\\b`, "i").test(text)
     ) {
       return c.slug;
     }
     if (
       name &&
-      new RegExp(`\\b${name.replace(/[-/\\^$*+?.()|[\\]{}]/g, "\\\\$&")}\\b`, "i").test(text)
+      new RegExp(`\\b${name.replaceAll(/[-/\\^$*+?.()|[\\]{}]/g, "\\\\$&")}\\b`, "i").test(text)
     ) {
       return c.slug;
     }
@@ -192,7 +192,7 @@ function extractTags(message: string): string[] {
 
   const words = message
     .toLowerCase()
-    .replace(/[^a-z0-9\\s-]/g, " ")
+    .replaceAll(/[^a-z0-9\\s-]/g, " ")
     .split(/\\s+/)
     .map((w) => w.trim())
     .filter(Boolean)
@@ -523,7 +523,7 @@ Guidance:
       // 2) If overlap fails or returns nothing, try searching the name.
       if (matchError || !matched || matched.length === 0) {
         const safeTags = tags
-          .map((t) => String(t).toLowerCase().replace(/[^a-z0-9-]/g, ""))
+          .map((t) => String(t).toLowerCase().replaceAll(/[^a-z0-9-]/g, ""))
           .filter(Boolean)
           .slice(0, 4);
 

@@ -23,7 +23,7 @@ import {
 } from "./metadata"
 import { FreshnessIndicator } from "../freshness-indicator"
 import { VerifiedSellerBadge } from "../verified-seller-badge"
-import { getConditionKey } from "../_lib/condition"
+import { getConditionKey } from "../condition"
 import type { ProductCardBaseProps } from "./types"
 
 type DesktopProductCardProps = ProductCardBaseProps
