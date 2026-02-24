@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-02-24 | REFACTOR-PROD-004 | Batch Refactor: Over300 Target Met, Duplicates Reduced
+- Decision/Outcome: Executed the requested three-batch production-readiness pass: targeted dedupe extractions, decomposition of the main 400-500L files into orchestrator parents + sibling modules, and cleanup verification.
+- Why: Move architecture metrics toward launch-hardening targets while keeping all quality gates green.
+- Impact: Final gates green; architecture moved from `over300=84` to `over300=69` and from `duplicates=1500` to `duplicates=1435` (`clones=108`), with `over500=3` unchanged and `client-boundary` restored to baseline (`266`).
+- Next Action: Continue dedicated duplicate-cluster elimination work (top 20+ clusters) to drive `duplicatedLines` below `1000` then `800` without adding `use client` files.
+- Links: `app/actions/boosts.ts`, `app/actions/orders-support.ts`, `app/actions/orders-reads.ts`, `app/[locale]/_components/app-header.tsx`, `app/[locale]/_components/search/mobile-search-overlay.tsx`, `components/providers/cart-context.tsx`
+
 ### 2026-02-24 | REFACTOR-PROD-003 | Gate Recovery + Oversized Splits 2nd Pass
 - Decision/Outcome: Fixed broken TypeScript/architecture regressions first, then completed the requested oversized split sequence (`checkout`, `edit-product`, `buyer-order-actions`, `seller-orders-client`, `sales/page`, `desktop-buy-box`, `pricing-field`, `message-context`, `plans-content`, `sell.ts`) with stable public entrypoints.
 - Why: Prior pass left failing gates and `over500` regression; production-readiness refactor required gate-first recovery and continued decomposition.

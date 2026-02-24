@@ -1,5 +1,3 @@
-"use client";
-
 import { CloudUpload as CloudArrowUp, LoaderCircle as SpinnerGap } from "lucide-react";
 
 type SellPublishingStateProps = {

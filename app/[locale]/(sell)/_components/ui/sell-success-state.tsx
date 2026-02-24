@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { toast } from "sonner";
 import { Eye, House, Plus, Share, Zap as Lightning, CircleCheck as CheckCircle } from "lucide-react";
