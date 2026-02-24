@@ -69,20 +69,16 @@ export function MobileContextualHeader({
               </span>
             </Link>
           )}
-          {expandTitle ? (
-            <div className={cn("ml-1 flex-1 min-w-0", titleClassName)}>
-              {title}
-            </div>
-          ) : (
-            <h1
-              className={cn(
-                "ml-1 max-w-48 truncate text-sm font-semibold leading-tight text-foreground",
-                titleClassName,
-              )}
-            >
-              {title}
-            </h1>
-          )}
+          <div
+            className={cn(
+              expandTitle
+                ? "ml-1 flex-1 min-w-0"
+                : "ml-1 max-w-48 truncate text-sm font-semibold leading-tight text-foreground",
+              titleClassName,
+            )}
+          >
+            {title}
+          </div>
         </div>
         {!hideActions && (
           <div className="flex items-center gap-1">

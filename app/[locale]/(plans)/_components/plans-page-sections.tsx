@@ -152,7 +152,7 @@ export function PlansPricingGrid({
                     {price === 0 ? t.comparison.free : `€${price}`}
                   </PricingCard.MainPrice>
                   {price > 0 && (
-                    <PricingCard.Period>/{yearly ? t.period.yr : t.period.mo}</PricingCard.Period>
+                    <PricingCard.Period>{yearly ? t.period.yr : t.period.mo}</PricingCard.Period>
                   )}
                   {yearly && originalPrice && originalPrice > price && (
                     <PricingCard.OriginalPrice>€{originalPrice}</PricingCard.OriginalPrice>
@@ -314,7 +314,7 @@ function PlansComparisonTable({
                     {price === 0 ? t.comparison.free : formatPrice(price)}
                   </span>
                   {price > 0 && (
-                    <span className="text-xs text-muted-foreground">/{yearly ? t.period.yr : t.period.mo}</span>
+                    <span className="text-xs text-muted-foreground">{yearly ? t.period.yr : t.period.mo}</span>
                   )}
                 </TableCell>
                 <TableCell className="text-center">

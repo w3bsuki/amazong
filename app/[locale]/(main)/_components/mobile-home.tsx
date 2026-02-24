@@ -274,8 +274,6 @@ export function MobileHome({
       />
 
       <div className="mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe">
-        <h1 className="sr-only">{tV4("title")}</h1>
-
         <SmartRail
           ariaLabel={railAriaLabel}
           pills={railPills}

@@ -80,7 +80,7 @@ export function DesktopBuyBox({
   title,
   price,
   originalPrice,
-  currency = "BGN",
+  currency = "EUR",
   condition,
   stock,
   seller,

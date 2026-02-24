@@ -68,7 +68,7 @@ export function MobileBottomBar({
   const formattedProductPrice = formatCurrencyAmount(
     product.price,
     locale,
-    product.currency ?? "BGN",
+    product.currency ?? "EUR",
     { minimumFractionDigits: 2, maximumFractionDigits: 2 },
   )
 

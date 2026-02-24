@@ -148,7 +148,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false)
     }
     return true
-  }, [user])
+  }, [user, tWishlist])
 
   // Sync with server when auth state settles
   useEffect(() => {

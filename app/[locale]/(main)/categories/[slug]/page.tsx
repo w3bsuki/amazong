@@ -53,10 +53,10 @@ export async function generateMetadata({
     const categoryName = tCategories("title")
 
     return {
-      title: t("metaTitle", { categoryName }),
+      title: categoryName,
       description: t("metaDescription", { categoryName }),
       openGraph: {
-        title: t("metaTitle", { categoryName }),
+        title: categoryName,
         description: t("metaDescription", { categoryName }),
       },
     }
@@ -76,10 +76,10 @@ export async function generateMetadata({
     : category.name
 
   return {
-    title: t("metaTitle", { categoryName }),
+    title: categoryName,
     description: t("metaDescription", { categoryName }),
     openGraph: {
-      title: t("metaTitle", { categoryName }),
+      title: categoryName,
       description: t("metaDescription", { categoryName }),
     },
   }

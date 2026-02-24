@@ -36,7 +36,7 @@ async function BusinessDashboardLayoutInner({ children }: { children: React.Reac
   await connection()
 
   // This will redirect non-business sellers to account page
-  const businessSeller = await requireBusinessSeller("/account")
+  const businessSeller = await requireBusinessSeller("/account", "/dashboard")
   
   // Check subscription status for dashboard access
   const subscription = await getActiveSubscription(businessSeller.id)

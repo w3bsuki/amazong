@@ -1,0 +1,53 @@
+# CHANGELOG — Session Outcomes
+
+> Concise record of meaningful session outcomes.
+> Not a chat transcript. Keep entries short and operational.
+> Archive entries older than 20 to `docs/state/archive/YYYY-MM.md`.
+
+## Entry Format
+
+```
+### YYYY-MM-DD | TAG | Title
+- Decision/Outcome:
+- Why:
+- Impact:
+- Next Action:
+- Links:
+```
+
+---
+
+### 2026-02-24 | PLAN-001 | Docs Restructure & AI Vision Planning
+- Decision/Outcome: Copilot + Codex iterated 4 rounds to design new docs architecture for AI-first commerce platform evolution.
+- Why: Current docs optimized for V1 launch; need long-term strategic continuity and AI capability planning.
+- Impact: New docs layer created (state/, strategy/, architecture/). Session continuity via NOW.md + CHANGELOG.md. Phase-aligned TASKS.md.
+- Next Action: Agents read new AGENTS.md → NOW.md → TASKS.md session boot sequence.
+- Links: `docs/strategy/NORTH-STAR.md`, `docs/strategy/CAPABILITY-MAP.md`, `docs/architecture/AI-PLATFORM.md`
+
+### 2026-02-24 | LAUNCH-PUSH-001 | P0+P1 Audit Cycle Completed
+- Decision/Outcome: Launch checklist sections 1-11 were audited and iterated to pass.
+- Why: Establish launch confidence for all must/should flows before public release.
+- Impact: Current pass state is 11/15 total sections (P0+P1 complete); P2 sections 12-15 remain.
+- Next Action: Close four launch blockers (LAUNCH-001..004) and decide P2 sequencing.
+- Links: `docs/launch/TRACKER.md`, `docs/launch/CHECKLIST.md`
+
+### 2026-02-24 | FIX-ITERATION-001 | Post-Fix Verification (FIX-A..FIX-H)
+- Decision/Outcome: Follow-up fixes verified for settings auth/i18n, wishlist routing/metadata, onboarding metadata, not-found body content, and orders pagination.
+- Why: Remove quality debt discovered during audit pass.
+- Impact: Section scores improved (notably Orders/Profile/Cart-Onboarding/Nav); gates remain green.
+- Next Action: Keep unresolved launch blockers isolated and approved before production go-live.
+- Links: `docs/launch/TRACKER.md`
+
+### 2026-02-23 | BUSINESS-BASE-001 | Business Docs + Unified Skill Finalized
+- Decision/Outcome: Created and backfilled `docs/business/*`; replaced narrow persona skills with one `treido-business-agent`.
+- Why: Reduce context overhead and centralize strategic/finance/ops knowledge.
+- Impact: Business decisions now have one source of truth with clear routing from AGENTS.
+- Next Action: Keep PRD open questions synchronized with business doc decisions.
+- Links: `docs/business/README.md`, `.agents/skills/treido-business-agent/SKILL.md`
+
+### 2026-02-23 | LAUNCH-BLOCKER-004 | Supabase Password Protection Constraint Confirmed
+- Decision/Outcome: Management API check confirmed `password_hibp_enabled=false`; enabling failed with `402 Payment Required`.
+- Why: Validate leaked-password protection launch blocker with direct platform checks.
+- Impact: LAUNCH-004 remains open with one warning in Security Advisor and no critical findings.
+- Next Action: Human decision on Supabase plan upgrade or accepted launch risk posture.
+- Links: `TASKS.md`, `docs/features/auth.md`

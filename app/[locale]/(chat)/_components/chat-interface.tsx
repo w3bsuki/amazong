@@ -5,7 +5,6 @@ import { useTranslations, useLocale } from "next-intl"
 import { bg, enUS } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { useMessages } from "@/components/providers/message-context"
-import { createClient } from "@/lib/supabase/client"
 import { MessageCircle as ChatCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -44,7 +43,6 @@ export function ChatInterface({
   const tFreshness = useTranslations("Freshness")
   const locale = useLocale()
   const dateLocale = locale === "bg" ? bg : enUS
-  const supabase = createClient()
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -56,6 +54,7 @@ export function ChatInterface({
     messages,
     isLoadingMessages,
     isOtherUserTyping,
+    currentUserId,
     sendMessage,
     sendTypingIndicator,
     closeConversation,
@@ -65,19 +64,6 @@ export function ChatInterface({
   const { toast } = useToast()
   const [inputValue, setInputValue] = useState("")
   const [isSending, setIsSending] = useState(false)
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
-
-  // Get current user
-  useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser()
-      if (data.user) {
-        setCurrentUserId(data.user.id)
-      }
-    }
-    getUser()
-  }, [supabase])
-
   // Track whether the user is near the bottom (avoid yanking scroll when reading history)
   useEffect(() => {
     const container = messagesContainerRef.current
@@ -140,8 +126,12 @@ export function ChatInterface({
       if (inputRef.current) {
         inputRef.current.style.height = "auto"
       }
-    } catch (err) {
-      console.error("Error sending message:", err)
+    } catch {
+      toast({
+        title: tCommon("error"),
+        description: t("toasts.sendMessageFailed.description"),
+        variant: "destructive",
+      })
     } finally {
       setIsSending(false)
     }

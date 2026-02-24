@@ -239,7 +239,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                   title={product.title}
                   price={Number(product.price ?? 0)}
                   originalPrice={product.list_price != null ? Number(product.list_price) : null}
-                  currency="BGN"
+                  currency="EUR"
                   condition={null}
                   stock={product.stock}
                   seller={sellerInfo}

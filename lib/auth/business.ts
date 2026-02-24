@@ -5,6 +5,7 @@ import { redirect } from "@/i18n/routing"
 import { connection } from "next/server"
 import { getLocale } from "next-intl/server"
 import { logger } from "@/lib/logger"
+import { headers } from "next/headers"
 
 export type AccountType = 'personal' | 'business'
 
@@ -93,6 +94,28 @@ export interface BusinessSellerWithSubscription extends BusinessSeller {
   hasDashboardAccess: boolean
 }
 
+async function resolveLoginNextPath(locale: string, fallbackPath: string): Promise<string> {
+  try {
+    const requestHeaders = await headers()
+    const pathname = requestHeaders.get("x-pathname")
+    if (pathname && pathname.startsWith("/")) {
+      return pathname
+    }
+  } catch {
+    // No request headers available - use locale-aware fallback below.
+  }
+
+  if (!fallbackPath.startsWith("/")) {
+    return `/${locale}/${fallbackPath}`
+  }
+
+  if (fallbackPath.startsWith(`/${locale}/`) || fallbackPath === `/${locale}`) {
+    return fallbackPath
+  }
+
+  return `/${locale}${fallbackPath}`
+}
+
 type VariantSummary = {
   variantCount: number
   variantStock: number
@@ -174,16 +197,20 @@ async function getVariantSummaryByProductId(
  * @returns The business seller if verified
  * @throws Redirects to login or account if not authorized
  */
-export async function requireBusinessSeller(redirectTo: string = "/account"): Promise<BusinessSeller> {
+export async function requireBusinessSeller(
+  redirectTo: string = "/account",
+  loginNextFallback: string = "/dashboard"
+): Promise<BusinessSeller> {
   const locale = await getLocale()
   const supabase = await createClient()
+  const loginNext = await resolveLoginNextPath(locale, loginNextFallback)
   
   // Check if user is authenticated via Supabase auth
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   
   if (authError || !user) {
     // User not authenticated - redirect to login
-    return redirect({ href: "/auth/login", locale })
+    return redirect({ href: { pathname: "/auth/login", query: { next: loginNext } }, locale })
   }
   
   const userId = user.id
@@ -208,7 +235,7 @@ export async function requireBusinessSeller(redirectTo: string = "/account"): Pr
   
   if (profileError || !profile) {
     // No profile - redirect to login
-    return redirect({ href: "/auth/login", locale })
+    return redirect({ href: { pathname: "/auth/login", query: { next: loginNext } }, locale })
   }
   
   if (profile.account_type !== 'business') {
@@ -327,7 +354,7 @@ export async function requireDashboardAccess(
   const locale = await getLocale()
   
   // First verify they have a business account
-  const seller = await requireBusinessSeller("/account")
+  const seller = await requireBusinessSeller("/account", "/dashboard")
   
   // Then check their subscription status
   const subscription = await getActiveSubscription(seller.id)

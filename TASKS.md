@@ -1,119 +1,162 @@
-# Tasks — Active
+# Tasks — Active (Phase-Aligned)
 
-> Single task queue. Codex picks tasks here, executes, and checks boxes.
-> Each task is self-contained: description + context + acceptance criteria.
-> Completed tasks get checked off. Fully shipped work gets removed periodically.
+> Single execution queue. Phase-aligned with `docs/strategy/CAPABILITY-MAP.md`.
+> Codex picks tasks here, executes, and checks boxes.
+> Each task: description + context + acceptance criteria.
 
 ---
 
 ## How to Use This File
 
-**Codex:** Read AGENTS.md first. Find your assigned task below. Load the context docs listed. Execute. Check the boxes when done.
-**Orchestrator (me):** Creates tasks from audits, planning, and human requests. Verifies completion. Removes shipped work.
+**Codex:** Read AGENTS.md first → Read `docs/state/NOW.md` → Find your assigned task below. Load listed context docs. Execute. Check boxes.
+**Orchestrator:** Creates tasks from audits/planning. Verifies completion. Archives shipped work.
 **Human:** Picks which task to send to Codex. Bridges orchestrator and Codex.
+
+## Task Metadata
+
+Tasks use format: `PH<phase>-<area>-<number>`. Example: `PH0-LAUNCH-001`.
+Phase alignment tells agents WHY this task matters in the bigger picture.
 
 ---
 
-## Launch Blockers
+## Phase 0 — Launch Hardening (Current)
 
-> These must be resolved before going live. Sensitive — Codex flags approach, human approves.
+> V1 Bulgaria launch readiness. Close blockers, fix broken areas, harden trust surface.
 
-- [ ] **LAUNCH-001:** Verify Stripe webhook idempotency — no duplicate orders on replay
+### 0.1 Launch Blockers (Human Approval Required)
+
+- [ ] **PH0-LAUNCH-001:** Verify Stripe webhook idempotency — no duplicate orders on replay
   - Context: `docs/features/checkout-payments.md`
+  - Capability: Webhook idempotency + replay safety
   - Done: replay same `checkout.session.completed` event twice → second is no-op, order count unchanged
 
-- [ ] **LAUNCH-002:** Test refund/dispute flow end-to-end
+- [ ] **PH0-LAUNCH-002:** Test refund/dispute flow end-to-end
   - Context: `docs/features/checkout-payments.md`
+  - Capability: Refund/dispute operational flow
   - Done: trigger refund from Stripe dashboard → order status updates → buyer notified
 
-- [ ] **LAUNCH-003:** Verify Stripe environment separation (prod keys + webhook secrets)
+- [ ] **PH0-LAUNCH-003:** Verify Stripe environment separation (prod keys + webhook secrets)
   - Context: `docs/features/checkout-payments.md`, `docs/STACK.md`
+  - Capability: Environment separation (dev/prod payments)
   - Done: prod and dev use separate Stripe accounts, no test keys in prod env
 
-- [ ] **LAUNCH-004:** Enable leaked password protection + re-run Supabase Security Advisor
+- [ ] **PH0-LAUNCH-004:** Enable leaked password protection + re-run Supabase Security Advisor
   - Context: `docs/features/auth.md`
+  - Capability: Auth/session hardening
   - Done: Supabase Security Advisor returns no critical findings
-  - Note (2026-02-23): Executed Supabase Management API checks against project `dhtzybnkvpimmomzwrce`. `password_hibp_enabled` is currently `false`; enabling it via `PATCH /v1/projects/{ref}/config/auth` failed with `402 Payment Required` (feature is Pro plan+). Security Advisor rerun result: 1 warning (`auth_leaked_password_protection`), 0 critical.
+  - Note (2026-02-23): `password_hibp_enabled` is `false`; enabling via API failed with `402 Payment Required` (Pro plan+). Security Advisor: 1 warning, 0 critical.
 
-## Broken Areas
+### 0.2 Core Journey Breakages
 
-> Known broken areas from launch readiness assessment. Need audit + fix.
-
-- [x] **FIX-001:** Search is broken — needs investigation and repair
-  - Context: `docs/features/search-filters.md`
-  - Done: search returns relevant results, filters work, no console errors, mobile + desktop
-
-- [ ] **FIX-002:** Sell flow UX is terrible — needs redesign
+- [ ] **PH0-FIX-002:** Sell flow UX is terrible — needs redesign
   - Context: `docs/features/sell-flow.md`
+  - Capability: Sell flow quality and completion
   - Done: seller can list a product end-to-end with clear UX, image upload works, form validation helpful
 
-- [ ] **FIX-003:** Account settings broken on mobile, incomplete on desktop
+- [ ] **PH0-FIX-003:** Account settings broken on mobile, incomplete on desktop
   - Context: `docs/features/auth.md`, `docs/DESIGN.md`
+  - Capability: Account/profile reliability
   - Done: all settings accessible on mobile (375px), no overflow, no broken interactions
 
-## Refactor
+### 0.3 Trust/Compliance Hardening
 
-> Merged from refactor/CURRENT.md. Domains 1-5, 7 complete. Domain 6 blocked.
-
-- [ ] **REFACTOR-001:** Domain 6 — lib/, actions/, api/ refactoring (auth/payment sensitive)
+- [ ] **PH0-REFACTOR-001:** Domain 6 — lib/, actions/, api/ refactoring (auth/payment sensitive)
   - Context: `refactor/domains/06-lib-actions-api.md`
   - BLOCKED: Contains payment/auth action refactors. Needs human approval before execution.
-  - Note (2026-02-23): Completed a safe `lib/` hardening pass (JSON parse boundary, API response helper cleanup, server logging consistency). Full gate passes.
+  - Note (2026-02-23): Completed safe `lib/` hardening pass. Full gate passes.
   - Done: domain refactored per plan, verification passes, no auth/payment regressions
 
-- [x] **REFACTOR-002:** Phase 5 — production audit/refactor for `hooks/`
-  - Context: `refactor/domains/06-lib-actions-api.md`
-  - Done: `hooks/` is audited (dead/unused, cleanup, exhaustive-deps, type safety); `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit` pass
-
-## Backlog
-
-> Nice-to-haves. Not blocking launch but improve the product.
-
-- [ ] **BACKLOG-001:** Checkout buyer protection UX (blocking/warning)
+- [ ] **PH0-TRUST-001:** Checkout buyer protection UX (blocking/warning)
   - Context: `docs/features/checkout-payments.md`
+  - Capability: Stripe checkout + escrow lifecycle
   - Done: buyer protection fee visible before payment, clear explanation text
 
-- [ ] **BACKLOG-002:** Buyer confirmation email on checkout completion
+- [ ] **PH0-TRUST-002:** PDP report modal/flow (trust & safety)
+  - Done: report button opens modal, user selects reason + submits, report stored in DB
+
+- [ ] **PH0-TRUST-003:** Verify product data sanity — no test/dummy listings
+  - Done: audit shows only real listings, categories make sense
+
+### 0.4 Phase 0 Exit Criteria
+
+- All launch blockers closed (PH0-LAUNCH-001..004)
+- Core journeys stable (sell, browse, checkout, account)
+- Launch gates green (`pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`)
+- P2 sections (12-15) audited or deprioritized with rationale
+
+---
+
+## Phase 1 — Liquidity + Conversion (Next)
+
+> Post-launch. Grow supply, improve buyer conversion, build trust signals.
+
+### 1.1 Supply Seeding & Listing Velocity
+
+*(Tasks to be created post-launch based on GTM wedge category decisions)*
+
+### 1.2 Buyer Conversion & Trust UX
+
+- [ ] **PH1-BUYER-001:** Buyer confirmation email on checkout completion
   - Context: `docs/features/checkout-payments.md`
+  - Capability: Transactional email + trust communications
   - Done: email sent with order summary, delivery estimate, seller info
 
-- [ ] **BACKLOG-003:** PDP mobile seller bio surface
+- [ ] **PH1-BUYER-002:** PDP mobile seller bio surface
   - Context: `docs/features/product-cards.md`, `docs/DESIGN.md`
   - Done: seller name, avatar, rating, join date visible on mobile PDP
 
-- [ ] **BACKLOG-004:** PDP report modal/flow (trust & safety)
-  - Done: report button opens modal, user selects reason + submits, report stored in DB
+### 1.3 Seller Retention Foundations
 
-- [ ] **BACKLOG-005:** Verify product data sanity — no test/dummy listings
-  - Done: audit shows only real listings, categories make sense
+*(Tasks to be created when Phase 1 begins)*
 
-## Mobile UI/UX Perfection Pass
+### 1.4 Phase 1 Exit Criteria
 
-> Full codebase audit + rework to make mobile (375px) feel polished, consistent, and premium.
+- Listing and transaction growth with healthy trust metrics
+- Business dashboard baseline functional
+- Commerce Graph canonical entity contracts stable
 
-- [x] **MOBILE-001:** Full mobile UI/UX audit and alignment pass
-  - Context: `docs/DESIGN.md`, `docs/STACK.md`, `docs/features/product-cards.md`
-  - Scope: every mobile-visible route and component at 375px viewport
-  - See: `docs/MOBILE-UX-PERFECTION.md` for detailed spec and audit checklist
-  - Done: all acceptance criteria in the spec doc are met, `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit` pass
+---
 
-## Motion & Structure Pass
+## Phase 2 — AI Listings MVP
 
-> Framer Motion animations + structural improvements. Second Codex pass after MOBILE-001.
+> AI-powered listing creation. Photo → draft in seconds.
 
-- [x] **MOTION-001:** Motion & structure pass — Framer Motion polish + code improvements
-  - Context: `docs/MOTION-STRUCTURE-SPEC.md`, `docs/DESIGN.md`, `docs/STACK.md`
-  - Scope: MotionConfig provider, product grid stagger, drawer content entrance, category tab transitions, badge animations, sell flow improvement, CSS animation utilities
-  - See: `docs/MOTION-STRUCTURE-SPEC.md` for full spec (Parts 1-8)
-  - Done: all checkboxes in the spec doc are checked, `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit` pass
-  - NOT in scope: auth, payments, DB, drawer drag/slide, route transitions, new dependencies
+### 2.1 AI Platform Foundations
 
-## Audit Queue
+*(Tasks created when Phase 2 begins. See `docs/architecture/AI-PLATFORM.md` for architecture.)*
 
-> Tasks will be added here after each Playwright visual/functional audit.
-> Next audit: full mobile (375px) + desktop (1280px) of all major flows.
+### 2.2 Photo-to-Listing Autofill
 
-*(Empty — first audit pending)*
+### 2.3 Pricing Suggestions MVP
+
+### 2.4 Phase 2 Exit Criteria
+
+- AI listing MVP with measurable publish-speed and quality gains
+- Prompt registry and eval harness operational
+- Guardrails and schema validation enforced
+
+---
+
+## Phase 3 — AI Business Operator MVP
+
+*(See `docs/strategy/CAPABILITY-MAP.md` for capability inventory)*
+
+## Phase 4 — Buyer Agent + EU Expansion
+
+*(See `docs/strategy/CAPABILITY-MAP.md` for capability inventory)*
+
+## Phase 5 — Fulfillment Intelligence + Autonomy Pilots
+
+*(See `docs/strategy/CAPABILITY-MAP.md` for capability inventory)*
+
+---
+
+## Completed Recently
+
+- [x] **FIX-001:** Search repair — search returns relevant results, filters work *(2026-02-24)*
+- [x] **MOBILE-001:** Full mobile UI/UX audit and alignment pass *(2026-02-21)*
+- [x] **MOTION-001:** Motion & structure pass — Framer Motion polish *(2026-02-21)*
+- [x] **REFACTOR-002:** hooks/ production audit/refactor *(2026-02-23)*
 
 ---
 
@@ -121,19 +164,19 @@
 
 **Single task:**
 ```
-Read AGENTS.md. Then do task LAUNCH-001 from TASKS.md.
+Read AGENTS.md. Then do task PH0-LAUNCH-001 from TASKS.md.
 ```
 
-**Broken area batch:**
+**Phase 0 batch:**
 ```
-Read AGENTS.md. Do all unchecked tasks in the "Broken Areas" section of TASKS.md, top to bottom.
+Read AGENTS.md. Do all unchecked tasks in "Phase 0" of TASKS.md, top to bottom.
 ```
 
-**Backlog item:**
+**Specific area:**
 ```
-Read AGENTS.md. Then do task BACKLOG-003 from TASKS.md.
+Read AGENTS.md. Read docs/architecture/AI-PLATFORM.md. Then do task PH2-AI-001 from TASKS.md.
 ```
 
 ---
 
-*Last updated: 2026-02-23*
+*Last updated: 2026-02-24*

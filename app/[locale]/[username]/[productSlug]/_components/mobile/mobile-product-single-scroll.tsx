@@ -122,6 +122,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
       ? basePrice + Number(defaultVariant?.price_adjustment ?? 0)
       : basePrice;
   const displayRegularPrice = product.list_price != null ? Number(product.list_price) : null;
+  const displayCurrency = "EUR";
 
   // Time ago formatting
   const [mounted, setMounted] = useState(false);
@@ -242,7 +243,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
               condition={product.condition}
               freeShipping={freeShipping}
               price={displayPrice}
-              currency="BGN"
+              currency={displayCurrency}
               isNegotiable={isNegotiable}
               locale={currentLocale}
             />
@@ -338,7 +339,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
           title: cartProduct.title,
           price: displayPrice,
           originalPrice: displayRegularPrice,
-          currency: "BGN",
+          currency: displayCurrency,
           image: cartProduct.image,
           slug: cartProduct.slug,
           username: cartProduct.username,

@@ -2908,12 +2908,24 @@
             "blockUserFailed": {
                 "description": "Failed to block user"
             },
+            "invalidImageType": {
+                "description": "Please select an image file."
+            },
+            "imageTooLarge": {
+                "description": "Image is too large. Maximum file size is 5 MB."
+            },
+            "uploadImageFailed": {
+                "description": "Failed to upload image"
+            },
             "reportSubmitted": {
                 "title": "Report submitted",
                 "description": "Thank you for your report. We will review it."
             },
             "reportConversationFailed": {
                 "description": "Failed to submit report"
+            },
+            "sendMessageFailed": {
+                "description": "Failed to send message"
             }
         }
     },

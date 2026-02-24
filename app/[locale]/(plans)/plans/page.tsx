@@ -3,6 +3,9 @@ import { getActivePlans } from "@/lib/data/plans"
 import { createSubscriptionCheckoutSession } from "../../../actions/subscriptions-reads"
 import { downgradeToFreeTier } from "../../../actions/subscriptions-mutations"
 import PlansPageClient from "../_components/plans-page-client"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { validateLocale } from "@/i18n/routing"
+import type { Metadata } from "next"
 
 // =============================================================================
 // Types
@@ -12,9 +15,21 @@ interface PlansPageProps {
   params: Promise<{ locale: string }>
 }
 
-export const metadata = {
-  title: "Plans | Treido",
-  description: "Explore Treido plans and upgrade anytime.",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  setRequestLocale(locale)
+
+  const t = await getTranslations({ locale, namespace: "Plans.page" })
+
+  return {
+    title: t("title"),
+    description: t("subtitle"),
+  }
 }
 
 export default async function PlansPage({ params }: PlansPageProps) {

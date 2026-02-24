@@ -177,7 +177,7 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
   const t = translations[locale as keyof typeof translations] || translations.en
 
   // Get the business seller (they must be a business account to see this page)
-  const businessSeller = await requireBusinessSeller("/account")
+  const businessSeller = await requireBusinessSeller("/account", "/dashboard/upgrade")
 
   // Check if they already have dashboard access
   const subscription = await getActiveSubscription(businessSeller.id)

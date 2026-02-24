@@ -2908,12 +2908,24 @@
             "blockUserFailed": {
                 "description": "Неуспешно блокиране на потребителя"
             },
+            "invalidImageType": {
+                "description": "Моля, изберете файл с изображение."
+            },
+            "imageTooLarge": {
+                "description": "Изображението е твърде голямо. Максималният размер е 5 MB."
+            },
+            "uploadImageFailed": {
+                "description": "Неуспешно качване на изображение"
+            },
             "reportSubmitted": {
                 "title": "Докладът е изпратен",
                 "description": "Благодарим ви за сигнала. Ще го прегледаме."
             },
             "reportConversationFailed": {
                 "description": "Неуспешно изпращане на доклада"
+            },
+            "sendMessageFailed": {
+                "description": "Неуспешно изпращане на съобщение"
             }
         }
     },

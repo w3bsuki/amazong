@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 import { resolveLeafCategoryForListing } from "@/lib/sell/resolve-leaf-category"
 import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
+import { requireAuth } from "@/lib/auth/require-auth"
 import { logger } from "@/lib/logger"
 
 export type CreateListingResult =
@@ -75,31 +76,28 @@ function parseForm(data: unknown): SellFormData | CreateListingFailure {
 
 async function verifySellerAccess(
   supabase: SupabaseClient,
-  sellerId: string
+  sellerId: string,
+  authenticatedUserId: string
 ): Promise<SellerAccess | CreateListingFailure> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { success: false, error: "Unauthorized" }
-  }
-
-  if (user.id !== sellerId) {
+  if (authenticatedUserId !== sellerId) {
     return { success: false, error: "Forbidden" }
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("id, username")
-    .eq("id", user.id)
+    .eq("id", authenticatedUserId)
     .single()
+
+  if (profileError) {
+    return { success: false, error: "Failed to load seller profile" }
+  }
 
   if (!profile?.username) {
     return { success: false, error: "You must set up a username to sell items" }
   }
 
-  return { userId: user.id, username: profile.username }
+  return { userId: authenticatedUserId, username: profile.username }
 }
 
 async function verifyListingLimits(
@@ -295,12 +293,17 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
   if (isCreateListingFailure(parsedArgs)) return parsedArgs
 
   const { sellerId, data } = parsedArgs
+  const auth = await requireAuth()
+  if (!auth) {
+    return { success: false, error: "Unauthorized" }
+  }
+
   const parsedForm = parseForm(data)
   if (isCreateListingFailure(parsedForm)) return parsedForm
   const form = parsedForm
 
-  const supabase = await createClient()
-  const sellerAccessResult = await verifySellerAccess(supabase, sellerId)
+  const supabase = auth.supabase
+  const sellerAccessResult = await verifySellerAccess(supabase, sellerId, auth.user.id)
   if (isCreateListingFailure(sellerAccessResult)) return sellerAccessResult
   const sellerAccess = sellerAccessResult
 

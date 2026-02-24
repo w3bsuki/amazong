@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
+import ResetPasswordClient from "./reset-password-client"
 
 export async function generateMetadata({
   params,
@@ -18,4 +19,6 @@ export async function generateMetadata({
   }
 }
 
-export { default } from "./reset-password-client"
+export default function ResetPasswordPage() {
+  return <ResetPasswordClient />
+}

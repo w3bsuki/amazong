@@ -1,7 +1,9 @@
 "use server"
 
 import { revalidateTag } from "next/cache"
-import { createAdminClient, createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/server"
+import { requireAuth } from "@/lib/auth/require-auth"
+import { logger } from "@/lib/logger"
 
 export type ReportReason = 
   | "spam"
@@ -24,15 +26,11 @@ export async function reportConversation(
   reason: ReportReason,
   description?: string
 ): Promise<ReportConversationResult> {
-  const supabase = await createClient()
-  if (!supabase) {
+  const auth = await requireAuth()
+  if (!auth) {
     return { success: false, error: "Not authenticated" }
   }
-
-  const { data: userData } = await supabase.auth.getUser()
-  if (!userData.user) {
-    return { success: false, error: "Not authenticated" }
-  }
+  const { user, supabase } = auth
 
   try {
     // Verify user is part of this conversation
@@ -46,7 +44,7 @@ export async function reportConversation(
       return { success: false, error: "Conversation not found" }
     }
 
-    const userId = userData.user.id
+    const userId = user.id
     if (conversation.buyer_id !== userId && conversation.seller_id !== userId) {
       return { success: false, error: "Not authorized to report this conversation" }
     }
@@ -62,7 +60,7 @@ export async function reportConversation(
     try {
       const admin = createAdminClient()
       ;({ error: notifError } = await admin.from("notifications").insert({
-        user_id: userData.user.id, // Placeholder - in production, this would go to admin users
+        user_id: user.id, // Placeholder - in production, this would go to admin users
         type: "system",
         title: "Conversation Reported",
         body: reportBody,
@@ -81,7 +79,11 @@ export async function reportConversation(
     }
 
     if (notifError) {
-      console.error("Error creating report notification:", notifError)
+      logger.error("[chat:report-conversation] failed_to_create_notification", notifError, {
+        conversationId,
+        userId,
+        reason,
+      })
       return { success: false, error: "Failed to submit report" }
     }
 
@@ -89,7 +91,10 @@ export async function reportConversation(
     
     return { success: true, error: null }
   } catch (err) {
-    console.error("Error reporting conversation:", err)
+    logger.error("[chat:report-conversation] unexpected_error", err, {
+      conversationId,
+      reason,
+    })
     return { success: false, error: "An unexpected error occurred" }
   }
 }

@@ -256,7 +256,7 @@ function SellerListings({
     const [resolvedImageSrc, setResolvedImageSrc] = useState(() =>
       normalizeOptionalImageUrl(product.image)
     )
-    const formattedPrice = formatCurrencyAmount(product.price, locale, "BGN", {
+    const formattedPrice = formatCurrencyAmount(product.price, locale, "EUR", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     })

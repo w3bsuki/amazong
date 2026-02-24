@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useTranslations } from "next-intl"
 
 import { createClient } from "@/lib/supabase/client"
-import { normalizeImageUrl } from "@/lib/normalize-image-url"
+import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 import { safeJsonParseUnknown } from "@/lib/safe-json"
 
 import { useAuth } from "./auth-state-manager"
@@ -28,6 +28,15 @@ export interface CartItem {
 }
 
 const MAX_CART_QUANTITY = 99
+const CART_ALLOWED_REMOTE_IMAGE_HOSTS = new Set([
+  "images.unsplash.com",
+  "cdn.simpleicons.org",
+  "flagcdn.com",
+  "upload.wikimedia.org",
+  "placehold.co",
+  "api.dicebear.com",
+])
+const CART_ALLOWED_REMOTE_IMAGE_HOST_SUFFIXES = [".supabase.co"] as const
 
 function toRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : null
@@ -83,6 +92,28 @@ function normalizeSellerSlugs(item: {
   }
 }
 
+function isAllowedCartRemoteImageHost(hostname: string): boolean {
+  const normalized = hostname.toLowerCase()
+  if (CART_ALLOWED_REMOTE_IMAGE_HOSTS.has(normalized)) return true
+  return CART_ALLOWED_REMOTE_IMAGE_HOST_SUFFIXES.some((suffix) => normalized.endsWith(suffix))
+}
+
+function normalizeCartImageUrl(image: unknown): string {
+  const normalized = normalizeImageUrl(asString(image))
+
+  if (!/^https?:\/\//i.test(normalized)) {
+    return normalized
+  }
+
+  try {
+    const parsed = new URL(normalized)
+    if (!isAllowedCartRemoteImageHost(parsed.hostname)) return PLACEHOLDER_IMAGE_PATH
+    return normalized
+  } catch {
+    return PLACEHOLDER_IMAGE_PATH
+  }
+}
+
 function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
   const sanitized: CartItem[] = []
   for (const item of rawItems) {
@@ -97,7 +128,7 @@ function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
     sanitized.push({
       ...item,
       ...sellerSlugs,
-      image: normalizeImageUrl(item.image),
+      image: normalizeCartImageUrl(item.image),
       price,
       quantity,
     })
@@ -182,7 +213,7 @@ async function fetchServerCart(activeUserId: string, unknownProductLabel: string
       const price = normalizePrice(products?.price)
 
       const images = asStringArray(products?.images)
-      const image = normalizeImageUrl(images?.[0] ?? null)
+      const image = normalizeCartImageUrl(images?.[0] ?? null)
       const slug = asString(products?.slug)
       const seller = toRecord(products?.seller)
       const username = asString(seller?.username)
@@ -409,6 +440,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const itemWithValidPrice = {
       ...newItem,
       ...normalizeSellerSlugs({ username: newItem.username, storeSlug: newItem.storeSlug ?? null }),
+      image: normalizeCartImageUrl(newItem.image),
       price: normalizedPrice,
       quantity: normalizedQuantity,
     }

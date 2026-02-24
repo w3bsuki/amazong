@@ -57,11 +57,19 @@ export function useChatInterfaceActions({
     if (!file) return
 
     if (!file.type.startsWith("image/")) {
-      console.error("File must be an image")
+      toast({
+        title: tCommon("error"),
+        description: t("toasts.invalidImageType.description"),
+        variant: "destructive",
+      })
       return
     }
     if (file.size > 5 * 1024 * 1024) {
-      console.error("Image too large (max 5MB)")
+      toast({
+        title: tCommon("error"),
+        description: t("toasts.imageTooLarge.description"),
+        variant: "destructive",
+      })
       return
     }
 
@@ -94,8 +102,12 @@ export function useChatInterfaceActions({
       }
 
       await sendMessage("", imageUrl)
-    } catch (error) {
-      console.error("Error uploading image:", error)
+    } catch {
+      toast({
+        title: tCommon("error"),
+        description: t("toasts.uploadImageFailed.description"),
+        variant: "destructive",
+      })
     } finally {
       setIsUploadingImage(false)
       if (fileInputRef.current) {
@@ -124,8 +136,7 @@ export function useChatInterfaceActions({
       } else {
         throw new Error(result.error || "Failed to block user")
       }
-    } catch (error) {
-      console.error("Error blocking user:", error)
+    } catch {
       toast({
         title: tCommon("error"),
         description: t("toasts.blockUserFailed.description"),
@@ -150,8 +161,7 @@ export function useChatInterfaceActions({
       } else {
         throw new Error(result.error || "Failed to report")
       }
-    } catch (error) {
-      console.error("Error reporting conversation:", error)
+    } catch {
       toast({
         title: tCommon("error"),
         description: t("toasts.reportConversationFailed.description"),
