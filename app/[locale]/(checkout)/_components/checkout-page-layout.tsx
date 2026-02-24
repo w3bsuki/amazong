@@ -389,7 +389,6 @@ function MobileCheckoutPaymentCard({ t }: { t: TranslationFn }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 py-4">
-        {/* TODO: requires payment logic review */}
         <p className="text-sm text-muted-foreground">{t("paymentStepDescription")}</p>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <ShieldCheck className="size-3.5 text-success" />

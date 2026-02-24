@@ -19,6 +19,7 @@ export default function WishlistPageClient() {
   const tNav = useTranslations("Navigation")
   const locale = useLocale()
   const [linkCopied, setLinkCopied] = useState(false)
+  const heading = t("heading")
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
@@ -68,7 +69,7 @@ export default function WishlistPageClient() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: t("title"),
+          title: heading,
           url: shareUrl,
         })
       } catch {
@@ -135,12 +136,12 @@ export default function WishlistPageClient() {
               {tNav("home")}
             </Link>
             <span>/</span>
-            <span className="text-foreground">{t("title")}</span>
+            <span className="text-foreground">{heading}</span>
           </nav>
 
           <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
             <Heart className="h-5 w-5 md:h-6 md:w-6" />
-            {t("title")}
+            {heading}
           </h1>
 
           <div className="bg-card rounded-md border border-border p-4 md:p-4 text-center">
@@ -170,14 +171,14 @@ export default function WishlistPageClient() {
             {tNav("home")}
           </Link>
           <span>/</span>
-          <span className="text-foreground">{t("title")}</span>
+          <span className="text-foreground">{heading}</span>
         </nav>
 
         {/* Header with title and actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Heart className="h-5 w-5 md:h-6 md:w-6 text-wishlist" />
-            {t("title")} <span className="text-muted-foreground font-normal">({items.length})</span>
+            {heading} <span className="text-muted-foreground font-normal">({items.length})</span>
           </h1>
 
           <div className="flex items-center gap-2">

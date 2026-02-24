@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getShippingRegion, type ShippingRegion } from '@/lib/shipping';
 import type { Locale } from '@/i18n/routing';
+import { logger } from '@/lib/logger';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -246,7 +247,7 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
         setLocalStorage(STORAGE_KEYS.LAST_SHOWN, Date.now().toString());
       } catch (error: unknown) {
         if (process.env.NODE_ENV === 'development') {
-          console.debug('[useGeoWelcome] Failed to initialize geo welcome:', getErrorMessage(error));
+          logger.debug('[useGeoWelcome] Failed to initialize geo welcome', { error: getErrorMessage(error) });
         }
 
         setClosedState();
@@ -320,7 +321,7 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
       }
     } catch (error: unknown) {
       if (process.env.NODE_ENV === 'development') {
-        console.debug('[useGeoWelcome] Failed to persist selected region:', getErrorMessage(error));
+        logger.debug('[useGeoWelcome] Failed to persist selected region', { error: getErrorMessage(error) });
       }
     }
 

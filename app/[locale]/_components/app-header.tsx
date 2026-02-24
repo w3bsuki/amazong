@@ -147,7 +147,7 @@ function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): R
 
   // Known routes start with: /search, /cart, /checkout, /account, /sell, /plans, /auth
   const segments = pathWithoutLocale.split("/").filter(Boolean)
-  const knownRoutes = ["search", "sellers", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant"]
+  const knownRoutes = ["search", "sellers", "cart", "checkout", "account", "sell", "plans", "auth", "categories", "api", "assistant", "wishlist"]
   
   // Product pages: /{username}/{productSlug} (2+ segments, not a known route)
   if (segments.length >= 2 && segments[0] && !knownRoutes.includes(segments[0])) {

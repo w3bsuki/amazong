@@ -14,7 +14,8 @@ export async function generateMetadata({
   const t = await getTranslations("Wishlist")
 
   return {
-    title: t("title"),
+    title: t("heading"),
+    description: t("description"),
   }
 }
 

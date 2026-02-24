@@ -908,7 +908,8 @@
         "checkout": "Proceed to Checkout",
         "continueShop": "Continue Shopping",
         "itemAdded": "Item added to Cart",
-        "items": "{count} items"
+        "items": "{count} items",
+        "unknownProduct": "Unknown product"
     },
     "CartPage": {
         "title": "Shopping Cart",
@@ -1547,6 +1548,7 @@
         },
         "settings": {
             "title": "Settings",
+            "description": "Manage your account settings.",
             "emailChangedTitle": "Email updated",
             "emailChangedDescription": "Your account email address was updated successfully."
         },
@@ -2658,6 +2660,7 @@
     },
     "Wishlist": {
         "title": "My Wishlist",
+        "heading": "My Wishlist",
         "empty": "Your wishlist is empty",
         "emptyDescription": "Save items you love by clicking the heart icon on any product.",
         "startShopping": "Start Shopping",
@@ -4843,6 +4846,32 @@
         "footer": "Theme: Twitter (tweakcn) • Tailwind v4 • shadcn/ui new-york"
     },
     "Onboarding": {
+        "meta": {
+            "index": {
+                "title": "Onboarding",
+                "description": "Set up your Treido account."
+            },
+            "accountType": {
+                "title": "Onboarding: Account Type",
+                "description": "Choose your account type to get started on Treido."
+            },
+            "profile": {
+                "title": "Onboarding: Profile",
+                "description": "Set up your Treido profile."
+            },
+            "businessProfile": {
+                "title": "Onboarding: Business Profile",
+                "description": "Set up your business profile on Treido."
+            },
+            "interests": {
+                "title": "Onboarding: Interests",
+                "description": "Tell us what you're interested in to personalize Treido."
+            },
+            "complete": {
+                "title": "Onboarding Complete",
+                "description": "Finish onboarding and start using Treido."
+            }
+        },
         "common": {
             "back": "Back",
             "continue": "Continue",
@@ -5055,7 +5084,7 @@
                 "label": "View dashboard"
             },
             "secondaryAction": {
-                "label": ""
+                "label": "Explore reports"
             },
             "tips": [
                 "Share your store link to drive traffic",
@@ -5070,7 +5099,7 @@
                 "label": "View products"
             },
             "secondaryAction": {
-                "label": ""
+                "label": "Invite customers"
             },
             "tips": [
                 "Offer great products at competitive prices",
@@ -5085,7 +5114,7 @@
                 "label": "Create discount"
             },
             "secondaryAction": {
-                "label": ""
+                "label": "View analytics"
             },
             "tips": [
                 "Use discounts for special promotions",

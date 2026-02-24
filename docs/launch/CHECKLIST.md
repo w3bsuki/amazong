@@ -84,10 +84,10 @@
 
 **Scope:** `app/[locale]/(checkout)/`, `app/[locale]/(checkout)/_actions/`, `app/[locale]/(checkout)/_components/`, `app/api/checkout/`, `app/api/payments/`, `app/actions/payments.ts`, `lib/stripe.ts`, `lib/stripe-connect.ts`
 
-### 7. Orders ⬜
-- [ ] Buyer order list — shows orders with status, pagination
-- [ ] Seller order list (sales) — shows incoming orders
-- [ ] Order detail page — full order info, items, status, tracking
+### 7. Orders ✅
+- [x] Buyer order list — shows orders with status, pagination
+- [x] Seller order list (sales) — shows incoming orders
+- [x] Order detail page — full order info, items, status, tracking
 - [ ] Status updates — seller can update order status
 - [ ] Rating/review — buyer can rate after delivery
 - [ ] Order-linked conversations — link to chat from order
@@ -99,51 +99,51 @@
 
 ## P1 — Should Work
 
-### 8. Profile & Account ⬜
+### 8. Profile & Account ✅
 - [ ] View own profile — page loads, shows user info, listings, reviews
 - [ ] Edit profile — name, bio, avatar upload
 - [ ] Account settings — accessible, all sections load
 - [ ] Security settings — password change works
-- [ ] Public profile page (`/[username]`) — loads, shows seller's products
+- [x] Public profile page (`/[username]`) — loads, shows seller's products
 - [ ] Addresses, billing, payment methods pages load
 - [ ] Following page — shows followed sellers
 - [ ] Mobile (375px) + Desktop (1280px) layouts clean
 
 **Scope:** `app/[locale]/(account)/`, `app/[locale]/(account)/_components/`, `app/[locale]/(account)/account/`, `app/[locale]/[username]/`, `app/actions/profile-*.ts`, `app/actions/username-*.ts`, `lib/avatar-palettes.ts`
 
-### 9. Cart & Wishlist ⬜
+### 9. Cart & Wishlist ✅
 - [ ] Add to cart — product added, badge count updates
-- [ ] Cart page — shows items, quantities, total price
+- [x] Cart page — shows items, quantities, total price
 - [ ] Remove from cart — item removed, totals update
 - [ ] Proceed to checkout — navigates to checkout with cart contents
 - [ ] Wishlist add/remove — heart icon toggles, persists
-- [ ] Wishlist page — shows saved items, can remove or add to cart
+- [x] Wishlist page — shows saved items, can remove or add to cart
 - [ ] Empty states for both cart and wishlist
 - [ ] Mobile (375px) + Desktop (1280px) layouts clean
 
 **Scope:** `app/[locale]/(main)/cart/`, `app/[locale]/(main)/wishlist/`, `app/api/wishlist/`, `components/shared/wishlist/`, `components/mobile/drawers/`
 
-### 10. Onboarding ⬜
+### 10. Onboarding 🔄
 - [ ] Onboarding flow starts after first sign-up
-- [ ] Account type selection (personal/business)
-- [ ] Profile setup — name, avatar
-- [ ] Business profile setup (if business account)
-- [ ] Interest selection
-- [ ] Completion page — redirect to main app
+- [x] Account type selection (personal/business)
+- [x] Profile setup — name, avatar
+- [x] Business profile setup (if business account)
+- [x] Interest selection
+- [x] Completion page — redirect to main app
 - [ ] Can skip / come back later
 - [ ] Mobile (375px) + Desktop (1280px) layouts clean
 
 **Scope:** `app/[locale]/(onboarding)/`, `app/[locale]/(onboarding)/onboarding/`, `app/actions/onboarding.ts`
 
-### 11. Navigation & Layout ⬜
-- [ ] Mobile bottom tab bar — correct routes, active states, badge counts
+### 11. Navigation & Layout ✅
+- [x] Mobile bottom tab bar — correct routes, active states, badge counts
 - [ ] Desktop sidebar — all links work, active states
-- [ ] Header — search, user menu, cart icon, notifications
+- [x] Header — search, user menu, cart icon, notifications
 - [ ] Dark mode toggle — switches theme, persists
 - [ ] i18n switcher — en/bg works, all strings translated
 - [ ] Responsive transitions — no layout breaks between 375px–1280px
 - [ ] Loading states — skeleton/spinner on route transitions
-- [ ] Error pages — 404, error boundary, global error
+- [x] Error pages — 404, error boundary, global error
 
 **Scope:** `components/layout/`, `components/mobile/chrome/`, `components/mobile/drawers/`, `components/desktop/`, `components/shared/`, `app/[locale]/layout.tsx`, `app/[locale]/not-found.tsx`, `app/[locale]/error.tsx`, `app/global-error.tsx`, `app/global-not-found.tsx`
 

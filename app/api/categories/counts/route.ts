@@ -3,6 +3,7 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { cacheLife, cacheTag } from "next/cache"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { cachedJsonResponse } from "@/lib/api/response-helpers"
+import { logger } from "@/lib/logger"
 
 // This endpoint returns product counts for ALL categories (L0, L1, L2).
 // Used for sidebar category navigation to show listing counts
@@ -74,7 +75,7 @@ async function getCategoryCountsCached(): Promise<CategoryCount[]> {
 
     if (statsError && shouldLogCategoryCountsErrors && !hasLoggedCategoryStatsError) {
       hasLoggedCategoryStatsError = true
-      console.debug("Category counts: Error fetching category_stats:", statsError?.message)
+      logger.debug("Category counts: Error fetching category_stats", { error: statsError?.message })
     }
 
     const countByCategoryId = new Map<string, number>()
@@ -95,7 +96,7 @@ async function getCategoryCountsCached(): Promise<CategoryCount[]> {
     if (shouldLogCategoryCountsErrors && !hasLoggedCategoryCacheError) {
       hasLoggedCategoryCacheError = true
       const message = error instanceof Error ? error.message : "Unknown error"
-      console.debug("Category counts: Cache function error:", message)
+      logger.debug("Category counts: Cache function error", { error: message })
     }
     return []
   }
@@ -118,7 +119,7 @@ export async function GET() {
     if (shouldLogCategoryCountsErrors && !hasLoggedCategoryRouteError) {
       hasLoggedCategoryRouteError = true
       const message = error instanceof Error ? error.message : "Unknown error"
-      console.debug("Category Counts API Error:", message)
+      logger.debug("Category counts API error", { error: message })
     }
     
     // Return empty counts with success status (graceful degradation)

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { revalidateTag } from "next/cache"
 
+import { logger } from "@/lib/logger"
 import type { Database } from "@/lib/supabase/database.types"
 
 export type ProfileRevalidateProfile = "max" | "user" | "products"
@@ -32,11 +33,15 @@ export async function revalidatePublicProfileTagsForUser(
 
   revalidateTag(`seller-${userId}`, profile)
 
-  const { data: profileRow } = await supabase
+  const { data: profileRow, error } = await supabase
     .from("profiles")
     .select("username")
     .eq("id", userId)
     .maybeSingle()
+  if (error) {
+    logger.error("[profile-tags] Failed to fetch username for revalidation", error, { userId })
+    return null
+  }
 
   const username = normalizeUsername(profileRow?.username ?? null)
   if (username) {

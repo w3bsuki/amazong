@@ -2,6 +2,7 @@ import 'server-only'
 
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 import type { BuyerReview, ProfileProduct, PublicProfile, SellerReview } from '@/lib/types/profile-page'
 
 // =============================================================================
@@ -19,6 +20,15 @@ export interface ProfilePageData {
   sellerReviewCount: number
   buyerReviews: BuyerReview[]
   buyerReviewCount: number
+}
+
+function isNoRowsError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "PGRST116"
+  )
 }
 
 /**
@@ -73,7 +83,7 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
           .select("total_sales, average_rating, follower_count")
           .eq("seller_id", profile.id)
           .single()
-      : Promise.resolve({ data: null }),
+      : Promise.resolve({ data: null, error: null }),
     
     // Buyer stats
     supabase
@@ -111,10 +121,16 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
             .order("created_at", { ascending: false })
             .limit(12)
 
-          if (error) return { data: [], count: count ?? 0 }
-          return { data: data ?? [], count: count ?? 0 }
+          if (error) {
+            logger.error("[profile-page] Failed to load profile products", error, {
+              username,
+              profileId: profile.id,
+            })
+            return { data: [], count: count ?? 0, error }
+          }
+          return { data: data ?? [], count: count ?? 0, error: null as null }
         })()
-      : Promise.resolve({ data: [], count: 0 }),
+      : Promise.resolve({ data: [], count: 0, error: null }),
     
     // Seller reviews
     profile.is_seller
@@ -137,7 +153,7 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
           .eq("seller_id", profile.id)
           .order("created_at", { ascending: false })
           .limit(10)
-      : Promise.resolve({ data: [], count: 0 }),
+      : Promise.resolve({ data: [], count: 0, error: null }),
     
     // Buyer reviews (only if has orders)
     supabase
@@ -160,8 +176,39 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
       .limit(10),
   ])
 
+  if (sellerStatsResult.error && !isNoRowsError(sellerStatsResult.error)) {
+    logger.error("[profile-page] Failed to load seller stats", sellerStatsResult.error, {
+      username,
+      profileId: profile.id,
+    })
+  }
+  if (buyerStatsResult.error && !isNoRowsError(buyerStatsResult.error)) {
+    logger.error("[profile-page] Failed to load buyer stats", buyerStatsResult.error, {
+      username,
+      profileId: profile.id,
+    })
+  }
+  if (sellerReviewsResult.error) {
+    logger.error("[profile-page] Failed to load seller reviews", sellerReviewsResult.error, {
+      username,
+      profileId: profile.id,
+    })
+  }
+  if (buyerReviewsResult.error) {
+    logger.error("[profile-page] Failed to load buyer reviews", buyerReviewsResult.error, {
+      username,
+      profileId: profile.id,
+    })
+  }
+
   const sellerStats = sellerStatsResult.data
   const buyerStats = buyerStatsResult.data
+  const products = productsResult.error ? [] : productsResult.data || []
+  const productCount = productsResult.error ? 0 : productsResult.count || 0
+  const sellerReviews = sellerReviewsResult.error ? [] : sellerReviewsResult.data || []
+  const sellerReviewCount = sellerReviewsResult.error ? 0 : sellerReviewsResult.count || 0
+  const buyerReviews = buyerReviewsResult.error ? [] : buyerReviewsResult.data || []
+  const buyerReviewCount = buyerReviewsResult.error ? 0 : buyerReviewsResult.count || 0
 
   // Transform social_links from Json to Record<string, string>
   const socialLinks = profile.social_links && typeof profile.social_links === 'object' && !Array.isArray(profile.social_links)
@@ -195,12 +242,12 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
 
   return {
     profile: publicProfile,
-    products: (productsResult.data || []) as ProfileProduct[],
-    productCount: productsResult.count || 0,
-    sellerReviews: (sellerReviewsResult.data || []) as SellerReview[],
-    sellerReviewCount: sellerReviewsResult.count || 0,
-    buyerReviews: (buyerReviewsResult.data || []) as BuyerReview[],
-    buyerReviewCount: buyerReviewsResult.count || 0,
+    products: products as ProfileProduct[],
+    productCount,
+    sellerReviews: sellerReviews as SellerReview[],
+    sellerReviewCount,
+    buyerReviews: buyerReviews as BuyerReview[],
+    buyerReviewCount,
   }
 }
 
@@ -215,22 +262,32 @@ export async function getProfileMetadata(username: string) {
 
   const supabase = createStaticClient()
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("id, username, display_name, bio, avatar_url, account_type, is_seller")
     .ilike("username", username)
     .single()
+  if (profileError && !isNoRowsError(profileError)) {
+    logger.error("[profile-page] Failed to load profile metadata", profileError, { username })
+    return null
+  }
 
   if (!profile) return null
 
   // Fetch seller stats if needed
   let sellerStats: { total_sales: number | null; average_rating: number | null } | null = null
   if (profile.is_seller) {
-    const { data: stats } = await supabase
+    const { data: stats, error: statsError } = await supabase
       .from("seller_stats")
       .select("total_sales, average_rating")
       .eq("seller_id", profile.id)
       .single()
+    if (statsError && !isNoRowsError(statsError)) {
+      logger.error("[profile-page] Failed to load seller metadata stats", statsError, {
+        username,
+        profileId: profile.id,
+      })
+    }
     sellerStats = stats
   }
 

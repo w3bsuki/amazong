@@ -1,12 +1,22 @@
 import { redirect, validateLocale } from "@/i18n/routing"
+import type { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 
 interface OnboardingPageProps {
   params: Promise<{ locale: string }>
 }
 
-export const metadata = {
-  title: "Onboarding | Treido",
-  description: "Set up your Treido account.",
+export async function generateMetadata({
+  params,
+}: OnboardingPageProps): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  const t = await getTranslations({ locale, namespace: "Onboarding" })
+
+  return {
+    title: t("meta.index.title"),
+    description: t("meta.index.description"),
+  }
 }
 
 export default async function OnboardingPage({ params }: OnboardingPageProps) {

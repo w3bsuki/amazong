@@ -1,27 +1,31 @@
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
-import { getTranslations } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
+import { PageShell } from "../../../_components/page-shell"
 
 export default async function NotFound() {
-  const t = await getTranslations("CategoryNotFound")
+  const locale = await getLocale()
+  const t = await getTranslations({ locale, namespace: "CategoryNotFound" })
 
   return (
-    <div className="min-h-(--dialog-h-50vh) flex items-center justify-center px-4">
-      <div className="text-center max-w-md">
-        <div className="text-7xl font-bold text-text-subtle mb-4">404</div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground mb-2">{t("title")}</h1>
-        <p className="text-muted-foreground mb-6">
-          {t("description")}
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/categories">
-            <Button className="w-full sm:w-auto">{t("browseCategories")}</Button>
-          </Link>
-          <Link href="/">
-            <Button variant="outline" className="w-full sm:w-auto">{t("goToHomepage")}</Button>
-          </Link>
+    <PageShell className="py-10">
+      <div className="mx-auto flex min-h-(--dialog-h-50vh) w-full max-w-2xl items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 text-center">
+          <div className="mb-4 text-7xl font-bold text-muted-foreground">404</div>
+          <h1 className="mb-2 text-2xl font-bold tracking-tight text-foreground">{t("title")}</h1>
+          <p className="mb-6 text-muted-foreground">
+            {t("description")}
+          </p>
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href="/categories">
+              <Button className="w-full sm:w-auto">{t("browseCategories")}</Button>
+            </Link>
+            <Link href="/">
+              <Button variant="outline" className="w-full sm:w-auto">{t("goToHomepage")}</Button>
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   )
 }

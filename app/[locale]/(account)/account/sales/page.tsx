@@ -24,7 +24,66 @@ interface SalesPageProps {
   }>
   searchParams: Promise<{
     period?: string
+    page?: string
   }>
+}
+
+const SALES_PAGE_SIZE = 10
+
+function parsePageParam(value?: string): number {
+  if (!value) return 1
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
+}
+
+function resolveStartDate(period: string, now: Date): Date {
+  const startDate = new Date(now)
+
+  switch (period) {
+    case "7d":
+      startDate.setDate(now.getDate() - 7)
+      break
+    case "30d":
+      startDate.setDate(now.getDate() - 30)
+      break
+    case "90d":
+      startDate.setDate(now.getDate() - 90)
+      break
+    case "1y":
+      startDate.setFullYear(now.getFullYear() - 1)
+      break
+    default:
+      startDate.setDate(now.getDate() - 30)
+  }
+
+  return startDate
+}
+
+function buildChartData(sales: SaleItem[], startDate: Date, now: Date) {
+  const salesByDate = sales.reduce((acc: Record<string, { revenue: number; orders: number }>, sale) => {
+    const date = new Date(sale.created_at).toISOString().slice(0, 10)
+    if (!acc[date]) {
+      acc[date] = { revenue: 0, orders: 0 }
+    }
+    acc[date].revenue += Number(sale.price_at_purchase) * sale.quantity
+    acc[date].orders += 1
+    return acc
+  }, {})
+
+  const chartData: { date: string; revenue: number; orders: number }[] = []
+  const currentDate = new Date(startDate)
+
+  while (currentDate <= now) {
+    const dateStr = currentDate.toISOString().slice(0, 10)
+    chartData.push({
+      date: dateStr,
+      revenue: salesByDate[dateStr]?.revenue || 0,
+      orders: salesByDate[dateStr]?.orders || 0,
+    })
+    currentDate.setDate(currentDate.getDate() + 1)
+  }
+
+  return chartData
 }
 
 export async function generateMetadata({
@@ -41,8 +100,10 @@ export async function generateMetadata({
 
 export default async function SalesPage({ params, searchParams }: SalesPageProps) {
   const { locale } = await params
-  const { period = "30d" } = await searchParams
+  const { period = "30d", page } = await searchParams
+  const requestedPage = parsePageParam(page)
   const t = await getTranslations({ locale, namespace: "SellerManagement" })
+  const tCommon = await getTranslations({ locale, namespace: "Common" })
   const supabase = await createClient()
 
   if (!supabase) {
@@ -86,30 +147,48 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
 
   // Calculate date range
   const now = new Date()
-  const startDate = new Date()
+  const startDate = resolveStartDate(period, now)
 
-  switch (period) {
-    case "7d":
-      startDate.setDate(now.getDate() - 7)
-      break
-    case "30d":
-      startDate.setDate(now.getDate() - 30)
-      break
-    case "90d":
-      startDate.setDate(now.getDate() - 90)
-      break
-    case "1y":
-      startDate.setFullYear(now.getFullYear() - 1)
-      break
-    default:
-      startDate.setDate(now.getDate() - 30)
+  const fetchSalesPage = async (nextPage: number) => {
+    const from = (nextPage - 1) * SALES_PAGE_SIZE
+    const to = from + SALES_PAGE_SIZE - 1
+
+    return supabase
+      .from("order_items")
+      .select(
+        `
+          id,
+          order_id,
+          product_id,
+          quantity,
+          price_at_purchase,
+          status,
+          order:orders!inner(
+            id,
+            status,
+            created_at,
+            shipping_address,
+            user_id
+          )
+        `,
+        { count: "exact" }
+      )
+      .eq("seller_id", user.id)
+      .gte("orders.created_at", startDate.toISOString())
+      .order("created_at", { ascending: false, foreignTable: "orders" })
+      .range(from, to)
   }
 
-  // Fetch sales (order_items where seller_id matches)
-  const { data: salesData } = await supabase
-    .from("order_items")
-    .select("id, order_id, product_id, quantity, price_at_purchase, status")
-    .eq("seller_id", user.id)
+  let salesResponse = await fetchSalesPage(requestedPage)
+  const totalSalesCount = salesResponse.count ?? 0
+  const totalPages = Math.max(1, Math.ceil(totalSalesCount / SALES_PAGE_SIZE))
+  const currentPage = Math.min(requestedPage, totalPages)
+
+  if (currentPage !== requestedPage) {
+    salesResponse = await fetchSalesPage(currentPage)
+  }
+
+  const salesData = salesResponse.data ?? []
 
   // Pending actions (counts)
   const { count: ordersToShipCount } = await supabase
@@ -133,22 +212,15 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
     .gt("stock", 0)
     .lte("stock", 2)
 
-  // Get unique order IDs and product IDs
-  const orderIds = [...new Set((salesData || []).map(s => s.order_id))]
-  const productIds = [...new Set((salesData || []).map(s => s.product_id))]
-
-  // Fetch orders with date filter
-  const { data: ordersData } = orderIds.length > 0
-    ? await supabase
-      .from("orders")
-      .select("id, status, created_at, shipping_address, user_id")
-      .in("id", orderIds)
-      .gte("created_at", startDate.toISOString())
-      .order("created_at", { ascending: false })
-    : { data: [] }
-
-  // Get buyer profiles for the orders
-  const buyerIds = [...new Set((ordersData || []).map(o => o.user_id))]
+  // Get unique buyer IDs and product IDs for the current page
+  const buyerIds = [
+    ...new Set(
+      salesData
+        .map((sale) => sale.order?.user_id)
+        .filter((id): id is string => typeof id === "string" && id.length > 0)
+    ),
+  ]
+  const productIds = [...new Set(salesData.map((s) => s.product_id))]
   const { data: buyersData } = buyerIds.length > 0
     ? await supabase
       .from("profiles")
@@ -165,15 +237,13 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
     : { data: [] }
 
   // Create lookup maps
-  const ordersMap = new Map((ordersData || []).map(o => [o.id, o]))
   const buyersMap = new Map((buyersData || []).map(b => [b.id, b]))
   const productsMap = new Map((productsData || []).map(p => [p.id, p]))
 
-  // Transform the data to match our interface - filter only items with orders in date range
-  const sales: SaleItem[] = (salesData || [])
-    .filter(item => ordersMap.has(item.order_id))
+  // Transform the data to match our interface
+  const sales: SaleItem[] = salesData
     .map((item) => {
-      const order = ordersMap.get(item.order_id)
+      const order = item.order
       const product = productsMap.get(item.product_id)
       const buyer = order ? buyersMap.get(order.user_id) : null
       const shippingAddress = order?.shipping_address as { city?: string; country?: string; email?: string } | null
@@ -229,6 +299,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
     .eq("seller_id", user.id)
     .gte("orders.created_at", prevStartDate.toISOString())
     .lt("orders.created_at", startDate.toISOString())
+    .limit(500)
 
   const prevTotalRevenue = (prevSalesData || []).reduce((sum, sale) =>
     sum + (Number(sale.price_at_purchase) * sale.quantity), 0)
@@ -248,34 +319,22 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   const totalCommission = totalRevenue * (commissionRate / 100)
 
   // Group sales by date for chart
-  const salesByDate = sales.reduce((acc: Record<string, { revenue: number; orders: number }>, sale) => {
-    const date = new Date(sale.created_at).toISOString().slice(0, 10)
-    if (!acc[date]) {
-      acc[date] = { revenue: 0, orders: 0 }
-    }
-    acc[date].revenue += Number(sale.price_at_purchase) * sale.quantity
-    acc[date].orders += 1
-    return acc
-  }, {})
-
-  // Fill in missing dates
-  const chartData: { date: string; revenue: number; orders: number }[] = []
-  const currentDate = new Date(startDate)
-  while (currentDate <= now) {
-    const dateStr = currentDate.toISOString().slice(0, 10)
-    chartData.push({
-      date: dateStr,
-      revenue: salesByDate[dateStr]?.revenue || 0,
-      orders: salesByDate[dateStr]?.orders || 0,
-    })
-    currentDate.setDate(currentDate.getDate() + 1)
-  }
+  const chartData = buildChartData(sales, startDate, now)
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'EUR',
     }).format(value)
+  }
+
+  const buildPageHref = (pageNumber: number) => {
+    const next = new URLSearchParams()
+    if (period !== "30d") next.set("period", period)
+    if (pageNumber > 1) next.set("page", String(pageNumber))
+
+    const qs = next.toString()
+    return qs ? `/account/sales?${qs}` : "/account/sales"
   }
 
   return (
@@ -399,7 +458,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
                   {t("sales.sections.recentSales.title")}
                 </CardTitle>
                 <CardDescription>
-                  {t("sales.sections.recentSales.description", { count: totalSales, period })}
+                  {t("sales.sections.recentSales.description", { count: totalSalesCount, period })}
                 </CardDescription>
               </div>
               <ExportSales
@@ -410,6 +469,38 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
           </CardHeader>
           <CardContent>
             <SalesTable sales={sales} locale={locale} />
+
+            {sales.length > 0 ? (
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-muted-foreground">
+                  {locale === "bg"
+                    ? `Страница ${currentPage} от ${totalPages}`
+                    : `Page ${currentPage} of ${totalPages}`}
+                </p>
+
+                <nav className="flex items-center gap-2" aria-label={tCommon("pagination")}>
+                  {currentPage > 1 ? (
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href={buildPageHref(currentPage - 1)}>{tCommon("previous")}</Link>
+                    </Button>
+                  ) : (
+                    <Button variant="outline" size="sm" disabled>
+                      {tCommon("previous")}
+                    </Button>
+                  )}
+
+                  {currentPage < totalPages ? (
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href={buildPageHref(currentPage + 1)}>{tCommon("next")}</Link>
+                    </Button>
+                  ) : (
+                    <Button variant="outline" size="sm" disabled>
+                      {tCommon("next")}
+                    </Button>
+                  )}
+                </nav>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 

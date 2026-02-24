@@ -10,6 +10,15 @@ import type {
   MessageType,
 } from "@/lib/types/messages"
 
+function isNoRowsError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "PGRST116"
+  )
+}
+
 // =============================================================================
 // PROFILE HELPERS
 // =============================================================================
@@ -23,10 +32,14 @@ export async function fetchProfiles(
 ): Promise<Map<string, RawProfileRow>> {
   if (userIds.length === 0) return new Map()
 
-  const { data: profiles } = await supabase
+  const { data: profiles, error } = await supabase
     .from("profiles")
     .select("id, full_name, avatar_url, display_name, business_name, username")
     .in("id", userIds)
+  if (error) {
+    logger.error("[Chat] Error fetching profiles", error, { userIds })
+    return new Map()
+  }
 
   return new Map(profiles?.map((p) => [p.id, p]) || [])
 }
@@ -274,13 +287,18 @@ export async function fetchConversation(
   const profileMap = await fetchProfiles(supabase, [data.buyer_id, data.seller_id])
 
   // Fetch last message for this conversation
-  const { data: lastMsgData } = await supabase
+  const { data: lastMsgData, error: lastMsgError } = await supabase
     .from("messages")
     .select("content, sender_id, message_type, created_at")
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
+  if (lastMsgError && !isNoRowsError(lastMsgError)) {
+    logger.error("[Chat] Error fetching conversation last message", lastMsgError, {
+      conversationId,
+    })
+  }
 
   const transformed = transformConversation(data as RawConversationRow, profileMap)
   if (lastMsgData) {
@@ -334,13 +352,17 @@ export async function fetchSenderProfile(
   supabase: SupabaseClient<Database>,
   senderId: string
 ): Promise<Pick<RawProfileRow, "id" | "full_name" | "avatar_url"> | null> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("profiles")
     .select("id, full_name, avatar_url")
     .eq("id", senderId)
-    .single()
+    .maybeSingle()
+  if (error && !isNoRowsError(error)) {
+    logger.error("[Chat] Error fetching sender profile", error, { senderId })
+    return null
+  }
 
-  return data
+  return data ?? null
 }
 
 // =============================================================================

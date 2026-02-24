@@ -99,14 +99,17 @@ refactor/          → Just domain 6 (blocked) + CURRENT.md
 | **Section 2** | Auth — ✅ PASS (9/10). All flows work, i18n complete, guards solid. |
 | **Section 3** | Selling — ✅ CONDITIONAL PASS (7/10). Auth guard + i18n solid. Needs auth session to test form. Unpersisted fields (tech debt). |
 | **Section 4** | Product Display (PDP) — ✅ PASS (8/10). Full data, i18n complete, share works. Minor 404 body text inconsistency. |
+| **Section 5** | Search & Browse — ✅ PASS (9/10). FIX-001 fixed, search works, i18n complete, pagination. |
 | **Section 6** | Checkout & Payments — ✅ PASS (8/10). Code excellent, typed errors, idempotent webhooks, server-side verification. Cart seed data issue. |
-| **Section 5** | Search & Browse — Codex DONE (FIX-001 fixed). Awaiting Playwright audit. |
-| **Section 7** | Orders — Codex DONE. Awaiting Playwright audit. |
-| **Sections 8-11** | Profile, Cart/Wishlist, Onboarding, Navigation — Codex DONE. Awaiting Playwright audit. |
+| **Section 7** | Orders — ✅ PASS (9/10). Auth guards, typed errors, buyer+seller pagination. |
+| **Section 8** | Profile & Account — ✅ PASS (9/10). Settings auth guard, localized metadata, not-found body content. |
+| **Section 9** | Cart & Wishlist — ✅ PASS (8/10). Titles localized, wishlist heading translated, standard header. |
+| **Section 10** | Onboarding — ✅ PASS (8/10). Auth guard, localized metadata (no double suffix), 5-step wizard. |
+| **Section 11** | Navigation & Layout — ✅ PASS (9/10). i18n routing, tab bar localized, not-found BG translated. |
 | **Sections 12-15** | P2 — not started (Business Dashboard, Plans, Chat, Support). |
 | **Launch blockers** | 4 open (Stripe idempotency, refund flow, env separation, password protection) — tracked separately. |
-| **Gates** | All green (typecheck, lint, styles:gate, test:unit — 33/33 pass). |
-| **Next** | Playwright-audit sections 5, 7, 8, 9, 10, 11 → update CHECKLIST + TRACKER → then P2 sections or launch. |
+| **Gates** | All green (typecheck, lint, styles:gate, test:unit — 394/394 pass). |
+| **Next** | All P0+P1 sections audited and iterated (11/11). Post-fix scores: avg 8.7/10. Remaining: P2 sections (12-15) or launch prep. |
 
 ## Recent Session Log (2026-02-21)
 

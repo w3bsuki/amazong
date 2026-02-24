@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 
+import { logger } from "@/lib/logger"
 import type { Database } from "@/lib/supabase/database.types"
 import { normalizePlanTier } from "@/lib/subscriptions/normalize-tier"
 
@@ -27,13 +28,17 @@ async function getPlanMaxListings(args: {
   accountType: SellerAccountType
 }): Promise<PlanLookupResult> {
   const { supabase, tier, accountType } = args
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("subscription_plans")
     .select("max_listings")
     .eq("tier", tier)
     .eq("account_type", accountType)
     .eq("is_active", true)
     .maybeSingle()
+  if (error) {
+    logger.error("[listing-limits] Failed to load plan listing limits", error, { tier, accountType })
+    return { found: false, maxListings: null }
+  }
 
   if (!data) {
     return { found: false, maxListings: null }
@@ -49,7 +54,11 @@ export async function getSellerListingLimitSnapshot(
   supabase: SupabaseClient<Database>,
   sellerId: string
 ): Promise<ListingLimitSnapshot | null> {
-  const [{ data: profile }, { count: currentListings }, { data: subscription }] = await Promise.all([
+  const [
+    { data: profile, error: profileError },
+    { count: currentListings, error: listingsError },
+    { data: subscription, error: subscriptionError },
+  ] = await Promise.all([
     supabase
       .from("profiles")
       .select("tier, account_type")
@@ -69,6 +78,12 @@ export async function getSellerListingLimitSnapshot(
       .limit(1)
       .maybeSingle(),
   ])
+  if (profileError || listingsError || subscriptionError) {
+    logger.error("[listing-limits] Failed to load seller listing snapshot", profileError ?? listingsError ?? subscriptionError, {
+      sellerId,
+    })
+    return null
+  }
 
   if (!profile) return null
 

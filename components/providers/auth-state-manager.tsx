@@ -49,70 +49,73 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
   const lastPathnameRef = useRef<string | null>(null)
   const lastRefreshRef = useRef<number>(0)
 
-  const syncSingletonSession = useCallback(async (session: Session | null) => {
+  const syncSingletonSession = useCallback(async (user: User | null) => {
     const singletonClient = createClient()
 
     const {
-      data: { session: singletonSession },
-    } = await singletonClient.auth.getSession()
+      data: { user: singletonUser },
+    } = await singletonClient.auth.getUser()
 
-    if (!session?.access_token || !session.refresh_token) {
+    if (!user) {
       // Avoid recursive SIGNED_OUT loops: only clear local auth state
       // when the singleton currently has an active session.
-      if (singletonSession) {
+      if (singletonUser) {
         await singletonClient.auth.signOut({ scope: "local" })
       }
       return
     }
 
-    if (singletonSession?.access_token === session.access_token) return
+    if (singletonUser?.id === user.id) return
 
-    await singletonClient.auth.setSession({
-      access_token: session.access_token,
-      refresh_token: session.refresh_token,
-    })
+    await singletonClient.auth.refreshSession()
   }, [])
-  const setStateFromSession = useCallback((session: Session | null) => {
+  const setStateFromUser = useCallback((user: User | null, session: Session | null = null) => {
     setState({
-      user: session?.user ?? null,
+      user,
       session,
       isLoading: false,
-      isAuthenticated: Boolean(session?.user),
+      isAuthenticated: Boolean(user),
     })
   }, [])
+  const setStateFromSession = useCallback(
+    (session: Session | null) => {
+      setStateFromUser(session?.user ?? null, session)
+    },
+    [setStateFromUser]
+  )
 
   const refreshSessionOnce = useCallback(
     async (forceRetry: boolean) => {
       try {
-        const readFreshSession = async () => {
+        const readFreshUser = async () => {
           // Fresh client ensures we re-read auth cookies written by server actions.
           const supabase = createFreshClient()
-          return supabase.auth.getSession()
+          return supabase.auth.getUser()
         }
 
         let {
-          data: { session },
+          data: { user },
           error,
-        } = await readFreshSession()
+        } = await readFreshUser()
 
         if (error) throw error
-        if (!session && forceRetry) {
+        if (!user && forceRetry) {
           await new Promise((resolve) => setTimeout(resolve, 180))
-          const retry = await readFreshSession()
-          session = retry.data.session
+          const retry = await readFreshUser()
+          user = retry.data.user
           error = retry.error
           if (error) throw error
         }
 
-        setStateFromSession(session)
-        await syncSingletonSession(session)
+        setStateFromUser(user)
+        await syncSingletonSession(user)
       } catch {
         // Avoid logging raw error objects in client (can contain request details).
         console.error("Failed to refresh session")
         setState((prev) => ({ ...prev, isLoading: false, isAuthenticated: Boolean(prev.user) }))
       }
     },
-    [setStateFromSession, syncSingletonSession]
+    [setStateFromUser, syncSingletonSession]
   )
 
   const refreshSession = useCallback(

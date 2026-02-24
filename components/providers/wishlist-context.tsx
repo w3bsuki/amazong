@@ -131,7 +131,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           return {
             id: item.id,
             product_id: item.product_id,
-            title: prod?.title || "Unknown Product",
+            title: prod?.title || tWishlist("unknownProduct"),
             price: prod?.price || 0,
             image: prod?.images?.[0] || "/placeholder.svg",
             created_at: item.created_at,

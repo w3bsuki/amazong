@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "@/i18n/routing"
-import { getTranslations } from "next-intl/server"
+import { redirect, validateLocale } from "@/i18n/routing"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { WishlistContent } from "./wishlist-content"
+import type { Metadata } from "next"
 
 interface WishlistPageProps {
   params: Promise<{
@@ -14,9 +15,19 @@ interface WishlistPageProps {
   }>
 }
 
-export const metadata = {
-  title: "Wishlist | Treido",
-  description: "View and manage your saved items.",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Wishlist" })
+  return {
+    title: t("heading"),
+    description: t("description"),
+  }
 }
 
 export default async function WishlistPage({ params, searchParams }: WishlistPageProps) {

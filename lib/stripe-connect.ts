@@ -2,6 +2,7 @@ import "server-only"
 
 import { stripe } from "@/lib/stripe"
 import { createClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger"
 import type Stripe from "stripe"
 
 // =============================================================================
@@ -34,11 +35,15 @@ export async function getFeesForSeller(sellerId: string): Promise<TransactionFee
   const supabase = await createClient()
   
   // Get seller's tier and account type from profiles
-  const { data: seller } = await supabase
+  const { data: seller, error: sellerError } = await supabase
     .from("profiles")
     .select("tier, account_type")
     .eq("id", sellerId)
     .maybeSingle()
+  if (sellerError) {
+    logger.error("[stripe-connect] Failed to load seller fee context", sellerError, { sellerId })
+    throw new Error("Failed to load seller fee context")
+  }
   
   const accountType = seller?.account_type === "business" ? "business" : "personal"
   const tier = seller?.tier || "free"
@@ -46,13 +51,17 @@ export async function getFeesForSeller(sellerId: string): Promise<TransactionFee
   const PLAN_SELECT = "seller_fee_percent, buyer_protection_percent, buyer_protection_fixed, buyer_protection_cap" as const
 
   const readPlanFees = async (params: { tier: string; accountType: "personal" | "business" }) => {
-    const { data: plan } = await supabase
+    const { data: plan, error: planError } = await supabase
       .from("subscription_plans")
       .select(PLAN_SELECT)
       .eq("tier", params.tier)
       .eq("account_type", params.accountType)
       .eq("is_active", true)
       .maybeSingle()
+    if (planError) {
+      logger.error("[stripe-connect] Failed to load fee plan", planError, params)
+      throw new Error("Failed to load fee plan")
+    }
 
     if (!plan) return null
 

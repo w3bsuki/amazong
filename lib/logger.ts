@@ -50,7 +50,8 @@ function emit(level: LogLevel, payload: Record<string, JsonValue>) {
   const line = JSON.stringify(payload)
   if (level === "error") console.error(line)
   else if (level === "warn") console.warn(line)
-  else console.log(line)
+  else if (typeof process !== "undefined" && typeof process.stdout?.write === "function") process.stdout.write(`${line}\n`)
+  else console.warn(line)
 }
 
 function wrapMeta(meta: unknown): Record<string, unknown> | undefined {

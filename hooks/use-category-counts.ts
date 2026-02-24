@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
+import { logger } from "@/lib/logger"
 
 interface CategoryCounts {
   [slug: string]: number
@@ -223,14 +224,13 @@ export function useCategoryCounts(options?: UseCategoryCountsOptions): UseCatego
         return
       }
       
-      // After all retries exhausted, set error state but don't log to console
+      // After all retries exhausted, set error state but don't log noisy errors
       // The hook has cached data as fallback, so this is a graceful degradation
       setError(message)
       
       // Only log in development for debugging, not in production
       if (process.env.NODE_ENV === "development") {
-        // Use console.debug instead of console.error - less noisy
-        console.debug("[useCategoryCounts] Failed after retries, using cached data:", message)
+        logger.debug("[useCategoryCounts] Failed after retries, using cached data", { error: message })
       }
     } finally {
       if (isRequestActive()) {

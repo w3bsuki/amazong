@@ -71,11 +71,22 @@ type SellerOrderItem = {
   }
 }
 
+const SELLER_ORDERS_PAGE_SIZE = 10
+
 export type SellerOrdersClientServerActions = OrderStatusActionsServerActions &
   SellerRateBuyerActionsServerActions & {
     getSellerOrders: (
-      statusFilter?: OrderItemStatus | "all"
-    ) => Promise<{ orders: SellerOrderItem[]; error?: string }>
+      statusFilter?: OrderItemStatus | "all" | "active",
+      page?: number,
+      pageSize?: number
+    ) => Promise<{
+      orders: SellerOrderItem[]
+      currentPage: number
+      pageSize: number
+      totalPages: number
+      totalItems: number
+      error?: string
+    }>
     getSellerOrderStats: () => Promise<{
       pending: number
       received: number
@@ -188,6 +199,8 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
   const [isLoading, setIsLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [activeTab, setActiveTab] = useState<StatusFilter>("all")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [stats, setStats] = useState({
     pending: 0,
     received: 0,
@@ -220,14 +233,18 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
 
   // Load orders and stats
   const loadData = useCallback(async () => {
+    setIsLoading(true)
+
     try {
       const [ordersResult, statsResult] = await Promise.all([
-        actions.getSellerOrders(),
+        actions.getSellerOrders(activeTab, currentPage, SELLER_ORDERS_PAGE_SIZE),
         actions.getSellerOrderStats(),
       ])
 
       if (ordersResult.orders) {
         setOrders(ordersResult.orders)
+        setCurrentPage(ordersResult.currentPage)
+        setTotalPages(ordersResult.totalPages)
 
         // Load conversation IDs for each order
         const convPromises = ordersResult.orders.map(async (item) => {
@@ -250,7 +267,7 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
       setIsLoading(false)
       setIsRefreshing(false)
     }
-  }, [actions])
+  }, [actions, activeTab, currentPage])
 
   useEffect(() => {
     loadData()
@@ -261,12 +278,11 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
     loadData()
   }
 
-  // Filter orders based on active tab
-  const filteredOrders = orders.filter(order => {
-    if (activeTab === "all") return true
-    if (activeTab === "active") return ["pending", "received", "processing", "shipped"].includes(order.status)
-    return order.status === activeTab
-  })
+  const handleTabChange = (value: string) => {
+    const nextTab = value as StatusFilter
+    setActiveTab(nextTab)
+    setCurrentPage(1)
+  }
 
   // Stats cards
   const statCards = [
@@ -339,7 +355,7 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
         </div>
 
         {/* Filter Tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as StatusFilter)}>
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <div className="flex items-center justify-between">
             <TabsList>
               <TabsTrigger value="all">
@@ -360,7 +376,7 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
-            ) : filteredOrders.length === 0 ? (
+            ) : orders.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
                   <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -375,7 +391,7 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
               </Card>
             ) : (
               <div className="space-y-4">
-                {filteredOrders.map((item) => {
+                {orders.map((item) => {
                   const convKey = `${item.order_id}-${item.seller_id}`
                   const conversationId = conversationMap.get(convKey)
 
@@ -531,6 +547,36 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
                 })}
               </div>
             )}
+
+            {orders.length > 0 ? (
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-muted-foreground">
+                  {locale === "bg"
+                    ? `Страница ${currentPage} от ${totalPages}`
+                    : `Page ${currentPage} of ${totalPages}`}
+                </p>
+
+                <nav className="flex items-center gap-2" aria-label={tCommon("pagination")}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                    disabled={currentPage <= 1 || isLoading}
+                  >
+                    {tCommon("previous")}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                    disabled={currentPage >= totalPages || isLoading}
+                  >
+                    {tCommon("next")}
+                  </Button>
+                </nav>
+              </div>
+            ) : null}
           </TabsContent>
         </Tabs>
       </div>

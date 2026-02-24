@@ -19,14 +19,38 @@ const OrderItemStatusSchema = z.enum([
   "delivered",
   "cancelled",
 ])
-const SellerOrdersStatusFilterSchema = z.union([OrderItemStatusSchema, z.literal("all")]).optional()
+const SellerOrdersStatusFilterSchema = z.union([
+  OrderItemStatusSchema,
+  z.literal("all"),
+  z.literal("active"),
+]).optional()
 const OrderIdSchema = z.string().uuid()
+const PositiveIntegerSchema = z.number().int().positive()
 const NOT_AUTHENTICATED_ERROR = "Not authenticated"
 const UNEXPECTED_ERROR = "An unexpected error occurred"
+const SELLER_ORDERS_DEFAULT_PAGE_SIZE = 10
 
 type OrdersReadResult = Envelope<
   { orders: OrderItem[] },
   { orders: OrderItem[]; error: string }
+>
+
+type SellerOrdersReadResult = Envelope<
+  {
+    orders: OrderItem[]
+    currentPage: number
+    pageSize: number
+    totalPages: number
+    totalItems: number
+  },
+  {
+    orders: OrderItem[]
+    currentPage: number
+    pageSize: number
+    totalPages: number
+    totalItems: number
+    error: string
+  }
 >
 
 type SellerOrderStats = {
@@ -67,38 +91,89 @@ type BuyerOrderDetailsResult = Envelope<
  * Get all order items for the current seller
  */
 export async function getSellerOrders(
-  statusFilter?: OrderItemStatus | "all"
-): Promise<OrdersReadResult> {
+  statusFilter?: OrderItemStatus | "all" | "active",
+  page = 1,
+  pageSize = SELLER_ORDERS_DEFAULT_PAGE_SIZE
+): Promise<SellerOrdersReadResult> {
   const parsedStatusFilter = SellerOrdersStatusFilterSchema.safeParse(statusFilter)
   if (!parsedStatusFilter.success) {
-    return errorEnvelope({ orders: [], error: "Invalid status filter" })
+    return errorEnvelope({
+      orders: [],
+      currentPage: 1,
+      pageSize: SELLER_ORDERS_DEFAULT_PAGE_SIZE,
+      totalPages: 1,
+      totalItems: 0,
+      error: "Invalid status filter",
+    })
+  }
+
+  const parsedPage = PositiveIntegerSchema.safeParse(page)
+  if (!parsedPage.success) {
+    return errorEnvelope({
+      orders: [],
+      currentPage: 1,
+      pageSize: SELLER_ORDERS_DEFAULT_PAGE_SIZE,
+      totalPages: 1,
+      totalItems: 0,
+      error: "Invalid page",
+    })
+  }
+
+  const parsedPageSize = PositiveIntegerSchema.safeParse(pageSize)
+  if (!parsedPageSize.success) {
+    return errorEnvelope({
+      orders: [],
+      currentPage: parsedPage.data,
+      pageSize: SELLER_ORDERS_DEFAULT_PAGE_SIZE,
+      totalPages: 1,
+      totalItems: 0,
+      error: "Invalid page size",
+    })
   }
 
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return errorEnvelope({ orders: [], error: NOT_AUTHENTICATED_ERROR })
+      return errorEnvelope({
+        orders: [],
+        currentPage: parsedPage.data,
+        pageSize: parsedPageSize.data,
+        totalPages: 1,
+        totalItems: 0,
+        error: NOT_AUTHENTICATED_ERROR,
+      })
     }
     const { user, supabase } = auth
+    const offset = (parsedPage.data - 1) * parsedPageSize.data
+    const to = offset + parsedPageSize.data - 1
 
     let query = supabase
       .from("order_items")
-      .select(ORDER_ITEM_LIST_SELECT)
+      .select(ORDER_ITEM_LIST_SELECT, { count: "exact" })
       .eq("seller_id", user.id)
       .order("created_at", { ascending: false, foreignTable: "orders" })
-      .limit(200)
+      .range(offset, to)
 
-    if (parsedStatusFilter.data && parsedStatusFilter.data !== "all") {
+    if (parsedStatusFilter.data === "active") {
+      query = query.in("status", ["pending", "received", "processing", "shipped"])
+    } else if (parsedStatusFilter.data && parsedStatusFilter.data !== "all") {
       query = query.eq("status", parsedStatusFilter.data)
     }
 
-    const { data: orderItems, error: fetchError } = await query
+    const { data: orderItems, error: fetchError, count } = await query
 
     if (fetchError) {
       logger.error("[orders-reads] get_seller_orders_fetch_failed", fetchError, {
         sellerId: user.id,
       })
-      return errorEnvelope({ orders: [], error: "Failed to fetch orders" })
+      return errorEnvelope({
+        orders: [],
+        currentPage: parsedPage.data,
+        pageSize: parsedPageSize.data,
+        totalPages: 1,
+        totalItems: 0,
+        error: "Failed to fetch orders",
+      })
     }
 
     const buyerIds = [
@@ -143,10 +218,27 @@ export async function getSellerOrders(
       })(),
     }))
 
-    return successEnvelope({ orders: ordersWithBuyers as OrderItem[] })
+    const totalItems = count ?? 0
+    const totalPages = Math.max(1, Math.ceil(totalItems / parsedPageSize.data))
+    const currentPage = Math.min(parsedPage.data, totalPages)
+
+    return successEnvelope({
+      orders: ordersWithBuyers as OrderItem[],
+      currentPage,
+      pageSize: parsedPageSize.data,
+      totalPages,
+      totalItems,
+    })
   } catch (error) {
     logger.error("[orders-reads] get_seller_orders_unexpected", error)
-    return errorEnvelope({ orders: [], error: UNEXPECTED_ERROR })
+    return errorEnvelope({
+      orders: [],
+      currentPage: parsedPage.data,
+      pageSize: parsedPageSize.data,
+      totalPages: 1,
+      totalItems: 0,
+      error: UNEXPECTED_ERROR,
+    })
   }
 }
 

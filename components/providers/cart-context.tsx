@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslations } from "next-intl"
 
 import { createClient } from "@/lib/supabase/client"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
@@ -139,7 +140,7 @@ function readCartFromStorage(): {
   }
 }
 
-async function fetchServerCart(activeUserId: string): Promise<CartItem[]> {
+async function fetchServerCart(activeUserId: string, unknownProductLabel: string): Promise<CartItem[]> {
   const supabase = createClient()
 
   const { data, error } = await supabase
@@ -177,7 +178,7 @@ async function fetchServerCart(activeUserId: string): Promise<CartItem[]> {
       const quantity = normalizeQuantity(record?.quantity)
 
       const products = toRecord(record?.products)
-      const title = asString(products?.title) ?? "Unknown Product"
+      const title = asString(products?.title) ?? unknownProductLabel
       const price = normalizePrice(products?.price)
 
       const images = asStringArray(products?.images)
@@ -298,6 +299,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth()
+  const tCart = useTranslations("Cart")
   const [items, setItems] = useState<CartItem[]>([])
   const hasSyncedRef = useRef<string | null>(null)
   const lastUserIdRef = useRef<string | null>(null)
@@ -306,11 +308,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [serverSyncDone, setServerSyncDone] = useState(false)
   const loadServerCart = useCallback(async (activeUserId: string) => {
     const requestSeq = ++serverLoadSeqRef.current
-    const nextItems = await fetchServerCart(activeUserId)
+    const nextItems = await fetchServerCart(activeUserId, tCart("unknownProduct"))
     if (requestSeq !== serverLoadSeqRef.current) return
     if (lastUserIdRef.current !== activeUserId) return
     setItems(nextItems)
-  }, [])
+  }, [tCart])
 
   const syncLocalCartToServer = useCallback(async () => {
     await syncLocalCartToServerStorage()

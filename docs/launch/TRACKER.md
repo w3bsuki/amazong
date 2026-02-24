@@ -10,13 +10,13 @@
 | 2 | Auth | P0 | ✅ | ✅ | 9 | All flows work, i18n complete, auth guards solid |
 | 3 | Selling | P0 | ✅ | ✅ | 7 | Auth guard + i18n solid; needs auth session to test form |
 | 4 | Product Display (PDP) | P0 | ✅ | ✅ | 8 | Full data renders, i18n complete, share works; minor 404 body text |
-| 5 | Search & Browse | P0 | ⬜ | ⬜ | — | Known broken (FIX-001) |
+| 5 | Search & Browse | P0 | ✅ | ✅ | 9 | FIX-001 fixed, search works, i18n complete, pagination, empty states |
 | 6 | Checkout & Payments | P0 | ✅ | ✅ | 8 | Code excellent, auth guard + i18n work; cart error from seed data |
-| 7 | Orders | P0 | ⬜ | ⬜ | — | |
-| 8 | Profile & Account | P1 | ⬜ | ⬜ | — | Known broken mobile (FIX-003) |
-| 9 | Cart & Wishlist | P1 | ⬜ | ⬜ | — | |
-| 10 | Onboarding | P1 | ⬜ | ⬜ | — | |
-| 11 | Navigation & Layout | P1 | ⬜ | ⬜ | — | |
+| 7 | Orders | P0 | ✅ | ✅ | 9 | Auth guards, typed errors, buyer/seller pagination |
+| 8 | Profile & Account | P1 | ✅ | ✅ | 9 | Auth guard on settings, localized metadata, not-found body content |
+| 9 | Cart & Wishlist | P1 | ✅ | ✅ | 8 | Pages load, titles localized, wishlist heading translated, standard header |
+| 10 | Onboarding | P1 | ✅ | ✅ | 8 | Auth guard, localized metadata (no double suffix), 5-step wizard |
+| 11 | Navigation & Layout | P1 | ✅ | ✅ | 9 | i18n routing, tab bar localized, not-found body content, BG 404 translated |
 | 12 | Business Dashboard | P2 | ⬜ | ⬜ | — | |
 | 13 | Plans & Subscriptions | P2 | ⬜ | ⬜ | — | |
 | 14 | Chat & Messaging | P2 | ⬜ | ⬜ | — | |
@@ -114,3 +114,103 @@
 - Cannot test full Stripe payment flow without auth session + valid cart items
 - LAUNCH-001/002/003 blockers tracked separately
 **Action:** Marked complete
+
+### Section 5: Search & Browse — 2026-02-24
+**Codex pass:** Fixed FIX-001 (raw commas in search query broke PostgREST), added localized metadata.
+**Playwright audit:**
+- Homepage: /en loads with title "Home | Treido", H1 "Treido Home", 20+ product cards, quick jump tabs (Categories, For you, Newest, Promoted, Nearby, Deals, Filter), header with search/wishlist/cart, full footer.
+- Search: /en/search?q=bmw returns BMW 330i result. Title "Results for 'bmw' | Treido". Sort dropdown, Filters button, Sellers mode link. FIX-001 confirmed fixed.
+- Empty state: "No results found" heading, "Try different keywords" text, "Browse All" link.
+- Category page: /en/categories/electronics — 20 products, subcategory nav, Filters button, "Now showing Electronics" status.
+- Bulgarian: /bg/search?q=кола — all UI translated. Zero console errors.
+**Result:** PASS
+**Score:** 9/10
+**Issues found:** None
+**Action:** Marked complete
+
+### Section 7: Orders — 2026-02-24
+**Codex pass:** Added pagination to buyer orders, localized metadata, typed error codes in order actions.
+**Playwright audit:**
+- Auth guards: All 3 routes redirect with return URL preserved (orders, sales, sell/orders).
+- Bulgarian: /bg/account/orders redirects with fully translated login page.
+- Code audit: All pages use `getUser()`, typed error codes (7+10 codes), buyer orders paginated (size 10), order detail owner-scoped, zero console.error in user-facing code.
+**Result:** PASS
+**Score:** 8/10
+**Issues found:**
+- sell/orders lacks pagination (capped at 200), account/sales unbounded query
+- Cannot test authenticated order views without credentials
+**Action:** Marked complete
+
+### Section 8: Profile & Account — 2026-02-24
+**Codex pass:** Converted profile actions to typed errorCode responses, localized profile editor.
+**Playwright audit:**
+- Auth guards: /en/account, /account/profile redirect to login with return URL.
+- Public profile: /en/treido loads — avatar, badges, stats, products, tabs.
+- Nonexistent profile: title "Profile not found | Treido" but body empty.
+- Bulgarian: redirects and 404 titles translated.
+- Code audit: All `getUser()`, typed errors (11+9 codes), requireAuth(), Zod validation. Settings page missing auth guard + has hardcoded English metadata.
+**Result:** PASS
+**Score:** 7/10
+**Issues found:**
+- Settings page missing auth guard and i18n metadata
+- Profile 404 body content empty
+**Action:** Marked complete
+
+### Section 9: Cart & Wishlist — 2026-02-24
+**Codex pass:** Fixed console.error usage, localized shared wishlist metadata.
+**Playwright audit:**
+- Cart: /en/cart loads guest-accessible. Title "Cart | Treido" / "Количка | Treido" (BG).
+- Wishlist: /en/wishlist shows loading state. Title "My Wishlist | Treido" / "Моят списък с желания | Treido" (BG). Loading text translated.
+- Zero console errors.
+**Result:** PASS
+**Score:** 7/10
+**Issues found:**
+- Wishlist heading "wishlist" not translated to Bulgarian
+- Wishlist stuck loading without auth
+- Cannot test add/remove flows without authentication
+**Action:** Marked complete
+
+### Section 10: Onboarding — 2026-02-24
+**Codex pass:** Replaced console.error with structured logger.
+**Playwright audit:**
+- Auth guard: /en/onboarding redirects to login with return URL. Bulgarian works.
+- Code audit: 5-step wizard, `getUser()` in layout, `requireAuth()` + Zod in action, `logger.error()` only.
+- All step metadata hardcoded English. console.error in Connect onboarding API route.
+**Result:** CONDITIONAL PASS
+**Score:** 7/10
+**Issues found:**
+- All onboarding metadata hardcoded English
+- Cannot test flow (requires fresh sign-up)
+**Action:** Marked conditional pass
+
+### Section 11: Navigation & Layout — 2026-02-24
+**Codex pass:** Fixed global-not-found links to use i18n routing, localized mobile progress accessibility text.
+**Playwright audit:**
+- 404: Caught by [username] route → "Profile not found | Treido". Bulgarian translated.
+- global-not-found.tsx uses Link from @/i18n/routing + getTranslations — Codex fix confirmed.
+- Mobile tab bar fully localized. All header components use useTranslations.
+- Footer: Company/Help/Legal sections complete. Skip links on all pages.
+**Result:** PASS
+**Score:** 8/10
+**Issues found:**
+- Redundant locale prefix in global-not-found links
+- Profile/category 404 pages have empty body content
+**Action:** Marked complete
+
+### Post-Fix Verification: FIX-A through FIX-H — 2026-02-24
+**Codex pass:** Implemented all 8 fixes (settings auth+metadata, wishlist heading, onboarding metadata, not-found body, console.error, sell/orders pagination, sales pagination, global-not-found links).
+**Orchestrator verification (code audit + Playwright):**
+- **FIX-A** ✅ Settings auth guard redirects to login (EN + BG), `generateMetadata` correct
+- **FIX-B** ⚠️→✅ Two issues found and fixed:
+  1. `wishlist` route misidentified as profile page by `detectRouteConfig` — added "wishlist" to `knownRoutes`
+  2. Account wishlist still had static `export const metadata` — replaced with `generateMetadata`
+- **FIX-C** ⚠️→✅ All 6 onboarding pages have `generateMetadata`, but message titles included "| Treido" causing double suffix — removed suffix from all 12 message titles (6 EN + 6 BG)
+- **FIX-D** ⚠️→✅ Both not-found pages render body content, but `params` isn't passed to not-found.tsx by Next.js — replaced `params` with `getLocale()` for correct BG translation
+- **FIX-E** ✅ `logger.error` used, no `console.error` in connect onboarding
+- **FIX-F** ✅ Server-side `.range()` pagination, prev/next UI with page count
+- **FIX-G** ✅ Sales page size 10, `.range()` with count, Link-based prev/next
+- **FIX-H** ✅ i18n-aware `Link` from `@/i18n/routing`, no manual locale prefix
+**Gates:** All 4 pass (typecheck, lint 0 errors/1 warning, styles:gate, 394/394 tests)
+**Orchestrator fixes applied:** 4 files changed (app-header.tsx, account/wishlist/page.tsx, [username]/not-found.tsx, categories/[slug]/not-found.tsx) + 2 message files (en.json, bg.json)
+**Result:** ALL PASS after iteration
+**Scores bumped:** S7→9, S8→9, S9→8, S10→8, S11→9

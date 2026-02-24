@@ -48,7 +48,7 @@ export default function InterestsPage() {
     )
   }
 
-  const handleContinue = () => {
+  const persistInterestsProgress = () => {
     try {
       const existing = sessionStorage.getItem("onboarding_profile")
       const profile = existing ? JSON.parse(existing) : {}
@@ -62,6 +62,10 @@ export default function InterestsPage() {
     } catch {
       // Ignore storage access errors
     }
+  }
+
+  const handleCompleteStep = () => {
+    persistInterestsProgress()
 
     startTransition(() => {
       router.push(`/onboarding/complete?type=${accountType}`)
@@ -71,12 +75,6 @@ export default function InterestsPage() {
   const handleBack = () => {
     if (isBusiness) router.push(`/onboarding/business-profile`)
     else router.push(`/onboarding/profile?type=personal`)
-  }
-
-  const handleSkip = () => {
-    startTransition(() => {
-      router.push(`/onboarding/complete?type=${accountType}`)
-    })
   }
 
   const canContinue = selectedInterests.length >= 3
@@ -92,7 +90,7 @@ export default function InterestsPage() {
       footer={
         <div className="space-y-2">
           <Button
-            onClick={handleContinue}
+            onClick={handleCompleteStep}
             disabled={!canContinue || isPending}
             size="lg"
             className="w-full"
@@ -100,7 +98,7 @@ export default function InterestsPage() {
             {t("common.continue")}
             <ArrowRight className="size-5" />
           </Button>
-          <Button variant="ghost" onClick={handleSkip} disabled={isPending} className="w-full">
+          <Button variant="ghost" onClick={handleCompleteStep} disabled={isPending} className="w-full">
             {t("common.skipForNow")}
           </Button>
         </div>

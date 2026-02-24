@@ -1,4 +1,7 @@
+"use client"
+
 import Image from "next/image"
+import { useSearchParams } from "next/navigation"
 import {
   CircleUser as UserCircle,
   Settings as Gear,
@@ -8,7 +11,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
-import { Link } from "@/i18n/routing"
+import { Link, usePathname } from "@/i18n/routing"
 import {
   DrawerClose,
   DrawerDescription,
@@ -44,6 +47,11 @@ export function SidebarMenuHeader({
   tAccountDrawer,
   tLocaleSwitcher,
 }: SidebarMenuHeaderProps) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const search = searchParams?.toString()
+  const localeHref = search ? `${pathname}?${search}` : pathname
+
   return (
     <header className="shrink-0 border-b border-border-subtle bg-background">
       <DrawerTitle className="sr-only">{tSidebar("title")}</DrawerTitle>
@@ -113,7 +121,7 @@ export function SidebarMenuHeader({
             <DropdownMenuContent align="end" className="min-w-36 rounded-2xl p-1">
               <DropdownMenuItem asChild>
                 <Link
-                  href="/"
+                  href={localeHref}
                   locale="en"
                   onClick={onCloseMenu}
                   className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-xl"
@@ -131,7 +139,7 @@ export function SidebarMenuHeader({
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link
-                  href="/"
+                  href={localeHref}
                   locale="bg"
                   onClick={onCloseMenu}
                   className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-xl"

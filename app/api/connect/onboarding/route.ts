@@ -3,6 +3,7 @@ import { createAdminClient, createRouteHandlerClient } from "@/lib/supabase/serv
 import { createConnectAccount, createAccountLink } from "@/lib/stripe-connect"
 import { buildLocaleUrlFromRequest, inferLocaleFromRequest } from "@/lib/stripe-locale"
 import { noStoreJson } from "@/lib/api/response-helpers"
+import { logger } from "@/lib/logger"
 
 /**
  * POST /api/connect/onboarding
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
 
     return noStoreJson({ url: accountLink.url })
   } catch (error) {
-    console.error("Connect onboarding error:", error)
+    logger.error("[connect-onboarding] create_account_link_failed", error)
     return noStoreJson(
       { error: error instanceof Error ? error.message : "Failed to create onboarding link" },
       { status: 500 }

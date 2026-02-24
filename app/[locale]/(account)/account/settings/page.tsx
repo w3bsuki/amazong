@@ -3,25 +3,34 @@ import { Link } from "@/i18n/routing"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChevronRight as IconChevronRight } from "lucide-react"
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
+import { requireAccountPageContext } from "../_lib/require-account-page-context"
 
-export const metadata = {
-  title: "Settings | Treido",
-  description: "Manage your account settings.",
+interface AccountSettingsPageProps {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ email_changed?: string }>
+}
+
+export async function generateMetadata({
+  params,
+}: Pick<AccountSettingsPageProps, "params">): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Account" })
+
+  return {
+    title: `${t("settings.title")} | Treido`,
+    description: t("settings.description"),
+  }
 }
 
 export default async function AccountSettingsPage({
   params,
   searchParams,
-}: {
-  params: Promise<{ locale: string }>
-  searchParams: Promise<{ email_changed?: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
+}: AccountSettingsPageProps) {
+  const { t } = await requireAccountPageContext(params)
   const sp = await searchParams
-
-  const t = await getTranslations("Account")
 
   const links = [
     { label: t("header.profile"), href: "/account/profile" },
