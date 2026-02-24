@@ -1,0 +1,10 @@
+[dotenv@17.2.3] injecting env (15) from .env.local -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (1) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+Unused files (5)
+app/[locale]/(account)/account/_components/account-page-header-skeleton.tsx            
+app/[locale]/(account)/account/_components/current-plan-card-skeleton.tsx              
+app/[locale]/(business)/dashboard/_components/dashboard-loading-skeletons.tsx          
+app/[locale]/_components/nav/_lib/user-menu-identity.tsx                               
+app/[locale]/(main)/search/_components/filters/sections/category-breadcrumb-trail.tsx  
+Unused exports (1)
+getCategoryTreeDepth3  function  lib/data/categories/hierarchy.ts:190:23

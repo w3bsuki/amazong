@@ -1,24 +1,24 @@
 {
-  "generatedAt": "2026-02-24T05:30:19.482Z",
+  "generatedAt": "2026-02-24T23:45:04.491Z",
   "sections": {
     "clientBoundary": {
-      "totalFiles": 976,
-      "useClientFiles": 266,
-      "useClientRatio": 27.25
+      "totalFiles": 1151,
+      "useClientFiles": 269,
+      "useClientRatio": 23.37
     },
     "oversized": {
-      "over300": 97,
-      "over500": 12
+      "over300": 66,
+      "over500": 3
     },
     "routes": {
       "pageCount": 86,
-      "missingLoading": 31,
+      "missingLoading": 0,
       "missingMetadata": 0
     },
     "duplicates": {
-      "clones": 145,
-      "duplicatedLines": 1969,
-      "percentage": 1.22
+      "clones": 53,
+      "duplicatedLines": 628,
+      "percentage": 0.4
     }
   }
 }
