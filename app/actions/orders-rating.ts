@@ -1,9 +1,6 @@
 "use server"
 
-import { z } from "zod"
-import { requireAuth } from "@/lib/auth/require-auth"
-
-const OrderItemIdSchema = z.string().uuid()
+import { getOrderActionContext, OrderActionItemIdSchema } from "./order-action-context"
 
 const ORDER_ITEM_RATING_SELECT = `
         id,
@@ -27,27 +24,26 @@ type RatingOrderItemRow = {
 export async function canBuyerRateSeller(
   orderItemId: string
 ): Promise<{ canRate: boolean; hasRated: boolean; sellerId?: string }> {
-  const parsedOrderItemId = OrderItemIdSchema.safeParse(orderItemId)
+  const parsedOrderItemId = OrderActionItemIdSchema.safeParse(orderItemId)
   if (!parsedOrderItemId.success) return { canRate: false, hasRated: false }
 
+  const context = await getOrderActionContext(parsedOrderItemId.data)
+  if (!context.success) return { canRate: false, hasRated: false }
+
   try {
-    const auth = await requireAuth()
-    if (!auth) {
-      return { canRate: false, hasRated: false }
-    }
-    const { user, supabase } = auth
+    const { orderItemId: parsedOrderItemId, userId, supabase } = context
 
     const { data: orderItem } = await supabase
       .from("order_items")
       .select(ORDER_ITEM_RATING_SELECT)
-      .eq("id", parsedOrderItemId.data)
+      .eq("id", parsedOrderItemId)
       .single<RatingOrderItemRow>()
 
     if (!orderItem) {
       return { canRate: false, hasRated: false }
     }
 
-    if (orderItem.order.user_id !== user.id) {
+    if (orderItem.order.user_id !== userId) {
       return { canRate: false, hasRated: false }
     }
 
@@ -58,7 +54,7 @@ export async function canBuyerRateSeller(
     const { data: existingFeedback } = await supabase
       .from("seller_feedback")
       .select("id")
-      .eq("buyer_id", user.id)
+      .eq("buyer_id", userId)
       .eq("seller_id", orderItem.seller_id)
       .eq("order_id", orderItem.order_id)
       .single()
@@ -79,21 +75,20 @@ export async function canBuyerRateSeller(
 export async function canSellerRateBuyer(
   orderItemId: string
 ): Promise<{ canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string }> {
-  const parsedOrderItemId = OrderItemIdSchema.safeParse(orderItemId)
+  const parsedOrderItemId = OrderActionItemIdSchema.safeParse(orderItemId)
   if (!parsedOrderItemId.success) return { canRate: false, hasRated: false }
 
+  const context = await getOrderActionContext(parsedOrderItemId.data)
+  if (!context.success) return { canRate: false, hasRated: false }
+
   try {
-    const auth = await requireAuth()
-    if (!auth) {
-      return { canRate: false, hasRated: false }
-    }
-    const { user, supabase } = auth
+    const { orderItemId: parsedOrderItemId, userId, supabase } = context
 
     const { data: orderItem } = await supabase
       .from("order_items")
       .select(ORDER_ITEM_RATING_SELECT)
-      .eq("id", parsedOrderItemId.data)
-      .eq("seller_id", user.id)
+      .eq("id", parsedOrderItemId)
+      .eq("seller_id", userId)
       .single<RatingOrderItemRow>()
 
     if (!orderItem) {
@@ -109,7 +104,7 @@ export async function canSellerRateBuyer(
     const { data: existingFeedback } = await supabase
       .from("buyer_feedback")
       .select("id")
-      .eq("seller_id", user.id)
+      .eq("seller_id", userId)
       .eq("buyer_id", buyerId)
       .eq("order_id", orderItem.order_id)
       .single()

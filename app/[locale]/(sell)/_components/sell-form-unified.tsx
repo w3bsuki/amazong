@@ -1,20 +1,18 @@
 "use client";
 
 import { useState, useCallback, useTransition } from "react";
-import Image from "next/image";
 import { toast } from "sonner";
-import { CircleCheck as CheckCircle, CloudUpload as CloudArrowUp, Eye, House, Zap as Lightning, Plus, Share, LoaderCircle as SpinnerGap } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { createFreshClient } from "@/lib/supabase/client";
-import { Link, validateLocale } from "@/i18n/routing";
-import { BoostDialog } from "../../_components/seller/boost-dialog";
+import { validateLocale } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 
 import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValuesV4 } from "./sell-form-provider";
 import { DesktopLayout } from "./layouts/desktop-layout";
 import { MobileLayout } from "./layouts/mobile-layout";
 import { PayoutRequiredModal } from "./ui/payout-required-modal";
+import { SellPublishingState } from "./ui/sell-publishing-state";
+import { SellSuccessState } from "./ui/sell-success-state";
 import type { Category } from "../_lib/types";
 import type { SellFormDataV4 } from "@/lib/sell/schema";
 import type { Locale } from "@/i18n/routing";
@@ -117,8 +115,6 @@ function SellFormContent({
   const form = useSellForm();
   const { clearDraft, setCurrentStep, locale } = useSellFormContext();
   const tSell = useTranslations("Sell");
-  const tCommon = useTranslations("Common");
-  const tBoost = useTranslations("Boost");
   
   const [isPending, startTransition] = useTransition();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -234,32 +230,11 @@ function SellFormContent({
   // Processing screen
   if (isPending) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center px-4">
-        <div className="w-full max-w-sm text-center space-y-8">
-          <div className="relative mx-auto w-24 h-24">
-            {/* Outer spinning ring */}
-            <div className="absolute inset-0 rounded-full border-4 border-border border-t-primary animate-spin" />
-            {/* Inner icon */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <CloudArrowUp className="size-10 text-primary animate-bounce" />
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              {tSell("actions.publishing")}
-            </h2>
-            <p className="text-muted-foreground font-medium">
-              {tSell("publish.processingDescription")}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
-            <SpinnerGap className="size-4 animate-spin" />
-            <span>{tSell("publish.pleaseWait")}</span>
-          </div>
-        </div>
-      </div>
+      <SellPublishingState
+        title={tSell("actions.publishing")}
+        description={tSell("publish.processingDescription")}
+        waitLabel={tSell("publish.pleaseWait")}
+      />
     );
   }
 
@@ -271,133 +246,14 @@ function SellFormContent({
     const productId = createdProductId;
 
     return (
-      <div className="flex flex-1 flex-col">
-        {/* Header */}
-        <header className="sticky top-0 z-40 bg-background border-b border-border">
-          <div className="flex h-(--control-primary) items-center justify-center md:h-14">
-            <span className="text-sm font-medium text-muted-foreground">
-              {tSell("success.headerStatus")}
-            </span>
-          </div>
-        </header>
-
-        {/* Success content */}
-        <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-          <div className="w-full max-w-sm text-center space-y-8">
-            {/* Success icon - clean, no animation */}
-            <div className="mx-auto w-20 h-20 bg-success rounded-full flex items-center justify-center">
-              <CheckCircle className="size-10 text-success-foreground" />
-            </div>
-
-            {/* Success message */}
-            <div className="space-y-3">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                {tSell("success.title")}
-              </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {tSell("success.description")}
-              </p>
-            </div>
-
-            {/* Product preview card - cleaner */}
-            {firstImageUrl && (
-                  <div className="bg-surface-subtle rounded-xl border border-border-subtle p-4">
-                <div className="flex items-center gap-4">
-                  <Image
-                    src={firstImageUrl}
-                    alt={productTitle}
-                    width={80}
-                    height={80}
-                    sizes="80px"
-                    className="size-20 rounded-xl object-cover"
-                  />
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="font-bold text-base truncate">{productTitle}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {tSell("success.listingActive")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Action buttons - cleaner, more professional */}
-            <div className="space-y-4 pt-4">
-              <Button asChild className="w-full h-(--control-primary) gap-2 bg-primary hover:bg-interactive-hover text-base font-semibold rounded-md">
-                <Link href={createdProductHref || "/"}>
-                  <Eye className="size-5" />
-                  {tSell("success.viewListing")}
-                </Link>
-              </Button>
-
-              {/* Boost CTA */}
-              {productId && (
-                <div className="space-y-2">
-                  <BoostDialog
-                    product={{ id: productId, title: productTitle, is_boosted: false, boost_expires_at: null }}
-                    locale={locale}
-                    trigger={
-                      <Button variant="outline" className="w-full h-(--control-primary) gap-2 rounded-md font-semibold">
-                        <Lightning className="size-5 text-primary" />
-                        {tBoost("title")}
-                      </Button>
-                    }
-                  />
-                  <p className="text-xs text-muted-foreground">{tBoost("description")}</p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <Button
-                  variant="outline"
-                  className="h-(--control-primary) gap-2 rounded-md font-medium"
-                  onClick={() => {
-                    const shareLocale = locale === "bg" ? "bg" : "en";
-                    if (navigator.share) {
-                      navigator.share({
-                        title: productTitle,
-                        url: createdProductHref
-                          ? `${window.location.origin}/${shareLocale}${createdProductHref}`
-                          : `${window.location.origin}/${shareLocale}/sell`,
-                      });
-                    } else {
-                      navigator.clipboard.writeText(
-                        createdProductHref
-                          ? `${window.location.origin}/${shareLocale}${createdProductHref}`
-                          : `${window.location.origin}/${shareLocale}/sell`
-                      );
-                      toast.success(tSell("success.linkCopied"));
-                    }
-                  }}
-                >
-                  <Share className="size-5" />
-                  {tCommon("share")}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="h-(--control-primary) gap-2 rounded-md font-medium"
-                  onClick={handleNewListing}
-                >
-                  <Plus className="size-5" />
-                  {tSell("success.newListing")}
-                </Button>
-              </div>
-
-              <Button
-                variant="ghost"
-                asChild
-                className="w-full h-(--control-primary) gap-2 text-muted-foreground hover:text-foreground rounded-md"
-              >
-                <Link href="/">
-                  <House className="size-5" />
-                  {tCommon("goToHomepage")}
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </main>
-      </div>
+      <SellSuccessState
+        locale={locale}
+        createdProductHref={createdProductHref}
+        productId={productId}
+        productTitle={productTitle}
+        firstImageUrl={firstImageUrl ?? null}
+        onNewListing={handleNewListing}
+      />
     );
   }
 

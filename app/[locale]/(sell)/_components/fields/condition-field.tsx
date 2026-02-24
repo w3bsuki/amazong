@@ -4,12 +4,13 @@ import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { ChevronRight as CaretRight, Check, Sparkles as Sparkle } from "lucide-react";
 
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
+import { Field, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell/schema";
 import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
 import { DrawerShell } from "@/components/shared/drawer-shell";
+import { SellFieldSectionHeader } from "./_shared/sell-field-section-header";
 
 // ============================================================================
 // CONDITION FIELD - Item condition selector with proper mobile touch targets
@@ -39,31 +40,16 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
 
         return (
           <Field data-invalid={fieldState.invalid} className={className}>
-            {/* Section Header (non-compact mode) */}
-            {!compact && (
-              <div className="flex items-center gap-3.5 mb-4">
-                <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
-                  <Sparkle className="size-5 text-muted-foreground" />
-                </div>
-                <div>
-                  <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                    {tSell("steps.details.conditionLabel")}
-                  </FieldLabel>
-                  <FieldDescription className="text-sm text-muted-foreground mt-0.5">
-                    {tSell("fields.condition.helpText")}
-                  </FieldDescription>
-                </div>
-              </div>
-            )}
-
-            {/* Compact Label */}
-            {compact && (
-              <div className="hidden">
-                <FieldLabel className="text-sm font-semibold mb-form-sm">
-                  {tSell("steps.details.conditionLabel")}
-                </FieldLabel>
-              </div>
-            )}
+            <SellFieldSectionHeader
+              compact={compact}
+              label={tSell("steps.details.conditionLabel")}
+              description={tSell("fields.condition.helpText")}
+              icon={<Sparkle className="size-5 text-muted-foreground" />}
+              sectionClassName="mb-4"
+              iconWrapClassName="bg-form-section-bg border-form-section-border"
+              descriptionClassName="text-sm mt-0.5"
+              compactLabelClassName="text-sm font-semibold mb-form-sm normal-case tracking-normal text-foreground"
+            />
 
             <FieldContent>
               {compact ? (

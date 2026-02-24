@@ -4,10 +4,11 @@ import { Controller } from "react-hook-form";
 import { Type as TextAa } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
+import { Field, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
+import { SellFieldSectionHeader } from "./_shared/sell-field-section-header";
 
 // ============================================================================
 // TITLE FIELD - Product title input with character count
@@ -47,33 +48,14 @@ export function TitleField({
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid} className={className}>
-          {/* Section Header (non-compact mode) */}
-          {!compact && (
-            <div className="p-4 pb-3 border-b border-form-section-border bg-surface-subtle">
-              <div className="flex items-center gap-3.5">
-                <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
-                  <TextAa className="size-5 text-muted-foreground" />
-                </div>
-                <div>
-                  <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                    {tSell("fields.title.label")}
-                  </FieldLabel>
-                  <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                    {tSell("fields.title.description", { min: minLength, max: maxLength })}
-                  </FieldDescription>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Compact Label - hidden if we use label inside */}
-          {compact && (
-            <div className="hidden">
-              <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
-                {tSell("fields.title.label")}
-              </FieldLabel>
-            </div>
-          )}
+          <SellFieldSectionHeader
+            compact={compact}
+            label={tSell("fields.title.label")}
+            description={tSell("fields.title.description", { min: minLength, max: maxLength })}
+            icon={<TextAa className="size-5 text-muted-foreground" />}
+            sectionClassName="p-4 pb-3 border-b border-form-section-border bg-surface-subtle"
+            iconWrapClassName="bg-form-section-bg border-form-section-border"
+          />
 
           {/* Input - Premium card design */}
           <FieldContent className={cn(!compact && "p-5")}>

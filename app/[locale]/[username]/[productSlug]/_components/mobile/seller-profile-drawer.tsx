@@ -1,324 +1,27 @@
 "use client"
 
-// =============================================================================
-// SELLER PROFILE DRAWER
-// =============================================================================
-// Mobile drawer showing seller profile info without leaving the current page.
-// Opens when user taps "View Profile" on seller preview card.
-// Contains: header, stats, bio, listings, and action buttons.
-// =============================================================================
+import { MessageCircle, Users } from "lucide-react"
+import { useTranslations } from "next-intl"
 
-import * as React from "react"
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { useTranslations, useLocale } from "next-intl"
-import { formatDistanceToNow } from "date-fns"
-import { bg, enUS } from "date-fns/locale"
-import {
-  Star,
-  CheckCircle2,
-  Calendar,
-  Package,
-  Users,
-  MessageCircle,
-  Sparkles,
-} from "lucide-react"
 import { useRouter } from "@/i18n/routing"
 import { DrawerBody, DrawerFooter } from "@/components/ui/drawer"
 import { DrawerShell } from "@/components/shared/drawer-shell"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
-import { UserAvatar } from "@/components/shared/user-avatar"
-import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
-import { formatCurrencyAmount } from "@/lib/price"
-
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
-
-export interface SellerProfileData {
-  id: string
-  name: string
-  username: string | null
-  avatarUrl: string | null
-  verified: boolean
-  rating: number | null
-  reviewCount: number | null
-  positivePercent?: number | null
-  totalSales: number | null
-  responseTimeHours: number | null
-  followers?: number | null
-  listingsCount?: number | null
-  joinedAt: string | null
-  joinedYear?: string | null
-  bio?: string | null
-}
-
-export interface SellerProduct {
-  id: string
-  title: string
-  price: number
-  originalPrice?: number | null
-  image?: string | null
-  slug?: string | null
-  storeSlug?: string | null
-}
+import { SellerBio, SellerHeader, SellerStats } from "./seller-profile-drawer-details"
+import { SellerListings } from "./seller-profile-drawer-listings"
+import type { SellerProfileData, SellerProduct } from "./seller-profile-drawer.types"
 
 interface SellerProfileDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   seller: SellerProfileData | null
-  /** Products from this seller to show in drawer */
   products?: SellerProduct[]
-  /** Callback for chat action */
   onChat?: () => void
-  /** Callback for follow action */
   onFollow?: () => void
-  /** Whether user is following this seller */
   isFollowing?: boolean
 }
 
-// -----------------------------------------------------------------------------
-// Sub-components
-// -----------------------------------------------------------------------------
-
-/** Check if seller is "new" (no sales or feedback) */
-function isNewSeller(seller: SellerProfileData): boolean {
-  return (seller.totalSales ?? 0) === 0 || (seller.positivePercent ?? 0) === 0
-}
-
-/** Seller Profile Header */
-function SellerHeader({ seller }: { seller: SellerProfileData }) {
-  const t = useTranslations("Product")
-  const tVerif = useTranslations("SellerVerification")
-
-  const showNewSellerBadge = isNewSeller(seller)
-
-  return (
-    <div className="flex items-start gap-3">
-      {/* Avatar */}
-      <div className="relative shrink-0">
-        <UserAvatar
-          name={seller.name}
-          avatarUrl={seller.avatarUrl}
-          size="xl"
-          className="size-16"
-        />
-        {seller.verified && (
-          <span className="absolute -bottom-1 -right-1 size-5 bg-primary rounded-full ring-2 ring-background flex items-center justify-center">
-            <CheckCircle2 className="size-3 text-primary-foreground" fill="currentColor" />
-          </span>
-        )}
-      </div>
-
-      {/* Name & Meta */}
-      <div className="flex-1 min-w-0 space-y-0.5">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <h2 className="text-base font-bold text-foreground truncate">{seller.name}</h2>
-          {seller.verified && (
-            <MarketplaceBadge variant="verified-personal" className="shrink-0 text-2xs px-1.5 py-0">
-              {t("verified")}
-            </MarketplaceBadge>
-          )}
-          {showNewSellerBadge && (
-            <Badge variant="secondary" className="shrink-0 text-2xs px-1.5 py-0 gap-1">
-              <Sparkles className="size-2.5" />
-              {tVerif("newSeller")}
-            </Badge>
-          )}
-        </div>
-        {seller.username && (
-          <p className="text-sm text-muted-foreground">@{seller.username}</p>
-        )}
-        {/* Rating */}
-        {seller.rating != null && seller.rating > 0 && (
-          <div className="flex items-center gap-1 mt-0.5">
-            <Star className="size-3.5 fill-warning text-warning" />
-            <span className="text-sm font-semibold text-foreground">
-              {seller.rating.toFixed(1)}
-            </span>
-            {seller.reviewCount != null && seller.reviewCount > 0 && (
-              <span className="text-xs text-muted-foreground">
-                ({seller.reviewCount})
-              </span>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-/** Stats Row */
-function SellerStats({ seller }: { seller: SellerProfileData }) {
-  const t = useTranslations("Seller")
-  const locale = useLocale()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-
-  const joinedText = mounted && seller.joinedAt
-    ? formatDistanceToNow(new Date(seller.joinedAt), {
-        addSuffix: false,
-        locale: locale === "bg" ? bg : enUS,
-      })
-    : seller.joinedYear ?? null
-
-  const isNew = isNewSeller(seller)
-
-  return (
-    <div className="rounded-xl bg-muted px-3 py-2.5 space-y-1.5">
-      {/* Stats Grid */}
-      <div className="flex items-center gap-4 text-sm">
-        {seller.listingsCount != null && seller.listingsCount > 0 && (
-          <div className="text-center">
-            <p className="font-semibold text-foreground">{seller.listingsCount}</p>
-            <p className="text-xs text-muted-foreground">{t("listings")}</p>
-          </div>
-        )}
-        {seller.totalSales != null && seller.totalSales > 0 && (
-          <div className="text-center">
-            <p className="font-semibold text-foreground">{seller.totalSales}</p>
-            <p className="text-xs text-muted-foreground">{t("itemsSold")}</p>
-          </div>
-        )}
-        {!isNew && seller.positivePercent != null && (
-          <div className="text-center">
-            <p className="font-semibold text-foreground">{seller.positivePercent}%</p>
-            <p className="text-xs text-muted-foreground">{t("positive")}</p>
-          </div>
-        )}
-        {seller.responseTimeHours != null && seller.responseTimeHours > 0 && (
-          <div className="text-center">
-            <p className="font-semibold text-foreground">
-              {seller.responseTimeHours <= 1 ? "<1h" : `${Math.round(seller.responseTimeHours)}h`}
-            </p>
-            <p className="text-xs text-muted-foreground">{t("response")}</p>
-          </div>
-        )}
-      </div>
-
-      {/* Joined Date */}
-      {joinedText && (
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-1 border-t border-border-subtle">
-          <Calendar className="size-3" strokeWidth={1.5} />
-          <span>{t("memberSince", { date: joinedText })}</span>
-        </div>
-      )}
-    </div>
-  )
-}
-
-/** Seller Bio */
-function SellerBio({ bio }: { bio: string | null | undefined }) {
-  const t = useTranslations("Seller")
-
-  if (!bio) return null
-
-  return (
-    <div className="space-y-2">
-      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-        {t("aboutThisSeller")}
-      </h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">{bio}</p>
-    </div>
-  )
-}
-
-/** Seller Listings Grid */
-function SellerListings({
-  products,
-  sellerUsername,
-  onClose,
-}: {
-  products: SellerProduct[]
-  sellerUsername: string | null
-  onClose: () => void
-}) {
-  const t = useTranslations("Product")
-  const locale = useLocale()
-  const router = useRouter()
-
-  if (!products || products.length === 0) return null
-
-  const getProductHref = (product: SellerProduct) => {
-    const resolvedSellerSlug = product.storeSlug || sellerUsername
-    const resolvedProductSlug = product.slug || product.id
-    return resolvedSellerSlug ? `/${resolvedSellerSlug}/${resolvedProductSlug}` : "#"
-  }
-
-  const handleProductClick = (href: string) => {
-    onClose()
-    router.push(href)
-  }
-
-  const SellerProductCard = ({ product }: { product: SellerProduct }) => {
-    const [resolvedImageSrc, setResolvedImageSrc] = useState(() =>
-      normalizeOptionalImageUrl(product.image)
-    )
-    const formattedPrice = formatCurrencyAmount(product.price, locale, "EUR", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    })
-
-    useEffect(() => {
-      setResolvedImageSrc(normalizeOptionalImageUrl(product.image))
-    }, [product.image])
-
-    return (
-      <button
-        onClick={() => handleProductClick(getProductHref(product))}
-        className="shrink-0 w-28 rounded-lg border border-border-subtle bg-card overflow-hidden text-left transition-colors hover:bg-hover"
-      >
-        {/* Image */}
-        <div className="aspect-square relative bg-muted">
-          {resolvedImageSrc ? (
-            <Image
-              src={resolvedImageSrc}
-              alt={product.title}
-              fill
-              sizes="112px"
-              className="object-cover"
-              onError={() => setResolvedImageSrc(null)}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Package className="size-6 text-muted-foreground" />
-            </div>
-          )}
-        </div>
-        {/* Info */}
-        <div className="p-2">
-          <p className="text-xs font-bold text-foreground">
-            {formattedPrice}
-          </p>
-          <p className="text-2xs text-muted-foreground line-clamp-1 mt-0.5">
-            {product.title}
-          </p>
-        </div>
-      </button>
-    )
-  }
-
-  return (
-    <div className="space-y-3">
-      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-        {t("moreFromSeller")}
-      </h3>
-
-      {/* Horizontal scroll of products */}
-      <div className="-mx-inset flex gap-2 overflow-x-auto px-inset pb-2 hide-scrollbar">
-        {products.slice(0, 8).map((product) => (
-          <SellerProductCard key={product.id} product={product} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// -----------------------------------------------------------------------------
-// Main Component
-// -----------------------------------------------------------------------------
+export type { SellerProfileData, SellerProduct } from "./seller-profile-drawer.types"
 
 export function SellerProfileDrawer({
   open,
@@ -346,14 +49,12 @@ export function SellerProfileDrawer({
   const handleFollow = () => {
     if (!showFollowAction) return
     onFollow?.()
-    // Don't close - user may want to continue browsing
   }
 
   const handleViewFullProfile = () => {
-    if (seller?.username) {
-      handleClose()
-      router.push(`/${seller.username}`)
-    }
+    if (!seller?.username) return
+    handleClose()
+    router.push(`/${seller.username}`)
   }
 
   if (!seller) return null
@@ -372,64 +73,56 @@ export function SellerProfileDrawer({
       closeButtonClassName="shrink-0 -mr-2 rounded-full text-foreground hover:bg-muted active:bg-active touch-manipulation"
       drawerContentProps={{ showHandle: true, overlayBlur: "none" }}
     >
-      {/* Scrollable body */}
-        <DrawerBody className="space-y-4 py-4">
-          {/* Profile Header */}
-          <SellerHeader seller={seller} />
+      <DrawerBody className="space-y-4 py-4">
+        <SellerHeader seller={seller} />
+        <SellerStats seller={seller} />
+        <SellerBio bio={seller.bio} />
+        <SellerListings
+          products={products}
+          sellerUsername={seller.username}
+          onClose={handleClose}
+        />
 
-          {/* Stats */}
-          <SellerStats seller={seller} />
+        {seller.username ? (
+          <Button
+            variant="ghost"
+            size="default"
+            className="w-full justify-center text-sm text-primary"
+            onClick={handleViewFullProfile}
+          >
+            {t("viewFullProfile")}
+          </Button>
+        ) : null}
+      </DrawerBody>
 
-          {/* Bio */}
-          <SellerBio bio={seller.bio} />
-
-          {/* Listings */}
-          <SellerListings
-            products={products}
-            sellerUsername={seller.username}
-            onClose={handleClose}
-          />
-
-          {seller.username && (
-            <Button
-              variant="ghost"
-              size="default"
-              className="w-full justify-center text-sm text-primary"
-              onClick={handleViewFullProfile}
-            >
-              {t("viewFullProfile")}
-            </Button>
-          )}
-        </DrawerBody>
-
-        {showFooterActions && (
-          <DrawerFooter className="border-t border-border-subtle py-2.5">
-            <div className="flex gap-2">
-              {showFollowAction && (
-                <Button
-                  variant={isFollowing ? "secondary" : "outline"}
-                  size="default"
-                  className="flex-1 gap-1.5"
-                  onClick={handleFollow}
-                >
-                  <Users className="size-4" />
-                  {isFollowing ? t("seller.following") : t("seller.follow")}
-                </Button>
-              )}
-              {showChatAction && (
-                <Button
-                  variant="default"
-                  size="default"
-                  className="flex-1 gap-1.5"
-                  onClick={handleChat}
-                >
-                  <MessageCircle className="size-4" />
-                  {t("chat")}
-                </Button>
-              )}
-            </div>
-          </DrawerFooter>
-        )}
+      {showFooterActions ? (
+        <DrawerFooter className="border-t border-border-subtle py-2.5">
+          <div className="flex gap-2">
+            {showFollowAction ? (
+              <Button
+                variant={isFollowing ? "secondary" : "outline"}
+                size="default"
+                className="flex-1 gap-1.5"
+                onClick={handleFollow}
+              >
+                <Users className="size-4" />
+                {isFollowing ? t("seller.following") : t("seller.follow")}
+              </Button>
+            ) : null}
+            {showChatAction ? (
+              <Button
+                variant="default"
+                size="default"
+                className="flex-1 gap-1.5"
+                onClick={handleChat}
+              >
+                <MessageCircle className="size-4" />
+                {t("chat")}
+              </Button>
+            ) : null}
+          </div>
+        </DrawerFooter>
+      ) : null}
     </DrawerShell>
   )
 }

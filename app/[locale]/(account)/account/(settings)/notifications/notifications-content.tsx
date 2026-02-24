@@ -2,180 +2,35 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslations } from "next-intl"
+import { Bell, ChevronRight as CaretRight, CircleCheck as CheckCircle } from "lucide-react"
+import { formatDistanceToNow } from "date-fns"
+import { toast } from "sonner"
+
+import { Link, useRouter } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
 import { createClient } from "@/lib/supabase/client"
 import { logger } from "@/lib/logger"
 import { cn } from "@/lib/utils"
-import { toast } from "sonner"
-import { Link, useRouter } from "@/i18n/routing"
-import { Bell, ChevronRight as CaretRight, MessageCircle as ChatCircle, CircleCheck as CheckCircle, Package, Star, Tag, Users } from "lucide-react";
 
-import { formatDistanceToNow } from "date-fns"
-
-import type { NotificationRow, NotificationType } from "./notification-types"
-
-type NotificationPreferences = {
-  in_app_purchase: boolean
-  in_app_order_status: boolean
-  in_app_message: boolean
-  in_app_review: boolean
-  in_app_system: boolean
-  in_app_promotion: boolean
-  email_purchase: boolean
-  email_order_status: boolean
-  email_message: boolean
-  email_review: boolean
-  email_system: boolean
-  email_promotion: boolean
-  push_enabled: boolean
-}
-
-const DEFAULT_PREFS: NotificationPreferences = {
-  in_app_purchase: true,
-  in_app_order_status: true,
-  in_app_message: true,
-  in_app_review: true,
-  in_app_system: true,
-  in_app_promotion: true,
-  email_purchase: false,
-  email_order_status: false,
-  email_message: false,
-  email_review: false,
-  email_system: false,
-  email_promotion: false,
-  push_enabled: false,
-}
-
-const IN_APP_PREFERENCE_ROWS = [
-  {
-    titleKey: "rows.newSales.title",
-    descriptionKey: "rows.newSales.description",
-    prefKey: "in_app_purchase",
-  },
-  {
-    titleKey: "rows.orderStatus.title",
-    descriptionKey: "rows.orderStatus.description",
-    prefKey: "in_app_order_status",
-  },
-  {
-    titleKey: "rows.messages.title",
-    descriptionKey: "rows.messages.description",
-    prefKey: "in_app_message",
-  },
-  {
-    titleKey: "rows.reviews.title",
-    descriptionKey: "rows.reviews.description",
-    prefKey: "in_app_review",
-  },
-  {
-    titleKey: "rows.system.title",
-    descriptionKey: "rows.system.description",
-    prefKey: "in_app_system",
-  },
-  {
-    titleKey: "rows.promotions.title",
-    descriptionKey: "rows.promotions.description",
-    prefKey: "in_app_promotion",
-  },
-] as const satisfies ReadonlyArray<{
-  titleKey: string
-  descriptionKey: string
-  prefKey: keyof NotificationPreferences
-}>
-
-const EMAIL_PREFERENCE_ROWS = [
-  { titleKey: "rows.newSalesEmail", prefKey: "email_purchase" },
-  { titleKey: "rows.orderStatusEmail", prefKey: "email_order_status" },
-  { titleKey: "rows.messagesEmail", prefKey: "email_message" },
-  { titleKey: "rows.reviewsEmail", prefKey: "email_review" },
-  { titleKey: "rows.systemEmail", prefKey: "email_system" },
-  { titleKey: "rows.promotionsEmail", prefKey: "email_promotion" },
-] as const satisfies ReadonlyArray<{
-  titleKey: string
-  prefKey: keyof NotificationPreferences
-}>
-
-const getNotificationIcon = (type: NotificationType) => {
-  switch (type) {
-    case "purchase":
-      return <Package size={18} className="text-success" />
-    case "order_status":
-      return <Package size={18} className="text-info" />
-    case "message":
-      return <ChatCircle size={18} className="text-primary" />
-    case "review":
-      return <Star size={18} className="text-warning" />
-    case "system":
-      return <Users size={18} className="text-muted-foreground" />
-    case "promotion":
-      return <Tag size={18} className="text-destructive" />
-    default:
-      return <Bell size={18} />
-  }
-}
-
-const isInAppEnabled = (prefs: NotificationPreferences, type: NotificationType) => {
-  switch (type) {
-    case "purchase":
-      return prefs.in_app_purchase
-    case "order_status":
-      return prefs.in_app_order_status
-    case "message":
-      return prefs.in_app_message
-    case "review":
-      return prefs.in_app_review
-    case "system":
-      return prefs.in_app_system
-    case "promotion":
-      return prefs.in_app_promotion
-    default:
-      return true
-  }
-}
-
-const getNotificationLink = (notification: NotificationRow): string => {
-  if (notification.conversation_id) {
-    return `/chat/${notification.conversation_id}`
-  }
-  if (notification.order_id) {
-    if (notification.type === "purchase") {
-      return `/account/sales`
-    }
-    return `/account/orders`
-  }
-  if (notification.product_id) {
-    return `/account/selling`
-  }
-  if (notification.data?.event_type === "new_follower") {
-    return `/account/following`
-  }
-  return "/account"
-}
-
-const NotificationToggleRow = ({
-  title,
-  description,
-  checked,
-  onCheckedChange,
-  disabled,
-}: {
-  title: string
-  description?: string
-  checked: boolean
-  onCheckedChange: (value: boolean) => void
-  disabled?: boolean
-}) => {
-  return (
-    <div className={cn("flex items-center gap-3 p-3", disabled && "opacity-60")}> 
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-foreground">{title}</div>
-        {description && <div className="text-xs text-muted-foreground mt-0.5">{description}</div>}
-      </div>
-      <Switch checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} />
-    </div>
-  )
-}
+import type { NotificationRow } from "./notification-types"
+import {
+  fetchNotificationData,
+  markAllNotificationsRead,
+  markNotificationRead,
+  saveNotificationPreferences,
+} from "./notifications-content.data"
+import {
+  getNotificationIcon,
+  getNotificationLink,
+  NotificationToggleRow,
+} from "./notifications-content.helpers"
+import {
+  DEFAULT_PREFS,
+  EMAIL_PREFERENCE_ROWS,
+  IN_APP_PREFERENCE_ROWS,
+  isInAppEnabled,
+  type NotificationPreferences,
+} from "./notifications-content.types"
 
 export function NotificationsContent({
   initialNotifications,
@@ -204,69 +59,33 @@ export function NotificationsContent({
       if (showSpinner) {
         setIsLoading(true)
       }
-    try {
-      const { data: userData } = await supabase.auth.getUser()
-      const user = userData.user
-      if (!user) {
-        setIsLoading(false)
-        return
-      }
 
-      // Preferences (optional)
       try {
-        const { data: prefData, error: prefError } = await supabase
-          .from("notification_preferences")
-          .select(
-            "user_id,in_app_purchase,in_app_order_status,in_app_message,in_app_review,in_app_system,in_app_promotion,email_purchase,email_order_status,email_message,email_review,email_system,email_promotion,push_enabled"
-          )
-          .eq("user_id", user.id)
-          .maybeSingle()
-
-        if (!prefError && prefData) {
-          setPrefs({
-            in_app_purchase: prefData.in_app_purchase ?? true,
-            in_app_order_status: prefData.in_app_order_status ?? true,
-            in_app_message: prefData.in_app_message ?? true,
-            in_app_review: prefData.in_app_review ?? true,
-            in_app_system: prefData.in_app_system ?? true,
-            in_app_promotion: prefData.in_app_promotion ?? true,
-            email_purchase: prefData.email_purchase ?? false,
-            email_order_status: prefData.email_order_status ?? false,
-            email_message: prefData.email_message ?? false,
-            email_review: prefData.email_review ?? false,
-            email_system: prefData.email_system ?? false,
-            email_promotion: prefData.email_promotion ?? false,
-            push_enabled: prefData.push_enabled ?? false,
-          })
+        const { data: userData } = await supabase.auth.getUser()
+        const user = userData.user
+        if (!user) {
+          return
         }
-      } catch {
-        // If preferences table isn't present yet, keep defaults.
-      }
 
-      const { data, error } = await supabase
-        .from("notifications")
-        .select(
-          "id,type,title,body,data,order_id,product_id,conversation_id,is_read,created_at"
+        const { prefs: loadedPrefs, notifications: loadedNotifications } = await fetchNotificationData(
+          supabase,
+          user.id
         )
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(50)
 
-      if (error) throw error
-      setNotifications((data ?? []) as NotificationRow[])
-    } catch (error) {
-      logger.error("[account-notifications] load_notifications_failed", error)
-      toast.error(t("toasts.loadError"))
-    } finally {
-      setIsLoading(false)
-      initializedRef.current = true
-    }
+        setPrefs(loadedPrefs)
+        setNotifications(loadedNotifications)
+      } catch (error) {
+        logger.error("[account-notifications] load_notifications_failed", error)
+        toast.error(t("toasts.loadError"))
+      } finally {
+        setIsLoading(false)
+        initializedRef.current = true
+      }
     },
     [supabase, t]
   )
 
   useEffect(() => {
-    // If we have SSR-provided notifications, render immediately and refresh quietly.
     if (initialNotifications !== undefined) {
       void fetchAll({ showSpinner: false })
       return
@@ -277,7 +96,7 @@ export function NotificationsContent({
 
   const markAsRead = async (notificationId: string) => {
     try {
-      await supabase.rpc("mark_notification_read", { p_notification_id: notificationId })
+      await markNotificationRead(supabase, notificationId)
       setNotifications((prev) => prev.map((n) => (n.id === notificationId ? { ...n, is_read: true } : n)))
     } catch {
       toast.error(t("toasts.markReadError"))
@@ -286,7 +105,7 @@ export function NotificationsContent({
 
   const markAllAsRead = async () => {
     try {
-      await supabase.rpc("mark_all_notifications_read")
+      await markAllNotificationsRead(supabase)
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
     } catch {
       toast.error(t("toasts.markAllReadError"))
@@ -299,15 +118,7 @@ export function NotificationsContent({
       const user = userData.user
       if (!user) return
 
-      await supabase
-        .from("notification_preferences")
-        .upsert(
-          {
-            user_id: user.id,
-            ...next,
-          },
-          { onConflict: "user_id" }
-        )
+      await saveNotificationPreferences(supabase, user.id, next)
     } catch (error) {
       logger.error("[account-notifications] save_preferences_failed", error)
       toast.error(t("toasts.saveError"))
@@ -317,7 +128,7 @@ export function NotificationsContent({
   const updatePref = <K extends keyof NotificationPreferences>(key: K, value: boolean) => {
     const next = { ...prefs, [key]: value }
     setPrefs(next)
-    // Avoid saving until we have attempted initial load.
+
     if (initializedRef.current) {
       void savePrefs(next)
     }
@@ -325,14 +136,11 @@ export function NotificationsContent({
 
   return (
     <div className="space-y-4">
-      {/* All notifications */}
       <div className="rounded-lg border bg-card overflow-hidden">
         <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
           <div className="flex items-center gap-2">
             <Bell size={20} className="text-muted-foreground" />
-            <div className="font-semibold text-base text-foreground">
-              {t("title")}
-            </div>
+            <div className="font-semibold text-base text-foreground">{t("title")}</div>
             {unreadCount > 0 && (
               <span className="text-xs bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full">
                 {unreadCount}
@@ -353,15 +161,11 @@ export function NotificationsContent({
         </div>
 
         {isLoading ? (
-          <div className="p-4 text-center text-muted-foreground">
-            {t("loading")}
-          </div>
+          <div className="p-4 text-center text-muted-foreground">{t("loading")}</div>
         ) : visibleNotifications.length === 0 ? (
           <div className="p-4 text-center">
             <Bell size={40} className="mx-auto mb-2 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">
-              {t("empty")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("empty")}</p>
           </div>
         ) : (
           <div className="divide-y divide-border">
@@ -403,22 +207,15 @@ export function NotificationsContent({
         )}
       </div>
 
-      {/* Preferences */}
       <div className="rounded-lg border bg-card overflow-hidden">
         <div className="p-4 bg-muted border-b border-border">
-          <div className="text-sm font-semibold text-foreground">
-            {t("preferences.title")}
-          </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            {t("preferences.description")}
-          </div>
+          <div className="text-sm font-semibold text-foreground">{t("preferences.title")}</div>
+          <div className="text-xs text-muted-foreground mt-1">{t("preferences.description")}</div>
         </div>
 
         <div className="divide-y divide-border">
           <div className="p-3">
-            <div className="text-xs font-medium text-muted-foreground">
-              {t("preferences.inApp")}
-            </div>
+            <div className="text-xs font-medium text-muted-foreground">{t("preferences.inApp")}</div>
           </div>
 
           {IN_APP_PREFERENCE_ROWS.map((row) => (
@@ -432,9 +229,7 @@ export function NotificationsContent({
           ))}
 
           <div className="p-3">
-            <div className="text-xs font-medium text-muted-foreground">
-              {t("preferences.email")}
-            </div>
+            <div className="text-xs font-medium text-muted-foreground">{t("preferences.email")}</div>
           </div>
 
           {EMAIL_PREFERENCE_ROWS.map((row) => (
@@ -447,9 +242,7 @@ export function NotificationsContent({
           ))}
 
           <div className="p-3">
-            <div className="text-xs font-medium text-muted-foreground">
-              {t("preferences.push")}
-            </div>
+            <div className="text-xs font-medium text-muted-foreground">{t("preferences.push")}</div>
           </div>
           <NotificationToggleRow
             title={t("rows.push.title")}

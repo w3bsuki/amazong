@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-02-24 | REFACTOR-PROD-003 | Gate Recovery + Oversized Splits 2nd Pass
+- Decision/Outcome: Fixed broken TypeScript/architecture regressions first, then completed the requested oversized split sequence (`checkout`, `edit-product`, `buyer-order-actions`, `seller-orders-client`, `sales/page`, `desktop-buy-box`, `pricing-field`, `message-context`, `plans-content`, `sell.ts`) with stable public entrypoints.
+- Why: Prior pass left failing gates and `over500` regression; production-readiness refactor required gate-first recovery and continued decomposition.
+- Impact: Full suite green (`typecheck`, `lint`, `styles:gate`, `test:unit`, `architecture:gate`), `over500` reduced to `3`, `client-boundary` restored to baseline (`266`), and architecture gate remains non-regressing (`duplicates=1500`, `clones=112`, `missingLoading=0`).
+- Next Action: Continue duplicate-cluster reduction toward sub-1k duplicated lines and expand architecture/tests hardening without increasing client-boundary count.
+- Links: `app/[locale]/(checkout)/_components/checkout-page-layout.tsx`, `app/[locale]/(account)/account/selling/edit/edit-product-client.tsx`, `app/[locale]/(account)/account/orders/_components/buyer-order-actions.tsx`, `app/[locale]/(sell)/sell/orders/seller-orders-client.tsx`, `app/[locale]/(account)/account/sales/page.tsx`, `app/[locale]/[username]/[productSlug]/_components/desktop/desktop-buy-box.tsx`, `app/[locale]/(sell)/_components/fields/pricing-field.tsx`, `components/providers/message-context.tsx`, `app/[locale]/(account)/account/plans/plans-content.tsx`, `app/[locale]/(sell)/_actions/sell.ts`
+
 ### 2026-02-24 | REFACTOR-PROD-002 | Production-Readiness Refactor Batches 1-4 + Test Expansion
 - Decision/Outcome: Executed broad structural refactor pass: action/auth migration validation, large file decomposition (messages/cart/providers/hooks/UI), route completeness closure (`missingLoading=0`), and duplicate reduction from `1951` to `1505`.
 - Why: Raise maintainability and release safety while keeping all quality gates green.

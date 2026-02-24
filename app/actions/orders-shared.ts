@@ -1,4 +1,3 @@
-import type { OrderItem } from "@/lib/types/order-item"
 export type { OrderItem } from "@/lib/types/order-item"
 
 export const ORDER_ITEM_LIST_SELECT = `

@@ -4,8 +4,9 @@
 
 begin;
 
--- 5a) Recreate view without products.is_prime dependency.
-create or replace view public.deal_products as
+-- 5a) Must DROP then CREATE (CREATE OR REPLACE cannot remove columns from a view).
+drop view if exists public.deal_products;
+create view public.deal_products as
 select
   p.id,
   p.seller_id,

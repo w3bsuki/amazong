@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { BoostDialog } from "../../../_components/seller/boost-dialog"
 import { Eye, Package, Pause, Pencil, Play, Star, Tag, Trash, Zap as Lightning } from "lucide-react"
 import type { BoostTimeLeft, SellingProduct, TranslateFn } from "./selling-products-list.types"
+import { getListingStatus, getStatusBadgeProps } from "./selling-products-listing-status"
 
 interface SellingProductsDesktopListProps {
   products: SellingProduct[]
@@ -25,26 +26,6 @@ interface SellingProductsDesktopListProps {
   onDelete: (productId: string) => void
   togglingId: string | null
   deletingId: string | null
-}
-
-type ListingStatus = "active" | "draft" | "sold"
-
-function getListingStatus(product: SellingProduct): ListingStatus {
-  if (product.status === "draft" || product.status === "archived") return "draft"
-  if (product.status === "out_of_stock" || product.stock === 0) return "sold"
-  return "active"
-}
-
-function getStatusBadgeProps(status: ListingStatus, t: TranslateFn) {
-  switch (status) {
-    case "sold":
-      return { variant: "warning-subtle" as const, label: t("status.sold") }
-    case "draft":
-      return { variant: "neutral-subtle" as const, label: t("status.draft") }
-    case "active":
-    default:
-      return { variant: "success-subtle" as const, label: t("status.active") }
-  }
 }
 
 export function SellingProductsDesktopList({

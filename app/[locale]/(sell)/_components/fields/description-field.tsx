@@ -3,10 +3,11 @@
 import { Controller } from "react-hook-form";
 import { AlignLeft as TextAlignLeft } from "lucide-react";
 
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
+import { Field, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
+import { SellFieldSectionHeader } from "./_shared/sell-field-section-header";
 
 // ============================================================================
 // DESCRIPTION FIELD - Rich text area for product description
@@ -45,33 +46,13 @@ export function DescriptionField({
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid} className={className}>
-          {/* Section Header (non-compact mode) */}
-          {!compact && (
-            <div className="p-4 pb-3 border-b border-border-subtle bg-surface-subtle">
-              <div className="flex items-center gap-3.5">
-                <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
-                  <TextAlignLeft className="size-5 text-muted-foreground" />
-                </div>
-                <div>
-                  <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                    {tSell("fields.description.label")}
-                  </FieldLabel>
-                  <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                    {tSell("fields.description.helpText")}
-                  </FieldDescription>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Compact Label */}
-            {compact && (
-              <div className="hidden">
-                <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
-                  {tSell("fields.description.label")}
-                </FieldLabel>
-              </div>
-            )}
+          <SellFieldSectionHeader
+            compact={compact}
+            label={tSell("fields.description.label")}
+            description={tSell("fields.description.helpText")}
+            icon={<TextAlignLeft className="size-5 text-muted-foreground" />}
+            sectionClassName="p-4 pb-3 border-b border-border-subtle bg-surface-subtle"
+          />
 
           {/* Rich Textarea with label inside */}
           <FieldContent className={cn(!compact && "p-5")}>

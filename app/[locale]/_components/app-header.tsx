@@ -16,174 +16,22 @@
 // =============================================================================
 
 import {
-  MobileHomepageHeader,
-} from "@/components/layout/header/mobile/homepage-header"
-import {
-  MobileProductHeader,
-} from "@/components/layout/header/mobile/product-header"
-import {
-  MobileContextualHeader,
-} from "@/components/layout/header/mobile/contextual-header"
-import {
   DesktopStandardHeader,
 } from "@/components/layout/header/desktop/standard-header"
 import { MobileSearchOverlay } from "./search/mobile-search-overlay"
+import { detectRouteConfig } from "./app-header-route-config"
+import { AppHeaderMobileVariants } from "./app-header-mobile-variants"
+import type { AppHeaderProps } from "./app-header.types"
 import { useHeaderOptional } from "@/components/providers/header-context"
 import { useAuthOptional } from "@/components/providers/auth-state-manager"
 import { cn } from "@/lib/utils"
-import { IconButton } from "@/components/ui/icon-button"
 import { useEffect, useRef, useState } from "react"
-import { Link, useRouter, usePathname } from "@/i18n/routing"
+import { useRouter, usePathname } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { MessageCircle as ChatCircle, Share as Export, Settings as Gear } from "lucide-react"
-import type { User } from "@supabase/supabase-js"
-import type { CategoryTreeNode } from "@/lib/data/categories/types"
-import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu"
-import type { HeaderVariant } from "@/components/layout/header/types"
-
-// =============================================================================
-// Props
-// =============================================================================
-
-export interface AppHeaderProps {
-  /** Header rendering variant */
-  variant?: HeaderVariant
-  /** Authenticated user */
-  user: User | null
-  /** Categories for navigation */
-  categories?: CategoryTreeNode[]
-  /** User listing stats for hamburger menu footer */
-  userStats?: UserListingStats
-  
-  // Homepage variant props
-  /** Active category slug for homepage pills */
-  activeCategory?: string
-  /** Callback when category pill is selected */
-  onCategorySelect?: (slug: string) => void
-  /** Callback to open search overlay */
-  onSearchOpen?: () => void
-  
-  // Product variant props
-  /** Product title for product header */
-  productTitle?: string | null
-  /** Seller name for product header */
-  sellerName?: string | null
-  /** Seller username for profile link */
-  sellerUsername?: string | null
-  /** Seller avatar URL */
-  sellerAvatarUrl?: string | null
-  /** Product ID for wishlist */
-  productId?: string | null
-  /** Product price for wishlist */
-  productPrice?: number | null
-  /** Product image for wishlist */
-  productImage?: string | null
-  
-  // Contextual variant props
-  /** Title for contextual header (category name) */
-  contextualTitle?: string
-  /** Active category slug (for subtle active highlight during instant navigation). */
-  contextualActiveSlug?: string
-  /** Back href for contextual header */
-  contextualBackHref?: string
-  /** Back handler for instant navigation */
-  onContextualBack?: () => void
-  /** Subcategories for contextual pill rail state */
-  contextualSubcategories?: CategoryTreeNode[]
-  /** Callback when subcategory pill is clicked */
-  onSubcategoryClick?: (cat: CategoryTreeNode) => void
-  
-  // Legacy props (for gradual migration)
-  hideSubheader?: boolean
-  hideOnMobile?: boolean
-  hideOnDesktop?: boolean
-}
 
 // Re-export types
+export type { AppHeaderProps } from "./app-header.types"
 export type { HeaderVariant } from "@/components/layout/header/types"
-
-// =============================================================================
-// Route Detection Helper
-// =============================================================================
-
-type RouteConfig = {
-  variant: HeaderVariant
-  profileUsername?: string
-}
-
-function detectRouteConfig(pathname: string, explicitVariant?: HeaderVariant): RouteConfig {
-  // If explicit variant is provided, use it
-  if (explicitVariant) {
-    return { variant: explicitVariant }
-  }
-  
-  // Strip locale prefix (e.g., /en, /bg)
-  const pathWithoutLocale = pathname.replace(/^\/(en|bg)/, "") || "/"
-  
-  // Homepage: / or empty
-  if (pathWithoutLocale === "/" || pathWithoutLocale === "") {
-    return { variant: "homepage" }
-  }
-  
-  // Categories: /categories or /categories/* 
-  if (pathWithoutLocale.startsWith("/categories")) {
-    return { variant: "contextual" }
-  }
-  
-  // Assistant: /assistant - AI shopping assistant
-  if (pathWithoutLocale.startsWith("/assistant")) {
-    return { variant: "contextual" }
-  }
-
-  // Search: contextual header (Phase 4 mobile search revamp)
-  if (pathWithoutLocale.startsWith("/search")) {
-    return { variant: "contextual" }
-  }
-
-  // Sellers directory uses the shopping-style mobile header.
-  if (pathWithoutLocale.startsWith("/sellers")) {
-    return { variant: "homepage" }
-  }
-
-  // Known routes start with: /search, /cart, /checkout, /account, /sell, /plans, /auth
-  const segments = pathWithoutLocale.split("/").filter(Boolean)
-  const knownRoutes = [
-    "search",
-    "sellers",
-    "cart",
-    "checkout",
-    "account",
-    "sell",
-    "plans",
-    "auth",
-    "categories",
-    "api",
-    "assistant",
-    "wishlist",
-    "terms",
-    "privacy",
-    "cookies",
-    "customer-service",
-    "returns",
-    "contact",
-    "security",
-    "feedback",
-    "faq",
-  ]
-  
-  // Product pages: /{username}/{productSlug} (2+ segments, not a known route)
-  if (segments.length >= 2 && segments[0] && !knownRoutes.includes(segments[0])) {
-    return { variant: "product" }
-  }
-  
-  // Profile pages: /{username} (1 segment, not a known route) - use contextual header with profile actions
-  if (segments.length === 1 && segments[0] && !knownRoutes.includes(segments[0])) {
-    return { variant: "contextual", profileUsername: segments[0] }
-  }
-  
-  // Default for everything else
-  return { variant: "default" }
-}
 
 // =============================================================================
 // Main Component
@@ -318,21 +166,7 @@ export function AppHeader({
     }
   }
 
-  // ==========================================================================
-  // MOBILE HEADER VARIANTS
-  // ==========================================================================
-
-  const homepageMobileHeader = (
-    <MobileHomepageHeader
-      user={effectiveUser}
-      userStats={userStats}
-      activeCategory={effectiveHomepageCategory}
-      onCategorySelect={effectiveHomepageCategorySelect}
-      onSearchOpen={handleSearchOpen}
-
-      locale={locale}
-    />
-  )
+  const handleBack = () => router.back()
 
   const handleShareProfile = async () => {
     const url = typeof window !== "undefined" ? window.location.href : ""
@@ -358,95 +192,6 @@ export function AppHeader({
 
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       await navigator.clipboard.writeText(url)
-    }
-  }
-
-  const profileMobileActions = (
-    <>
-      <IconButton
-        type="button"
-        variant="ghost"
-        className="text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
-        aria-label={tProfile("share")}
-        onClick={handleShareProfile}
-      >
-        <Export className="size-icon-sm" />
-      </IconButton>
-
-      {effectiveProfileIsOwn ? (
-        <IconButton
-          asChild
-          variant="ghost"
-          className="text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
-          aria-label={tProfile("settings")}
-        >
-          <Link href="/account">
-            <Gear className="size-icon-sm" />
-          </Link>
-        </IconButton>
-      ) : effectiveProfileSellerId ? (
-        <IconButton
-          asChild
-          variant="ghost"
-          className="text-foreground motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active"
-          aria-label={tProfile("message")}
-        >
-          <Link href={`/chat?to=${effectiveProfileSellerId}`}>
-            <ChatCircle className="size-icon-sm" />
-          </Link>
-        </IconButton>
-      ) : null}
-    </>
-  )
-
-  const renderMobileHeader = () => {
-    switch (variant) {
-      case "homepage":
-        return homepageMobileHeader
-      case "product":
-        return (
-          <MobileProductHeader
-            user={effectiveUser}
-            categories={categories}
-            userStats={userStats}
-            productTitle={effectiveProductTitle}
-            sellerName={effectiveSellerName}
-            sellerUsername={effectiveSellerUsername}
-            sellerAvatarUrl={effectiveSellerAvatarUrl}
-            productId={effectiveProductId}
-            productPrice={effectiveProductPrice}
-            productImage={effectiveProductImage}
-            onBack={() => router.back()}
-            locale={locale}
-          />
-        )
-      case "contextual": {
-        const isProfileHeader = Boolean(profileUsernameFromRoute)
-        const title = isProfileHeader
-          ? effectiveProfileDisplayName ?? effectiveProfileUsername ?? profileUsernameFromRoute ?? tProfile("profile")
-          : effectiveContextualTitle
-
-        return (
-          <MobileContextualHeader
-            user={effectiveUser}
-            categories={categories}
-            userStats={userStats}
-            title={title}
-            activeSlug={effectiveContextualActiveSlug}
-            backHref={isProfileHeader ? "/" : effectiveContextualBackHref}
-            onBack={isProfileHeader ? () => router.back() : effectiveContextualBack}
-            subcategories={effectiveContextualSubcategories}
-            onSubcategoryClick={effectiveContextualSubcategoryClick}
-            trailingActions={isProfileHeader ? profileMobileActions : effectiveContextualTrailingActions}
-            hideActions={effectiveContextualHideActions}
-            expandTitle={effectiveContextualExpandTitle}
-            locale={locale}
-          />
-        )
-      }
-      default:
-        // Fallback to homepage header (inline search + pills)
-        return homepageMobileHeader
     }
   }
 
@@ -481,7 +226,53 @@ export function AppHeader({
           hideOnDesktop && "md:hidden"
         )}
       >
-        {renderMobileHeader()}
+        <AppHeaderMobileVariants
+          variant={variant}
+          user={effectiveUser}
+          categories={categories}
+          userStats={userStats}
+          locale={locale}
+          homepage={{
+            activeCategory: effectiveHomepageCategory,
+            onCategorySelect: effectiveHomepageCategorySelect,
+            onSearchOpen: handleSearchOpen,
+          }}
+          product={{
+            title: effectiveProductTitle,
+            sellerName: effectiveSellerName,
+            sellerUsername: effectiveSellerUsername,
+            sellerAvatarUrl: effectiveSellerAvatarUrl,
+            productId: effectiveProductId,
+            productPrice: effectiveProductPrice,
+            productImage: effectiveProductImage,
+          }}
+          contextual={{
+            title: effectiveContextualTitle,
+            activeSlug: effectiveContextualActiveSlug,
+            backHref: effectiveContextualBackHref,
+            onBack: effectiveContextualBack,
+            subcategories: effectiveContextualSubcategories,
+            onSubcategoryClick: effectiveContextualSubcategoryClick,
+            trailingActions: effectiveContextualTrailingActions,
+            hideActions: effectiveContextualHideActions,
+            expandTitle: effectiveContextualExpandTitle,
+          }}
+          profile={{
+            usernameFromRoute: profileUsernameFromRoute,
+            displayName: effectiveProfileDisplayName,
+            username: effectiveProfileUsername,
+            isOwnProfile: effectiveProfileIsOwn,
+            sellerId: effectiveProfileSellerId,
+            labels: {
+              profile: tProfile("profile"),
+              share: tProfile("share"),
+              settings: tProfile("settings"),
+              message: tProfile("message"),
+            },
+            onShare: handleShareProfile,
+          }}
+          onBack={handleBack}
+        />
         {renderDesktopHeader()}
       </header>
 

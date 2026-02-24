@@ -21,7 +21,6 @@ import { clampModesToPolicy, toCategoryPolicy } from "@/lib/sell/category-policy
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { SelectDrawer } from "../ui/select-drawer";
 import { useTranslations } from "next-intl";
-import type { Category } from "../../_lib/types";
 import { findCategoryById } from "./category-helpers";
 import { PriceSuggestionCard } from "./pricing/price-suggestion-card";
 import { QuantityStepper } from "./pricing/quantity-stepper";

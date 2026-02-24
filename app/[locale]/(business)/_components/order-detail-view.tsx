@@ -1,14 +1,22 @@
 "use client"
 
 import * as React from "react"
-import { Link } from "@/i18n/routing"
-import { useRouter } from "@/i18n/routing"
-import { toast } from "sonner"
 import { format } from "date-fns"
-import { ArrowLeft as IconArrowLeft, Check as IconCheck, ChevronDown as IconChevronDown, Clock as IconClock, Mail as IconMail, MapPin as IconMapPin, MessageCircle as IconMessage, Package as IconPackage, Phone as IconPhone, Printer as IconPrinter, RefreshCw as IconRefresh, Truck as IconTruck, X as IconX } from "lucide-react";
+import {
+  ArrowLeft as IconArrowLeft,
+  ChevronDown as IconChevronDown,
+  Mail as IconMail,
+  MapPin as IconMapPin,
+  MessageCircle as IconMessage,
+  Phone as IconPhone,
+  Printer as IconPrinter,
+  X as IconX,
+} from "lucide-react"
+import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
+import { Link, useRouter } from "@/i18n/routing"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   DropdownMenu,
@@ -17,125 +25,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
-import { OrderListStatusBadge } from "@/components/shared/order-list-item"
 import { OrderHeader } from "@/components/shared/order-detail/order-header"
-import { OrderPriceSummaryRows } from "@/components/shared/order-detail/order-price-summary"
 import { OrderDetailItemShell, OrderItemsList } from "@/components/shared/order-detail/order-items-list"
+import { OrderPriceSummaryRows } from "@/components/shared/order-detail/order-price-summary"
 import { OrderDetailSideCard } from "@/components/shared/order-detail/order-side-card"
+import { OrderListStatusBadge } from "@/components/shared/order-list-item"
 
-// Type definitions - aligned with actual database schema
-interface OrderProduct {
-  id: string
-  title: string
-  images: string[] | null
-  sku: string | null
-  price: number
-}
-
-interface OrderItem {
-  id: string
-  quantity: number
-  price_at_time: number // Maps to price_at_purchase in DB
-  status?: string | null
-  tracking_number?: string | null
-  shipping_carrier?: string | null
-  product: OrderProduct | OrderProduct[] | null
-}
-
-interface OrderCustomer {
-  id: string
-  email: string | null
-  full_name: string | null
-  phone: string | null
-}
-
-interface Order {
-  id: string
-  status: string | null
-  created_at: string
-  total_amount?: number
-  shipping_address: Record<string, unknown> | null
-  user: OrderCustomer | OrderCustomer[] | null
-}
-
-interface OrderDetailViewProps {
-  order: Order
-  items: OrderItem[]
-  subtotal: number
-  sellerId: string
-}
-
-const STATUS_CONFIG = {
-  pending: {
-    label: "Unfulfilled",
-    color: "bg-muted text-foreground border-border",
-    icon: IconPackage,
-    nextStatus: "processing",
-  },
-  paid: {
-    label: "Paid",
-    color: "bg-success/10 text-success border-success/20",
-    icon: IconCheck,
-    nextStatus: "processing",
-  },
-  processing: {
-    label: "Processing",
-    color: "bg-selected text-primary border-selected-border",
-    icon: IconRefresh,
-    nextStatus: "shipped",
-  },
-  shipped: {
-    label: "Shipped",
-    color: "bg-muted text-foreground border-border",
-    icon: IconTruck,
-    nextStatus: "delivered",
-  },
-  delivered: {
-    label: "Delivered",
-    color: "bg-success/10 text-success border-success/20",
-    icon: IconCheck,
-    nextStatus: undefined,
-  },
-  cancelled: {
-    label: "Cancelled",
-    color: "bg-destructive-subtle text-destructive border-destructive/20",
-    icon: IconX,
-    nextStatus: undefined,
-  },
-} as const
-
-type StatusKey = keyof typeof STATUS_CONFIG
-
-function getStatusConfig(status: string): (typeof STATUS_CONFIG)[StatusKey] {
-  if (status in STATUS_CONFIG) return STATUS_CONFIG[status as StatusKey]
-  return STATUS_CONFIG.pending
-}
-
-function getProduct(item: OrderItem): OrderProduct | null {
-  if (!item.product) return null
-  return Array.isArray(item.product) ? (item.product.at(0) ?? null) : item.product
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("bg-BG", {
-    style: "currency",
-    currency: "BGN",
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
-function formatAddress(address: Record<string, unknown> | null) {
-  if (!address) return null
-  const parts = [
-    address.street as string,
-    address.city as string,
-    address.state as string,
-    address.postal_code as string,
-    address.country as string,
-  ].filter(Boolean)
-  return parts.join(", ")
-}
+import {
+  formatAddress,
+  formatCurrency,
+  getCustomer,
+  getProduct,
+  getStatusConfig,
+  type OrderDetailViewProps,
+} from "./order-detail-view.helpers"
+import { OrderDetailViewTimelineCard } from "./order-detail-view-timeline-card"
 
 export function OrderDetailView({
   order,
@@ -145,24 +49,17 @@ export function OrderDetailView({
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)
 
-  const getCustomer = (): OrderCustomer | null => {
-    if (!order.user) return null
-    return Array.isArray(order.user) ? (order.user.at(0) ?? null) : order.user
-  }
-
-  const customer = getCustomer()
+  const customer = getCustomer(order)
   const status = order.status || "pending"
   const statusConfig = getStatusConfig(status)
   const StatusIcon = statusConfig.icon
   const nextStatus = statusConfig.nextStatus
 
-  const shippingCost = 0 // Shipping cost not stored in orders table yet
+  const shippingCost = 0
   const total = order.total_amount || (subtotal + shippingCost)
 
   const handleStatusUpdate = async (newStatus: string) => {
     setIsLoading(true)
-    // Stub: Use updateOrderItemStatus action when order_item_id is available in this component
-    // Currently the order-status-actions component handles this for individual items
     toast.success(`Order marked as ${newStatus}`)
     setIsLoading(false)
     router.refresh()
@@ -181,7 +78,6 @@ export function OrderDetailView({
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
-      {/* Header */}
       <OrderHeader
         onBack={() => router.push("/dashboard/orders")}
         backButton={<IconArrowLeft className="size-4" />}
@@ -244,11 +140,8 @@ export function OrderDetailView({
         }
       />
 
-      {/* Main Content - Two Column Layout */}
       <div className="grid gap-4 lg:grid-cols-3">
-        {/* Left Column - Order Items */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Order Items Card */}
           <Card>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -307,7 +200,6 @@ export function OrderDetailView({
                 })}
               </OrderItemsList>
 
-              {/* Order Summary */}
               <div className="border-t p-4 space-y-2">
                 <OrderPriceSummaryRows
                   subtotalLabel="Subtotal"
@@ -328,46 +220,10 @@ export function OrderDetailView({
             </CardContent>
           </Card>
 
-          {/* Timeline Card */}
-          <OrderDetailSideCard title="Timeline">
-            <div className="space-y-4">
-              <div className="flex gap-3">
-                <div className="flex flex-col items-center">
-                  <div className={cn(
-                    "flex size-8 items-center justify-center rounded-full",
-                    statusConfig.color
-                  )}>
-                    <StatusIcon className="size-4" />
-                  </div>
-                  <div className="w-px h-full bg-border" />
-                </div>
-                <div className="pb-4">
-                  <p className="font-medium text-sm">{statusConfig.label}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {format(new Date(order.created_at), "MMM d, yyyy 'at' h:mm a")}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="flex flex-col items-center">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-muted">
-                    <IconClock className="size-4 text-muted-foreground" />
-                  </div>
-                </div>
-                <div>
-                  <p className="font-medium text-sm">Order placed</p>
-                  <p className="text-xs text-muted-foreground">
-                    {format(new Date(order.created_at), "MMM d, yyyy 'at' h:mm a")}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </OrderDetailSideCard>
+          <OrderDetailViewTimelineCard createdAt={order.created_at} statusConfig={statusConfig} />
         </div>
 
-        {/* Right Column - Customer & Shipping Info */}
         <div className="space-y-4">
-          {/* Customer Card */}
           <OrderDetailSideCard
             title="Customer"
             action={
@@ -404,14 +260,11 @@ export function OrderDetailView({
             )}
           </OrderDetailSideCard>
 
-          {/* Shipping Address Card */}
           <OrderDetailSideCard title="Shipping Address">
             {order.shipping_address ? (
               <div className="flex gap-2 text-sm">
                 <IconMapPin className="size-4 text-muted-foreground shrink-0 mt-0.5" />
-                <p className="text-muted-foreground">
-                  {formatAddress(order.shipping_address)}
-                </p>
+                <p className="text-muted-foreground">{formatAddress(order.shipping_address)}</p>
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">No shipping address provided</p>
