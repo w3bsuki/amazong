@@ -1,6 +1,7 @@
 import "server-only"
 
 import type { SupabaseClient } from "@supabase/supabase-js"
+import { logger } from "@/lib/logger"
 import type { Database } from "@/lib/supabase/database.types"
 
 type ConversationSeed = {
@@ -8,19 +9,6 @@ type ConversationSeed = {
   buyerId: string
   sellerId: string
   productId: string
-}
-
-function formatSupabaseError(error: unknown): string {
-  if (!error) return "unknown error"
-  if (typeof error === "string") return error
-  if (error instanceof Error) return error.message
-  if (typeof error === "object") {
-    const record = error as Record<string, unknown>
-    const code = typeof record.code === "string" ? record.code : null
-    const message = typeof record.message === "string" ? record.message : null
-    return [code, message].filter(Boolean).join(": ") || "unknown error"
-  }
-  return String(error)
 }
 
 export async function ensureOrderConversations(
@@ -48,7 +36,7 @@ export async function ensureOrderConversations(
       .maybeSingle()
 
     if (existingError) {
-      console.error("Error checking order conversation:", formatSupabaseError(existingError))
+      logger.error("order_conversations_check_failed", existingError)
       continue
     }
 
@@ -60,7 +48,7 @@ export async function ensureOrderConversations(
           .eq("id", existing.id)
 
         if (updateError) {
-          console.error("Error linking order to conversation:", formatSupabaseError(updateError))
+          logger.error("order_conversations_link_failed", updateError)
         }
       }
       continue
@@ -77,7 +65,7 @@ export async function ensureOrderConversations(
     })
 
     if (insertError) {
-      console.error("Error creating order conversation:", formatSupabaseError(insertError))
+      logger.error("order_conversations_create_failed", insertError)
     }
   }
 }

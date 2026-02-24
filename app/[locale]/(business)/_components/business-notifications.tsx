@@ -101,6 +101,8 @@ export function BusinessNotifications({
   const [isOpen, setIsOpen] = React.useState(false)
 
   const unreadCount = notifications.filter(n => !n.read).length
+  const notificationsAriaLabel =
+    unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"
 
   const markAsRead = (id: string) => {
     setNotifications(prev =>
@@ -119,7 +121,12 @@ export function BusinessNotifications({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon-sm" className="relative">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="relative"
+          aria-label={notificationsAriaLabel}
+        >
           <IconBell className="size-4" />
           {unreadCount > 0 && (
             <Badge
@@ -149,8 +156,8 @@ export function BusinessNotifications({
                 Mark all read
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="size-7" asChild>
-              <Link href="/dashboard/settings?tab=notifications">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/dashboard/settings?tab=notifications" aria-label="Notification settings">
                 <IconSettings className="size-3.5" />
               </Link>
             </Button>
@@ -219,7 +226,12 @@ export function BusinessNotifications({
                     {/* Actions */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-6 shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="min-h-11 min-w-11 shrink-0"
+                          aria-label={`Open actions for notification: ${notification.title}`}
+                        >
                           <IconDots className="size-3.5" />
                         </Button>
                       </DropdownMenuTrigger>

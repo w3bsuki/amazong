@@ -3,6 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { getCategoryIcon, getCategoryColor, type IconSize } from "./category-icons"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import Image from "next/image"
 
 type CategoryLike = {
   slug: string
@@ -77,7 +78,7 @@ export function CategoryCircleVisual({
   return (
     <div
       className={cn(
-        "rounded-full flex items-center justify-center overflow-hidden",
+        "relative rounded-full flex items-center justify-center overflow-hidden",
         surfaceClass,
         "transition-shadow duration-150",
         ringClass,
@@ -87,12 +88,12 @@ export function CategoryCircleVisual({
     >
       {
         imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover"
+            fill
+            sizes="64px"
+            className="object-cover"
           />
         ) : icon ? (
           <span className={cn("text-lg leading-none", iconColorClass)} aria-hidden="true">

@@ -252,7 +252,7 @@ export function MobileCategoryBrowserContextual({
   ])
 
   const railLeadingAction = useMemo<SmartRailAction | undefined>(() => {
-    if (sectionPath.length === 0) return undefined
+    if (sectionPath.length === 0) return
     return {
       label: tCommon("back"),
       icon: <ChevronLeft size={18} aria-hidden="true" />,

@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -10,6 +12,7 @@ import { CountBadge } from "@/components/shared/count-badge"
 import { AccountDropdownMenu } from "@/components/shared/account-menu-items"
 import { HeaderDropdown } from "@/components/shared/header-dropdown"
 import { HeaderIconTrigger } from "@/components/shared/header-icon-trigger"
+import { useNotificationCount } from "@/hooks/use-notification-count"
 
 interface AccountDropdownProps {
   user: User | null
@@ -19,15 +22,17 @@ interface AccountDropdownProps {
   notificationCount?: number
 }
 
-export function AccountDropdown({ user, variant = "icon", notificationCount = 0, className }: AccountDropdownProps) {
+export function AccountDropdown({ user, variant = "icon", notificationCount, className }: AccountDropdownProps) {
   const t = useTranslations("Header")
   const tAccount = useTranslations("Account")
   const tAccountDrawer = useTranslations("AccountDrawer")
   const tNotifications = useTranslations("NotificationsDropdown")
   const [isSigningOut, setIsSigningOut] = useState(false)
+  const liveNotificationCount = useNotificationCount(user)
+  const resolvedNotificationCount = notificationCount ?? liveNotificationCount
   const notificationSuffix =
-    notificationCount > 0
-      ? ` (${notificationCount} ${tNotifications("title").toLowerCase()})`
+    resolvedNotificationCount > 0
+      ? ` (${resolvedNotificationCount} ${tNotifications("title").toLowerCase()})`
       : ""
 
   // For non-authenticated users with icon variant, show a simple Sign In link
@@ -52,7 +57,7 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
           href: "/account/notifications",
           icon: Bell,
           label: tNotifications("title"),
-          badgeCount: notificationCount,
+          badgeCount: resolvedNotificationCount,
         },
         {
           href: "/account/orders",
@@ -88,9 +93,9 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
         {/* Avatar with notification badge */}
         <div className="relative flex items-center justify-center text-header-text-muted">
           <UserCircle className="size-7" />
-          {notificationCount > 0 && (
+          {resolvedNotificationCount > 0 && (
             <CountBadge
-              count={notificationCount}
+              count={resolvedNotificationCount}
               className="absolute -top-0.5 -right-0.5 bg-notification text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
               aria-hidden="true"
             />
@@ -111,7 +116,7 @@ export function AccountDropdown({ user, variant = "icon", notificationCount = 0,
   ) : (
     <HeaderIconTrigger
       icon={<UserCircle />}
-      badgeCount={notificationCount}
+      badgeCount={resolvedNotificationCount}
       bordered={false}
       className={className}
       badgeClassName="absolute -top-0.5 -right-0.5 bg-notification text-primary-foreground ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"

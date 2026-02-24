@@ -8,7 +8,7 @@
  * to avoid issues with client-only components (Button uses React Context).
  */
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { routing } from "@/i18n/routing"
+import { Link, routing } from "@/i18n/routing"
 import { PageShell } from "./[locale]/_components/page-shell"
 
 export default async function GlobalNotFound() {
@@ -40,19 +40,19 @@ export default async function GlobalNotFound() {
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <a
+              <Link
                 href={`/${locale}`}
                 className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-interactive-hover"
               >
                 {t("goToHomepage")}
-              </a>
+              </Link>
             </div>
 
             <p className="mt-8 text-xs text-muted-foreground">
               {t("supportPrefix")}{" "}
-              <a href={`/${locale}/contact`} className="text-primary hover:underline">
+              <Link href={`/${locale}/contact`} className="text-primary hover:underline">
                 {t("supportLink")}
-              </a>
+              </Link>
               {t("supportSuffix")}
             </p>
           </div>

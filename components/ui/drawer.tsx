@@ -55,12 +55,6 @@ function Drawer({
   )
 }
 
-function DrawerTrigger({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
-  return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />
-}
-
 function DrawerPortal({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Portal>) {
@@ -331,7 +325,6 @@ export {
   Drawer,
   DrawerPortal,
   DrawerOverlay,
-  DrawerTrigger,
   DrawerClose,
   DrawerContent,
   DrawerHeader,

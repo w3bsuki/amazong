@@ -2,21 +2,49 @@ import { getProductsByCategorySlug, toUI } from "@/lib/data/products"
 import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
 import type { NextRequest } from "next/server"
 import { parseShippingRegion, type ShippingRegion } from "@/lib/shipping"
+import { z } from "zod"
 
 const CACHEABLE_ZONE_VALUES = new Set(["BG", "UK", "EU", "US", "WW", "GB"])
+
+const ZoneParamSchema = z.preprocess(
+  (value) => (typeof value === "string" ? value.trim().toUpperCase() : value),
+  z.enum(["BG", "UK", "EU", "US", "WW", "GB"]),
+)
+
+const CategoryProductsQuerySchema = z
+  .object({
+    limit: z.coerce.number().int().min(1).max(24).optional(),
+    zone: ZoneParamSchema.optional(),
+  })
+  .strict()
+
+const CategorySlugSchema = z.string().trim().min(1).max(64)
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = await params
-    const { searchParams } = new URL(request.url)
-    const requestedLimit = Number.parseInt(searchParams.get("limit") || "18", 10)
-    const limit = Math.min(24, Math.max(1, Number.isFinite(requestedLimit) ? requestedLimit : 18))
+    const { slug: rawSlug } = await params
+    const slugResult = CategorySlugSchema.safeParse(rawSlug)
+    if (!slugResult.success) {
+      return noStoreJson({ error: "Invalid category slug" }, { status: 400 })
+    }
 
-    const zoneParamRaw = searchParams.get("zone")
-    const zoneParam = zoneParamRaw ? zoneParamRaw.toUpperCase() : null
+    const slug = slugResult.data
+    const { searchParams } = new URL(request.url)
+
+    const parsedQuery = CategoryProductsQuerySchema.safeParse({
+      limit: searchParams.get("limit") ?? undefined,
+      zone: searchParams.get("zone") ?? undefined,
+    })
+
+    if (!parsedQuery.success) {
+      return noStoreJson({ error: "Invalid query" }, { status: 400 })
+    }
+
+    const limit = parsedQuery.data.limit ?? 18
+    const zoneParam = parsedQuery.data.zone ?? null
 
     let userZone: ShippingRegion = "WW"
     let cacheable = false

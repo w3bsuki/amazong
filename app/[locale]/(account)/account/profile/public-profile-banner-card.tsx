@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Camera, Image as ImageIcon, LoaderCircle as SpinnerGap } from "lucide-react"
@@ -17,18 +18,17 @@ export function PublicProfileBannerCard({
   bannerInputRef,
   onBannerChange,
 }: PublicProfileBannerCardProps) {
+  const t = useTranslations("Account.profileEditor")
+  void locale
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <ImageIcon className="size-5" />
-          {locale === "bg" ? "Банер на профила" : "Profile Banner"}
+          {t("banner.title")}
         </CardTitle>
-        <CardDescription>
-          {locale === "bg"
-            ? "Препоръчителен размер: 1200x300 пиксела"
-            : "Recommended size: 1200x300 pixels"}
-        </CardDescription>
+        <CardDescription>{t("banner.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div
@@ -36,7 +36,7 @@ export function PublicProfileBannerCard({
           onClick={() => bannerInputRef.current?.click()}
         >
           {bannerPreview ? (
-            <Image src={bannerPreview} alt="Banner" fill sizes="100vw" className="object-cover" />
+            <Image src={bannerPreview} alt={t("banner.alt")} fill sizes="100vw" className="object-cover" />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <ImageIcon className="size-8 text-muted-foreground" />

@@ -102,7 +102,8 @@ export function FilterChips({
       params.delete("page")
       const queryString = params.toString()
       if (basePath) {
-        router.push(`${basePath}${queryString ? `?${queryString}` : ""}`)
+        const nextPath = queryString ? `${basePath}?${queryString}` : basePath
+        router.push(nextPath)
       } else {
         router.push(`/search?${queryString}`)
       }

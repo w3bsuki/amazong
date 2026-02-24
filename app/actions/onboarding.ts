@@ -3,6 +3,8 @@
 import { z } from "zod"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { createClient } from "@/lib/supabase/server"
+import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
+import { logger } from "@/lib/logger"
 
 export interface OnboardingData {
   userId: string
@@ -46,6 +48,87 @@ function buildGeneratedAvatar(seed: string, palette?: number): string {
   return `boring-avatar:marble:${paletteIndex}:${safeSeed}`
 }
 
+type AvatarStorageClient = {
+  storage: {
+    from(bucket: string): {
+      upload(
+        path: string,
+        file: File,
+        options: { upsert: boolean }
+      ): Promise<{ error: unknown; data: unknown }>
+      getPublicUrl(path: string): { data: { publicUrl: string } }
+    }
+  }
+}
+
+async function uploadAvatarAsset(
+  supabase: AvatarStorageClient,
+  userId: string,
+  file: File,
+  suffix: "avatar" | "banner"
+): Promise<string | null> {
+  const fileExt = file.name.split(".").pop()
+  const fileName = `${userId}-${suffix}-${Date.now()}.${fileExt}`
+  const filePath = `${userId}/${fileName}`
+
+  const { error: uploadError, data: uploadData } = await supabase.storage
+    .from("avatars")
+    .upload(filePath, file, { upsert: true })
+
+  if (uploadError || !uploadData) {
+    return null
+  }
+
+  const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath)
+  return publicUrl
+}
+
+function buildProfileUpdateData(params: {
+  accountType: OnboardingData["accountType"]
+  displayName: string | null
+  bio: string | null
+  businessName: string | null
+  website: string | null
+  location: string | null
+  socialLinks: Record<string, string> | null
+  avatarUrl: string
+  bannerUrl: string | null
+}): Record<string, unknown> {
+  const {
+    accountType,
+    displayName,
+    bio,
+    businessName,
+    website,
+    location,
+    socialLinks,
+    avatarUrl,
+    bannerUrl,
+  } = params
+
+  const updateData: Record<string, unknown> = {
+    onboarding_completed: true,
+    updated_at: new Date().toISOString(),
+    avatar_url: avatarUrl,
+  }
+
+  if (displayName) updateData.display_name = displayName
+  if (bio) updateData.bio = bio
+  if (bannerUrl) updateData.banner_url = bannerUrl
+  if (location) updateData.location = location
+
+  if (accountType === "business") {
+    if (businessName) updateData.business_name = businessName
+    if (website) updateData.website_url = website
+  }
+
+  if (socialLinks && Object.keys(socialLinks).length > 0) {
+    updateData.social_links = socialLinks
+  }
+
+  return updateData
+}
+
 export async function completePostSignupOnboarding(
   data: OnboardingData,
   avatarFile: File | null,
@@ -54,7 +137,7 @@ export async function completePostSignupOnboarding(
   const parsed = onboardingSchema.safeParse(data)
 
   if (!parsed.success) {
-    console.error("Onboarding validation error:", parsed.error)
+    logger.error("[onboarding] validation_failed", parsed.error)
     return { success: false, error: "Invalid data provided" }
   }
 
@@ -95,18 +178,7 @@ export async function completePostSignupOnboarding(
   // Upload avatar if custom
   let avatarUrl: string | null = null
   if (avatarType === "custom" && avatarFile) {
-    const fileExt = avatarFile.name.split(".").pop()
-    const fileName = `${userId}-avatar-${Date.now()}.${fileExt}`
-    const filePath = `${userId}/${fileName}`
-
-    const { error: uploadError, data: uploadData } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, avatarFile, { upsert: true })
-
-    if (!uploadError && uploadData) {
-      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath)
-      avatarUrl = publicUrl
-    }
+    avatarUrl = await uploadAvatarAsset(supabase, userId, avatarFile, "avatar")
   } else if (avatarType === "generated") {
     // Lock-down rule: generated avatar must always resolve to a supported preset.
     avatarUrl = buildGeneratedAvatar(username, avatarPalette)
@@ -119,43 +191,20 @@ export async function completePostSignupOnboarding(
   // Upload cover image if provided (business only)
   let bannerUrl: string | null = null
   if (coverFile && accountType === "business") {
-    const fileExt = coverFile.name.split(".").pop()
-    const fileName = `${userId}-banner-${Date.now()}.${fileExt}`
-    const filePath = `${userId}/${fileName}`
-
-    const { error: uploadError, data: uploadData } = await supabase.storage
-      .from("avatars") // Using same bucket for simplicity
-      .upload(filePath, coverFile, { upsert: true })
-
-    if (!uploadError && uploadData) {
-      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath)
-      bannerUrl = publicUrl
-    }
+    bannerUrl = await uploadAvatarAsset(supabase, userId, coverFile, "banner")
   }
 
-  // Build update object - simplified without intent, just update profile
-  const updateData: Record<string, unknown> = {
-    onboarding_completed: true,
-    updated_at: new Date().toISOString(),
-  }
-
-  // Only update if values are provided
-  if (displayName) updateData.display_name = displayName
-  if (bio) updateData.bio = bio
-  updateData.avatar_url = avatarUrl
-  if (bannerUrl) updateData.banner_url = bannerUrl
-  if (location) updateData.location = location
-  
-  // Business account-specific updates
-  if (accountType === "business") {
-    if (businessName) updateData.business_name = businessName
-    if (website) updateData.website_url = website
-  }
-  
-  // Social links for all account types
-  if (socialLinks && Object.keys(socialLinks).length > 0) {
-    updateData.social_links = socialLinks
-  }
+  const updateData = buildProfileUpdateData({
+    accountType,
+    displayName,
+    bio,
+    businessName,
+    website,
+    location,
+    socialLinks,
+    avatarUrl,
+    bannerUrl,
+  })
 
   // Update profile with authed client (RLS enforces ownership)
   const { error: updateError } = await supabase
@@ -164,9 +213,11 @@ export async function completePostSignupOnboarding(
     .eq("id", userId)
 
   if (updateError) {
-    console.error("Profile update error:", updateError)
+    logger.error("[onboarding] profile_update_failed", updateError, { userId })
     return { success: false, error: "Failed to update profile" }
   }
+
+  await revalidatePublicProfileTagsForUser(supabase, userId, "max")
 
   return { success: true }
 }

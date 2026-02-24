@@ -24,7 +24,7 @@ I'm the **project orchestrator** for Treido — the technical lead, AI team mana
 | **Codex prompts** | Ready-to-paste prompts for the human to send to Codex |
 | **Code review** | Codebase search, pattern analysis, architectural review → tasks or recommendations |
 | **Research** | context7 for framework docs, web fetch for best practices, grep for patterns |
-| **Business strategy** | Wear agent personas (strategist, marketing, finance, operations) for non-code domain discussions. Load `docs/business/` + `docs/agents/` for context. |
+| **Business strategy** | Unified business agent skill (`.agents/skills/treido-business-agent/SKILL.md`). Load `docs/business/` for domain context. |
 
 ## What I Don't Do (Unless Told)
 
@@ -75,7 +75,6 @@ docs/database.md   → Schema overview + query patterns
 docs/testing.md    → Test conventions + configs
 docs/features/     → Per-feature implementation docs
 docs/business/     → Business domain (pricing, monetization, GTM, competitors, metrics, legal)
-docs/agents/       → Agent personas (business-strategist, marketing-manager, finance-analyst, operations-manager)
 docs/archive/      → Historical stuff nobody reads actively
 refactor/          → Just domain 6 (blocked) + CURRENT.md
 ```
@@ -94,15 +93,20 @@ refactor/          → Just domain 6 (blocked) + CURRENT.md
 
 | What | Status |
 |------|--------|
-| **Phase** | Mobile UX revamp (phases 0-9) SHIPPED. Code cleanup SHIPPED. Polish pass in progress. |
-| **Mobile revamp** | Phases 0-7 verified green. Phases 8-9 (checkout + polish) executed. SmartRail, DrawerShell, VisualDrawerSurface, MobileStepProgress — all live. 3-header model (homepage, contextual, product). |
-| **Code cleanup** | Dead files deleted (7/9 — 2 on do-not-touch list). Category consolidation done (compat shims). Test `any` types cleaned. Unused deps NOT yet verified (knip crashed). |
-| **UI polish** | `docs/MOBILE-POLISH-2026.md` created — 11 sections of spacing/gap/token fixes. Execution pending or in-progress by Opus agent. |
-| **Launch blockers** | 4 open (Stripe idempotency, refund flow, env separation, password protection) |
-| **Broken areas** | Search, sell flow, account settings — flagged in TASKS.md, unresolved |
-| **Dead code remaining** | `category-pill-rail.tsx` (dead, was on do-not-touch list). `home-browse-options-sheet.tsx` already deleted. |
-| **Business docs** | Created `docs/business/` (6 docs) + `docs/agents/` (4 business personas). Skeleton docs with `[DECISION NEEDED]` markers. AGENTS.md routing table updated. |
-| **Next** | Fill in pricing decisions in `docs/business/plans-pricing.md` → then GTM timeline → then launch |
+| **Phase** | **Production push** — systematic section-by-section audit + fix. |
+| **Launch system** | 3 files: `docs/launch/CHECKLIST.md` (15 sections), `CODEX.md` (instructions), `TRACKER.md` (audit log). Two-brain synergy: Codex audits+fixes code → I Playwright-audit the result → iterate until pass. |
+| **Section 1** | Infrastructure & Gates — ✅ PASS (10/10). All gates green. |
+| **Section 2** | Auth — ✅ PASS (9/10). All flows work, i18n complete, guards solid. |
+| **Section 3** | Selling — ✅ CONDITIONAL PASS (7/10). Auth guard + i18n solid. Needs auth session to test form. Unpersisted fields (tech debt). |
+| **Section 4** | Product Display (PDP) — ✅ PASS (8/10). Full data, i18n complete, share works. Minor 404 body text inconsistency. |
+| **Section 6** | Checkout & Payments — ✅ PASS (8/10). Code excellent, typed errors, idempotent webhooks, server-side verification. Cart seed data issue. |
+| **Section 5** | Search & Browse — Codex DONE (FIX-001 fixed). Awaiting Playwright audit. |
+| **Section 7** | Orders — Codex DONE. Awaiting Playwright audit. |
+| **Sections 8-11** | Profile, Cart/Wishlist, Onboarding, Navigation — Codex DONE. Awaiting Playwright audit. |
+| **Sections 12-15** | P2 — not started (Business Dashboard, Plans, Chat, Support). |
+| **Launch blockers** | 4 open (Stripe idempotency, refund flow, env separation, password protection) — tracked separately. |
+| **Gates** | All green (typecheck, lint, styles:gate, test:unit — 33/33 pass). |
+| **Next** | Playwright-audit sections 5, 7, 8, 9, 10, 11 → update CHECKLIST + TRACKER → then P2 sections or launch. |
 
 ## Recent Session Log (2026-02-21)
 
@@ -117,11 +121,21 @@ refactor/          → Just domain 6 (blocked) + CURRENT.md
 ## Session Log (2026-02-23)
 
 - Created business knowledge base: `docs/business/` with 6 docs (plans-pricing, monetization, go-to-market, competitors, metrics-kpis, legal-compliance)
-- Created 4 business agent personas: `docs/agents/` (business-strategist, marketing-manager, finance-analyst, operations-manager)
-- Updated AGENTS.md routing table with business docs + agent personas
-- Updated claude.md with business strategy capabilities
+- Backfilled all 6 business docs with real data from admin seed templates (was: empty skeletons with [DECISION NEEDED])
+- Created unified business agent skill: `.agents/skills/treido-business-agent/SKILL.md`
+- Deleted 4 narrow agent skills (business-strategist, finance-analyst, marketing-manager, operations-manager)
+- Deleted 4 persona docs (`docs/agents/` directory removed entirely)
+- Updated AGENTS.md routing table, PRD.md open questions (5 of 7 now resolved), README.md
 - Architecture: in-repo, routing-table-gated (agents only load business docs when working on business topics)
+
+## Session Log (2026-02-24)
+
+- **Production push launched.** Created `docs/launch/CHECKLIST.md` (15 sections, P0/P1/P2 tiered), `CODEX.md` (Codex instructions), `TRACKER.md` (audit tracking).
+- Two-brain synergy model: Codex gets bounded autonomy per section (audit + fix within scoped dirs) → I Playwright-audit → targeted fix if needed.
+- Section 1 (Infrastructure & Gates): Codex fixed lint warnings, console.error removal, build failures. I verified all 4 gates independently. PASS 10/10.
+- Section 2 (Auth): Codex fixed getSession→getUser, i18n localization, welcome flow hardening. I Playwright-audited all auth routes (login, sign-up, forgot-password, reset-password, error, sign-up-success, welcome, auth guards, Bulgarian i18n). PASS 9/10.
+- Kicked off parallel Codex runs: Selling (3), PDP (4), Checkout (6). Awaiting completion.
 
 ---
 
-*Last updated: 2026-02-23*
+*Last updated: 2026-02-24*

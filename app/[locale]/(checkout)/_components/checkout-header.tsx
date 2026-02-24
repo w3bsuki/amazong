@@ -33,7 +33,7 @@ export function CheckoutHeader() {
           {canStepBack ? (
             <button
               type="button"
-              onClick={() => setCurrentStep((effectiveStep - 1) as 1 | 2 | 3)}
+              onClick={() => setCurrentStep(effectiveStep === 3 ? 2 : 1)}
               aria-label={tCommon("back")}
               className="size-(--control-default) -ml-2 flex items-center justify-center rounded-md transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
             >

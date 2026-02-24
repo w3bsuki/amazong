@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
+import { noStoreJson } from "@/lib/api/response-helpers"
 
 /**
  * GET /api/badges
@@ -8,21 +9,12 @@ import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interru
  */
 export async function GET(request: NextRequest) {
   if (process.env.NEXT_PHASE === 'phase-production-build') {
-    const res = NextResponse.json({ skipped: true }, { status: 200 })
-    res.headers.set('Cache-Control', 'private, no-store')
-    res.headers.set('CDN-Cache-Control', 'private, no-store')
-    res.headers.set('Vercel-CDN-Cache-Control', 'private, no-store')
-    return res
+    return noStoreJson({ skipped: true }, { status: 200 })
   }
   try {
     const { supabase, applyCookies } = createRouteHandlerClient(request)
-    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) => {
-      const res = NextResponse.json(body, init)
-      res.headers.set('Cache-Control', 'private, no-store')
-      res.headers.set('CDN-Cache-Control', 'private, no-store')
-      res.headers.set('Vercel-CDN-Cache-Control', 'private, no-store')
-      return applyCookies(res)
-    }
+    const json = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
+      applyCookies(noStoreJson(body, init))
 
     const { data: { user } } = await supabase.auth.getUser()
     
@@ -71,11 +63,9 @@ export async function GET(request: NextRequest) {
     
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) {
-      const res = NextResponse.json({ skipped: true }, { status: 200 })
-      res.headers.set('Cache-Control', 'private, no-store')
-      return res
+      return noStoreJson({ skipped: true }, { status: 200 })
     }
     console.error("Error fetching badges:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return noStoreJson({ error: "Internal server error" }, { status: 500 })
   }
 }

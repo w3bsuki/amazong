@@ -76,6 +76,63 @@ function getStatusConfig(status: string): (typeof STATUS_CONFIG)[OrderStatusKey]
   return STATUS_CONFIG[isOrderStatusKey(status) ? status : "pending"]
 }
 
+function getLocalizedStatusLabel(
+  locale: string,
+  config: (typeof STATUS_CONFIG)[OrderStatusKey]
+) {
+  return locale === "bg" ? config.labelBg : config.label
+}
+
+function OrderProgressCard({
+  locale,
+  orderStatusKey,
+}: {
+  locale: string
+  orderStatusKey: OrderStatusKey
+}) {
+  const normalizedStatus = normalizeProgressStatus(orderStatusKey)
+  const normalizedIndex = ORDER_PROGRESS_STATUSES.indexOf(normalizedStatus)
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base">{locale === "bg" ? "Статус на поръчката" : "Order Status"}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between">
+          {ORDER_PROGRESS_STATUSES.map((status, index, arr) => {
+            const config = STATUS_CONFIG[status]
+            const Icon = config.icon
+            const isActive = normalizedIndex >= index
+            const statusClassName = isActive
+              ? `${config.color} ${config.text}`
+              : "bg-muted text-muted-foreground"
+            const connectorClassName = normalizedIndex > index ? "bg-primary" : "bg-muted"
+
+            return (
+              <div key={status} className="flex items-center flex-1">
+                <div className="flex flex-col items-center flex-1">
+                  <div
+                    className={`size-8 rounded-full flex items-center justify-center transition-colors ${statusClassName}`}
+                  >
+                    <Icon className="size-4" />
+                  </div>
+                  <span className={`text-xs mt-1.5 ${isActive ? "font-medium" : "text-muted-foreground"}`}>
+                    {getLocalizedStatusLabel(locale, config)}
+                  </span>
+                </div>
+                {index < arr.length - 1 && (
+                  <div className={`h-0.5 flex-1 mx-1 transition-colors ${connectorClassName}`} />
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 const CARRIERS: Record<string, { name: string; trackingUrl: string }> = {
   speedy: { name: "Speedy", trackingUrl: "https://www.speedy.bg/bg/track-shipment?shipmentNumber=" },
   econt: { name: "Econt", trackingUrl: "https://www.econt.com/services/track-shipment/" },
@@ -102,6 +159,11 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
   const statusConfig = STATUS_CONFIG[orderStatusKey]
   const StatusIcon = statusConfig.icon
   const stripePaymentIntentId = order.stripe_payment_intent_id
+  const createdAtDate = new Date(order.created_at)
+  const orderHeaderSubtitle = `${format(createdAtDate, "PPP", { locale: dateLocale })} · ${formatDistanceToNow(createdAtDate, {
+    addSuffix: true,
+    locale: dateLocale,
+  })}`
 
   // Format currency
   const formatPrice = (price: number) => {
@@ -139,7 +201,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
     setIsSubmitting(false)
 
     if (!result.success) {
-      toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
+      toast.error(locale === "bg" ? "Неуспешно изпращане на заявката" : "Failed to submit return request")
       return
     }
 
@@ -181,16 +243,13 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
         uppercaseOrderId
         orderIdLength={8}
         titleClassName="text-lg font-semibold tracking-normal"
-        subtitle={`${format(new Date(order.created_at), "PPP", { locale: dateLocale })} · ${formatDistanceToNow(new Date(order.created_at), {
-          addSuffix: true,
-          locale: dateLocale,
-        })}`}
+        subtitle={orderHeaderSubtitle}
         copyAriaLabel={tCommon("copyOrderId")}
         onCopy={() => copyToClipboard(order.id, "ID")}
         rightContent={
           <Badge variant="secondary" className={`${statusConfig.color} ${statusConfig.text}`}>
             <StatusIcon className="size-3.5 mr-1" />
-            {locale === "bg" ? statusConfig.labelBg : statusConfig.label}
+            {getLocalizedStatusLabel(locale, statusConfig)}
           </Badge>
         }
         className="sm:items-center"
@@ -198,38 +257,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
       />
 
       {/* Order Progress */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">{locale === "bg" ? "Статус на поръчката" : "Order Status"}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            {ORDER_PROGRESS_STATUSES.map((status, index, arr) => {
-              const config = STATUS_CONFIG[status]
-              const Icon = config.icon
-              const isActive = arr.indexOf(normalizeProgressStatus(orderStatusKey)) >= index
-
-              return (
-                <div key={status} className="flex items-center flex-1">
-                  <div className="flex flex-col items-center flex-1">
-                    <div className={`size-8 rounded-full flex items-center justify-center transition-colors ${isActive ? `${config.color} ${config.text}` : "bg-muted text-muted-foreground"
-                      }`}>
-                      <Icon className="size-4" />
-                    </div>
-                    <span className={`text-xs mt-1.5 ${isActive ? "font-medium" : "text-muted-foreground"}`}>
-                      {locale === "bg" ? config.labelBg : config.label}
-                    </span>
-                  </div>
-                  {index < arr.length - 1 && (
-                    <div className={`h-0.5 flex-1 mx-1 transition-colors ${arr.indexOf(normalizeProgressStatus(orderStatusKey)) > index ? "bg-primary" : "bg-muted"
-                      }`} />
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </CardContent>
-      </Card>
+      <OrderProgressCard locale={locale} orderStatusKey={orderStatusKey} />
 
       <OrderDetailFeedback
         locale={locale}
@@ -379,7 +407,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
             <div className="flex items-center gap-3 p-3 rounded-lg border bg-surface-subtle">
               <OrderListProductThumb
                 imageSrc={selectedItem.product?.images?.[0]}
-                alt={selectedItem.product?.title || "Product"}
+                alt={selectedItem.product?.title || (locale === "bg" ? "Продукт" : "Product")}
                 className="size-12 rounded bg-muted"
                 sizes="48px"
                 fallbackClassName="text-muted-foreground"

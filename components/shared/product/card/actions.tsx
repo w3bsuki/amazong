@@ -62,6 +62,7 @@ export function ProductCardActions({
     const { isInWishlist, toggleWishlist } = useWishlist()
     const t = useTranslations("Product")
     const tCart = useTranslations("Cart")
+    const tCommon = useTranslations("Common")
 
     const [isWishlistPending, setIsWishlistPending] = React.useState(false)
 
@@ -99,10 +100,12 @@ export function ProductCardActions({
         setIsWishlistPending(true)
         try {
             await toggleWishlist({ id, title, price, image })
+        } catch {
+            toast.error(tCommon("error"))
         } finally {
             setIsWishlistPending(false)
         }
-    }, [id, title, price, image, isWishlistPending, toggleWishlist])
+    }, [id, title, price, image, isWishlistPending, toggleWishlist, tCommon])
 
     return (
         <div className={cn("flex items-center gap-2", className)}>

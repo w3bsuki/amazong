@@ -1,6 +1,8 @@
 import { z } from "zod"
 import type { createStaticClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger"
 import type { SellerResultCard, SellerSearchFilters } from "./types"
+import { buildTokenizedIlikeOrFilter, normalizeSearchQuery } from "@/lib/filters/search-query"
 
 const SellerFilterInputSchema = z.object({
   sellerSort: z.enum(["products", "rating", "newest"]).optional(),
@@ -70,15 +72,21 @@ export async function searchSellers(
   const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1
   const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 24
   const offset = (safePage - 1) * safeLimit
-  const normalizedQuery = query.trim()
+  const normalizedQuery = normalizeSearchQuery(query)
 
   let categoryId: string | null = null
   if (categorySlug) {
-    const { data: categoryData } = await supabase
+    const { data: categoryData, error: categoryError } = await supabase
       .from("categories")
       .select("id")
       .eq("slug", categorySlug)
       .maybeSingle()
+
+    if (categoryError) {
+      logger.error("[search-sellers] failed to resolve category", categoryError, { categorySlug })
+      return { sellers: [], total: 0 }
+    }
+
     categoryId = categoryData?.id ?? null
   }
 
@@ -88,13 +96,24 @@ export async function searchSellers(
     .eq("is_seller", true)
     .not("username", "is", null)
 
-  if (normalizedQuery) {
-    profilesQuery = profilesQuery.or(
-      `display_name.ilike.%${normalizedQuery}%,business_name.ilike.%${normalizedQuery}%,username.ilike.%${normalizedQuery}%`
-    )
+  const sellerSearchFilter = buildTokenizedIlikeOrFilter(normalizedQuery, [
+    "display_name",
+    "business_name",
+    "username",
+  ])
+  if (sellerSearchFilter) {
+    profilesQuery = profilesQuery.or(sellerSearchFilter)
   }
 
-  const { data: profileRows } = await profilesQuery
+  const { data: profileRows, error: profilesError } = await profilesQuery
+  if (profilesError) {
+    logger.error("[search-sellers] failed to fetch seller profiles", profilesError, {
+      query: normalizedQuery,
+      categorySlug,
+    })
+    return { sellers: [], total: 0 }
+  }
+
   const sellerProfiles = (profileRows ?? []) as SellerProfileRow[]
   if (sellerProfiles.length === 0) {
     return { sellers: [], total: 0 }
@@ -125,7 +144,16 @@ export async function searchSellers(
     productsQuery = productsQuery.ilike("seller_city", effectiveCity)
   }
 
-  const { data: productRows } = await productsQuery
+  const { data: productRows, error: productsError } = await productsQuery
+  if (productsError) {
+    logger.error("[search-sellers] failed to fetch seller products", productsError, {
+      query: normalizedQuery,
+      categorySlug,
+      sellerCount: sellerIds.length,
+    })
+    return { sellers: [], total: 0 }
+  }
+
   const sellerProducts = (productRows ?? []) as SellerProductRow[]
 
   const aggregates = new Map<string, { count: number; ratingSum: number; ratingCount: number }>()
@@ -149,7 +177,7 @@ export async function searchSellers(
       return {
         id: profile.id,
         username: profile.username,
-        store_name: profile.display_name || profile.business_name || profile.username || "Unknown",
+        store_name: profile.display_name || profile.business_name || profile.username || profile.id,
         description: profile.bio,
         verified: Boolean(profile.verified),
         created_at: profile.created_at,

@@ -53,7 +53,7 @@ export async function cancelSubscription(): Promise<ActionResult> {
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return errorEnvelope({ error: "Not authenticated" })
     }
 
     const { user, supabase } = auth
@@ -67,7 +67,7 @@ export async function cancelSubscription(): Promise<ActionResult> {
       .single()
 
     if (fetchError || !subscription) {
-      return { success: false, error: "No active subscription found" }
+      return errorEnvelope({ error: "No active subscription found" })
     }
 
     // If we have a Stripe subscription, cancel it at period end
@@ -78,7 +78,7 @@ export async function cancelSubscription(): Promise<ActionResult> {
         })
       } catch (stripeError) {
         console.error("Stripe cancellation error:", stripeError)
-        return { success: false, error: "Failed to cancel with payment provider" }
+        return errorEnvelope({ error: "Failed to cancel with payment provider" })
       }
     }
 
@@ -95,15 +95,15 @@ export async function cancelSubscription(): Promise<ActionResult> {
 
     if (updateError) {
       console.error("Database update error:", updateError)
-      return { success: false, error: "Failed to update subscription" }
+      return errorEnvelope({ error: "Failed to update subscription" })
     }
 
     await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     revalidateTag("subscriptions", "max")
-    return { success: true }
+    return successEnvelope()
   } catch (error) {
     console.error("cancelSubscription error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return errorEnvelope({ error: "An unexpected error occurred" })
   }
 }
 
@@ -116,7 +116,7 @@ export async function reactivateSubscription(): Promise<ActionResult> {
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return errorEnvelope({ error: "Not authenticated" })
     }
 
     const { user, supabase } = auth
@@ -131,7 +131,7 @@ export async function reactivateSubscription(): Promise<ActionResult> {
       .single()
 
     if (fetchError || !subscription) {
-      return { success: false, error: "No cancellation to revert" }
+      return errorEnvelope({ error: "No cancellation to revert" })
     }
 
     // Reactivate in Stripe
@@ -142,7 +142,7 @@ export async function reactivateSubscription(): Promise<ActionResult> {
         })
       } catch (stripeError) {
         console.error("Stripe reactivation error:", stripeError)
-        return { success: false, error: "Failed to reactivate with payment provider" }
+        return errorEnvelope({ error: "Failed to reactivate with payment provider" })
       }
     }
 
@@ -157,15 +157,14 @@ export async function reactivateSubscription(): Promise<ActionResult> {
 
     if (updateError) {
       console.error("Database update error:", updateError)
-      return { success: false, error: "Failed to update subscription" }
+      return errorEnvelope({ error: "Failed to update subscription" })
     }
 
     await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     revalidateTag("subscriptions", "max")
-    return { success: true }
+    return successEnvelope()
   } catch (error) {
     console.error("reactivateSubscription error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return errorEnvelope({ error: "An unexpected error occurred" })
   }
 }
-

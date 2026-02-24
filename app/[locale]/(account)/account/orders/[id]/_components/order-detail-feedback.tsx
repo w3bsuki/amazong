@@ -142,7 +142,7 @@ export function OrderDetailFeedback({
         setIsFeedbackDialogOpen(false)
         setFeedbackSellerId(null)
       } else {
-        toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
+        toast.error(locale === "bg" ? "Възникна грешка" : "An error occurred")
       }
     })
   }

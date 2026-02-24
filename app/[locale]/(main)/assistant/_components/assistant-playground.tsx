@@ -86,11 +86,11 @@ export function AssistantPlayground({
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto overscroll-contain">
+      <div className="flex-1 overflow-y-auto overscroll-contain" aria-busy={isLoading}>
         {messages.length === 0 ? (
           <WelcomeScreen copy={copy} onSuggestionClick={handleSubmit} />
         ) : (
-          <div className="mx-auto max-w-2xl space-y-5 px-4 py-4">
+          <div className="mx-auto max-w-2xl space-y-5 px-4 py-4" role="log" aria-live="polite" aria-relevant="additions text">
             {messages.map((message) => {
               const isUser = message.role === "user"
               const parts = message.parts as ChatPart[]
@@ -173,7 +173,7 @@ export function AssistantPlayground({
             {isLoading && <TypingIndicator text={copy.loading} />}
 
             {error && (
-              <Card className="border-destructive/30 bg-destructive-subtle p-3 text-sm text-destructive">
+              <Card className="border-destructive/30 bg-destructive-subtle p-3 text-sm text-destructive" role="alert">
                 {error.message}
               </Card>
             )}
@@ -197,6 +197,7 @@ export function AssistantPlayground({
               value={input}
               onChange={handleInputChange}
               placeholder={copy.chatPlaceholder}
+              aria-label={copy.chatPlaceholder}
               rows={1}
               className="min-h-11 resize-none rounded-lg py-2.5 field-sizing-content"
               onKeyDown={(event) => {
@@ -215,7 +216,7 @@ export function AssistantPlayground({
             aria-label={copy.send}
           >
             {isLoading ? (
-              <CircleNotch size={18} className="animate-spin" />
+              <CircleNotch size={18} className="animate-spin" aria-hidden="true" />
             ) : (
               <PaperPlaneTilt size={18} />
             )}

@@ -39,6 +39,41 @@ interface AccountAddressesGridProps {
   isLoading?: boolean
 }
 
+function getAddressLabelIcon(label: string) {
+  switch (label.toLowerCase()) {
+    case "home":
+    case "дом":
+      return House
+    case "work":
+    case "работа":
+      return Briefcase
+    default:
+      return MapPin
+  }
+}
+
+function getAddressLabelColor(label: string) {
+  switch (label.toLowerCase()) {
+    case "home":
+    case "дом":
+      return "text-success"
+    case "work":
+    case "работа":
+      return "text-info"
+    default:
+      return "text-muted-foreground"
+  }
+}
+
+function formatAddressLines(address: UserAddress) {
+  const parts = [address.address_line1]
+  if (address.address_line2) parts.push(address.address_line2)
+  const cityState = address.state ? `${address.city}, ${address.state}` : address.city
+  parts.push(`${cityState} ${address.postal_code}`.trim())
+  parts.push(address.country)
+  return parts
+}
+
 export function AccountAddressesGrid({ 
   addresses, 
   onEdit, 
@@ -49,40 +84,6 @@ export function AccountAddressesGrid({
 }: AccountAddressesGridProps) {
   const [openDrawerId, setOpenDrawerId] = useState<string | null>(null)
   const t = useTranslations("Account.addressesPage.grid")
-
-  const getLabelIcon = (label: string) => {
-    switch (label.toLowerCase()) {
-      case 'home':
-      case 'дом':
-        return House
-      case 'work':
-      case 'работа':
-        return Briefcase
-      default:
-        return MapPin
-    }
-  }
-
-  const getLabelColor = (label: string) => {
-    switch (label.toLowerCase()) {
-      case 'home':
-      case 'дом':
-        return 'text-success'
-      case 'work':
-      case 'работа':
-        return 'text-info'
-      default:
-        return 'text-muted-foreground'
-    }
-  }
-
-  const formatAddress = (address: UserAddress) => {
-    const parts = [address.address_line1]
-    if (address.address_line2) parts.push(address.address_line2)
-    parts.push(`${address.city}${address.state ? `, ${address.state}` : ''} ${address.postal_code}`)
-    parts.push(address.country)
-    return parts
-  }
 
   // Empty state
   if (addresses.length === 0) {
@@ -107,7 +108,7 @@ export function AccountAddressesGrid({
 
   // Mobile card with Drawer
   const MobileAddressCard = ({ address }: { address: UserAddress }) => {
-    const LabelIcon = getLabelIcon(address.label)
+    const LabelIcon = getAddressLabelIcon(address.label)
     const isOpen = openDrawerId === address.id
 
     return (
@@ -124,7 +125,7 @@ export function AccountAddressesGrid({
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <LabelIcon className={`size-5 shrink-0 ${getLabelColor(address.label)}`} />
+                  <LabelIcon className={`size-5 shrink-0 ${getAddressLabelColor(address.label)}`} />
                   <CardTitle className="text-base truncate">{address.label}</CardTitle>
                 </div>
                 {address.is_default && (
@@ -148,7 +149,7 @@ export function AccountAddressesGrid({
           title={address.label}
           closeLabel={t("close")}
           contentAriaLabel={t("addressDetails")}
-          icon={<LabelIcon className={`size-5 ${getLabelColor(address.label)}`} />}
+          icon={<LabelIcon className={`size-5 ${getAddressLabelColor(address.label)}`} />}
           titleSuffix={
             address.is_default ? (
               <Badge variant="secondary" className="ml-2 text-xs bg-selected text-primary border-0">
@@ -168,7 +169,7 @@ export function AccountAddressesGrid({
                 <p className="text-sm font-medium text-muted-foreground mb-1">{t("deliveryAddress")}</p>
                 <div className="space-y-1">
                   <p className="font-medium">{address.full_name}</p>
-                  {formatAddress(address).map((line, i) => (
+                  {formatAddressLines(address).map((line, i) => (
                     <p key={i} className="text-muted-foreground">{line}</p>
                   ))}
                 </div>
@@ -233,14 +234,14 @@ export function AccountAddressesGrid({
 
   // Desktop card
   const DesktopAddressCard = ({ address }: { address: UserAddress }) => {
-    const LabelIcon = getLabelIcon(address.label)
+    const LabelIcon = getAddressLabelIcon(address.label)
 
     return (
       <Card className={`${address.is_default ? 'border-selected-border ring-1 ring-border-subtle' : ''}`}>
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
-              <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} />
+              <LabelIcon className={`size-5 ${getAddressLabelColor(address.label)}`} />
               <CardTitle className="text-base">{address.label}</CardTitle>
               {address.is_default && (
                 <Badge variant="secondary" className="text-xs bg-selected text-primary border-0">
@@ -274,7 +275,7 @@ export function AccountAddressesGrid({
         <CardContent>
           <div className="text-sm space-y-1">
             <p className="font-medium">{address.full_name}</p>
-            {formatAddress(address).map((line, i) => (
+            {formatAddressLines(address).map((line, i) => (
               <p key={i} className="text-muted-foreground">{line}</p>
             ))}
             {address.phone && (

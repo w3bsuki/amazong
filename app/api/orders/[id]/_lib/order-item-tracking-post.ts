@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server"
+import { noStoreJson } from "@/lib/api/response-helpers"
 
-import { updateOrderItemStatus } from "@/app/actions/orders-status"
+import { updateOrderItemStatus } from "../../../../actions/orders-status"
 import { orderItemIdParamSchema } from "@/lib/validation/orders"
 import type { ShippingCarrier } from "@/lib/order-status"
 
@@ -19,36 +19,51 @@ export async function handleOrderItemTrackingPost(
   params: Promise<{ id: string }>,
   payloadSchema: SafeParseSchema<TrackingPayload>,
 ) {
-  const paramsResult = orderItemIdParamSchema.safeParse(await params)
-  if (!paramsResult.success) {
-    return NextResponse.json({ error: "Invalid order item id" }, { status: 400 })
-  }
-
-  const rawBody = await req.text()
-  let parsedBody: unknown = {}
-  if (rawBody) {
-    try {
-      parsedBody = JSON.parse(rawBody)
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 })
+  try {
+    const paramsResult = orderItemIdParamSchema.safeParse(await params)
+    if (!paramsResult.success) {
+      return noStoreJson({ error: "Invalid order item id" }, { status: 400 })
     }
+
+    const rawBody = await req.text()
+    let parsedBody: unknown = {}
+    if (rawBody) {
+      try {
+        parsedBody = JSON.parse(rawBody)
+      } catch {
+        return noStoreJson({ error: "Invalid JSON" }, { status: 400 })
+      }
+    }
+
+    const bodyResult = payloadSchema.safeParse(parsedBody)
+    if (!bodyResult.success) {
+      return noStoreJson({ error: "Invalid request" }, { status: 400 })
+    }
+
+    const result = await updateOrderItemStatus(
+      paramsResult.data.id,
+      "shipped",
+      bodyResult.data.trackingNumber,
+      bodyResult.data.shippingCarrier,
+    )
+
+    if (!result.success) {
+      const errorMessage = result.error || "Failed"
+      const status =
+        errorMessage === "Not authenticated"
+          ? 401
+          : errorMessage === "Order item not found"
+            ? 404
+            : errorMessage === "Invalid input"
+              ? 400
+              : 500
+
+      return noStoreJson({ error: errorMessage }, { status })
+    }
+
+    return noStoreJson({ ok: true })
+  } catch (error) {
+    console.error("[order-item-tracking-post] Unexpected error:", error)
+    return noStoreJson({ error: "Internal server error" }, { status: 500 })
   }
-
-  const bodyResult = payloadSchema.safeParse(parsedBody)
-  if (!bodyResult.success) {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 })
-  }
-
-  const result = await updateOrderItemStatus(
-    paramsResult.data.id,
-    "shipped",
-    bodyResult.data.trackingNumber,
-    bodyResult.data.shippingCarrier,
-  )
-
-  if (!result.success) {
-    return NextResponse.json({ error: result.error || "Failed" }, { status: 400 })
-  }
-
-  return NextResponse.json({ ok: true })
 }

@@ -3,6 +3,7 @@
 import { z } from 'zod'
 import { errorEnvelope, successEnvelope, type Envelope } from '@/lib/api/envelope'
 import { requireAuth } from '@/lib/auth/require-auth'
+import { logError } from '@/lib/logger'
 import { stripe } from '@/lib/stripe'
 import { STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { buildLocaleUrl } from '@/lib/stripe-locale'
@@ -14,6 +15,8 @@ const paymentMethodInputSchema = z.object({
   dbId: z.string().min(1),
 })
 
+const PAYMENT_METHOD_SELECT = 'id,stripe_payment_method_id' as const
+
 type PaymentSetupSessionResult = Envelope<
   { url: string | null | undefined },
   { error: string }
@@ -21,6 +24,36 @@ type PaymentSetupSessionResult = Envelope<
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- intentionally empty: no extra success payload
 type PaymentMethodMutationResult = Envelope<{}, { error: string }>
+
+async function getOwnedPaymentMethod(params: {
+  userId: string
+  dbId: string
+  paymentMethodId: string
+  supabase: NonNullable<Awaited<ReturnType<typeof requireAuth>>>['supabase']
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const { userId, dbId, paymentMethodId, supabase } = params
+
+  const { data: paymentMethod, error: paymentMethodError } = await supabase
+    .from('user_payment_methods')
+    .select(PAYMENT_METHOD_SELECT)
+    .eq('id', dbId)
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (paymentMethodError) {
+    logError('payments_owned_method_lookup_failed', paymentMethodError, {
+      userId,
+      dbId,
+    })
+    return { ok: false, error: 'Failed to validate payment method' }
+  }
+
+  if (!paymentMethod || paymentMethod.stripe_payment_method_id !== paymentMethodId) {
+    return { ok: false, error: 'Invalid input' }
+  }
+
+  return { ok: true }
+}
 
 export async function createPaymentMethodSetupSession(
   input?: { locale?: 'en' | 'bg' }
@@ -33,11 +66,16 @@ export async function createPaymentMethodSetupSession(
 
     const { user, supabase } = auth
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('private_profiles')
       .select(STRIPE_CUSTOMER_ID_SELECT)
       .eq('id', user.id)
       .single()
+
+    if (profileError) {
+      logError('payments_profile_lookup_failed', profileError, { userId: user.id })
+      return errorEnvelope({ error: 'Failed to create setup session' })
+    }
 
     let stripeCustomerId = profile?.stripe_customer_id
 
@@ -51,10 +89,15 @@ export async function createPaymentMethodSetupSession(
 
       stripeCustomerId = customer.id
 
-      await supabase
+      const { error: profileUpdateError } = await supabase
         .from('private_profiles')
         .update({ stripe_customer_id: stripeCustomerId })
         .eq('id', user.id)
+
+      if (profileUpdateError) {
+        logError('payments_profile_update_failed', profileUpdateError, { userId: user.id })
+        return errorEnvelope({ error: 'Failed to create setup session' })
+      }
     }
 
     if (!stripeCustomerId) {
@@ -78,7 +121,7 @@ export async function createPaymentMethodSetupSession(
 
     return successEnvelope({ url: session.url })
   } catch (error) {
-    console.error('createPaymentMethodSetupSession error:', error)
+    logError('payments_create_setup_session_failed', error)
     return errorEnvelope({ error: 'Failed to create setup session' })
   }
 }
@@ -101,6 +144,16 @@ export async function deletePaymentMethod(
 
     const { paymentMethodId, dbId } = parsed.data
 
+    const ownedMethodCheck = await getOwnedPaymentMethod({
+      userId: user.id,
+      dbId,
+      paymentMethodId,
+      supabase,
+    })
+    if (!ownedMethodCheck.ok) {
+      return errorEnvelope({ error: ownedMethodCheck.error })
+    }
+
     await stripe.paymentMethods.detach(paymentMethodId)
 
     const { error: deleteError } = await supabase
@@ -115,7 +168,7 @@ export async function deletePaymentMethod(
 
     return successEnvelope()
   } catch (error) {
-    console.error('deletePaymentMethod error:', error)
+    logError('payments_delete_method_failed', error)
     return errorEnvelope({ error: 'Failed to delete payment method' })
   }
 }
@@ -138,11 +191,26 @@ export async function setDefaultPaymentMethod(
 
     const { paymentMethodId, dbId } = parsed.data
 
-    const { data: profile } = await supabase
+    const ownedMethodCheck = await getOwnedPaymentMethod({
+      userId: user.id,
+      dbId,
+      paymentMethodId,
+      supabase,
+    })
+    if (!ownedMethodCheck.ok) {
+      return errorEnvelope({ error: ownedMethodCheck.error })
+    }
+
+    const { data: profile, error: profileError } = await supabase
       .from('private_profiles')
       .select(STRIPE_CUSTOMER_ID_SELECT)
       .eq('id', user.id)
       .single()
+
+    if (profileError) {
+      logError('payments_profile_lookup_failed', profileError, { userId: user.id })
+      return errorEnvelope({ error: 'Failed to set default payment method' })
+    }
 
     if (!profile?.stripe_customer_id) {
       return errorEnvelope({ error: 'No Stripe customer found' })
@@ -175,7 +243,7 @@ export async function setDefaultPaymentMethod(
 
     return successEnvelope()
   } catch (error) {
-    console.error('setDefaultPaymentMethod error:', error)
+    logError('payments_set_default_method_failed', error)
     return errorEnvelope({ error: 'Failed to set default payment method' })
   }
 }

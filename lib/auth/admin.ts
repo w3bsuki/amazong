@@ -15,6 +15,20 @@ export interface AdminUser {
   full_name: string | null
 }
 
+const toRecord = (value: unknown): Record<string, unknown> | null => {
+  if (!value || typeof value !== "object") return null
+  return value as Record<string, unknown>
+}
+
+const asNumber = (value: unknown): number | null => {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null
+  if (typeof value === "string") {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
+}
+
 /**
  * Verifies the current user is authenticated and has admin role.
  * MUST be called in server components only.
@@ -99,20 +113,6 @@ export async function getAdminStats() {
    * revoke all on function public.admin_paid_revenue_total() from public;
    * grant execute on function public.admin_paid_revenue_total() to service_role;
    */
-
-  const toRecord = (value: unknown): Record<string, unknown> | null => {
-    if (!value || typeof value !== "object") return null
-    return value as Record<string, unknown>
-  }
-
-  const asNumber = (value: unknown): number | null => {
-    if (typeof value === "number") return Number.isFinite(value) ? value : null
-    if (typeof value === "string") {
-      const parsed = Number(value)
-      return Number.isFinite(parsed) ? parsed : null
-    }
-    return null
-  }
 
   const sevenDaysAgoIso = new Date(
     Date.now() - 7 * 24 * 60 * 60 * 1000

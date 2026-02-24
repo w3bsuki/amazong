@@ -48,7 +48,8 @@ export function DesktopFilterToolbar({
         else params.set(key, value)
       }
       const queryString = params.toString()
-      router.push(`${pathname}${queryString ? `?${queryString}` : ""}`)
+      const nextPath = queryString ? `${pathname}?${queryString}` : pathname
+      router.push(nextPath)
     },
     [router, pathname, searchParams]
   )

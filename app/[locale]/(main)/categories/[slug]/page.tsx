@@ -1,10 +1,9 @@
 import { Suspense, use } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 
-import { routing, validateLocale } from "@/i18n/routing"
+import { notFound, routing, validateLocale } from "@/i18n/routing"
 import {
   getCategoryBySlug,
   getCategoryContext,

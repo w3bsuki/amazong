@@ -10,7 +10,7 @@ import {
   type ReactNode,
   type Context,
 } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname } from "@/i18n/routing"
 import { createClient, createFreshClient } from "@/lib/supabase/client"
 import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js"
 

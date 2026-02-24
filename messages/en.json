@@ -1001,6 +1001,7 @@
         "shipping": "Shipping",
         "tax": "Tax ({percent}%)",
         "total": "Total",
+        "totalFormula": "Total = item subtotal + buyer protection fee",
         "processing": "Processing...",
         "proceedToPayment": "Proceed to Payment",
         "securePayment": "Secure payment with SSL encryption",
@@ -1808,6 +1809,195 @@
             "title": "Something went wrong",
             "description": "We couldn't load your billing information. Please try again.",
             "retry": "Try again"
+        },
+        "profileEditor": {
+            "meta": {
+                "title": "Profile | Treido",
+                "description": "Manage your Treido profile information."
+            },
+            "tabs": {
+                "account": "Account",
+                "public": "Public Profile"
+            },
+            "defaults": {
+                "user": "User"
+            },
+            "actions": {
+                "save": "Save",
+                "saving": "Saving...",
+                "cancel": "Cancel",
+                "change": "Change",
+                "set": "Set",
+                "reset": "Reset"
+            },
+            "toasts": {
+                "profileUpdated": "Profile updated successfully",
+                "avatarUploaded": "Avatar uploaded successfully",
+                "avatarReset": "Avatar reset",
+                "avatarUpdated": "Avatar updated",
+                "emailChangeSent": "A confirmation email has been sent to your new address",
+                "passwordChanged": "Password changed successfully",
+                "usernameChanged": "Username changed successfully",
+                "publicProfileUpdated": "Profile updated successfully",
+                "bannerUploaded": "Banner uploaded successfully",
+                "businessUpgraded": "Upgraded to business account",
+                "businessDowngraded": "Downgraded to personal account"
+            },
+            "passwordStrength": {
+                "weak": "Weak",
+                "fair": "Fair",
+                "good": "Good",
+                "strong": "Strong"
+            },
+            "personalInfo": {
+                "title": "Personal Information",
+                "description": "Update your profile information",
+                "fullNameLabel": "Full Name",
+                "fullNamePlaceholder": "Your name",
+                "phoneLabel": "Phone",
+                "shippingRegionLabel": "Shipping Region",
+                "shippingRegionPlaceholder": "Select region",
+                "countryCodeLabel": "Country Code"
+            },
+            "security": {
+                "title": "Security",
+                "description": "Manage your account email and password",
+                "emailLabel": "Email",
+                "passwordLabel": "Password",
+                "verified": "Verified"
+            },
+            "avatar": {
+                "title": "Profile Picture",
+                "description": "Upload a picture for your profile. Max size: 5MB",
+                "uploadAriaLabel": "Upload new profile picture",
+                "chooseTitle": "Choose an avatar",
+                "chooseDescription": "Quick pick without uploading",
+                "chooseAriaLabel": "Choose this avatar",
+                "generatedHint": "You can switch to a generated avatar anytime"
+            },
+            "emailDialog": {
+                "title": "Change Email",
+                "description": "You will receive a confirmation email at the new address",
+                "newEmailLabel": "New Email"
+            },
+            "passwordDialog": {
+                "title": "Change Password",
+                "description": "Enter your current and new password",
+                "currentPasswordLabel": "Current Password",
+                "newPasswordLabel": "New Password",
+                "confirmPasswordLabel": "Confirm Password",
+                "hidePassword": "Hide password",
+                "showPassword": "Show password",
+                "passwordsDoNotMatch": "Passwords do not match"
+            },
+            "username": {
+                "yourPublicProfile": "Your Public Profile",
+                "viewProfile": "View Profile",
+                "title": "Username",
+                "description": "Your unique identifier for URLs and mentions",
+                "notSet": "Not set",
+                "set": "Set",
+                "changeTitle": "Change Username",
+                "chooseTitle": "Choose Username",
+                "changeRule": "Username can be changed once every 14 days",
+                "newLabel": "New Username",
+                "taken": "This username is taken",
+                "rules": "Rules: 3-30 chars, lowercase letters, numbers, and underscores only",
+                "changeInDays": "Can change again in {days} days"
+            },
+            "publicInfo": {
+                "title": "Public Information",
+                "description": "This information is visible on your public profile",
+                "displayNameLabel": "Display Name",
+                "displayNamePlaceholder": "Your name",
+                "displayNameHelp": "Shown instead of @username",
+                "bioLabel": "Bio",
+                "bioPlaceholder": "Tell us about yourself...",
+                "locationLabel": "Location",
+                "locationPlaceholder": "Sofia, Bulgaria",
+                "websiteLabel": "Website",
+                "socialFacebook": "Facebook",
+                "socialInstagram": "Instagram",
+                "socialTwitter": "Twitter/X",
+                "socialTiktok": "TikTok"
+            },
+            "banner": {
+                "title": "Profile Banner",
+                "description": "Recommended size: 1200x300 pixels",
+                "alt": "Profile banner"
+            },
+            "accountType": {
+                "title": "Account Type",
+                "businessDescription": "Business account with extended features",
+                "personalDescription": "Personal account",
+                "businessLabel": "Business",
+                "personalLabel": "Personal",
+                "verified": "Verified",
+                "switchToPersonal": "Switch to Personal",
+                "upgradeToBusiness": "Upgrade to Business",
+                "upgradeDialogTitle": "Upgrade to Business Account",
+                "upgradeDialogDescription": "Business accounts have additional features",
+                "businessNameLabel": "Business Name *",
+                "businessNamePlaceholder": "Your Business",
+                "vatNumberLabel": "VAT Number (optional)",
+                "profileInfoNotice": "Business accounts display additional profile info - social links, website, etc.",
+                "upgrade": "Upgrade",
+                "businessNameValueLabel": "Business Name",
+                "vatNumberValueLabel": "VAT Number"
+            },
+            "errors": {
+                "profile": {
+                    "NOT_AUTHENTICATED": "Please sign in to continue.",
+                    "INVALID_INPUT": "Please check your input and try again.",
+                    "INVALID_EMAIL": "Please enter a valid email address.",
+                    "EMAIL_UNCHANGED": "New email matches your current email.",
+                    "EMAIL_ALREADY_REGISTERED": "This email is already registered.",
+                    "PROFILE_UPDATE_FAILED": "Failed to update profile.",
+                    "EMAIL_UPDATE_FAILED": "Failed to update email.",
+                    "PASSWORD_UPDATE_UNAVAILABLE": "Password update is not available for this account.",
+                    "CURRENT_PASSWORD_INCORRECT": "Current password is incorrect.",
+                    "PASSWORD_UPDATE_FAILED": "Failed to update password.",
+                    "NO_FILE": "Please select a file.",
+                    "FILE_TOO_LARGE": "File is too large. Maximum size is 5MB.",
+                    "INVALID_FILE_TYPE": "Unsupported file type.",
+                    "AVATAR_UPLOAD_FAILED": "Failed to upload avatar.",
+                    "AVATAR_PROFILE_UPDATE_FAILED": "Failed to save avatar on your profile.",
+                    "AVATAR_UPDATE_FAILED": "Failed to update avatar.",
+                    "AVATAR_RESET_FAILED": "Failed to reset avatar.",
+                    "UNKNOWN_ERROR": "Something went wrong. Please try again."
+                },
+                "usernameAvailability": {
+                    "INVALID_USERNAME": "Username format is invalid.",
+                    "USERNAME_RESERVED": "This username is reserved.",
+                    "USERNAME_TAKEN": "This username is already taken.",
+                    "CHECK_FAILED": "Could not check username availability."
+                },
+                "usernameAccount": {
+                    "NOT_AUTHENTICATED": "Please sign in to continue.",
+                    "INVALID_USERNAME": "Username format is invalid.",
+                    "USERNAME_RESERVED": "This username is reserved.",
+                    "USERNAME_COOLDOWN_ACTIVE": "You can change your username again in {days} days.",
+                    "USERNAME_TAKEN": "This username is already taken.",
+                    "USERNAME_UPDATE_FAILED": "Failed to update username.",
+                    "INVALID_BUSINESS_DATA": "Please review your business details and try again.",
+                    "ACCOUNT_UPGRADE_FAILED": "Failed to upgrade account.",
+                    "ACTIVE_BUSINESS_SUBSCRIPTION": "Cancel your active business subscription before downgrading.",
+                    "ACCOUNT_DOWNGRADE_FAILED": "Failed to downgrade account.",
+                    "UNKNOWN_ERROR": "Something went wrong. Please try again."
+                },
+                "usernameProfile": {
+                    "NOT_AUTHENTICATED": "Please sign in to continue.",
+                    "INVALID_PROFILE_DATA": "Please review your profile details and try again.",
+                    "NO_FILE": "Please select a file.",
+                    "FILE_TOO_LARGE": "File is too large. Maximum size is 5MB.",
+                    "INVALID_FILE_TYPE": "Unsupported file type. Use JPEG, PNG, or WebP.",
+                    "PUBLIC_PROFILE_UPDATE_FAILED": "Failed to update public profile.",
+                    "BANNER_UPLOAD_FAILED": "Failed to upload banner.",
+                    "BANNER_SAVE_FAILED": "Failed to save banner.",
+                    "PROFILE_NOT_FOUND": "Profile not found.",
+                    "UNKNOWN_ERROR": "Something went wrong. Please try again."
+                }
+            }
         }
     },
     "ProductForm": {
@@ -2506,7 +2696,9 @@
         "viewProduct": "View Product",
         "createYourOwn": "Create Your Own Wishlist",
         "signUpToCreate": "Sign up to save your favorite items and share them with friends and family.",
-        "signUpFree": "Sign Up Free"
+        "signUpFree": "Sign Up Free",
+        "metadataTitle": "Shared Wishlist | Treido",
+        "metadataDescription": "View a shared Treido wishlist."
     },
     "Seller": {
         "aboutThisSeller": "About this seller",
@@ -4440,15 +4632,21 @@
             "popular": "Popular",
             "mostPopular": "Most popular",
             "feeLabel": "Seller fee",
+            "buyerFeeLabel": "Buyer fee",
             "period": {
                 "mo": "/mo",
                 "yr": "/yr"
+            },
+            "buyerFeeAdvantage": {
+                "title": "Lower buyer fees help you convert faster",
+                "desc": "Upgrading reduces buyer protection fees, which makes your listings cheaper for buyers."
             },
             "planFeatures": {
                 "listingsPerMonth": "listings/mo",
                 "unlimitedListings": "Unlimited listings",
                 "whenSoldShort": "when sold",
                 "buyerProtection": "buyer protection",
+                "capLabel": "cap",
                 "boostsShort": "boosts/mo",
                 "analytics": "Analytics"
             },
@@ -4895,5 +5093,9 @@
                 "Track discount performance in analytics"
             ]
         }
+    },
+    "MobileStepProgress": {
+        "ariaLabel": "Step progress",
+        "ariaValueText": "Step {current} of {total}"
     }
 }

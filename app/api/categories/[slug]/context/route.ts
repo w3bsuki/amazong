@@ -1,35 +1,33 @@
-import { NextResponse } from 'next/server'
+import { z } from "zod"
 import { getCategoryContext } from '@/lib/data/categories'
+import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
+
+const CategoryContextParamsSchema = z
+  .object({
+    slug: z.string().trim().min(1).max(64),
+  })
+  .strict()
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = await params
-
-  if (!slug) {
-    return NextResponse.json(
-      { error: 'Slug is required' },
-      { status: 400 }
-    )
+  const parsedParams = CategoryContextParamsSchema.safeParse(await params)
+  if (!parsedParams.success) {
+    return noStoreJson({ error: "Slug is required" }, { status: 400 })
   }
+  const { slug } = parsedParams.data
 
   try {
     const context = await getCategoryContext(slug)
 
     if (!context) {
-      return NextResponse.json(
-        { error: 'Category not found' },
-        { status: 404 }
-      )
+      return noStoreJson({ error: "Category not found" }, { status: 404 })
     }
 
-    return NextResponse.json(context)
+    return cachedJsonResponse(context, "categories")
   } catch (error) {
     console.error('Error fetching category context:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return noStoreJson({ error: "Internal server error" }, { status: 500 })
   }
 }

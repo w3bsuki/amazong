@@ -1,20 +1,14 @@
-import {
-  AccountDropdown,
-} from "@/components/dropdowns/account-dropdown"
-import {
-  MessagesDropdown,
-} from "@/components/dropdowns/messages-dropdown"
-import {
-  WishlistDropdown,
-} from "@/components/dropdowns/wishlist-dropdown"
-import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
-import { DesktopSearch } from "./desktop-search"
-import { Button } from "@/components/ui/button"
-import { Camera } from "lucide-react";
-
-import { Link } from "@/i18n/routing"
+import { Camera } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useNotificationCount } from "@/hooks/use-notification-count"
+
+import { AccountDropdown } from "@/components/dropdowns/account-dropdown"
+import { MessagesDropdown } from "@/components/dropdowns/messages-dropdown"
+import { WishlistDropdown } from "@/components/dropdowns/wishlist-dropdown"
+import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
+import { Button } from "@/components/ui/button"
+import { Link } from "@/i18n/routing"
+
+import { DesktopSearch } from "./desktop-search"
 import type { BaseHeaderProps } from "../types"
 
 /**
@@ -32,7 +26,6 @@ export function DesktopStandardHeader({
   user,
 }: BaseHeaderProps) {
   const t = useTranslations("Navigation")
-  const notificationCount = useNotificationCount(user)
 
   return (
     <header className="hidden md:block bg-header-bg text-header-text border-b border-header-border">
@@ -43,7 +36,7 @@ export function DesktopStandardHeader({
             <span className="text-xl font-bold tracking-tight text-header-text">treido<span className="text-primary">.</span></span>
           </Link>
           <div className="hidden lg:block">
-            <AccountDropdown user={user} variant="full" notificationCount={notificationCount} />
+            <AccountDropdown user={user} variant="full" />
           </div>
         </div>
 
@@ -73,7 +66,7 @@ export function DesktopStandardHeader({
               
               {/* Account on medium screens (when full variant is hidden) */}
               <div className="hidden md:block lg:hidden ml-1">
-                <AccountDropdown user={user} notificationCount={notificationCount} />
+                <AccountDropdown user={user} />
               </div>
             </>
           ) : (

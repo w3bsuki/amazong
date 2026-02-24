@@ -83,7 +83,12 @@ const appImportLeakPatterns = [
   },
 ];
 
-const config = [...nextVitals, ...nextTs, {
+const config = [
+  // Local scratch/audit workspace; not production source code.
+  { ignores: [".tmp/**"] },
+  ...nextVitals,
+  ...nextTs,
+  {
   files: ["**/*.{js,jsx,ts,tsx}"],
   rules: {
     // These rules are extremely strict and currently produce many false
@@ -118,7 +123,8 @@ const config = [...nextVitals, ...nextTs, {
       },
     ],
   },
-}, // =========================================================================
+},
+// =========================================================================
 // TypeScript Safety Rules (Phase 0): warnings-first rollout
 // =========================================================================
 {

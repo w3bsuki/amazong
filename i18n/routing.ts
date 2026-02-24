@@ -112,3 +112,4 @@ export const routing = defineRouting({
  * ```
  */
 export const { Link, redirect, usePathname, useRouter } = createNavigation(routing)
+export { notFound } from "next/navigation"

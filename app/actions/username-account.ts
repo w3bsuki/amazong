@@ -5,6 +5,7 @@ import {
   revalidatePublicProfileTagsByUsername,
   revalidatePublicProfileTagsForUser,
 } from "@/lib/cache/revalidate-profile-tags"
+import { logger } from "@/lib/logger"
 import { revalidateTag } from "next/cache"
 import {
   RESERVED_USERNAMES,
@@ -15,28 +16,42 @@ import {
 } from "./username-shared"
 import type { z } from "zod"
 
+export type UsernameAccountErrorCode =
+  | "NOT_AUTHENTICATED"
+  | "INVALID_USERNAME"
+  | "USERNAME_RESERVED"
+  | "USERNAME_COOLDOWN_ACTIVE"
+  | "USERNAME_TAKEN"
+  | "USERNAME_UPDATE_FAILED"
+  | "INVALID_BUSINESS_DATA"
+  | "ACCOUNT_UPGRADE_FAILED"
+  | "ACTIVE_BUSINESS_SUBSCRIPTION"
+  | "ACCOUNT_DOWNGRADE_FAILED"
+  | "UNKNOWN_ERROR"
+
 /**
  * Set or change username.
  */
 export async function setUsername(username: string): Promise<{
   success: boolean
-  error?: string
+  errorCode?: UsernameAccountErrorCode
+  daysRemaining?: number
 }> {
   try {
     const auth = await requireUsernameAuth()
     if ("error" in auth) {
-      return { success: false, error: auth.error }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
     const { userId, supabase } = auth
 
     const normalizedUsername = normalizeUsername(username)
     const validation = usernameSchema.safeParse(normalizedUsername)
     if (!validation.success) {
-      return { success: false, error: validation.error.issues[0]?.message ?? "Invalid username" }
+      return { success: false, errorCode: "INVALID_USERNAME" }
     }
 
     if (RESERVED_USERNAMES.includes(normalizedUsername)) {
-      return { success: false, error: "This username is reserved" }
+      return { success: false, errorCode: "USERNAME_RESERVED" }
     }
 
     const { data: profile } = await supabase
@@ -56,7 +71,8 @@ export async function setUsername(username: string): Promise<{
           const daysLeft = Math.ceil((cooldownEnd.getTime() - Date.now()) / (24 * 60 * 60 * 1000))
           return {
             success: false,
-            error: `You can change your username in ${daysLeft} day${daysLeft > 1 ? "s" : ""}`,
+            errorCode: "USERNAME_COOLDOWN_ACTIVE",
+            daysRemaining: daysLeft,
           }
         }
       }
@@ -76,7 +92,7 @@ export async function setUsername(username: string): Promise<{
       .maybeSingle()
 
     if (existing) {
-      return { success: false, error: "This username is already taken" }
+      return { success: false, errorCode: "USERNAME_TAKEN" }
     }
 
     const { error: updateError } = await supabase
@@ -89,8 +105,8 @@ export async function setUsername(username: string): Promise<{
       .eq("id", userId)
 
     if (updateError) {
-      console.error("setUsername error:", updateError)
-      return { success: false, error: "Failed to update username" }
+      logger.error("[username-account] set_username_update_failed", updateError, { userId })
+      return { success: false, errorCode: "USERNAME_UPDATE_FAILED" }
     }
 
     revalidateTag(`seller-${userId}`, "max")
@@ -101,8 +117,8 @@ export async function setUsername(username: string): Promise<{
 
     return { success: true }
   } catch (error) {
-    console.error("setUsername error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[username-account] set_username_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
 
@@ -111,23 +127,29 @@ export async function setUsername(username: string): Promise<{
  */
 export async function upgradeToBusinessAccount(
   data: z.infer<typeof businessUpgradeSchema>
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; errorCode?: UsernameAccountErrorCode; daysRemaining?: number }> {
   try {
     const auth = await requireUsernameAuth()
     if ("error" in auth) {
-      return { success: false, error: auth.error }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
     const { userId, supabase } = auth
 
     const validation = businessUpgradeSchema.safeParse(data)
     if (!validation.success) {
-      return { success: false, error: validation.error.issues[0]?.message ?? "Invalid business data" }
+      return { success: false, errorCode: "INVALID_BUSINESS_DATA" }
     }
 
     if (data.change_username && data.new_username) {
       const usernameResult = await setUsername(data.new_username)
       if (!usernameResult.success) {
-        return { success: false, error: `Username: ${usernameResult.error ?? "Failed to set username"}` }
+        return {
+          success: false,
+          errorCode: usernameResult.errorCode ?? "USERNAME_UPDATE_FAILED",
+          ...(usernameResult.daysRemaining !== undefined
+            ? { daysRemaining: usernameResult.daysRemaining }
+            : {}),
+        }
       }
     }
 
@@ -150,8 +172,8 @@ export async function upgradeToBusinessAccount(
     ])
 
     if (updateError || privateError) {
-      console.error("upgradeToBusinessAccount error:", updateError || privateError)
-      return { success: false, error: "Failed to upgrade account" }
+      logger.error("[username-account] upgrade_business_failed", updateError ?? privateError, { userId })
+      return { success: false, errorCode: "ACCOUNT_UPGRADE_FAILED" }
     }
 
     await supabase.from("business_verification").upsert(
@@ -167,8 +189,8 @@ export async function upgradeToBusinessAccount(
     await revalidatePublicProfileTagsForUser(supabase, userId, "max")
     return { success: true }
   } catch (error) {
-    console.error("upgradeToBusinessAccount error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[username-account] upgrade_business_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
 
@@ -177,12 +199,12 @@ export async function upgradeToBusinessAccount(
  */
 export async function downgradeToPersonalAccount(): Promise<{
   success: boolean
-  error?: string
+  errorCode?: UsernameAccountErrorCode
 }> {
   try {
     const auth = await requireUsernameAuth()
     if ("error" in auth) {
-      return { success: false, error: auth.error }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
     const { userId, supabase } = auth
 
@@ -196,7 +218,7 @@ export async function downgradeToPersonalAccount(): Promise<{
     if (subscription && subscription.plan_type !== "free") {
       return {
         success: false,
-        error: "Please cancel your business subscription first before downgrading",
+        errorCode: "ACTIVE_BUSINESS_SUBSCRIPTION",
       }
     }
 
@@ -212,15 +234,14 @@ export async function downgradeToPersonalAccount(): Promise<{
       .eq("id", userId)
 
     if (updateError) {
-      console.error("downgradeToPersonalAccount error:", updateError)
-      return { success: false, error: "Failed to downgrade account" }
+      logger.error("[username-account] downgrade_personal_failed", updateError, { userId })
+      return { success: false, errorCode: "ACCOUNT_DOWNGRADE_FAILED" }
     }
 
     await revalidatePublicProfileTagsForUser(supabase, userId, "max")
     return { success: true }
   } catch (error) {
-    console.error("downgradeToPersonalAccount error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[username-account] downgrade_personal_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
-

@@ -119,21 +119,40 @@ export function PhotosField({
     });
 
     if (!response.ok) {
-      const errorPayload: unknown = await response.json();
-      const errorMessage =
-        typeof errorPayload === "object" &&
-        errorPayload !== null &&
-        "error" in errorPayload &&
-        typeof (errorPayload as { error?: unknown }).error === "string"
-          ? (errorPayload as { error: string }).error
-          : tSell("photos.errors.uploadFailed");
+      let errorMessage = tSell("photos.errors.uploadFailed")
+      try {
+        const errorPayload: unknown = await response.json()
+        if (
+          typeof errorPayload === "object" &&
+          errorPayload !== null &&
+          "error" in errorPayload &&
+          typeof (errorPayload as { error?: unknown }).error === "string"
+        ) {
+          errorMessage = (errorPayload as { error: string }).error
+        }
+      } catch {
+        // Keep the default localized message when response is not JSON.
+      }
       throw new Error(errorMessage);
     }
 
-    const data = await response.json();
+    const data: unknown = await response.json();
+    if (
+      typeof data !== "object" ||
+      data === null ||
+      !("url" in data) ||
+      typeof (data as { url?: unknown }).url !== "string"
+    ) {
+      throw new Error(tSell("photos.errors.uploadFailed"))
+    }
+
+    const dataRecord = data as Record<string, unknown>
+    const url = dataRecord.url as string
+    const thumbnailUrl = typeof dataRecord.thumbnailUrl === "string" ? dataRecord.thumbnailUrl : url
+
     return {
-      url: data.url,
-      thumbnailUrl: data.thumbnailUrl || data.url,
+      url,
+      thumbnailUrl,
       isPrimary: false,
     };
   }, [tSell]);

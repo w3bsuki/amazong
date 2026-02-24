@@ -33,6 +33,156 @@ export type IssueType =
   | 'missing_parts'
   | 'other'
 
+type BuyerOrderActionsCopy = {
+  confirmDelivery: string
+  rateSeller: string
+  ratedSeller: string
+  chat: string
+  cancelOrder: string
+  reportIssue: string
+  ratingTitle: string
+  ratingDescription: string
+  commentLabel: string
+  commentPlaceholder: string
+  submitRating: string
+  cancel: string
+  cancelTitle: string
+  cancelDescription: string
+  cancelReasonLabel: string
+  cancelReasonPlaceholder: string
+  confirmCancel: string
+  issueTitle: string
+  issueDescription: string
+  issueTypeLabel: string
+  issueTypePlaceholder: string
+  issueDescLabel: string
+  issueDescPlaceholder: string
+  submitIssue: string
+  submitting: string
+  errors: {
+    failedToConfirmDelivery: string
+    failedToSubmitRating: string
+    failedToCancelOrder: string
+    failedToReportIssue: string
+    unexpected: string
+    issueTypeRequired: string
+    issueDescriptionMinLength: string
+  }
+  toasts: {
+    deliveryConfirmed: string
+    feedbackSubmitted: string
+    orderCancelled: string
+    issueReported: string
+  }
+  issueTypes: Record<IssueType, string>
+}
+
+const BUYER_ORDER_ACTIONS_COPY_EN: BuyerOrderActionsCopy = {
+  confirmDelivery: "Confirm Delivery",
+  rateSeller: "Rate Seller",
+  ratedSeller: "Rated",
+  chat: "Chat",
+  cancelOrder: "Cancel Order",
+  reportIssue: "Report Issue",
+  ratingTitle: "How would you rate the seller?",
+  ratingDescription: "Your rating helps other buyers make informed decisions.",
+  commentLabel: "Comment (optional)",
+  commentPlaceholder: "Share your experience with this seller...",
+  submitRating: "Submit Review",
+  cancel: "Cancel",
+  cancelTitle: "Cancel Order",
+  cancelDescription: "Are you sure you want to cancel this order? This action cannot be undone.",
+  cancelReasonLabel: "Reason for cancellation (optional)",
+  cancelReasonPlaceholder: "Describe why you are cancelling...",
+  confirmCancel: "Confirm Cancellation",
+  issueTitle: "Report an Issue",
+  issueDescription: "Describe the issue with your order and we will help.",
+  issueTypeLabel: "Issue Type",
+  issueTypePlaceholder: "Select issue type",
+  issueDescLabel: "Description",
+  issueDescPlaceholder: "Describe the issue in detail (minimum 10 characters)...",
+  submitIssue: "Submit Report",
+  submitting: "Submitting...",
+  errors: {
+    failedToConfirmDelivery: "Failed to confirm delivery",
+    failedToSubmitRating: "Failed to submit rating",
+    failedToCancelOrder: "Failed to cancel order",
+    failedToReportIssue: "Failed to report issue",
+    unexpected: "An unexpected error occurred",
+    issueTypeRequired: "Please select an issue type",
+    issueDescriptionMinLength: "Description must be at least 10 characters",
+  },
+  toasts: {
+    deliveryConfirmed: "Delivery confirmed!",
+    feedbackSubmitted: "Thank you for your feedback!",
+    orderCancelled: "Order cancelled!",
+    issueReported: "Issue reported!",
+  },
+  issueTypes: {
+    not_received: "Item Not Received",
+    wrong_item: "Wrong Item Received",
+    damaged: "Item Damaged",
+    not_as_described: "Not As Described",
+    missing_parts: "Missing Parts",
+    other: "Other",
+  },
+}
+
+const BUYER_ORDER_ACTIONS_COPY_BG: BuyerOrderActionsCopy = {
+  confirmDelivery: "Потвърди получаване",
+  rateSeller: "Оцени продавача",
+  ratedSeller: "Оценено",
+  chat: "Чат",
+  cancelOrder: "Отмени поръчка",
+  reportIssue: "Докладвай проблем",
+  ratingTitle: "Как бихте оценили продавача?",
+  ratingDescription: "Вашата оценка помага на други купувачи да направят информиран избор.",
+  commentLabel: "Коментар (по избор)",
+  commentPlaceholder: "Споделете опита си с този продавач...",
+  submitRating: "Изпрати отзив",
+  cancel: "Отмени",
+  cancelTitle: "Отмени поръчка",
+  cancelDescription: "Сигурни ли сте, че искате да отмените тази поръчка? Това действие не може да бъде отменено.",
+  cancelReasonLabel: "Причина за отмяна (по избор)",
+  cancelReasonPlaceholder: "Опишете защо отменяте...",
+  confirmCancel: "Потвърди отмяна",
+  issueTitle: "Докладвай проблем",
+  issueDescription: "Опишете проблема с поръчката си и ние ще помогнем.",
+  issueTypeLabel: "Тип проблем",
+  issueTypePlaceholder: "Изберете тип проблем",
+  issueDescLabel: "Описание",
+  issueDescPlaceholder: "Опишете проблема подробно (минимум 10 символа)...",
+  submitIssue: "Изпрати доклад",
+  submitting: "Изпращане...",
+  errors: {
+    failedToConfirmDelivery: "Неуспешно потвърждение на доставката",
+    failedToSubmitRating: "Неуспешно изпращане на оценката",
+    failedToCancelOrder: "Неуспешна отмяна на поръчката",
+    failedToReportIssue: "Неуспешно докладване на проблема",
+    unexpected: "Възникна неочаквана грешка",
+    issueTypeRequired: "Моля, изберете тип проблем",
+    issueDescriptionMinLength: "Описанието трябва да е поне 10 символа",
+  },
+  toasts: {
+    deliveryConfirmed: "Доставката е потвърдена!",
+    feedbackSubmitted: "Благодарим за отзива!",
+    orderCancelled: "Поръчката е отменена!",
+    issueReported: "Проблемът е докладван!",
+  },
+  issueTypes: {
+    not_received: "Не е получено",
+    wrong_item: "Грешен артикул",
+    damaged: "Повреден артикул",
+    not_as_described: "Не отговаря на описанието",
+    missing_parts: "Липсващи части",
+    other: "Друго",
+  },
+}
+
+function getBuyerOrderActionsCopy(locale: string): BuyerOrderActionsCopy {
+  return locale === "bg" ? BUYER_ORDER_ACTIONS_COPY_BG : BUYER_ORDER_ACTIONS_COPY_EN
+}
+
 export type BuyerOrderActionsServerActions = {
   buyerConfirmDelivery: (orderItemId: string) => Promise<{ success: boolean; error?: string }>
   canBuyerRateSeller: (orderItemId: string) => Promise<{ canRate: boolean; hasRated: boolean }>
@@ -77,6 +227,7 @@ export function BuyerOrderActions({
   actions,
   mode = "full",
 }: BuyerOrderActionsProps) {
+  const t = getBuyerOrderActionsCopy(locale)
   const router = useRouter()
   const isReportOnly = mode === "report-only"
   const [isSubmitting, startTransition] = useTransition()
@@ -128,17 +279,17 @@ export function BuyerOrderActions({
       try {
         const result = await actions.buyerConfirmDelivery(orderItemId)
         if (result.success) {
-          toast.success(locale === 'bg' ? 'Доставката е потвърдена!' : 'Delivery confirmed!')
+          toast.success(t.toasts.deliveryConfirmed)
           router.refresh()
           // Ask to rate the seller
           setTimeout(() => {
             setShowRatingDialog(true)
           }, 500)
         } else {
-          toast.error(result.error || 'Failed to confirm delivery')
+          toast.error(t.errors.failedToConfirmDelivery)
         }
       } catch {
-        toast.error('An error occurred')
+        toast.error(t.errors.unexpected)
       }
     })
   }
@@ -157,15 +308,15 @@ export function BuyerOrderActions({
         })
         
         if (result.success) {
-          toast.success(locale === 'bg' ? 'Благодарим за отзива!' : 'Thank you for your feedback!')
+          toast.success(t.toasts.feedbackSubmitted)
           setShowRatingDialog(false)
           setHasRated(true)
           router.refresh()
         } else {
-          toast.error(result.error || 'Failed to submit rating')
+          toast.error(t.errors.failedToSubmitRating)
         }
       } catch {
-        toast.error('An error occurred')
+        toast.error(t.errors.unexpected)
       }
     })
   }
@@ -175,26 +326,26 @@ export function BuyerOrderActions({
       try {
         const result = await actions.requestOrderCancellation(orderItemId, cancelReason || undefined)
         if (result.success) {
-          toast.success(locale === 'bg' ? 'Поръчката е отменена!' : 'Order cancelled!')
+          toast.success(t.toasts.orderCancelled)
           setShowCancelDialog(false)
           setCancelReason("")
           router.refresh()
         } else {
-          toast.error(result.error || 'Failed to cancel order')
+          toast.error(t.errors.failedToCancelOrder)
         }
       } catch {
-        toast.error('An error occurred')
+        toast.error(t.errors.unexpected)
       }
     })
   }
 
   async function handleReportIssue() {
     if (!issueType) {
-      toast.error(locale === 'bg' ? 'Моля, изберете тип проблем' : 'Please select an issue type')
+      toast.error(t.errors.issueTypeRequired)
       return
     }
     if (issueDescription.length < 10) {
-      toast.error(locale === 'bg' ? 'Описанието трябва да е поне 10 символа' : 'Description must be at least 10 characters')
+      toast.error(t.errors.issueDescriptionMinLength)
       return
     }
 
@@ -202,7 +353,7 @@ export function BuyerOrderActions({
       try {
         const result = await actions.reportOrderIssue(orderItemId, issueType as IssueType, issueDescription)
         if (result.success) {
-          toast.success(locale === 'bg' ? 'Проблемът е докладван!' : 'Issue reported!')
+          toast.success(t.toasts.issueReported)
           setShowIssueDialog(false)
           setIssueType("")
           setIssueDescription("")
@@ -213,57 +364,12 @@ export function BuyerOrderActions({
             router.refresh()
           }
         } else {
-          toast.error(result.error || 'Failed to report issue')
+          toast.error(t.errors.failedToReportIssue)
         }
       } catch {
-        toast.error('An error occurred')
+        toast.error(t.errors.unexpected)
       }
     })
-  }
-
-  const t = {
-    confirmDelivery: locale === 'bg' ? 'Потвърди получаване' : 'Confirm Delivery',
-    rateSeller: locale === 'bg' ? 'Оцени продавача' : 'Rate Seller',
-    ratedSeller: locale === 'bg' ? 'Оценено' : 'Rated',
-    chat: locale === 'bg' ? 'Чат' : 'Chat',
-    cancelOrder: locale === 'bg' ? 'Отмени поръчка' : 'Cancel Order',
-    reportIssue: locale === 'bg' ? 'Докладвай проблем' : 'Report Issue',
-    ratingTitle: locale === 'bg' ? 'Как бихте оценили продавача?' : 'How would you rate the seller?',
-    ratingDescription: locale === 'bg' 
-      ? 'Вашата оценка помага на други купувачи да направят информиран избор.'
-      : 'Your rating helps other buyers make informed decisions.',
-    commentLabel: locale === 'bg' ? 'Коментар (по избор)' : 'Comment (optional)',
-    commentPlaceholder: locale === 'bg' 
-      ? 'Споделете опита си с този продавач...'
-      : 'Share your experience with this seller...',
-    submitRating: locale === 'bg' ? 'Изпрати отзив' : 'Submit Review',
-    cancel: locale === 'bg' ? 'Отмени' : 'Cancel',
-    cancelTitle: locale === 'bg' ? 'Отмени поръчка' : 'Cancel Order',
-    cancelDescription: locale === 'bg' 
-      ? 'Сигурни ли сте, че искате да отмените тази поръчка? Това действие не може да бъде отменено.'
-      : 'Are you sure you want to cancel this order? This action cannot be undone.',
-    cancelReasonLabel: locale === 'bg' ? 'Причина за отмяна (по избор)' : 'Reason for cancellation (optional)',
-    cancelReasonPlaceholder: locale === 'bg' ? 'Опишете защо отменяте...' : 'Describe why you are cancelling...',
-    confirmCancel: locale === 'bg' ? 'Потвърди отмяна' : 'Confirm Cancellation',
-    issueTitle: locale === 'bg' ? 'Докладвай проблем' : 'Report an Issue',
-    issueDescription: locale === 'bg' 
-      ? 'Опишете проблема с поръчката си и ние ще помогнем.'
-      : 'Describe the issue with your order and we will help.',
-    issueTypeLabel: locale === 'bg' ? 'Тип проблем' : 'Issue Type',
-    issueTypePlaceholder: locale === 'bg' ? 'Изберете тип проблем' : 'Select issue type',
-    issueDescLabel: locale === 'bg' ? 'Описание' : 'Description',
-    issueDescPlaceholder: locale === 'bg' 
-      ? 'Опишете проблема подробно (минимум 10 символа)...'
-      : 'Describe the issue in detail (minimum 10 characters)...',
-    submitIssue: locale === 'bg' ? 'Изпрати доклад' : 'Submit Report',
-    issueTypes: {
-      not_received: locale === 'bg' ? 'Не е получено' : 'Item Not Received',
-      wrong_item: locale === 'bg' ? 'Грешен артикул' : 'Wrong Item Received',
-      damaged: locale === 'bg' ? 'Повреден артикул' : 'Item Damaged',
-      not_as_described: locale === 'bg' ? 'Не отговаря на описанието' : 'Not As Described',
-      missing_parts: locale === 'bg' ? 'Липсващи части' : 'Missing Parts',
-      other: locale === 'bg' ? 'Друго' : 'Other',
-    } as Record<IssueType, string>,
   }
 
   return (
@@ -319,7 +425,7 @@ export function BuyerOrderActions({
           ) : (
             <Package className="h-4 w-4 mr-1.5" />
           )}
-          {isSubmitting ? '...' : t.confirmDelivery}
+          {isSubmitting ? t.submitting : t.confirmDelivery}
         </Button>
       )}
 
@@ -385,7 +491,7 @@ export function BuyerOrderActions({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                    ...
+                    {t.submitting}
                   </>
                 ) : (
                   <>
@@ -454,7 +560,7 @@ export function BuyerOrderActions({
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                  ...
+                  {t.submitting}
                 </>
               ) : (
                 <>

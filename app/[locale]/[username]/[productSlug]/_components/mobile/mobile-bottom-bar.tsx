@@ -19,7 +19,7 @@ import { useCart } from "@/components/providers/cart-context"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import type { CategoryType } from "@/lib/utils/category-type"
-import { formatPrice } from "@/lib/price"
+import { formatCurrencyAmount } from "@/lib/price"
 import { getMobileTabBarRouteState } from "@/lib/navigation/mobile-tab-bar"
 
 export interface MobileBottomBarProps {
@@ -65,6 +65,12 @@ export function MobileBottomBar({
   const { addToCart } = useCart()
   const routeState = getMobileTabBarRouteState(pathname)
   const isTabBarVisible = !routeState.shouldHideTabBar
+  const formattedProductPrice = formatCurrencyAmount(
+    product.price,
+    locale,
+    product.currency ?? "BGN",
+    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+  )
 
   // Navigate to chat
   const handleChat = () => {
@@ -181,7 +187,7 @@ export function MobileBottomBar({
               onClick={handleAddToCart}
             >
               <ShoppingCart className="size-5" />
-              <span>{t("add")} · {formatPrice(product.price, { locale })}</span>
+              <span>{t("add")} · {formattedProductPrice}</span>
             </Button>
           </>
         )

@@ -18,11 +18,15 @@ export function buildPlanFeatureList(
   t: PlansPageContent,
   plan: SubscriptionPlanRow
 ): string[] {
-  const sellerFee = Number(plan.seller_fee_percent ?? 0)
   const buyerProtection = Number(plan.buyer_protection_percent ?? 0)
   const buyerFixed = Number(plan.buyer_protection_fixed ?? 0)
+  const buyerCap = Number(plan.buyer_protection_cap ?? 0)
   const boosts = plan.boosts_included ?? 0
   const analytics = (plan.analytics_access || "").toLowerCase()
+  const sellerFee = Number(plan.seller_fee_percent ?? 0)
+  const featureItems = Array.isArray(plan.features)
+    ? plan.features.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    : []
 
   const features: string[] = []
 
@@ -32,15 +36,35 @@ export function buildPlanFeatureList(
     features.push(`${formatInt(locale, plan.max_listings)} ${t.planFeatures.listingsPerMonth}`)
   }
 
-  features.push(`${sellerFee}% ${t.planFeatures.whenSoldShort}`)
-  features.push(`${buyerProtection}% + €${buyerFixed.toFixed(2)} ${t.planFeatures.buyerProtection}`)
+  const capSuffix =
+    buyerCap > 0 ? ` (${t.planFeatures.capLabel} €${buyerCap.toFixed(2)})` : ""
+  features.push(
+    `${buyerProtection}% + €${buyerFixed.toFixed(2)} ${t.planFeatures.buyerProtection}${capSuffix}`
+  )
 
-  if (boosts > 0) {
-    const boostsLabel = boosts >= 999 ? "∞" : formatInt(locale, boosts)
-    features.push(`${boostsLabel} ${t.planFeatures.boostsShort}`)
+  const boostsLabel = boosts >= 999 ? "∞" : formatInt(locale, boosts)
+  features.push(`${boostsLabel} ${t.planFeatures.boostsShort}`)
+
+  if (sellerFee > 0) {
+    features.push(`${sellerFee}% ${t.planFeatures.whenSoldShort}`)
   }
 
-  if (analytics && analytics !== "none" && analytics !== "-" && analytics !== "—") {
+  for (const feature of featureItems) {
+    if (!features.includes(feature)) {
+      features.push(feature)
+    }
+    if (features.length >= 6) {
+      break
+    }
+  }
+
+  if (
+    features.length < 6 &&
+    analytics &&
+    analytics !== "none" &&
+    analytics !== "-" &&
+    analytics !== "—"
+  ) {
     features.push(t.planFeatures.analytics)
   }
 

@@ -121,7 +121,7 @@ export function SupportChatWidgetView({
               />
             </div>
           ) : isLoading ? (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center h-full" role="status" aria-live="polite">
               <Spinner className="size-8 text-primary" label={tCommon("loading")} />
             </div>
           ) : messages.length === 0 ? (
@@ -135,7 +135,7 @@ export function SupportChatWidgetView({
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4" role="log" aria-live="polite" aria-relevant="additions text" aria-busy={isSending}>
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -187,6 +187,7 @@ export function SupportChatWidgetView({
                 onChange={(event) => setNewMessage(event.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={t("typeMessage") || "Type a message..."}
+                aria-label={t("typeMessage") || "Type a message"}
                 disabled={isSending}
                 className="flex-1"
               />

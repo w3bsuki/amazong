@@ -6,7 +6,7 @@ import {
     createPaymentMethodSetupSession,
     deletePaymentMethod,
     setDefaultPaymentMethod,
-} from "@/app/actions/payments"
+} from "../../../../actions/payments"
 
 const PAYMENT_METHODS_SELECT =
     'id,stripe_payment_method_id,card_brand,card_last4,card_exp_month,card_exp_year,is_default'

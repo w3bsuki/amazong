@@ -204,6 +204,350 @@ function extractTags(message: string): string[] {
   return [...new Set(words)].slice(0, 6);
 }
 
+type ConversationMessage = { role: string; content: string };
+
+type AssistantPayload = {
+  message: string;
+  conversationHistory: ConversationMessage[];
+};
+
+type CategoryEntry = { id: string; name: string; slug: string };
+
+type ParsedAssistantResponse = Record<string, unknown>;
+
+type ProviderName = "lovable" | "gemini" | "heuristic";
+
+type FiltersShape = {
+  priceMin?: number | null;
+  priceMax?: number | null;
+  category?: string | null;
+  tags?: string[];
+};
+
+function jsonResponse(
+  corsHeaders: Record<string, string>,
+  body: Record<string, unknown>,
+  status = 200
+): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function buildInvalidJsonResponse(corsHeaders: Record<string, string>): Response {
+  return jsonResponse(corsHeaders, {
+    error: "invalid_json",
+    message: "Invalid request body. Expected JSON.",
+    messageKey: "ai.invalidJson",
+    products: [],
+    filters: {},
+    suggestions: [],
+  }, 400);
+}
+
+function buildRateLimitResponse(corsHeaders: Record<string, string>): Response {
+  return jsonResponse(corsHeaders, {
+    error: "rate_limited",
+    message: "Rate limit exceeded. Please try again in a moment.",
+    messageKey: "ai.rateLimited",
+  }, 429);
+}
+
+function buildUnavailableResponse(corsHeaders: Record<string, string>): Response {
+  return jsonResponse(corsHeaders, {
+    error: "service_unavailable",
+    message: "Service temporarily unavailable. Please try again later.",
+    messageKey: "ai.unavailable",
+  }, 402);
+}
+
+function parsePayload(body: unknown): AssistantPayload {
+  const payload = body as {
+    message?: string;
+    conversationHistory?: Array<{ role: string; content: string }>;
+  };
+
+  return {
+    message: typeof payload.message === "string" ? payload.message : "",
+    conversationHistory: Array.isArray(payload.conversationHistory)
+      ? payload.conversationHistory
+      : [],
+  };
+}
+
+function parseStructuredAiText(
+  responseText: string
+): ParsedAssistantResponse {
+  try {
+    const jsonMatch =
+      responseText.match(/```json\\s*([\\s\\S]*?)\\s*```/) ||
+      responseText.match(/```\\s*([\\s\\S]*?)\\s*```/) ||
+      [null, responseText];
+    const jsonStr = jsonMatch[1] || responseText;
+    return JSON.parse(String(jsonStr).trim()) as ParsedAssistantResponse;
+  } catch {
+    return {
+      message: responseText,
+      messageKey: "ai.response",
+      products: [],
+      filters: {},
+      suggestions: [],
+    };
+  }
+}
+
+async function tryLovableProvider(params: {
+  apiKey: string;
+  systemPrompt: string;
+  conversationHistory: ConversationMessage[];
+  message: string;
+  corsHeaders: Record<string, string>;
+}): Promise<{ parsedResponse: ParsedAssistantResponse | null; earlyResponse: Response | null }> {
+  const { apiKey, systemPrompt, conversationHistory, message, corsHeaders } = params;
+  const messages = [
+    { role: "system", content: systemPrompt },
+    ...conversationHistory.map((msg) => ({
+      role: msg.role,
+      content: msg.content,
+    })),
+    { role: "user", content: message },
+  ];
+
+  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages,
+      temperature: 0.7,
+    }),
+  });
+
+  if (!response.ok) {
+    console.error("AI gateway error:", response.status);
+    if (response.status === 429) {
+      return { parsedResponse: null, earlyResponse: buildRateLimitResponse(corsHeaders) };
+    }
+    if (response.status === 402) {
+      return { parsedResponse: null, earlyResponse: buildUnavailableResponse(corsHeaders) };
+    }
+    // If the AI gateway is misconfigured, fall back to heuristic mode rather than 500'ing.
+    return { parsedResponse: null, earlyResponse: null };
+  }
+
+  const data = (await response.json().catch(() => null)) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  } | null;
+  const aiResponse = data?.choices?.[0]?.message?.content;
+  if (typeof aiResponse !== "string") {
+    return { parsedResponse: null, earlyResponse: null };
+  }
+
+  return {
+    parsedResponse: parseStructuredAiText(aiResponse),
+    earlyResponse: null,
+  };
+}
+
+async function tryGeminiProvider(params: {
+  apiKey: string;
+  systemPrompt: string;
+  conversationHistory: ConversationMessage[];
+  message: string;
+}): Promise<ParsedAssistantResponse | null> {
+  const { apiKey, systemPrompt, conversationHistory, message } = params;
+  const geminiText = await callGeminiDirect({
+    apiKey,
+    systemPrompt,
+    conversationHistory,
+    message,
+  });
+
+  if (!geminiText) {
+    return null;
+  }
+
+  return parseStructuredAiText(geminiText);
+}
+
+function buildHeuristicParsedResponse(
+  message: string,
+  categoryList: CategoryEntry[]
+): ParsedAssistantResponse {
+  const { priceMin, priceMax } = extractPriceRange(message);
+  const category = resolveCategorySlug(message, categoryList);
+  const tags = extractTags(message);
+
+  return {
+    message: "",
+    products: [],
+    filters: {
+      priceMin,
+      priceMax,
+      category,
+      tags,
+    },
+    suggestions: [],
+  };
+}
+
+function normalizeFiltersFromResponse(
+  parsedResponse: ParsedAssistantResponse
+): {
+  priceMin: number | null;
+  priceMax: number | null;
+  tags: string[];
+  categorySlug: string | null;
+} {
+  const filters = (parsedResponse.filters ?? {}) as FiltersShape;
+  const priceMin = typeof filters.priceMin === "number" ? filters.priceMin : null;
+  const priceMax = typeof filters.priceMax === "number" ? filters.priceMax : null;
+  const tags = Array.isArray(filters.tags)
+    ? filters.tags.filter(Boolean).map((t) => String(t).toLowerCase())
+    : [];
+  const categorySlug = typeof filters.category === "string" ? filters.category : null;
+
+  return { priceMin, priceMax, tags, categorySlug };
+}
+
+function isSpecificQuery(params: {
+  message: string;
+  priceMin: number | null;
+  priceMax: number | null;
+  tags: string[];
+  categorySlug: string | null;
+}): boolean {
+  const { message, priceMin, priceMax, tags, categorySlug } = params;
+  const msgWords = String(message ?? "")
+    .trim()
+    .split(/\\s+/)
+    .filter((w) => w.length > 1).length;
+
+  return priceMin !== null || priceMax !== null || tags.length >= 1 || categorySlug !== null || msgWords >= 3;
+}
+
+function applyClarificationFallback(
+  parsedResponse: ParsedAssistantResponse,
+  params: {
+    priceMin: number | null;
+    priceMax: number | null;
+    categorySlug: string | null;
+    tags: string[];
+  }
+): ParsedAssistantResponse {
+  const { priceMin, priceMax, categorySlug, tags } = params;
+  parsedResponse.products = [];
+  parsedResponse.filters = {
+    priceMin,
+    priceMax,
+    category: categorySlug,
+    tags,
+  };
+
+  if (!parsedResponse.message || typeof parsedResponse.message !== "string") {
+    parsedResponse.message =
+      "Quick question so I can narrow it down: what's your budget, and any preferences (make/model/type)?";
+    parsedResponse.messageKey = "ai.clarify";
+  }
+
+  if (!Array.isArray(parsedResponse.suggestions) || parsedResponse.suggestions.length === 0) {
+    parsedResponse.suggestions = DEFAULT_SUGGESTIONS;
+  }
+
+  return parsedResponse;
+}
+
+function resolveCategoryId(categorySlug: string | null, categoryList: CategoryEntry[]): string | null {
+  if (!categorySlug) return null;
+  return categoryList.find((c) => c.slug === categorySlug)?.id ?? null;
+}
+
+function buildBaseProductQuery(
+  supabase: ReturnType<typeof createClient>,
+  params: { categoryId: string | null; priceMin: number | null; priceMax: number | null }
+) {
+  const { categoryId, priceMin, priceMax } = params;
+  let q = supabase
+    .from("products")
+    .select("id")
+    .order("created_at", { ascending: false })
+    .limit(12);
+
+  if (categoryId) q = q.eq("category_id", categoryId);
+  if (priceMin !== null) q = q.gte("price", priceMin);
+  if (priceMax !== null) q = q.lte("price", priceMax);
+  return q;
+}
+
+async function queryMatchedProductIds(params: {
+  supabase: ReturnType<typeof createClient>;
+  categoryId: string | null;
+  priceMin: number | null;
+  priceMax: number | null;
+  tags: string[];
+}): Promise<{ ids: string[]; matchError: unknown }> {
+  const { supabase, categoryId, priceMin, priceMax, tags } = params;
+
+  const runBaseQuery = () =>
+    buildBaseProductQuery(supabase, {
+      categoryId,
+      priceMin,
+      priceMax,
+    });
+
+  let matched: Array<{ id: string }> | null = null;
+  let matchError: unknown = null;
+
+  if (tags.length > 0) {
+    // 1) Prefer array overlap on tags.
+    try {
+      // @ts-expect-error - overlaps typing not available in this Supabase client version
+      const { data, error } = await runBaseQuery().overlaps("tags", tags);
+      matched = data ?? null;
+      matchError = error;
+    } catch (e) {
+      matchError = e;
+    }
+
+    // 2) If overlap fails or returns nothing, try searching the name.
+    if (matchError || !matched || matched.length === 0) {
+      const safeTags = tags
+        .map((t) => String(t).toLowerCase().replaceAll(/[^a-z0-9-]/g, ""))
+        .filter(Boolean)
+        .slice(0, 4);
+
+      if (safeTags.length > 0) {
+        const orFilter = safeTags.map((t) => `name.ilike.%${t}%`).join(",");
+        const { data, error } = await runBaseQuery().or(orFilter);
+        if (!error && data && data.length > 0) {
+          matched = data;
+          matchError = null;
+        }
+      }
+    }
+
+    // 3) Last resort: return latest matches without tags so the UI isn't empty.
+    if (!matched || matched.length === 0) {
+      const { data, error } = await runBaseQuery();
+      matched = data ?? null;
+      matchError = error;
+    }
+  } else {
+    const { data, error } = await runBaseQuery();
+    matched = data ?? null;
+    matchError = error;
+  }
+
+  return {
+    ids: (matched ?? []).map((row) => row.id),
+    matchError,
+  };
+}
+
 serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req.headers.get("Origin"));
 
@@ -216,31 +560,10 @@ serve(async (req) => {
     try {
       body = await req.json();
     } catch {
-      return new Response(
-        JSON.stringify({
-          error: "invalid_json",
-          message: "Invalid request body. Expected JSON.",
-          messageKey: "ai.invalidJson",
-          products: [],
-          filters: {},
-          suggestions: [],
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return buildInvalidJsonResponse(corsHeaders);
     }
 
-    const payload = body as {
-      message?: string;
-      conversationHistory?: Array<{ role: string; content: string }>;
-    };
-
-    const message: string = typeof payload.message === "string" ? payload.message : "";
-    const conversationHistory = Array.isArray(payload.conversationHistory)
-      ? payload.conversationHistory
-      : [];
+    const { message, conversationHistory } = parsePayload(body);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") ?? null;
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? null;
@@ -301,257 +624,80 @@ Guidance:
 - Suggestion chips: 4-6 short refinements (e.g., "Under $5,000", "Automatic", "Low mileage").
 `;
 
-    // Either call an LLM (if configured) or fall back to a heuristic intent extractor.
-    let parsedResponse: Record<string, unknown> | null = null;
-    let provider: "lovable" | "gemini" | "heuristic" = "heuristic";
+    let parsedResponse: ParsedAssistantResponse | null = null;
+    let provider: ProviderName = "heuristic";
 
     if (LOVABLE_API_KEY) {
-      const messages = [
-        { role: "system", content: systemPrompt },
-        ...conversationHistory.map((msg) => ({
-          role: msg.role,
-          content: msg.content,
-        })),
-        { role: "user", content: message },
-      ];
-
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages,
-          temperature: 0.7,
-        }),
+      const lovableResult = await tryLovableProvider({
+        apiKey: LOVABLE_API_KEY,
+        systemPrompt,
+        conversationHistory,
+        message,
+        corsHeaders,
       });
-
-      if (!response.ok) {
-        console.error("AI gateway error:", response.status);
-
-        if (response.status === 429) {
-          return new Response(
-            JSON.stringify({
-              error: "rate_limited",
-              message: "Rate limit exceeded. Please try again in a moment.",
-              messageKey: "ai.rateLimited",
-            }),
-            {
-              status: 429,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            }
-          );
-        }
-        if (response.status === 402) {
-          return new Response(
-            JSON.stringify({
-              error: "service_unavailable",
-              message: "Service temporarily unavailable. Please try again later.",
-              messageKey: "ai.unavailable",
-            }),
-            {
-              status: 402,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            }
-          );
-        }
-
-        // If the AI gateway is misconfigured, fall back to heuristic mode rather than 500'ing.
-        parsedResponse = null;
-      } else {
-        const data = (await response.json().catch(() => null)) as {
-          choices?: Array<{ message?: { content?: string } }>;
-        } | null;
-        const aiResponse = data?.choices?.[0]?.message?.content;
-        if (typeof aiResponse !== "string") {
-          parsedResponse = null;
-        } else {
-          try {
-            const jsonMatch =
-              aiResponse.match(/```json\\s*([\\s\\S]*?)\\s*```/) ||
-              aiResponse.match(/```\\s*([\\s\\S]*?)\\s*```/) ||
-              [null, aiResponse];
-            const jsonStr = jsonMatch[1] || aiResponse;
-            parsedResponse = JSON.parse(jsonStr.trim()) as Record<string, unknown>;
-            provider = "lovable";
-          } catch {
-            parsedResponse = {
-              message: aiResponse,
-              messageKey: "ai.response",
-              products: [],
-              filters: {},
-              suggestions: [],
-            };
-            provider = "lovable";
-          }
-        }
+      if (lovableResult.earlyResponse) {
+        return lovableResult.earlyResponse;
+      }
+      if (lovableResult.parsedResponse) {
+        parsedResponse = lovableResult.parsedResponse;
+        provider = "lovable";
       }
     }
 
     if (!parsedResponse && GEMINI_API_KEY) {
-      const geminiText = await callGeminiDirect({
+      const geminiParsed = await tryGeminiProvider({
         apiKey: GEMINI_API_KEY,
         systemPrompt,
         conversationHistory,
         message,
       });
-
-      if (geminiText) {
-        try {
-          const jsonMatch =
-            geminiText.match(/```json\\s*([\\s\\S]*?)\\s*```/) ||
-            geminiText.match(/```\\s*([\\s\\S]*?)\\s*```/) ||
-            [null, geminiText];
-          const jsonStr = jsonMatch[1] || geminiText;
-          parsedResponse = JSON.parse(String(jsonStr).trim()) as Record<string, unknown>;
-          provider = "gemini";
-        } catch {
-          parsedResponse = {
-            message: geminiText,
-            messageKey: "ai.response",
-            products: [],
-            filters: {},
-            suggestions: [],
-          };
-          provider = "gemini";
-        }
+      if (geminiParsed) {
+        parsedResponse = geminiParsed;
+        provider = "gemini";
       }
     }
 
     if (!parsedResponse) {
-      const { priceMin, priceMax } = extractPriceRange(message);
-      const category = resolveCategorySlug(message, categoryList);
-      const tags = extractTags(message);
-      parsedResponse = {
-        message: "",
-        products: [],
-        filters: {
-          priceMin,
-          priceMax,
-          category,
-          tags,
-        },
-        suggestions: [],
-      };
+      parsedResponse = buildHeuristicParsedResponse(message, categoryList);
       provider = "heuristic";
     }
 
     parsedResponse._meta = { provider };
 
     // Server-side: ALWAYS show products. Only ask clarifying questions for extremely vague queries.
-    const filters = (parsedResponse.filters ?? {}) as {
-      priceMin?: number | null;
-      priceMax?: number | null;
-      category?: string | null;
-      tags?: string[];
-    };
-    const priceMin = typeof filters.priceMin === "number" ? filters.priceMin : null;
-    const priceMax = typeof filters.priceMax === "number" ? filters.priceMax : null;
-    const tags = Array.isArray(filters.tags)
-      ? filters.tags.filter(Boolean).map((t) => String(t).toLowerCase())
-      : [];
-    const categorySlug = typeof filters.category === "string" ? filters.category : null;
-
-    // Show products if: any price filter, any tags, any category, or message has 3+ words (specific query)
-    const msgWords = String(message ?? "")
-      .trim()
-      .split(/\\s+/)
-      .filter((w) => w.length > 1).length;
-    const isSpecific =
-      priceMin !== null || priceMax !== null || tags.length >= 1 || categorySlug !== null || msgWords >= 3;
-
-    // Resolve category slug -> id
-    const categoryId = categorySlug
-      ? categoryList.find((c) => c.slug === categorySlug)?.id ?? null
-      : null;
+    const { priceMin, priceMax, tags, categorySlug } = normalizeFiltersFromResponse(parsedResponse);
+    const specific = isSpecificQuery({
+      message,
+      priceMin,
+      priceMax,
+      tags,
+      categorySlug,
+    });
 
     // If not specific, force clarification: no products.
-    if (!isSpecific) {
-      parsedResponse.products = [];
-      parsedResponse.filters = {
+    if (!specific) {
+      const clarified = applyClarificationFallback(parsedResponse, {
         priceMin,
         priceMax,
-        category: categorySlug,
+        categorySlug,
         tags,
-      };
-
-      if (!parsedResponse.message || typeof parsedResponse.message !== "string") {
-        parsedResponse.message =
-          "Quick question so I can narrow it down: what's your budget, and any preferences (make/model/type)?";
-        parsedResponse.messageKey = "ai.clarify";
-      }
-
-      if (!Array.isArray(parsedResponse.suggestions) || parsedResponse.suggestions.length === 0) {
-        parsedResponse.suggestions = DEFAULT_SUGGESTIONS;
-      }
-
-      return new Response(JSON.stringify(parsedResponse), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+      return jsonResponse(corsHeaders, clarified);
     }
 
     // Specific enough: query DB to get product IDs.
-    const buildBaseQuery = () => {
-      let q = supabase
-        .from("products")
-        .select("id")
-        .order("created_at", { ascending: false })
-        .limit(12);
-
-      if (categoryId) q = q.eq("category_id", categoryId);
-      if (priceMin !== null) q = q.gte("price", priceMin);
-      if (priceMax !== null) q = q.lte("price", priceMax);
-      return q;
-    };
-
-    let matched: Array<{ id: string }> | null = null;
-    let matchError: unknown = null;
-
-    if (tags.length > 0) {
-      // 1) Prefer array overlap on tags.
-      try {
-        // @ts-expect-error - overlaps typing not available in this Supabase client version
-        const { data, error } = await buildBaseQuery().overlaps("tags", tags);
-        matched = data ?? null;
-        matchError = error;
-      } catch (e) {
-        matchError = e;
-      }
-
-      // 2) If overlap fails or returns nothing, try searching the name.
-      if (matchError || !matched || matched.length === 0) {
-        const safeTags = tags
-          .map((t) => String(t).toLowerCase().replaceAll(/[^a-z0-9-]/g, ""))
-          .filter(Boolean)
-          .slice(0, 4);
-
-        if (safeTags.length > 0) {
-          const orFilter = safeTags.map((t) => `name.ilike.%${t}%`).join(",");
-          const { data, error } = await buildBaseQuery().or(orFilter);
-          if (!error && data && data.length > 0) {
-            matched = data;
-            matchError = null;
-          }
-        }
-      }
-
-      // 3) Last resort: return latest matches without tags so the UI isn't empty.
-      if (!matched || matched.length === 0) {
-        const { data, error } = await buildBaseQuery();
-        matched = data ?? null;
-        matchError = error;
-      }
-    } else {
-      const { data, error } = await buildBaseQuery();
-      matched = data ?? null;
-      matchError = error;
-    }
+    const categoryId = resolveCategoryId(categorySlug, categoryList);
+    const { ids, matchError } = await queryMatchedProductIds({
+      supabase,
+      categoryId,
+      priceMin,
+      priceMax,
+      tags,
+    });
 
     if (matchError) console.error("Error querying matched products");
 
-    parsedResponse.products = (matched ?? []).map((r) => r.id);
+    parsedResponse.products = ids;
     parsedResponse.filters = {
       priceMin,
       priceMax,
@@ -562,24 +708,16 @@ Guidance:
     // Make sure suggestions exists.
     if (!Array.isArray(parsedResponse.suggestions)) parsedResponse.suggestions = [];
 
-    return new Response(JSON.stringify(parsedResponse), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(corsHeaders, parsedResponse);
   } catch {
     console.error("Error in ai-shopping-assistant");
-    return new Response(
-      JSON.stringify({
-        error: "internal_error",
-        message: "I'm having trouble right now. Please try again!",
-        messageKey: "ai.error",
-        products: [],
-        filters: {},
-        suggestions: [],
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return jsonResponse(corsHeaders, {
+      error: "internal_error",
+      message: "I'm having trouble right now. Please try again!",
+      messageKey: "ai.error",
+      products: [],
+      filters: {},
+      suggestions: [],
+    }, 500);
   }
 });

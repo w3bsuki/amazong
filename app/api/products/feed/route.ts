@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
 import { toUI, normalizeProductRow } from "@/lib/data/products"
 import { 
   cachedJsonResponse, 
   dbUnavailableResponse, 
+  noStoreJson,
   parsePaginationParams 
 } from "@/lib/api/response-helpers"
 import { z } from "zod"
@@ -34,6 +35,106 @@ const FeedQuerySchema = z.object({
   filters: z.string().trim().max(200).optional(),
 })
 
+type FeedType = (typeof FEED_TYPE_VALUES)[number]
+type ParsedFeedQuery = { success: boolean; data?: z.infer<typeof FeedQuerySchema> }
+
+interface FeedQueryLike {
+  eq(column: string, value: unknown): this
+  gt(column: string, value: unknown): this
+  gte(column: string, value: unknown): this
+  lt(column: string, value: unknown): this
+  ilike(column: string, value: string): this
+  order(column: string, options?: { ascending?: boolean; nullsFirst?: boolean }): this
+}
+
+function resolveFeedType(parsedQuery: ParsedFeedQuery, filterTypes: Set<string>): FeedType {
+  if (!parsedQuery.success || !parsedQuery.data) return "all"
+
+  const requestedType = parsedQuery.data.type ?? parsedQuery.data.sort ?? "all"
+  if (requestedType !== "all") return requestedType
+
+  let resolvedType: FeedType = "all"
+  if (filterTypes.has("nearby") || filterTypes.has("near_me")) resolvedType = "nearby"
+  if (filterTypes.has("promoted")) resolvedType = "promoted"
+  if (filterTypes.has("deals")) resolvedType = "deals"
+  if (filterTypes.has("free_shipping")) resolvedType = "free_shipping"
+  return resolvedType
+}
+
+function normalizeNearbyCity(city: string | undefined): string {
+  if (city && city !== "undefined" && city !== "null") {
+    return city
+  }
+  // Default to Sofia for Bulgarian users if no city detected yet
+  return "sofia"
+}
+
+function applyTypeSpecificFeedQuery<T extends FeedQueryLike>(query: T, type: FeedType, nowIso: string, city: string | undefined): T {
+  switch (type) {
+    case "promoted":
+      // Only show products with ACTIVE boosts (not expired) and use fair rotation
+      return query
+        .eq("is_boosted", true)
+        .gt("boost_expires_at", nowIso)
+        .order("boost_expires_at", { ascending: true }) // Fair rotation: soonest-expiring first
+
+    case "deals":
+      return query
+        .order("effective_discount", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false })
+
+    case "top_rated":
+      return query
+        .gte("rating", 4)
+        .order("rating", { ascending: false })
+        .order("review_count", { ascending: false })
+
+    case "most_viewed":
+      // Proxy for most viewed: high review count + high rating
+      return query
+        .order("review_count", { ascending: false })
+        .order("rating", { ascending: false })
+
+    case "best_sellers":
+      // Proxy for best sellers: high review count + recent
+      return query
+        .order("review_count", { ascending: false })
+        .order("created_at", { ascending: false })
+
+    case "price_low":
+      return query.order("price", { ascending: true })
+
+    case "price_high":
+      return query.order("price", { ascending: false })
+
+    case "free_shipping":
+      return query
+        .eq("free_shipping", true)
+        .order("created_at", { ascending: false })
+
+    case "ending_soon": {
+      // Sales ending within 7 days, sorted by soonest end
+      const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      return query
+        .eq("is_on_sale", true)
+        .gt("sale_end_date", nowIso)
+        .lt("sale_end_date", weekFromNow)
+        .order("sale_end_date", { ascending: true })
+    }
+
+    case "nearby":
+    case "near_me":
+      return query
+        .ilike("seller_city", normalizeNearbyCity(city))
+        .order("created_at", { ascending: false })
+
+    case "newest":
+    case "all":
+    default:
+      return query.order("created_at", { ascending: false })
+  }
+}
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const parsedQuery = FeedQuerySchema.safeParse({
@@ -51,16 +152,7 @@ export async function GET(request: NextRequest) {
       .filter(Boolean) ?? []
   )
 
-  let type: (typeof FEED_TYPE_VALUES)[number] = "all"
-  if (parsedQuery.success) {
-    type = parsedQuery.data.type ?? parsedQuery.data.sort ?? "all"
-    if (type === "all") {
-      if (filterTypes.has("nearby") || filterTypes.has("near_me")) type = "nearby"
-      if (filterTypes.has("promoted")) type = "promoted"
-      if (filterTypes.has("deals")) type = "deals"
-      if (filterTypes.has("free_shipping")) type = "free_shipping"
-    }
-  }
+  const type = resolveFeedType(parsedQuery, filterTypes)
 
   const { page, limit: safeLimit, offset } = parsePaginationParams(searchParams)
   const category = parsedQuery.success ? parsedQuery.data.category : undefined
@@ -70,7 +162,7 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = createStaticClient()
     if (!supabase) {
-      return dbUnavailableResponse()
+      return dbUnavailableResponse({ products: [], hasMore: false })
     }
 
     const baseSelect = `
@@ -143,83 +235,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Apply Type-specific Filters and Sorting
-    switch (type) {
-      case 'promoted':
-        // Only show products with ACTIVE boosts (not expired) and use fair rotation
-        query = query.eq('is_boosted', true)
-        query = query.gt('boost_expires_at', nowIso)
-        query = query.order('boost_expires_at', { ascending: true }) // Fair rotation: soonest-expiring first
-        break
-      
-      case 'deals':
-        query = query
-          .order('effective_discount', { ascending: false, nullsFirst: false })
-          .order('created_at', { ascending: false })
-        break
-
-      case 'top_rated':
-        query = query.gte('rating', 4)
-        query = query.order('rating', { ascending: false })
-        query = query.order('review_count', { ascending: false })
-        break
-
-      case 'most_viewed':
-        // Proxy for most viewed: high review count + high rating
-        query = query.order('review_count', { ascending: false })
-        query = query.order('rating', { ascending: false })
-        break
-
-      case 'best_sellers':
-        // Proxy for best sellers: high review count + recent
-        query = query.order('review_count', { ascending: false })
-        query = query.order('created_at', { ascending: false })
-        break
-
-      case 'price_low':
-        query = query.order('price', { ascending: true })
-        break
-
-      case 'price_high':
-        query = query.order('price', { ascending: false })
-        break
-
-      case 'free_shipping':
-        query = query.eq('free_shipping', true)
-        query = query.order('created_at', { ascending: false })
-        break
-
-      case 'ending_soon':
-        // Sales ending within 7 days, sorted by soonest end
-        query = query.eq('is_on_sale', true)
-        query = query.gt('sale_end_date', nowIso)
-        const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-        query = query.lt('sale_end_date', weekFromNow)
-        query = query.order('sale_end_date', { ascending: true })
-        break
-
-      case 'nearby':
-      case 'near_me':
-        if (city && city !== 'undefined' && city !== 'null') {
-          query = query.ilike('seller_city', city)
-        } else {
-          // Default to Sofia for Bulgarian users if no city detected yet
-          query = query.ilike('seller_city', 'sofia')
-        }
-        query = query.order('created_at', { ascending: false })
-        break
-
-      case 'newest':
-      case 'all':
-      default:
-        query = query.order('created_at', { ascending: false })
-        break
-    }
+    query = applyTypeSpecificFeedQuery(query, type, nowIso, city)
 
     const { data, error, count } = await query.range(offset, offset + safeLimit - 1)
 
     if (error) {
       console.error("[API] Feed products error:", error.message)
-      return NextResponse.json({ 
+      return noStoreJson({ 
         products: [], 
         hasMore: false,
         error: error.message 
@@ -251,7 +273,7 @@ export async function GET(request: NextRequest) {
     )
   } catch (error) {
     console.error("[API] Feed products exception:", error)
-    return NextResponse.json({ 
+    return noStoreJson({ 
       products: [], 
       hasMore: false,
       error: "Internal server error" 

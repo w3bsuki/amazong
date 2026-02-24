@@ -182,6 +182,7 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
       cantFind: "Can't find what you're looking for?",
       contactUs: 'Contact our support team',
       categories: 'Browse by category',
+      breadcrumbLabel: 'FAQ',
     },
     bg: {
       title: 'Често задавани въпроси',
@@ -190,6 +191,7 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
       cantFind: 'Не намирате това, което търсите?',
       contactUs: 'Свържете се с нашия екип',
       categories: 'Прегледай по категория',
+      breadcrumbLabel: 'ЧЗВ',
     },
   }[locale as 'en' | 'bg'] || {
     title: 'Frequently Asked Questions',
@@ -198,10 +200,11 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
     cantFind: "Can't find what you're looking for?",
     contactUs: 'Contact our support team',
     categories: 'Browse by category',
+    breadcrumbLabel: 'FAQ',
   }
 
   const breadcrumbItems = [
-    { label: locale === 'bg' ? 'ЧЗВ' : 'FAQ' },
+    { label: t.breadcrumbLabel },
   ]
 
   return (

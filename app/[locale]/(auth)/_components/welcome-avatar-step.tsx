@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { AVATAR_VARIANTS, COLOR_PALETTES, type AvatarVariant } from "@/lib/avatar-palettes"
 import { ArrowRight, Camera, Image as ImageIcon, LoaderCircle as SpinnerGap } from "lucide-react"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 import { StepHeader } from "./welcome-step-header"
 
 export function WelcomeAvatarStep({
@@ -34,6 +35,9 @@ export function WelcomeAvatarStep({
   onSelectVariant: (variant: AvatarVariant) => void
   onSelectPalette: (idx: number) => void
 }) {
+  const tOnboarding = useTranslations("Onboarding")
+  const tAuth = useTranslations("Auth")
+
   return (
     <motion.div
       key="avatar"
@@ -42,7 +46,11 @@ export function WelcomeAvatarStep({
       exit={{ opacity: 0, x: -20 }}
       className="bg-card rounded-xl border border-border overflow-hidden"
     >
-      <StepHeader onBack={onBack} title="Choose your avatar" description="Pick a style or upload your own photo" />
+      <StepHeader
+        onBack={onBack}
+        title={tOnboarding("profile.profileImageLabel")}
+        description={tOnboarding("profile.profileImageHint")}
+      />
 
       <div className="p-4 space-y-4">
         <div className="flex justify-center">
@@ -50,7 +58,7 @@ export function WelcomeAvatarStep({
             {useCustomAvatar && avatarPreview ? (
               <Image
                 src={avatarPreview}
-                alt="Avatar preview"
+                alt={tOnboarding("profile.profileImageLabel")}
                 width={96}
                 height={96}
                 className="size-24 rounded-full object-cover border-4 border-selected-border"
@@ -65,7 +73,7 @@ export function WelcomeAvatarStep({
             )}
             <label
               className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-interactive-hover rounded-full flex items-center justify-center cursor-pointer shadow-sm transition-colors"
-              aria-label="Upload avatar image"
+              aria-label={tOnboarding("profile.profileImageLabel")}
             >
               <Camera className="size-4 text-primary-foreground" />
               <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
@@ -74,7 +82,7 @@ export function WelcomeAvatarStep({
         </div>
 
         <div>
-          <h3 className="text-sm font-medium text-foreground mb-3">Or choose a style</h3>
+          <h3 className="text-sm font-medium text-foreground mb-3">{tAuth("or")}</h3>
           <div className="grid grid-cols-6 gap-2">
             {AVATAR_VARIANTS.map((variant) => (
               <button
@@ -101,7 +109,7 @@ export function WelcomeAvatarStep({
 
         {!useCustomAvatar && (
           <div>
-            <h3 className="text-sm font-medium text-foreground mb-3">Color palette</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3">{tOnboarding("profile.profileImageLabel")}</h3>
             <div className="grid grid-cols-6 gap-2">
               {COLOR_PALETTES.map((palette, idx) => (
                 <button
@@ -128,7 +136,7 @@ export function WelcomeAvatarStep({
           <div className="text-center">
             <label className="inline-flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground cursor-pointer rounded-lg hover:bg-muted transition-colors">
               <ImageIcon className="size-4" />
-              Upload your own photo
+              {tOnboarding("profile.profileImageHint")}
               <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
             </label>
           </div>
@@ -136,7 +144,7 @@ export function WelcomeAvatarStep({
 
         <div className="flex gap-3 pt-4">
           <Button variant="outline" onClick={onBack} className="flex-1">
-            Back
+            {tOnboarding("common.back")}
           </Button>
           <Button
             onClick={onContinue}
@@ -147,7 +155,7 @@ export function WelcomeAvatarStep({
               <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
             ) : (
               <>
-                Continue <ArrowRight className="size-4 ml-2" />
+                {tOnboarding("common.continue")} <ArrowRight className="size-4 ml-2" />
               </>
             )}
           </Button>

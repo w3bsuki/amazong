@@ -6,6 +6,7 @@ import { createStaticClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/database.types'
 import { CATEGORY_ATTRIBUTES_SELECT } from '@/lib/supabase/selects/categories'
 import { normalizeAttributeKey } from '@/lib/attributes/normalize-attribute-key'
+import { isUuid } from '@/lib/utils/is-uuid'
 import type { AttributeType, CategoryAttribute, CategoryAttributeInheritScope } from '@/lib/types/categories'
 
 const VALID_ATTRIBUTE_TYPES: AttributeType[] = ['select', 'multiselect', 'boolean', 'number', 'text', 'date']
@@ -13,10 +14,37 @@ const MAX_ANCESTOR_DEPTH = 6
 
 export type CategoryAttributeRow = Database['public']['Tables']['category_attributes']['Row']
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+type CategoryAttributeSourceRow = Pick<
+  CategoryAttributeRow,
+  | 'id'
+  | 'category_id'
+  | 'name'
+  | 'name_bg'
+  | 'attribute_type'
+  | 'attribute_key'
+  | 'inherit_scope'
+  | 'options'
+  | 'options_bg'
+  | 'placeholder'
+  | 'placeholder_bg'
+  | 'is_filterable'
+  | 'is_required'
+  | 'is_hero_spec'
+  | 'hero_priority'
+  | 'is_badge_spec'
+  | 'badge_priority'
+  | 'unit_suffix'
+  | 'sort_order'
+  | 'validation_rules'
+>
 
-function isUuid(value: string): boolean {
-  return UUID_RE.test(value)
+function isMissingColumnError(error: unknown, columnName: string): boolean {
+  if (typeof error !== 'object' || error === null) return false
+
+  const record = error as Record<string, unknown>
+  const code = typeof record.code === 'string' ? record.code : ''
+  const message = typeof record.message === 'string' ? record.message : ''
+  return code === '42703' && message.includes(columnName)
 }
 
 function normalizeInheritScope(
@@ -27,7 +55,7 @@ function normalizeInheritScope(
   return categoryId ? 'self_only' : 'global'
 }
 
-export function toCategoryAttribute(row: CategoryAttributeRow): CategoryAttribute {
+export function toCategoryAttribute(row: CategoryAttributeSourceRow): CategoryAttribute {
   const attrType = VALID_ATTRIBUTE_TYPES.includes(row.attribute_type as AttributeType)
     ? (row.attribute_type as AttributeType)
     : 'text'
@@ -167,30 +195,83 @@ export async function resolveCategoryAttributesWithClient(
     ? await getCategoryAncestorIds(supabase, categoryId)
     : [categoryId]
 
-  const scopedQuery = supabase
-    .from('category_attributes')
-    .select(CATEGORY_ATTRIBUTES_SELECT)
-    .in('category_id', ancestorIds)
+  const legacySelect = CATEGORY_ATTRIBUTES_SELECT.replace(',is_active', '')
 
-  const scopedResult = filterableOnly ? scopedQuery.eq('is_filterable', true) : scopedQuery
-  const { data: scopedRows, error: scopedError } = await scopedResult.order('sort_order')
+  const buildScopedQueryWithActive = () =>
+    supabase
+      .from('category_attributes')
+      .select(CATEGORY_ATTRIBUTES_SELECT)
+      .in('category_id', ancestorIds)
+      .eq('is_active', true)
+
+  const buildScopedQueryLegacy = () =>
+    supabase.from('category_attributes').select(legacySelect).in('category_id', ancestorIds)
+
+  let scopedRows: unknown = null
+  let scopedError: unknown = null
+
+  {
+    const scopedQuery = filterableOnly
+      ? buildScopedQueryWithActive().eq('is_filterable', true)
+      : buildScopedQueryWithActive()
+
+    const result = await scopedQuery.order('sort_order')
+    scopedRows = result.data
+    scopedError = result.error
+  }
+
+  if (scopedError && isMissingColumnError(scopedError, 'is_active')) {
+    const scopedQuery = filterableOnly ? buildScopedQueryLegacy().eq('is_filterable', true) : buildScopedQueryLegacy()
+
+    const result = await scopedQuery.order('sort_order')
+    scopedRows = result.data
+    scopedError = result.error
+  }
+
   if (scopedError) {
     return { attributes: [], ancestorIds }
   }
 
-  let globalRows: CategoryAttributeRow[] = []
+  let globalRows: CategoryAttributeSourceRow[] = []
   if (includeGlobal) {
-    const globalQuery = supabase
-      .from('category_attributes')
-      .select(CATEGORY_ATTRIBUTES_SELECT)
-      .is('category_id', null)
+    const buildGlobalQueryWithActive = () =>
+      supabase
+        .from('category_attributes')
+        .select(CATEGORY_ATTRIBUTES_SELECT)
+        .is('category_id', null)
+        .eq('is_active', true)
 
-    const globalResult = filterableOnly ? globalQuery.eq('is_filterable', true) : globalQuery
-    const { data: globalData } = await globalResult.order('sort_order')
-    globalRows = (globalData || []) as CategoryAttributeRow[]
+    const buildGlobalQueryLegacy = () =>
+      supabase.from('category_attributes').select(legacySelect).is('category_id', null)
+
+    let globalData: unknown = null
+    let globalError: unknown = null
+
+    {
+      const globalQuery = filterableOnly
+        ? buildGlobalQueryWithActive().eq('is_filterable', true)
+        : buildGlobalQueryWithActive()
+
+      const result = await globalQuery.order('sort_order')
+      globalData = result.data
+      globalError = result.error
+    }
+
+    if (globalError && isMissingColumnError(globalError, 'is_active')) {
+      const globalQuery = filterableOnly
+        ? buildGlobalQueryLegacy().eq('is_filterable', true)
+        : buildGlobalQueryLegacy()
+
+      const result = await globalQuery.order('sort_order')
+      globalData = result.data
+      globalError = result.error
+    }
+
+    globalRows = (globalData || []) as CategoryAttributeSourceRow[]
   }
 
-  const rawAttributes = [...(scopedRows || []), ...globalRows].map(toCategoryAttribute)
+  const scopedSourceRows = (scopedRows || []) as CategoryAttributeSourceRow[]
+  const rawAttributes = [...scopedSourceRows, ...globalRows].map(toCategoryAttribute)
   const filtered = rawAttributes.filter((attr) =>
     shouldIncludeAttribute({ attr, categoryId, includeParents, includeGlobal })
   )

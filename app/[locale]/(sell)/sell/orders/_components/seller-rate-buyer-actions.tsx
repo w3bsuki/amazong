@@ -34,6 +34,67 @@ interface SellerRateBuyerActionsProps {
   actions: SellerRateBuyerActionsServerActions
 }
 
+type SellerRateBuyerCopy = {
+  rateBuyer: string
+  ratedBuyer: string
+  ratingTitle: string
+  ratingDescription: string
+  commentLabel: string
+  commentPlaceholder: string
+  submitRating: string
+  cancel: string
+  errors: {
+    buyerOrOrderMissing: string
+    submitFailed: string
+    unexpected: string
+  }
+  toasts: {
+    feedbackSent: string
+  }
+}
+
+function getSellerRateBuyerCopy(locale: string): SellerRateBuyerCopy {
+  if (locale === "bg") {
+    return {
+      rateBuyer: "Оцени купувача",
+      ratedBuyer: "Оценен",
+      ratingTitle: "Как бихте оценили купувача?",
+      ratingDescription: "Вашата оценка помага на други продавачи да опознаят клиентите си.",
+      commentLabel: "Коментар (по избор)",
+      commentPlaceholder: "Споделете опита си с този купувач...",
+      submitRating: "Изпрати отзив",
+      cancel: "Откажи",
+      errors: {
+        buyerOrOrderMissing: "Липсва информация за купувача или поръчката",
+        submitFailed: "Неуспешно изпращане на оценката",
+        unexpected: "Възникна неочаквана грешка",
+      },
+      toasts: {
+        feedbackSent: "Благодарим за отзива!",
+      },
+    }
+  }
+
+  return {
+    rateBuyer: "Rate Buyer",
+    ratedBuyer: "Rated",
+    ratingTitle: "How would you rate the buyer?",
+    ratingDescription: "Your rating helps other sellers understand their customers better.",
+    commentLabel: "Comment (optional)",
+    commentPlaceholder: "Share your experience with this buyer...",
+    submitRating: "Submit Review",
+    cancel: "Cancel",
+    errors: {
+      buyerOrOrderMissing: "Buyer or order not found",
+      submitFailed: "Failed to submit rating",
+      unexpected: "An unexpected error occurred",
+    },
+    toasts: {
+      feedbackSent: "Thank you for your feedback!",
+    },
+  }
+}
+
 export function SellerRateBuyerActions({
   orderItemId,
   currentStatus,
@@ -41,6 +102,7 @@ export function SellerRateBuyerActions({
   actions,
 }: SellerRateBuyerActionsProps) {
   const router = useRouter()
+  const copy = getSellerRateBuyerCopy(locale)
   const [isPending, startTransition] = useTransition()
   const [showRatingDialog, setShowRatingDialog] = useState(false)
   const [canRate, setCanRate] = useState(false)
@@ -66,7 +128,7 @@ export function SellerRateBuyerActions({
 
   async function handleSubmitRating(rating: number, comment: string) {
     if (!buyerId || !orderId) {
-      toast.error('Buyer or order not found')
+      toast.error(copy.errors.buyerOrOrderMissing)
       return
     }
 
@@ -80,32 +142,17 @@ export function SellerRateBuyerActions({
         })
         
         if (result.success) {
-          toast.success(locale === 'bg' ? 'Благодарим за отзива!' : 'Thank you for your feedback!')
+          toast.success(copy.toasts.feedbackSent)
           setShowRatingDialog(false)
           setHasRated(true)
           router.refresh()
         } else {
-          toast.error(result.error || 'Failed to submit rating')
+          toast.error(copy.errors.submitFailed)
         }
       } catch {
-        toast.error('An error occurred')
+        toast.error(copy.errors.unexpected)
       }
     })
-  }
-
-  const t = {
-    rateBuyer: locale === 'bg' ? 'Оцени купувача' : 'Rate Buyer',
-    ratedBuyer: locale === 'bg' ? 'Оценен' : 'Rated',
-    ratingTitle: locale === 'bg' ? 'Как бихте оценили купувача?' : 'How would you rate the buyer?',
-    ratingDescription: locale === 'bg' 
-      ? 'Вашата оценка помага на други продавачи да познават клиентите си.'
-      : 'Your rating helps other sellers know their customers better.',
-    commentLabel: locale === 'bg' ? 'Коментар (по избор)' : 'Comment (optional)',
-    commentPlaceholder: locale === 'bg' 
-      ? 'Споделете опита си с този купувач...'
-      : 'Share your experience with this buyer...',
-    submitRating: locale === 'bg' ? 'Изпрати отзив' : 'Submit Review',
-    cancel: locale === 'bg' ? 'Отмени' : 'Cancel',
   }
 
   // Don't render if order is not delivered
@@ -124,7 +171,7 @@ export function SellerRateBuyerActions({
           disabled={isPending}
         >
           <UserCheck className="h-4 w-4 mr-1.5" />
-          {t.rateBuyer}
+          {copy.rateBuyer}
         </Button>
       )}
 
@@ -132,7 +179,7 @@ export function SellerRateBuyerActions({
       {hasRated && (
         <span className="inline-flex items-center gap-1 text-sm text-success">
           <CheckCircle className="h-4 w-4" />
-          {t.ratedBuyer}
+          {copy.ratedBuyer}
         </span>
       )}
 
@@ -141,7 +188,7 @@ export function SellerRateBuyerActions({
         open={showRatingDialog}
         onOpenChange={setShowRatingDialog}
         onSubmit={handleSubmitRating}
-        copy={t}
+        copy={copy}
         locale={locale}
         isLoading={isPending}
       />

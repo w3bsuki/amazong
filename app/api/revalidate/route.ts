@@ -87,6 +87,70 @@ function hasCategoryStructuralChange(supabase: SupabaseWebhookEvent): boolean {
   })
 }
 
+function addScopeCategoryTags(out: Set<string>, body: RevalidateRequest): void {
+  if (body.scope !== 'categories') return
+
+  addTag(out, 'categories:tree')
+  addTag(out, 'categories:sell')
+  addTag(out, 'categories:sell:depth:3')
+
+  const categorySlug = asString(body.categorySlug)
+  const previousCategorySlug = asString(body.previousCategorySlug)
+  const parentId = asString(body.parentId)
+  const previousParentId = asString(body.previousParentId)
+
+  addTag(out, categorySlug ? `category:${categorySlug}` : null)
+  addTag(out, previousCategorySlug ? `category:${previousCategorySlug}` : null)
+  addTag(out, parentId ? `category-children:${parentId}` : null)
+  addTag(out, previousParentId ? `category-children:${previousParentId}` : null)
+}
+
+function addScopeAttributeTags(out: Set<string>, body: RevalidateRequest): void {
+  if (body.scope !== 'attributes') return
+
+  const categoryId = asString(body.categoryId)
+  const previousCategoryId = asString(body.previousCategoryId)
+
+  addTag(out, categoryId ? `attrs:category:${categoryId}` : null)
+  addTag(out, previousCategoryId ? `attrs:category:${previousCategoryId}` : null)
+}
+
+function addSupabaseCategoryTags(out: Set<string>, supabase: SupabaseWebhookEvent): void {
+  if (supabase.table !== 'categories') return
+
+  const rec = asRecord(supabase.record)
+  const old = asRecord(supabase.old_record)
+
+  const slug = asString(rec["slug"])
+  const oldSlug = asString(old["slug"])
+  const parentId = asString(rec["parent_id"])
+  const oldParentId = asString(old["parent_id"])
+
+  addTag(out, slug ? `category:${slug}` : null)
+  addTag(out, oldSlug ? `category:${oldSlug}` : null)
+  addTag(out, parentId ? `category-children:${parentId}` : null)
+  addTag(out, oldParentId ? `category-children:${oldParentId}` : null)
+
+  if (hasCategoryStructuralChange(supabase)) {
+    addTag(out, 'categories:tree')
+    addTag(out, 'categories:sell')
+    addTag(out, 'categories:sell:depth:3')
+  }
+}
+
+function addSupabaseCategoryAttributeTags(out: Set<string>, supabase: SupabaseWebhookEvent): void {
+  if (supabase.table !== 'category_attributes') return
+
+  const rec = asRecord(supabase.record)
+  const old = asRecord(supabase.old_record)
+
+  const categoryId = asString(rec["category_id"])
+  const oldCategoryId = asString(old["category_id"])
+
+  addTag(out, categoryId ? `attrs:category:${categoryId}` : null)
+  addTag(out, oldCategoryId ? `attrs:category:${oldCategoryId}` : null)
+}
+
 function collectTagsForRequest(body: RevalidateRequest): string[] {
   const out = new Set<string>()
 
@@ -97,62 +161,13 @@ function collectTagsForRequest(body: RevalidateRequest): string[] {
     }
   }
 
-  if (body.scope === 'categories') {
-    addTag(out, 'categories:tree')
-    addTag(out, 'categories:sell')
-    addTag(out, 'categories:sell:depth:3')
-
-    const categorySlug = asString(body.categorySlug)
-    const previousCategorySlug = asString(body.previousCategorySlug)
-    const parentId = asString(body.parentId)
-    const previousParentId = asString(body.previousParentId)
-
-    addTag(out, categorySlug ? `category:${categorySlug}` : null)
-    addTag(out, previousCategorySlug ? `category:${previousCategorySlug}` : null)
-
-    addTag(out, parentId ? `category-children:${parentId}` : null)
-    addTag(out, previousParentId ? `category-children:${previousParentId}` : null)
-  }
-
-  if (body.scope === 'attributes') {
-    const categoryId = asString(body.categoryId)
-    const previousCategoryId = asString(body.previousCategoryId)
-
-    addTag(out, categoryId ? `attrs:category:${categoryId}` : null)
-    addTag(out, previousCategoryId ? `attrs:category:${previousCategoryId}` : null)
-  }
+  addScopeCategoryTags(out, body)
+  addScopeAttributeTags(out, body)
 
   const supabase = body.supabase
-  if (supabase?.table === 'categories') {
-    const rec = asRecord(supabase.record)
-    const old = asRecord(supabase.old_record)
-
-    const slug = asString(rec["slug"])
-    const oldSlug = asString(old["slug"])
-    const parentId = asString(rec["parent_id"])
-    const oldParentId = asString(old["parent_id"])
-
-    addTag(out, slug ? `category:${slug}` : null)
-    addTag(out, oldSlug ? `category:${oldSlug}` : null)
-    addTag(out, parentId ? `category-children:${parentId}` : null)
-    addTag(out, oldParentId ? `category-children:${oldParentId}` : null)
-
-    if (hasCategoryStructuralChange(supabase)) {
-      addTag(out, 'categories:tree')
-      addTag(out, 'categories:sell')
-      addTag(out, 'categories:sell:depth:3')
-    }
-  }
-
-  if (supabase?.table === 'category_attributes') {
-    const rec = asRecord(supabase.record)
-    const old = asRecord(supabase.old_record)
-
-    const categoryId = asString(rec["category_id"])
-    const oldCategoryId = asString(old["category_id"])
-
-    addTag(out, categoryId ? `attrs:category:${categoryId}` : null)
-    addTag(out, oldCategoryId ? `attrs:category:${oldCategoryId}` : null)
+  if (supabase) {
+    addSupabaseCategoryTags(out, supabase)
+    addSupabaseCategoryAttributeTags(out, supabase)
   }
 
   return [...out].slice(0, MAX_TAGS_PER_REQUEST)

@@ -54,39 +54,51 @@ export default function CheckoutPageClient({
   const [checkoutError, setCheckoutError] = useState<CheckoutErrorKind>(null)
 
   const fetchSavedAddresses = useCallback(async () => {
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    setIsLoadingAddresses(true)
 
-    if (!user) {
-      setIsLoadingAddresses(false)
-      setIsAuthenticated(false)
-      return
-    }
+    try {
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
-    setIsAuthenticated(true)
-
-    const { data: addresses } = await supabase
-      .from("user_addresses")
-      .select(
-        "id,label,full_name,phone,address_line1,address_line2,city,state,postal_code,country,is_default,created_at"
-      )
-      .eq("user_id", user.id)
-      .order("is_default", { ascending: false })
-      .order("created_at", { ascending: false })
-
-    if (addresses && addresses.length > 0) {
-      setSavedAddresses(addresses)
-      const defaultAddress = addresses.find((a) => a.is_default) ?? addresses.at(0)
-      if (defaultAddress) {
-        setSelectedAddressId(defaultAddress.id)
+      if (!user) {
+        setIsAuthenticated(false)
+        setSavedAddresses([])
+        setSelectedAddressId(null)
+        setUseNewAddress(true)
+        return
       }
-    } else {
-      setUseNewAddress(true)
-    }
 
-    setIsLoadingAddresses(false)
+      setIsAuthenticated(true)
+
+      const { data: addresses } = await supabase
+        .from("user_addresses")
+        .select(
+          "id,label,full_name,phone,address_line1,address_line2,city,state,postal_code,country,is_default,created_at"
+        )
+        .eq("user_id", user.id)
+        .order("is_default", { ascending: false })
+        .order("created_at", { ascending: false })
+
+      if (addresses && addresses.length > 0) {
+        setSavedAddresses(addresses)
+        const defaultAddress = addresses.find((address) => address.is_default) ?? addresses.at(0)
+        setSelectedAddressId(defaultAddress?.id ?? null)
+        setUseNewAddress(false)
+      } else {
+        setSavedAddresses([])
+        setSelectedAddressId(null)
+        setUseNewAddress(true)
+      }
+    } catch {
+      setIsAuthenticated(false)
+      setSavedAddresses([])
+      setSelectedAddressId(null)
+      setUseNewAddress(true)
+    } finally {
+      setIsLoadingAddresses(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -115,8 +127,8 @@ export default function CheckoutPageClient({
   }, [getCheckoutFeeQuoteAction, items])
 
   const shippingCost = SHIPPING_COSTS[shippingMethod]
-  const tax = subtotal * 0.1
-  const total = subtotal + shippingCost + tax + buyerProtectionFee
+  const tax = 0
+  const total = subtotal + buyerProtectionFee
 
   const formatPrice = useCallback(
     (price: number) => {
@@ -152,7 +164,13 @@ export default function CheckoutPageClient({
     try {
       const result = await createCheckoutSessionAction(items, locale === "bg" ? "bg" : "en")
       if (!result.ok) {
-        setCheckoutError(getCheckoutErrorKind(result.error))
+        const errorKind =
+          result.errorCode === "authRequired"
+            ? "authRequired"
+            : result.errorCode === "ownProducts"
+              ? "ownProducts"
+              : getCheckoutErrorKind(result.error)
+        setCheckoutError(errorKind)
         window.scrollTo({ top: 0, behavior: "smooth" })
         return
       }

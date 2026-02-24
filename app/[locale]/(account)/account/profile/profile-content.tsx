@@ -7,28 +7,55 @@ import { Settings2 as GearSix, CircleUser as UserCircle } from "lucide-react"
 import { toast } from "sonner"
 import { validateEmail, validatePassword } from "@/lib/validation/auth"
 import { PublicProfileEditor, type PublicProfileEditorServerActions } from "./public-profile-editor"
-import { PRESET_AVATARS, SHIPPING_REGIONS, type EmailDataState, type PasswordDataState, type PasswordStrength, type ProfileDataState } from "./profile-account.types"
+import {
+  PRESET_AVATARS,
+  SHIPPING_REGIONS,
+  type EmailDataState,
+  type PasswordDataState,
+  type PasswordStrength,
+  type ProfileDataState,
+} from "./profile-account.types"
 import { ProfileAvatarCard } from "./profile-avatar-card"
 import { ProfilePersonalInfoCard } from "./profile-personal-info-card"
 import { ProfileSecurityCard } from "./profile-security-card"
 import { ProfileEmailDialog } from "./profile-email-dialog"
 import { ProfilePasswordDialog } from "./profile-password-dialog"
 
+type ProfileActionErrorCode =
+  | "NOT_AUTHENTICATED"
+  | "INVALID_INPUT"
+  | "INVALID_EMAIL"
+  | "EMAIL_UNCHANGED"
+  | "EMAIL_ALREADY_REGISTERED"
+  | "PROFILE_UPDATE_FAILED"
+  | "EMAIL_UPDATE_FAILED"
+  | "PASSWORD_UPDATE_UNAVAILABLE"
+  | "CURRENT_PASSWORD_INCORRECT"
+  | "PASSWORD_UPDATE_FAILED"
+  | "NO_FILE"
+  | "FILE_TOO_LARGE"
+  | "INVALID_FILE_TYPE"
+  | "AVATAR_UPLOAD_FAILED"
+  | "AVATAR_PROFILE_UPDATE_FAILED"
+  | "AVATAR_UPDATE_FAILED"
+  | "AVATAR_RESET_FAILED"
+  | "UNKNOWN_ERROR"
+
 export type ProfileContentServerActions = {
-  updateProfile: (formData: FormData) => Promise<{ success: boolean; error?: string }>
+  updateProfile: (formData: FormData) => Promise<{ success: boolean; errorCode?: ProfileActionErrorCode }>
   uploadAvatar: (formData: FormData) => Promise<{
     success: boolean
     avatarUrl?: string
-    error?: string
+    errorCode?: ProfileActionErrorCode
   }>
-  deleteAvatar: () => Promise<{ success: boolean; avatarUrl?: string; error?: string }>
+  deleteAvatar: () => Promise<{ success: boolean; avatarUrl?: string; errorCode?: ProfileActionErrorCode }>
   setAvatarUrl: (formData: FormData) => Promise<{
     success: boolean
     avatarUrl?: string
-    error?: string
+    errorCode?: ProfileActionErrorCode
   }>
-  updateEmail: (formData: FormData) => Promise<{ success: boolean; error?: string }>
-  updatePassword: (formData: FormData) => Promise<{ success: boolean; error?: string }>
+  updateEmail: (formData: FormData) => Promise<{ success: boolean; errorCode?: ProfileActionErrorCode }>
+  updatePassword: (formData: FormData) => Promise<{ success: boolean; errorCode?: ProfileActionErrorCode }>
 }
 
 interface ProfileContentProps {
@@ -69,6 +96,7 @@ export function ProfileContent({
   publicProfileActions,
 }: ProfileContentProps) {
   const tAuth = useTranslations("Auth")
+  const tProfile = useTranslations("Account.profileEditor")
   const [isPending, startTransition] = useTransition()
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
   const [isChangeEmailOpen, setIsChangeEmailOpen] = useState(false)
@@ -94,6 +122,48 @@ export function ProfileContent({
     newEmail: "",
   })
 
+  const getProfileErrorMessage = (errorCode?: ProfileActionErrorCode): string => {
+    switch (errorCode) {
+      case "NOT_AUTHENTICATED":
+        return tProfile("errors.profile.NOT_AUTHENTICATED")
+      case "INVALID_INPUT":
+        return tProfile("errors.profile.INVALID_INPUT")
+      case "INVALID_EMAIL":
+        return tProfile("errors.profile.INVALID_EMAIL")
+      case "EMAIL_UNCHANGED":
+        return tProfile("errors.profile.EMAIL_UNCHANGED")
+      case "EMAIL_ALREADY_REGISTERED":
+        return tProfile("errors.profile.EMAIL_ALREADY_REGISTERED")
+      case "PROFILE_UPDATE_FAILED":
+        return tProfile("errors.profile.PROFILE_UPDATE_FAILED")
+      case "EMAIL_UPDATE_FAILED":
+        return tProfile("errors.profile.EMAIL_UPDATE_FAILED")
+      case "PASSWORD_UPDATE_UNAVAILABLE":
+        return tProfile("errors.profile.PASSWORD_UPDATE_UNAVAILABLE")
+      case "CURRENT_PASSWORD_INCORRECT":
+        return tProfile("errors.profile.CURRENT_PASSWORD_INCORRECT")
+      case "PASSWORD_UPDATE_FAILED":
+        return tProfile("errors.profile.PASSWORD_UPDATE_FAILED")
+      case "NO_FILE":
+        return tProfile("errors.profile.NO_FILE")
+      case "FILE_TOO_LARGE":
+        return tProfile("errors.profile.FILE_TOO_LARGE")
+      case "INVALID_FILE_TYPE":
+        return tProfile("errors.profile.INVALID_FILE_TYPE")
+      case "AVATAR_UPLOAD_FAILED":
+        return tProfile("errors.profile.AVATAR_UPLOAD_FAILED")
+      case "AVATAR_PROFILE_UPDATE_FAILED":
+        return tProfile("errors.profile.AVATAR_PROFILE_UPDATE_FAILED")
+      case "AVATAR_UPDATE_FAILED":
+        return tProfile("errors.profile.AVATAR_UPDATE_FAILED")
+      case "AVATAR_RESET_FAILED":
+        return tProfile("errors.profile.AVATAR_RESET_FAILED")
+      case "UNKNOWN_ERROR":
+      default:
+        return tProfile("errors.profile.UNKNOWN_ERROR")
+    }
+  }
+
   const handleProfileUpdate = async (event: React.FormEvent) => {
     event.preventDefault()
 
@@ -106,9 +176,9 @@ export function ProfileContent({
     startTransition(async () => {
       const result = await profileActions.updateProfile(formData)
       if (result.success) {
-        toast.success(locale === "bg" ? "Профилът е обновен успешно" : "Profile updated successfully")
+        toast.success(tProfile("toasts.profileUpdated"))
       } else {
-        toast.error(result.error || (locale === "bg" ? "Грешка при обновяване" : "Error updating profile"))
+        toast.error(getProfileErrorMessage(result.errorCode))
       }
     })
   }
@@ -132,10 +202,10 @@ export function ProfileContent({
 
     if (result.success) {
       setAvatarPreview(result.avatarUrl || null)
-      toast.success(locale === "bg" ? "Аватарът е качен успешно" : "Avatar uploaded successfully")
+      toast.success(tProfile("toasts.avatarUploaded"))
     } else {
       setAvatarPreview(profile.avatar_url)
-      toast.error(result.error || (locale === "bg" ? "Грешка при качване" : "Error uploading avatar"))
+      toast.error(getProfileErrorMessage(result.errorCode))
     }
   }
 
@@ -146,9 +216,9 @@ export function ProfileContent({
 
     if (result.success) {
       setAvatarPreview(result.avatarUrl ?? profile.avatar_url)
-      toast.success(locale === "bg" ? "Аватарът е нулиран" : "Avatar reset")
+      toast.success(tProfile("toasts.avatarReset"))
     } else {
-      toast.error(result.error || (locale === "bg" ? "Грешка при нулиране" : "Error resetting avatar"))
+      toast.error(getProfileErrorMessage(result.errorCode))
     }
   }
 
@@ -165,10 +235,10 @@ export function ProfileContent({
 
       if (result.success) {
         setAvatarPreview(result.avatarUrl || url)
-        toast.success(locale === "bg" ? "Аватарът е обновен" : "Avatar updated")
+        toast.success(tProfile("toasts.avatarUpdated"))
       } else {
         setAvatarPreview(profile.avatar_url)
-        toast.error(result.error || (locale === "bg" ? "Грешка при обновяване" : "Error updating avatar"))
+        toast.error(getProfileErrorMessage(result.errorCode))
       }
     })
   }
@@ -186,15 +256,11 @@ export function ProfileContent({
     startTransition(async () => {
       const result = await profileActions.updateEmail(formData)
       if (result.success) {
-        toast.success(
-          locale === "bg"
-            ? "Изпратен е имейл за потвърждение на новия адрес"
-            : "A confirmation email has been sent to your new address"
-        )
+        toast.success(tProfile("toasts.emailChangeSent"))
         setIsChangeEmailOpen(false)
         setEmailData({ newEmail: "" })
       } else {
-        toast.error(result.error || (locale === "bg" ? "Грешка при промяна на имейла" : "Error changing email"))
+        toast.error(getProfileErrorMessage(result.errorCode))
       }
     })
   }
@@ -219,11 +285,11 @@ export function ProfileContent({
     startTransition(async () => {
       const result = await profileActions.updatePassword(formData)
       if (result.success) {
-        toast.success(locale === "bg" ? "Паролата е променена успешно" : "Password changed successfully")
+        toast.success(tProfile("toasts.passwordChanged"))
         setIsChangePasswordOpen(false)
         setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
       } else {
-        toast.error(result.error || (locale === "bg" ? "Грешка при промяна на паролата" : "Error changing password"))
+        toast.error(getProfileErrorMessage(result.errorCode))
       }
     })
   }
@@ -243,26 +309,26 @@ export function ProfileContent({
     if (hasNumber) score++
     if (hasSpecial) score++
 
-    if (score <= 2) return { label: locale === "bg" ? "Слаба" : "Weak", color: "bg-destructive", width: "w-1/4" }
-    if (score === 3) return { label: locale === "bg" ? "Средна" : "Fair", color: "bg-warning", width: "w-2/4" }
-    if (score === 4) return { label: locale === "bg" ? "Добра" : "Good", color: "bg-info", width: "w-3/4" }
-    return { label: locale === "bg" ? "Силна" : "Strong", color: "bg-success", width: "w-full" }
+    if (score <= 2) return { label: tProfile("passwordStrength.weak"), color: "bg-destructive", width: "w-1/4" }
+    if (score === 3) return { label: tProfile("passwordStrength.fair"), color: "bg-warning", width: "w-2/4" }
+    if (score === 4) return { label: tProfile("passwordStrength.good"), color: "bg-info", width: "w-3/4" }
+    return { label: tProfile("passwordStrength.strong"), color: "bg-success", width: "w-full" }
   }
 
   const passwordStrength = getPasswordStrength(passwordData.newPassword)
   const isPasswordValid = validatePassword(passwordData.newPassword).valid
-  const displayName = profile.full_name || profile.email || "User"
+  const displayName = profile.full_name || profile.email || tProfile("defaults.user")
 
   return (
     <Tabs defaultValue="account" className="space-y-6">
       <TabsList className="max-w-md">
         <TabsTrigger value="account" className="flex-1 gap-2">
           <GearSix className="size-4" />
-          {locale === "bg" ? "Акаунт" : "Account"}
+          {tProfile("tabs.account")}
         </TabsTrigger>
         <TabsTrigger value="public" className="flex-1 gap-2">
           <UserCircle className="size-4" />
-          {locale === "bg" ? "Публичен профил" : "Public Profile"}
+          {tProfile("tabs.public")}
         </TabsTrigger>
       </TabsList>
 
@@ -279,7 +345,12 @@ export function ProfileContent({
             location: profile.location,
             website_url: profile.website_url,
             social_links: profile.social_links,
-            account_type: profile.account_type === "business" ? "business" : profile.account_type === "personal" ? "personal" : null,
+            account_type:
+              profile.account_type === "business"
+                ? "business"
+                : profile.account_type === "personal"
+                  ? "personal"
+                  : null,
             is_seller: profile.is_seller ?? false,
             verified_business: profile.is_verified_business ?? false,
             business_name: profile.business_name,

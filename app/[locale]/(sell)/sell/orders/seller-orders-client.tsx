@@ -3,7 +3,18 @@
 import { useCallback, useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
-import { ArrowLeft, Package, Loader2, RefreshCw, ExternalLink } from "lucide-react"
+import {
+  ArrowLeft,
+  Package,
+  Loader2,
+  RefreshCw,
+  ExternalLink,
+  Clock3,
+  Truck,
+  CircleCheck,
+  MapPin,
+  Mail,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -14,6 +25,7 @@ import { SellerRateBuyerActions, type SellerRateBuyerActionsServerActions } from
 import { type OrderItemStatus } from "@/lib/order-status"
 import { cn } from "@/lib/utils"
 import { formatDistanceToNow } from "date-fns"
+import { bg, enUS } from "date-fns/locale"
 import { useTranslations } from "next-intl"
 
 type SellerOrderItem = {
@@ -85,14 +97,97 @@ interface SellerOrdersClientProps {
   actions: SellerOrdersClientServerActions
 }
 
-type StatusFilter = OrderItemStatus | 'all' | 'active'
+type StatusFilter = OrderItemStatus | "all" | "active"
+
+type SellerOrdersCopy = {
+  headerTitle: string
+  headerDescription: string
+  refresh: string
+  tabs: {
+    active: string
+  }
+  empty: {
+    title: string
+    allDescription: string
+    statusDescription: (statusLabel: string) => string
+  }
+  item: {
+    unknownProduct: string
+    quantity: string
+    unitMultiplier: string
+    shipTo: string
+    tracking: string
+    ordered: string
+    unknownUser: string
+    unknownBuyer: string
+    productImageAlt: string
+  }
+}
+
+function getSellerOrdersCopy(locale: string): SellerOrdersCopy {
+  if (locale === "bg") {
+    return {
+      headerTitle: "Поръчки от купувачи",
+      headerDescription: "Управлявайте входящите поръчки и доставките",
+      refresh: "Обнови",
+      tabs: {
+        active: "Активни",
+      },
+      empty: {
+        title: "Все още няма поръчки",
+        allDescription: "Когато клиентите купуват вашите продукти, поръчките ще се появят тук.",
+        statusDescription: (statusLabel) => `Нямате поръчки със статус „${statusLabel}“.`,
+      },
+      item: {
+        unknownProduct: "Неизвестен продукт",
+        quantity: "Кол.",
+        unitMultiplier: "×",
+        shipTo: "Адрес за доставка",
+        tracking: "Проследяване",
+        ordered: "Поръчана",
+        unknownUser: "Потребител",
+        unknownBuyer: "Неизвестен купувач",
+        productImageAlt: "Изображение на продукт",
+      },
+    }
+  }
+
+  return {
+    headerTitle: "Your Orders",
+    headerDescription: "Manage incoming orders and shipments",
+    refresh: "Refresh",
+    tabs: {
+      active: "Active",
+    },
+    empty: {
+      title: "No orders yet",
+      allDescription: "When customers purchase your products, their orders will appear here.",
+      statusDescription: (statusLabel) => `You have no ${statusLabel.toLowerCase()} orders.`,
+    },
+    item: {
+      unknownProduct: "Unknown Product",
+      quantity: "Qty",
+      unitMultiplier: "×",
+      shipTo: "Ship to",
+      tracking: "Tracking",
+      ordered: "Ordered",
+      unknownUser: "User",
+      unknownBuyer: "Unknown buyer",
+      productImageAlt: "Product image",
+    },
+  }
+}
 
 export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOrdersClientProps) {
   const tCommon = useTranslations("Common")
+  const tOrders = useTranslations("Orders")
+  const copy = getSellerOrdersCopy(locale)
+  const dateLocale = locale === "bg" ? bg : enUS
+
   const [orders, setOrders] = useState<SellerOrderItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [activeTab, setActiveTab] = useState<StatusFilter>('all')
+  const [activeTab, setActiveTab] = useState<StatusFilter>("all")
   const [stats, setStats] = useState({
     pending: 0,
     received: 0,
@@ -100,16 +195,35 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
     shipped: 0,
     delivered: 0,
     cancelled: 0,
-    total: 0
+    total: 0,
   })
   const [conversationMap, setConversationMap] = useState<Map<string, string>>(new Map())
+
+  const formatCurrency = useCallback(
+    (value: number) =>
+      new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-US", {
+        style: "currency",
+        currency: locale === "bg" ? "BGN" : "EUR",
+        maximumFractionDigits: 2,
+      }).format(value),
+    [locale]
+  )
+
+  const statusLabels = {
+    pending: tOrders("status.pending.label"),
+    processing: tOrders("status.processing.label"),
+    shipped: tOrders("status.shipped.label"),
+    delivered: tOrders("status.delivered.label"),
+    active: copy.tabs.active,
+    all: tCommon("all"),
+  }
 
   // Load orders and stats
   const loadData = useCallback(async () => {
     try {
       const [ordersResult, statsResult] = await Promise.all([
         actions.getSellerOrders(),
-        actions.getSellerOrderStats()
+        actions.getSellerOrderStats(),
       ])
 
       if (ordersResult.orders) {
@@ -130,8 +244,8 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
       }
 
       setStats(statsResult)
-    } catch (error) {
-      console.error('Error loading orders:', error)
+    } catch {
+      // Keep UI functional even if refresh fails; existing state remains visible.
     } finally {
       setIsLoading(false)
       setIsRefreshing(false)
@@ -149,18 +263,29 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
 
   // Filter orders based on active tab
   const filteredOrders = orders.filter(order => {
-    if (activeTab === 'all') return true
-    if (activeTab === 'active') return ['pending', 'received', 'processing', 'shipped'].includes(order.status)
+    if (activeTab === "all") return true
+    if (activeTab === "active") return ["pending", "received", "processing", "shipped"].includes(order.status)
     return order.status === activeTab
   })
 
   // Stats cards
   const statCards = [
-    { key: 'pending' as const, label: 'Pending', icon: '⏳', color: 'bg-order-pending' },
-    { key: 'processing' as const, label: 'Processing', icon: '📦', color: 'bg-order-processing' },
-    { key: 'shipped' as const, label: 'Shipped', icon: '🚚', color: 'bg-order-shipped' },
-    { key: 'delivered' as const, label: 'Delivered', icon: '🎉', color: 'bg-order-delivered' },
+    { key: "pending" as const, label: statusLabels.pending, icon: Clock3, color: "bg-order-pending" },
+    { key: "processing" as const, label: statusLabels.processing, icon: Package, color: "bg-order-processing" },
+    { key: "shipped" as const, label: statusLabels.shipped, icon: Truck, color: "bg-order-shipped" },
+    { key: "delivered" as const, label: statusLabels.delivered, icon: CircleCheck, color: "bg-order-delivered" },
   ]
+
+  const activeTabLabel =
+    activeTab === "pending"
+      ? statusLabels.pending
+      : activeTab === "shipped"
+        ? statusLabels.shipped
+        : activeTab === "delivered"
+          ? statusLabels.delivered
+          : activeTab === "active"
+            ? statusLabels.active
+            : statusLabels.all
 
   return (
     <div className="flex flex-1 flex-col">
@@ -173,12 +298,12 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
             </Link>
           </Button>
           <div className="flex-1">
-            <h1 className="text-xl font-semibold">Your Orders</h1>
-            <p className="text-sm text-muted-foreground">Manage incoming orders and shipments</p>
+            <h1 className="text-xl font-semibold">{copy.headerTitle}</h1>
+            <p className="text-sm text-muted-foreground">{copy.headerDescription}</p>
           </div>
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing}>
             <RefreshCw className={cn("h-4 w-4 mr-2", isRefreshing && "animate-spin")} />
-            Refresh
+            {copy.refresh}
           </Button>
         </div>
       </header>
@@ -186,28 +311,31 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
       <div className="container mx-auto px-4 py-6 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {statCards.map((stat) => (
-            <Card
-              key={stat.key}
-              className={cn(
-                "cursor-pointer transition-shadow hover:shadow-md",
-                activeTab === stat.key && "ring-2 ring-primary"
-              )}
-              onClick={() => setActiveTab(stat.key)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-badge-fg-on-solid", stat.color)}>
-                    <span className="text-lg">{stat.icon}</span>
+          {statCards.map((stat) => {
+            const Icon = stat.icon
+            return (
+              <Card
+                key={stat.key}
+                className={cn(
+                  "cursor-pointer transition-shadow hover:shadow-md",
+                  activeTab === stat.key && "ring-2 ring-primary"
+                )}
+                onClick={() => setActiveTab(stat.key)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-badge-fg-on-solid", stat.color)}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{stats[stat.key]}</p>
+                      <p className="text-sm text-muted-foreground">{stat.label}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold">{stats[stat.key]}</p>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
 
         {/* Filter Tabs */}
@@ -215,14 +343,14 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
           <div className="flex items-center justify-between">
             <TabsList>
               <TabsTrigger value="all">
-                All ({stats.total})
+                {tCommon("all")} ({stats.total})
               </TabsTrigger>
               <TabsTrigger value="active">
-                Active ({stats.pending + stats.received + stats.processing + stats.shipped})
+                {copy.tabs.active} ({stats.pending + stats.received + stats.processing + stats.shipped})
               </TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="shipped">Shipped</TabsTrigger>
-              <TabsTrigger value="delivered">Delivered</TabsTrigger>
+              <TabsTrigger value="pending">{statusLabels.pending}</TabsTrigger>
+              <TabsTrigger value="shipped">{statusLabels.shipped}</TabsTrigger>
+              <TabsTrigger value="delivered">{statusLabels.delivered}</TabsTrigger>
             </TabsList>
           </div>
 
@@ -236,11 +364,11 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
               <Card>
                 <CardContent className="py-12 text-center">
                   <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No orders yet</h3>
+                  <h3 className="text-lg font-medium mb-2">{copy.empty.title}</h3>
                   <p className="text-muted-foreground">
-                    {activeTab === 'all'
-                      ? "When customers purchase your products, their orders will appear here."
-                      : `You have no ${activeTab} orders.`
+                    {activeTab === "all"
+                      ? copy.empty.allDescription
+                      : copy.empty.statusDescription(activeTabLabel)
                     }
                   </p>
                 </CardContent>
@@ -260,7 +388,7 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
                             {item.product?.images?.[0] ? (
                               <Image
                                 src={item.product.images[0]}
-                                alt={item.product?.title || 'Product'}
+                                alt={item.product?.title || copy.item.productImageAlt}
                                 fill
                                 className="object-cover"
                               />
@@ -276,10 +404,10 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
                             <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                               <div>
                                 <h3 className="font-semibold line-clamp-1">
-                                  {item.product?.title || 'Unknown Product'}
+                                  {item.product?.title || copy.item.unknownProduct}
                                 </h3>
                                 <p className="text-sm text-muted-foreground">
-                                  Qty: {item.quantity} × ${item.price_at_purchase.toFixed(2)}
+                                  {copy.item.quantity}: {item.quantity} {copy.item.unitMultiplier} {formatCurrency(item.price_at_purchase)}
                                 </p>
                               </div>
                               <OrderStatusBadge status={item.status} />
@@ -289,13 +417,13 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
                             {item.buyer && (
                               <div className="flex items-center gap-2 mb-3 text-sm">
                                 <UserAvatar
-                                  name={item.buyer.full_name || item.buyer.email || "User"}
+                                  name={item.buyer.full_name || item.buyer.email || copy.item.unknownUser}
                                   avatarUrl={item.buyer.avatar_url ?? null}
                                   className="size-6 bg-muted"
                                   fallbackClassName="bg-muted text-2xs font-semibold"
                                 />
                                 <span className="text-muted-foreground">
-                                  {item.buyer.full_name || item.buyer.email}
+                                  {item.buyer.full_name || item.buyer.email || copy.item.unknownBuyer}
                                 </span>
                               </div>
                             )}
@@ -304,7 +432,8 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
                             {item.order?.shipping_address && (
                               <div className="text-sm bg-surface-subtle rounded-lg p-3 mb-3 space-y-1">
                                 <div className="flex items-center gap-1.5 font-medium text-foreground">
-                                  📍 Ship To:
+                                  <MapPin className="size-3.5" />
+                                  {copy.item.shipTo}
                                 </div>
                                 {item.order.shipping_address.name && (
                                   <div>{item.order.shipping_address.name}</div>
@@ -328,7 +457,10 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
                                   <div className="text-muted-foreground font-medium">{item.order.shipping_address.address.country}</div>
                                 )}
                                 {item.order.shipping_address.email && (
-                                  <div className="text-xs text-muted-foreground mt-1">✉️ {item.order.shipping_address.email}</div>
+                                  <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                                    <Mail className="size-3.5" />
+                                    {item.order.shipping_address.email}
+                                  </div>
                                 )}
                               </div>
                             )}
@@ -336,7 +468,7 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
                             {/* Tracking Info */}
                             {item.tracking_number && (
                               <div className="text-sm mb-3">
-                                <span className="text-muted-foreground">Tracking: </span>
+                                <span className="text-muted-foreground">{copy.item.tracking}: </span>
                                 <span className="font-mono">{item.tracking_number}</span>
                                 {item.shipping_carrier && (
                                   <span className="text-muted-foreground"> ({item.shipping_carrier})</span>
@@ -346,7 +478,11 @@ export function SellerOrdersClient({ locale, sellerUsername, actions }: SellerOr
 
                             {/* Time */}
                             <p className="text-xs text-muted-foreground">
-                              Ordered {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
+                              {copy.item.ordered}{" "}
+                              {formatDistanceToNow(new Date(item.created_at), {
+                                addSuffix: true,
+                                locale: dateLocale,
+                              })}
                             </p>
                           </div>
 

@@ -1,5 +1,6 @@
 import * as React from "react"
 import type { ComponentPropsWithoutRef } from "react"
+import { useTranslations } from "next-intl"
 
 import { cn } from "@/lib/utils"
 
@@ -9,13 +10,15 @@ type MobileStepProgressProps = Omit<ComponentPropsWithoutRef<"div">, "children">
 }
 
 export function MobileStepProgress({ current, total, className, ...props }: MobileStepProgressProps) {
+  const t = useTranslations("MobileStepProgress")
   const safeTotal = Number.isFinite(total) ? Math.max(1, Math.floor(total)) : 1
   const safeCurrent = Number.isFinite(current)
     ? Math.min(safeTotal, Math.max(1, Math.floor(current)))
     : 1
 
-  const ariaLabel = props["aria-label"] ?? "Step progress"
-  const ariaValueText = props["aria-valuetext"] ?? `Step ${safeCurrent} of ${safeTotal}`
+  const ariaLabel = props["aria-label"] ?? t("ariaLabel")
+  const ariaValueText =
+    props["aria-valuetext"] ?? t("ariaValueText", { current: safeCurrent, total: safeTotal })
 
   return (
     <div

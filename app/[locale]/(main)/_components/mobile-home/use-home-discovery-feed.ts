@@ -5,8 +5,8 @@ import {
   type HomeDiscoveryScope,
 } from "@/lib/home-browse-href"
 import type { UIProduct } from "@/lib/types/products"
-import { buildCacheKey, fetchDiscoveryPage, productMatchesSlug } from "./use-home-discovery-feed/helpers"
-import type { HomePoolMap, UseHomeDiscoveryFeedOptions } from "./use-home-discovery-feed/types"
+import { buildCacheKey, fetchDiscoveryPage, productMatchesSlug } from "./use-home-discovery-feed-helpers"
+import type { HomePoolMap, UseHomeDiscoveryFeedOptions } from "./use-home-discovery-feed-types"
 
 export type { HomeDiscoveryScope }
 

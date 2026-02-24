@@ -11,6 +11,196 @@ import {
   revalidateProductCaches,
   requireProductAuth,
 } from "./products-shared"
+import { resolveLeafCategoryForListing } from "@/lib/sell/resolve-leaf-category"
+import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
+import type { Database } from "@/lib/supabase/database.types"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import { logger } from "@/lib/logger"
+
+type ProductSupabaseClient = SupabaseClient<Database>
+
+type ExistingProductForUpdate = {
+  id: string
+  seller_id: string
+  category_id: string | null
+  title: string
+  status: string | null
+}
+
+async function validateProductActivation(args: {
+  supabase: ProductSupabaseClient
+  userId: string
+  existingProduct: ExistingProductForUpdate
+  input: Partial<ProductInput>
+}): Promise<string | null> {
+  const { supabase, userId, existingProduct, input } = args
+  if (input.status !== "active") return null
+
+  const nextTitle = input.title ?? existingProduct.title
+  const parsedTitle = listingTitleSchema.safeParse(nextTitle)
+  if (!parsedTitle.success) {
+    return parsedTitle.error.issues[0]?.message || "Invalid title"
+  }
+
+  if (existingProduct.status === "active") return null
+
+  const listingLimits = await getSellerListingLimitSnapshot(supabase, userId)
+  if (!listingLimits) {
+    return "Failed to verify listing limits"
+  }
+
+  if (listingLimits.needsUpgrade) {
+    return `You have reached your listing limit (${listingLimits.currentListings} of ${listingLimits.maxListings}). Please upgrade your plan to add more listings.`
+  }
+
+  return null
+}
+
+function buildProductUpdateData(input: Partial<ProductInput>): {
+  updateData: Record<string, unknown>
+  error: string | null
+} {
+  const updateData: Record<string, unknown> = {
+    updated_at: new Date().toISOString(),
+  }
+
+  if (input.title !== undefined) {
+    const parsedTitle = listingTitleSchema.safeParse(input.title)
+    if (!parsedTitle.success) {
+      return { updateData, error: parsedTitle.error.issues[0]?.message || "Invalid title" }
+    }
+    updateData.title = parsedTitle.data
+  }
+  if (input.description !== undefined) updateData.description = input.description
+  if (input.price !== undefined) updateData.price = input.price
+  if (input.compareAtPrice !== undefined) updateData.list_price = input.compareAtPrice
+  if (input.stock !== undefined) updateData.stock = input.stock
+  if (input.trackInventory !== undefined) updateData.track_inventory = input.trackInventory
+  if (input.categoryId !== undefined) updateData.category_id = input.categoryId
+  if (input.status !== undefined) updateData.status = input.status
+  if (input.weight !== undefined) updateData.weight = input.weight
+  if (input.weightUnit !== undefined) updateData.weight_unit = input.weightUnit
+  if (input.condition !== undefined) updateData.condition = input.condition
+  if (input.images !== undefined) updateData.images = input.images
+
+  return { updateData, error: null }
+}
+
+function getUpdateProductErrorMessage(error: { code?: string; message?: string | null }): string | null {
+  if (error.code === "P0001" || error.message?.toLowerCase().includes("listing limit reached")) {
+    return "You have reached your listing limit. Please upgrade your plan to add more listings."
+  }
+  if (isLeafCategoryError(error)) {
+    return LEAF_CATEGORY_ERROR_MESSAGE
+  }
+  return null
+}
+
+function buildPrivateUpdatePayload(
+  productId: string,
+  sellerId: string,
+  input: Partial<ProductInput>
+): {
+  product_id: string
+  seller_id: string
+  cost_price?: number | null
+  sku?: string | null
+  barcode?: string | null
+} {
+  const privateUpdate: {
+    product_id: string
+    seller_id: string
+    cost_price?: number | null
+    sku?: string | null
+    barcode?: string | null
+  } = { product_id: productId, seller_id: sellerId }
+
+  if (input.costPrice !== undefined) privateUpdate.cost_price = input.costPrice
+  if (input.sku !== undefined) privateUpdate.sku = input.sku
+  if (input.barcode !== undefined) privateUpdate.barcode = input.barcode
+
+  return privateUpdate
+}
+
+async function savePrivateProductFields(args: {
+  supabase: ProductSupabaseClient
+  privateUpdate: {
+    product_id: string
+    seller_id: string
+    cost_price?: number | null
+    sku?: string | null
+    barcode?: string | null
+  }
+}): Promise<{ success: true } | { success: false; error: string }> {
+  const { supabase, privateUpdate } = args
+  if (Object.keys(privateUpdate).length <= 2) {
+    return { success: true }
+  }
+
+  const { error: privateError } = await supabase
+    .from("product_private")
+    .upsert(privateUpdate, { onConflict: "product_id" })
+
+  if (privateError) {
+    logger.error("[updateProduct] Product private upsert error", privateError)
+    return { success: false, error: "Failed to save seller-only product fields" }
+  }
+
+  return { success: true }
+}
+
+async function syncProductAttributes(args: {
+  supabase: ProductSupabaseClient
+  productId: string
+  input: Partial<ProductInput>
+}): Promise<{ success: true } | { success: false; error: string }> {
+  const { supabase, productId, input } = args
+  const shouldUpdateAttributes = Object.prototype.hasOwnProperty.call(input, "attributes")
+  if (!shouldUpdateAttributes) {
+    return { success: true }
+  }
+
+  const attributes = normalizeProductAttributes((input as ProductInput).attributes)
+
+  const { error: deleteError } = await supabase
+    .from("product_attributes")
+    .delete()
+    .eq("product_id", productId)
+
+  if (deleteError) {
+    logger.error("[updateProduct] Product attributes delete error", deleteError)
+    return { success: false, error: "Failed to update product" }
+  }
+
+  if (attributes.length === 0) {
+    return { success: true }
+  }
+
+  const attributeRows = attributes.map((attribute) => ({
+    product_id: productId,
+    attribute_id: attribute.attributeId ?? null,
+    name: attribute.name,
+    value: attribute.value,
+    is_custom: attribute.isCustom ?? false,
+  }))
+
+  const { error: insertError } = await supabase.from("product_attributes").insert(attributeRows)
+
+  if (insertError) {
+    logger.error("[updateProduct] Product attributes insert error", insertError)
+    return { success: false, error: "Failed to update product" }
+  }
+
+  return { success: true }
+}
+
+function resolveInvalidateTypes(input: Partial<ProductInput>): ProductFeedType[] {
+  const invalidateTypes: ProductFeedType[] = []
+  if (input.price !== undefined || input.compareAtPrice !== undefined) {
+    invalidateTypes.push("promo")
+  }
+  return invalidateTypes
+}
 
 /**
  * Update an existing product
@@ -28,7 +218,7 @@ export async function updateProduct(
 
     const { data: existingProduct, error: fetchError } = await supabase
       .from("products")
-      .select("id, seller_id, category_id, title")
+      .select("id, seller_id, category_id, title, status")
       .eq("id", productId)
       .single()
 
@@ -40,109 +230,72 @@ export async function updateProduct(
       return { success: false, error: "You don't have permission to edit this product" }
     }
 
-    if (input.status === "active") {
-      const nextTitle = input.title ?? existingProduct.title
-      const parsedTitle = listingTitleSchema.safeParse(nextTitle)
-      if (!parsedTitle.success) {
-        return { success: false, error: parsedTitle.error.issues[0]?.message || "Invalid title" }
+    const resolvedInput: Partial<ProductInput> = { ...input }
+    if (Object.prototype.hasOwnProperty.call(input, "categoryId") && input.categoryId) {
+      const categoryResolution = await resolveLeafCategoryForListing({
+        supabase,
+        selectedCategoryId: input.categoryId,
+        context: {
+          title: input.title ?? existingProduct.title,
+          description: input.description,
+          attributes: normalizeProductAttributes(input.attributes).map((attribute) => ({
+            name: attribute.name,
+            value: attribute.value,
+          })),
+        },
+      })
+
+      if (!categoryResolution.ok) {
+        return { success: false, error: categoryResolution.message }
       }
+
+      resolvedInput.categoryId = categoryResolution.categoryId
     }
 
-    const updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
+    const activationError = await validateProductActivation({
+      supabase,
+      userId: user.id,
+      existingProduct: existingProduct as ExistingProductForUpdate,
+      input: resolvedInput,
+    })
+    if (activationError) {
+      return { success: false, error: activationError }
     }
 
-    if (input.title !== undefined) {
-      const parsedTitle = listingTitleSchema.safeParse(input.title)
-      if (!parsedTitle.success) {
-        return { success: false, error: parsedTitle.error.issues[0]?.message || "Invalid title" }
-      }
-      updateData.title = parsedTitle.data
+    const { updateData, error: updateDataError } = buildProductUpdateData(resolvedInput)
+    if (updateDataError) {
+      return { success: false, error: updateDataError }
     }
-    if (input.description !== undefined) updateData.description = input.description
-    if (input.price !== undefined) updateData.price = input.price
-    if (input.compareAtPrice !== undefined) updateData.list_price = input.compareAtPrice
-    if (input.stock !== undefined) updateData.stock = input.stock
-    if (input.trackInventory !== undefined) updateData.track_inventory = input.trackInventory
-    if (input.categoryId !== undefined) updateData.category_id = input.categoryId
-    if (input.status !== undefined) updateData.status = input.status
-    if (input.weight !== undefined) updateData.weight = input.weight
-    if (input.weightUnit !== undefined) updateData.weight_unit = input.weightUnit
-    if (input.condition !== undefined) updateData.condition = input.condition
-    if (input.images !== undefined) updateData.images = input.images
 
     const { error: updateError } = await supabase.from("products").update(updateData).eq("id", productId)
 
     if (updateError) {
-      if (isLeafCategoryError(updateError)) {
-        return { success: false, error: LEAF_CATEGORY_ERROR_MESSAGE }
+      const mappedError = getUpdateProductErrorMessage(updateError)
+      if (mappedError) {
+        return { success: false, error: mappedError }
       }
-      console.error("[updateProduct] Update error:", updateError)
+      logger.error("[updateProduct] Update error", updateError)
       return { success: false, error: "Failed to update product" }
     }
 
-    const privateUpdate: {
-      product_id: string
-      seller_id: string
-      cost_price?: number | null
-      sku?: string | null
-      barcode?: string | null
-    } = { product_id: productId, seller_id: user.id }
-
-    if (input.costPrice !== undefined) privateUpdate.cost_price = input.costPrice
-    if (input.sku !== undefined) privateUpdate.sku = input.sku
-    if (input.barcode !== undefined) privateUpdate.barcode = input.barcode
-
-    if (Object.keys(privateUpdate).length > 2) {
-      const { error: privateError } = await supabase
-        .from("product_private")
-        .upsert(privateUpdate, { onConflict: "product_id" })
-
-      if (privateError) {
-        console.error("[updateProduct] Product private upsert error:", privateError)
-        return { success: false, error: "Failed to save seller-only product fields" }
-      }
+    const privateUpdate = buildPrivateUpdatePayload(productId, user.id, resolvedInput)
+    const privateUpdateResult = await savePrivateProductFields({
+      supabase,
+      privateUpdate,
+    })
+    if (!privateUpdateResult.success) {
+      return { success: false, error: privateUpdateResult.error }
     }
 
-    const shouldUpdateAttributes = Object.prototype.hasOwnProperty.call(input, "attributes")
-    if (shouldUpdateAttributes) {
-      const attributes = normalizeProductAttributes((input as ProductInput).attributes)
-
-      const { error: deleteError } = await supabase
-        .from("product_attributes")
-        .delete()
-        .eq("product_id", productId)
-
-      if (deleteError) {
-        console.error("[updateProduct] Product attributes delete error:", deleteError)
-        return { success: false, error: "Failed to update product" }
-      }
-
-      if (attributes.length > 0) {
-        const attributeRows = attributes.map((attribute) => ({
-          product_id: productId,
-          attribute_id: attribute.attributeId ?? null,
-          name: attribute.name,
-          value: attribute.value,
-          is_custom: attribute.isCustom ?? false,
-        }))
-
-        const { error: insertError } = await supabase.from("product_attributes").insert(attributeRows)
-
-        if (insertError) {
-          console.error("[updateProduct] Product attributes insert error:", insertError)
-          return { success: false, error: "Failed to update product" }
-        }
-      }
+    const attributesResult = await syncProductAttributes({ supabase, productId, input: resolvedInput })
+    if (!attributesResult.success) {
+      return { success: false, error: attributesResult.error }
     }
 
     const categoryIdsToInvalidate: Array<string | null | undefined> = [existingProduct.category_id]
-    if (input.categoryId !== undefined) categoryIdsToInvalidate.push(input.categoryId)
+    if (resolvedInput.categoryId !== undefined) categoryIdsToInvalidate.push(resolvedInput.categoryId)
 
-    const invalidateTypes: ProductFeedType[] = []
-    if (input.price !== undefined || input.compareAtPrice !== undefined) {
-      invalidateTypes.push("promo")
-    }
+    const invalidateTypes = resolveInvalidateTypes(resolvedInput)
 
     await revalidateProductCaches({
       supabase,
@@ -154,7 +307,7 @@ export async function updateProduct(
 
     return { success: true }
   } catch (error) {
-    console.error("[updateProduct] Error:", error)
+    logger.error("[updateProduct] Error", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }
@@ -187,7 +340,7 @@ export async function deleteProduct(productId: string): Promise<ActionResult> {
     const { error: deleteError } = await supabase.from("products").delete().eq("id", productId)
 
     if (deleteError) {
-      console.error("[deleteProduct] Delete error:", deleteError)
+      logger.error("[deleteProduct] Delete error", deleteError)
       return { success: false, error: "Failed to delete product" }
     }
 
@@ -201,7 +354,7 @@ export async function deleteProduct(productId: string): Promise<ActionResult> {
 
     return { success: true }
   } catch (error) {
-    console.error("[deleteProduct] Error:", error)
+    logger.error("[deleteProduct] Error", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }

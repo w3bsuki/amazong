@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import { getConditionKey } from "@/components/shared/product/condition"
 import type { QuickViewProduct } from "@/components/providers/drawer-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
-import { formatPrice, getDiscountPercentage, hasDiscount as checkHasDiscount } from "@/lib/price"
+import { formatCurrencyAmount, getDiscountPercentage, hasDiscount as checkHasDiscount } from "@/lib/price"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
 import { ProductQuickViewDesktopContent } from "./product-quick-view-desktop-content"
@@ -79,6 +79,7 @@ export function ProductQuickViewContent({
   const tDrawers = useTranslations("Drawers")
   const tProduct = useTranslations("Product")
   const tModal = useTranslations("ProductModal")
+  const tCommon = useTranslations("Common")
   const locale = useLocale()
   const { isInWishlist, toggleWishlist } = useWishlist()
 
@@ -130,15 +131,23 @@ export function ProductQuickViewContent({
     setWishlistPending(true)
     try {
       await toggleWishlist({ id, title, price, image: primaryImage })
+    } catch {
+      toast.error(tCommon("error"))
     } finally {
       setWishlistPending(false)
     }
-  }, [wishlistPending, toggleWishlist, id, title, price, primaryImage])
+  }, [wishlistPending, toggleWishlist, id, title, price, primaryImage, tCommon])
 
-  const formattedPrice = formatPrice(price, { locale })
+  const formattedPrice = formatCurrencyAmount(price, locale, "BGN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
   const formattedOriginalPrice =
     showDiscount && typeof originalPrice === "number"
-      ? formatPrice(originalPrice, { locale })
+      ? formatCurrencyAmount(originalPrice, locale, "BGN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
       : null
 
   const conditionLabel = React.useMemo(() => {

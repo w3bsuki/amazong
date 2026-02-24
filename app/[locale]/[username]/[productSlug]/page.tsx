@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
@@ -12,7 +11,7 @@ import {
   buildProductPageViewModel,
   isUuid,
 } from "@/lib/view-models/product-page"
-import { routing } from "@/i18n/routing"
+import { notFound, routing } from "@/i18n/routing"
 
 // =============================================================================
 // SEO-OPTIMIZED PRODUCT PAGE
@@ -230,7 +229,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     offers: {
       "@type": "Offer",
       price: productData.price,
-      priceCurrency: "EUR",
+      priceCurrency: "BGN",
       availability: Number(productData.stock ?? 0) > 0
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",

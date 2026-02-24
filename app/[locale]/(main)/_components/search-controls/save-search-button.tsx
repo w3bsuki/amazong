@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
-import { Bell, BellRing as BellRinging, Check } from "lucide-react";
+import { Bell, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"

@@ -30,14 +30,20 @@ export function SortSelect() {
     return `/${segments.join('/')}` || '/'
   })()
   
-  // Get current sort from URL, default to "featured"
-  const currentSort = searchParams.get('sort') || 'featured'
+  // "featured" is kept as a legacy alias for "relevance".
+  const rawSort = searchParams.get('sort')
+  const currentSort = (() => {
+    const normalized = !rawSort || rawSort === 'featured' ? 'relevance' : rawSort
+    return ['relevance', 'price-asc', 'price-desc', 'rating', 'newest'].includes(normalized)
+      ? normalized
+      : 'relevance'
+  })()
   
   // Handle sort change
   const handleSortChange = useCallback((value: string) => {
     const params = new URLSearchParams(searchParams.toString())
     
-    if (value === 'featured') {
+    if (value === 'relevance') {
       params.delete('sort')
     } else {
       params.set('sort', value)
@@ -47,7 +53,7 @@ export function SortSelect() {
     router.replace(queryString ? `${normalizedPathname}?${queryString}` : normalizedPathname)
   }, [router, normalizedPathname, searchParams])
 
-  const isSorted = currentSort !== 'featured'
+  const isSorted = currentSort !== 'relevance'
 
   return (
     <Select value={currentSort} onValueChange={handleSortChange}>
@@ -71,7 +77,7 @@ export function SortSelect() {
         <SelectValue placeholder={t('sortBy')} />
       </SelectTrigger>
       <SelectContent className="rounded-lg border-border">
-        <SelectItem value="featured" className="rounded-md">{t('featured')}</SelectItem>
+        <SelectItem value="relevance" className="rounded-md">{t('relevance')}</SelectItem>
         <SelectItem value="price-asc" className="rounded-md">{t('priceLowHigh')}</SelectItem>
         <SelectItem value="price-desc" className="rounded-md">{t('priceHighLow')}</SelectItem>
         <SelectItem value="rating" className="rounded-md">{t('avgReview')}</SelectItem>

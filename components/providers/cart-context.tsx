@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 
 import { createClient } from "@/lib/supabase/client"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
-import { safeJsonParse } from "@/lib/safe-json"
+import { safeJsonParseUnknown } from "@/lib/safe-json"
 
 import { useAuth } from "./auth-state-manager"
 
@@ -120,8 +120,8 @@ function readCartFromStorage(): {
     }
   }
 
-  const parsed = safeJsonParse<CartItem[]>(raw)
-  if (!parsed) {
+  const parsed = safeJsonParseUnknown(raw)
+  if (!Array.isArray(parsed)) {
     return {
       items: [],
       hadRawValue: true,
@@ -130,7 +130,7 @@ function readCartFromStorage(): {
     }
   }
 
-  const sanitized = sanitizeCartItems(parsed)
+  const sanitized = sanitizeCartItems(parsed as unknown as CartItem[])
   return {
     items: sanitized,
     hadRawValue: true,
@@ -210,7 +210,9 @@ async function fetchServerCart(activeUserId: string): Promise<CartItem[]> {
 
 async function syncLocalCartToServerStorage(): Promise<boolean> {
   const savedCart = localStorage.getItem("cart")
-  const localItems = sanitizeCartItems(safeJsonParse<CartItem[]>(savedCart) || [])
+
+  const parsed = safeJsonParseUnknown(savedCart)
+  const localItems = sanitizeCartItems((Array.isArray(parsed) ? parsed : []) as unknown as CartItem[])
 
   if (localItems.length === 0) {
     if (savedCart) localStorage.removeItem("cart")

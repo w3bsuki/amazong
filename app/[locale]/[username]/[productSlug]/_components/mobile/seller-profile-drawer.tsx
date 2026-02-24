@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
+import { formatCurrencyAmount } from "@/lib/price"
 
 // -----------------------------------------------------------------------------
 // Types
@@ -235,6 +236,7 @@ function SellerListings({
   onClose: () => void
 }) {
   const t = useTranslations("Product")
+  const locale = useLocale()
   const router = useRouter()
 
   if (!products || products.length === 0) return null
@@ -254,6 +256,10 @@ function SellerListings({
     const [resolvedImageSrc, setResolvedImageSrc] = useState(() =>
       normalizeOptionalImageUrl(product.image)
     )
+    const formattedPrice = formatCurrencyAmount(product.price, locale, "BGN", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })
 
     useEffect(() => {
       setResolvedImageSrc(normalizeOptionalImageUrl(product.image))
@@ -284,7 +290,7 @@ function SellerListings({
         {/* Info */}
         <div className="p-2">
           <p className="text-xs font-bold text-foreground">
-            €{product.price.toLocaleString()}
+            {formattedPrice}
           </p>
           <p className="text-2xs text-muted-foreground line-clamp-1 mt-0.5">
             {product.title}
@@ -325,15 +331,20 @@ export function SellerProfileDrawer({
 }: SellerProfileDrawerProps) {
   const t = useTranslations("Product")
   const router = useRouter()
+  const showFollowAction = typeof onFollow === "function"
+  const showChatAction = typeof onChat === "function"
+  const showFooterActions = showFollowAction || showChatAction
 
   const handleClose = () => onOpenChange(false)
 
   const handleChat = () => {
+    if (!showChatAction) return
     onChat?.()
     handleClose()
   }
 
   const handleFollow = () => {
+    if (!showFollowAction) return
     onFollow?.()
     // Don't close - user may want to continue browsing
   }
@@ -391,30 +402,34 @@ export function SellerProfileDrawer({
           )}
         </DrawerBody>
 
-        {/* Footer with actions */}
-        <DrawerFooter className="border-t border-border-subtle py-2.5">
-          {/* Action buttons */}
-          <div className="flex gap-2">
-            <Button
-              variant={isFollowing ? "secondary" : "outline"}
-              size="default"
-              className="flex-1 gap-1.5"
-              onClick={handleFollow}
-            >
-              <Users className="size-4" />
-              {isFollowing ? t("seller.following") : t("seller.follow")}
-            </Button>
-            <Button
-              variant="default"
-              size="default"
-              className="flex-1 gap-1.5"
-              onClick={handleChat}
-            >
-              <MessageCircle className="size-4" />
-              {t("chat")}
-            </Button>
-          </div>
-        </DrawerFooter>
+        {showFooterActions && (
+          <DrawerFooter className="border-t border-border-subtle py-2.5">
+            <div className="flex gap-2">
+              {showFollowAction && (
+                <Button
+                  variant={isFollowing ? "secondary" : "outline"}
+                  size="default"
+                  className="flex-1 gap-1.5"
+                  onClick={handleFollow}
+                >
+                  <Users className="size-4" />
+                  {isFollowing ? t("seller.following") : t("seller.follow")}
+                </Button>
+              )}
+              {showChatAction && (
+                <Button
+                  variant="default"
+                  size="default"
+                  className="flex-1 gap-1.5"
+                  onClick={handleChat}
+                >
+                  <MessageCircle className="size-4" />
+                  {t("chat")}
+                </Button>
+              )}
+            </div>
+          </DrawerFooter>
+        )}
     </DrawerShell>
   )
 }

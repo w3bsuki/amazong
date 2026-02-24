@@ -6,6 +6,14 @@ import type { QuickViewProduct } from "@/components/providers/drawer-context"
 
 type QuickViewDetailsResponse = Partial<QuickViewProduct>
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError"
+}
+
+function isQuickViewDetailsResponse(value: unknown): value is QuickViewDetailsResponse {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
 /**
  * When quick view opens from a product grid, we often only have "card" data.
  * This hook opportunistically fetches richer details for the open product and
@@ -71,36 +79,49 @@ export function useProductQuickViewDetails(open: boolean, product: QuickViewProd
     fetchedKeyRef.current = key
 
     const controller = new AbortController()
+    let isActive = true
     const fetchProductId = id // Capture for closure
 
     setIsLoading(true)
 
-    fetch(
-      `/api/products/quick-view?username=${encodeURIComponent(username)}&productSlug=${encodeURIComponent(productSlug)}`,
-      { signal: controller.signal },
-    )
-      .then(async (res) => {
-        if (!res.ok) throw new Error(String(res.status))
-        return (await res.json()) as QuickViewDetailsResponse
-      })
-      .then((data) => {
-        if (controller.signal.aborted) return
-        if (!data || typeof data !== "object") return
+    const fetchDetails = async () => {
+      try {
+        const res = await fetch(
+          `/api/products/quick-view?username=${encodeURIComponent(username)}&productSlug=${encodeURIComponent(productSlug)}`,
+          { signal: controller.signal },
+        )
+
+        if (!res.ok) {
+          throw new Error(String(res.status))
+        }
+
+        let data: unknown = null
+        try {
+          data = await res.json()
+        } catch {
+          data = null
+        }
+
+        if (!isActive || controller.signal.aborted || !isQuickViewDetailsResponse(data)) return
 
         // Store fetched data with its product ID for safe merging
         setFetchedData({ productId: fetchProductId, data })
-      })
-      .catch(() => {
-        if (controller.signal.aborted) return
+      } catch (error: unknown) {
+        if (!isActive || controller.signal.aborted || isAbortError(error)) return
         fetchedKeyRef.current = null // Allow retry
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) {
+      } finally {
+        if (isActive && !controller.signal.aborted) {
           setIsLoading(false)
         }
-      })
+      }
+    }
 
-    return () => controller.abort()
+    void fetchDetails()
+
+    return () => {
+      isActive = false
+      controller.abort()
+    }
   }, [open, product])
 
   return { product: resolvedProduct, isLoading }

@@ -11,8 +11,50 @@ import { createRouteHandlerClient } from "@/lib/supabase/server"
 
 const noStoreHeaders = { "Cache-Control": "private, no-store" } as const
 
+const AssistantMessageRoleSchema = z.enum(["user", "assistant", "system"])
+
+type AssistantMessageRole = z.infer<typeof AssistantMessageRoleSchema>
+type SimpleAssistantMessage = {
+  role: AssistantMessageRole
+  content: string
+}
+type IncomingAssistantMessages = UIMessage[] | SimpleAssistantMessage[]
+
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null
+}
+
+function hasAssistantMessageRole(value: unknown): value is AssistantMessageRole {
+  return AssistantMessageRoleSchema.safeParse(value).success
+}
+
+function isSimpleAssistantMessage(value: unknown): value is SimpleAssistantMessage {
+  if (!isObjectRecord(value)) return false
+  return hasAssistantMessageRole(value.role) && typeof value.content === "string"
+}
+
+function isUiLikeAssistantMessage(value: unknown): value is UIMessage {
+  if (!isObjectRecord(value)) return false
+  return hasAssistantMessageRole(value.role) && Array.isArray(value.parts)
+}
+
+function isIncomingAssistantMessages(value: unknown): value is IncomingAssistantMessages {
+  if (!Array.isArray(value) || value.length > 50) return false
+  return value.every((message) => isSimpleAssistantMessage(message) || isUiLikeAssistantMessage(message))
+}
+
+function isSimpleAssistantMessageArray(
+  messages: IncomingAssistantMessages
+): messages is SimpleAssistantMessage[] {
+  return messages.every(isSimpleAssistantMessage)
+}
+
+function isUiMessageArray(messages: IncomingAssistantMessages): messages is UIMessage[] {
+  return messages.every(isUiLikeAssistantMessage)
+}
+
 const AssistantChatRequestSchema = z.object({
-  messages: z.array(z.any()).max(50),
+  messages: z.custom<IncomingAssistantMessages>(isIncomingAssistantMessages),
   locale: z.enum(["en", "bg"]).optional(),
 })
 
@@ -80,19 +122,21 @@ export async function POST(request: NextRequest) {
 
     const locale = parsed.data.locale ?? "en"
     
-    // Check if messages are UIMessage format (from useChat) or simple {role, content} format
     const rawMessages = parsed.data.messages
-    const isUIMessageFormat = rawMessages.some((m: { parts?: unknown }) => 
-      m && typeof m === 'object' && 'parts' in m
-    )
-    
-    // Convert to model messages or use directly
-    const messages: ModelMessage[] = isUIMessageFormat
-      ? await convertToModelMessages(rawMessages as UIMessage[])
-      : rawMessages.map((m: { role: string; content: string }) => ({
-          role: m.role as "user" | "assistant" | "system",
-          content: m.content,
-        }))
+    let messages: ModelMessage[]
+    if (isSimpleAssistantMessageArray(rawMessages)) {
+      messages = rawMessages.map((message) => ({
+        role: message.role,
+        content: message.content,
+      }))
+    } else if (isUiMessageArray(rawMessages)) {
+      messages = await convertToModelMessages(rawMessages)
+    } else {
+      return json(
+        { error: { code: "BAD_REQUEST" } },
+        { status: 400, headers: noStoreHeaders },
+      )
+    }
 
     const systemPrompt = getSystemPrompt(locale)
 

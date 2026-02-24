@@ -73,12 +73,13 @@ Premium & Clean. Feels like Stripe meets a modern marketplace — calm confidenc
 
 | Stream | How |
 |--------|-----|
-| **Subscriptions** | Free/Pro/Business tiers. Higher tier = more listings, boosts, AI features, lower fees. Pricing TBD. |
-| **Transaction fees** | % of each sale via Stripe Connect. Rate varies by plan tier. Stored in DB, not hardcoded. |
-| **Boosts** | Paid listing visibility upgrades purchased via Stripe Checkout. |
+| **Buyer Protection** | Buyer pays transparent protection fee (% + fixed, capped) on every purchase. Primary revenue. |
+| **Subscriptions** | 6 tiers: Personal Free/Plus/Pro + Business Free/Pro/Enterprise. Higher tier = more listings, lower buyer fees, boosts, tools. |
+| **Boosts** | Paid listing visibility (€0.99/24h, €4.99/7d, €14.99/30d). Plan credits for 24h boosts. |
 
-**Payouts:** Stripe Connect Express. Direct payout after delivery (leaning — escrow model TBD).
-**Buyer protection:** Vinted-style feel desired. Card payments eliminate cash scams. Dispute flow needed.
+**Payouts:** Stripe Connect Express. Escrow — funds release after delivery confirmation (72h auto-confirm).
+**Seller fees:** Personal = 0%. Business = 0.5–1.5% by plan.
+**Full details:** `docs/business/monetization.md` and `docs/business/plans-pricing.md`.
 
 ---
 
@@ -113,14 +114,14 @@ Everything in this list must work before launch:
 
 ## Open Questions
 
-| ID | Question | Leaning |
-|----|----------|---------|
-| OPEN-001 | Plan tiers, limits, pricing? | Unresolved |
-| OPEN-002 | Direct payout vs escrow? | Direct payout |
-| OPEN-003 | Buyer protection model? | Unresolved |
-| OPEN-004 | Auto-complete policy (14 or 30 days)? | 14 days |
+| ID | Question | Status |
+|----|----------|--------|
+| OPEN-001 | Plan tiers, limits, pricing? | **Resolved** — 6 tiers (Personal Free/Plus/Pro + Business Free/Pro/Enterprise). Limits decided. Subscription prices TBD. See `docs/business/plans-pricing.md` |
+| OPEN-002 | Direct payout vs escrow? | **Resolved** — Escrow (Separate Charges and Transfers). Release after delivery confirmation or dispute resolution. |
+| OPEN-003 | Buyer protection model? | **Resolved** — Hybrid Buyer Protection. Buyer pays % + fixed (capped). See `docs/business/monetization.md` |
+| OPEN-004 | Auto-complete policy (14 or 30 days)? | **Resolved** — 72h after delivery |
 | OPEN-005 | Unified feed or business/personal split? | Unified |
-| OPEN-006 | Transaction fee % per plan? | Unresolved |
+| OPEN-006 | Transaction fee % per plan? | **Resolved** — Fee table in `docs/business/monetization.md` (0% personal seller, 0.5–1.5% business seller, 2–4% buyer protection) |
 | OPEN-007 | Pre-purchase messaging default? | Off |
 
 ---

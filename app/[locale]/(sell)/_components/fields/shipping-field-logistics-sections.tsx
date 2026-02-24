@@ -182,7 +182,9 @@ export function ShippingPriceSection({
           <span className="text-base font-semibold block">{tSell("shipping.freeShipping.title")}</span>
           <span className="text-sm text-muted-foreground line-clamp-1">{tSell("shipping.freeShipping.description")}</span>
         </div>
-        <Switch checked={freeShipping} onCheckedChange={onFreeShippingChange} className="shrink-0 scale-110" />
+        <div onClick={(event) => event.stopPropagation()}>
+          <Switch checked={freeShipping} onCheckedChange={onFreeShippingChange} className="shrink-0 scale-110" />
+        </div>
       </div>
 
       {!freeShipping && (

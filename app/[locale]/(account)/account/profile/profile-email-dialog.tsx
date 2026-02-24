@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -24,21 +25,20 @@ export function ProfileEmailDialog({
   isPending,
   onSubmit,
 }: ProfileEmailDialogProps) {
+  const t = useTranslations("Account.profileEditor")
+  void locale
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{locale === "bg" ? "Промяна на имейл" : "Change Email"}</DialogTitle>
-          <DialogDescription>
-            {locale === "bg"
-              ? "Ще получите имейл за потвърждение на новия адрес"
-              : "You will receive a confirmation email at the new address"}
-          </DialogDescription>
+          <DialogTitle>{t("emailDialog.title")}</DialogTitle>
+          <DialogDescription>{t("emailDialog.description")}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <Field>
             <FieldContent>
-              <FieldLabel htmlFor="newEmail">{locale === "bg" ? "Нов имейл" : "New Email"}</FieldLabel>
+              <FieldLabel htmlFor="newEmail">{t("emailDialog.newEmailLabel")}</FieldLabel>
               <Input
                 id="newEmail"
                 name="newEmail"
@@ -52,11 +52,11 @@ export function ProfileEmailDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {locale === "bg" ? "Отказ" : "Cancel"}
+            {t("actions.cancel")}
           </Button>
           <Button onClick={onSubmit} disabled={isPending || !emailData.newEmail}>
             {isPending ? <SpinnerGap className="size-4 mr-2 animate-spin" /> : null}
-            {locale === "bg" ? "Промени" : "Change"}
+            {t("actions.change")}
           </Button>
         </DialogFooter>
       </DialogContent>

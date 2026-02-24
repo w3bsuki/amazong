@@ -1,127 +1,117 @@
 # Plans & Pricing — Treido
 
 > Subscription tiers, feature gates, and pricing strategy.
-> Source of truth for what each plan includes and what it costs.
+> Source of truth for what each plan includes and costs.
 > Technical implementation: Stripe Subscriptions via `docs/features/checkout-payments.md`.
-
----
-
-## Open Decisions
-
-These correspond to PRD open questions OPEN-001 and OPEN-006:
-
-- **[DECISION NEEDED]** Monthly price for each tier (EUR)
-- **[DECISION NEEDED]** Transaction fee % per tier
-- **[DECISION NEEDED]** Listing limits per tier
-- **[DECISION NEEDED]** Boost allocation per tier
-- **[DECISION NEEDED]** Annual billing discount (if any)
 
 ---
 
 ## Tier Structure
 
-Three tiers. Free gets people in. Pro converts serious sellers. Business serves shops.
+Two account types × three plan levels = **6 tiers**.
 
-### Free Tier
+### Personal Account Plans
 
-**Target:** Casual sellers (Maria persona). List a few items, try the platform.
+For individuals selling personal items, secondhand goods, casual selling.
 
-| Feature | Limit |
-|---------|-------|
-| Active listings | **[DECISION NEEDED]** (suggestion: 50) |
-| Buyer protection fee | **[DECISION NEEDED]** (suggestion: 3% flat — charged to buyer, not seller) |
-| Boosts included | 0 |
-| AI autofill | No |
-| Analytics | Basic (views only) |
-| Support | Community / self-serve |
-| Badge | None |
+| Feature | Free | Plus | Pro |
+|---------|------|------|-----|
+| **Price** | €0 | **TBD** (~€2.99–4.99/mo) | **TBD** (~€6.99–9.99/mo) |
+| Active listings | 30 | 150 | 500 |
+| Seller fee | 0% | 0% | 0% |
+| Buyer protection rate | 4% + €0.50 (cap €15) | 3.5% + €0.40 (cap €14) | 3% + €0.30 (cap €12) |
+| Boost credits/month | 0 | 2× 24h | 5× 24h |
+| Analytics | None | Basic | Full |
+| Priority support | No | No | Yes |
+| Badge | None | None | "Pro Seller" |
 
-### Pro Tier
+### Business Account Plans
 
-**Target:** Regular sellers, side-hustlers. Enough volume to justify a monthly fee.
+For registered businesses, shops, professional sellers.
 
-| Feature | Limit |
-|---------|-------|
-| Price | **[DECISION NEEDED]** €/month (suggestion: €4.99-9.99) |
-| Active listings | **[DECISION NEEDED]** (suggestion: 50-100) |
-| Buyer protection fee | **[DECISION NEEDED]** (suggestion: 2.5-3% flat — charged to buyer) |
-| Boosts included | **[DECISION NEEDED]** (suggestion: 3-5/month) |
-| AI autofill | Yes |
-| Analytics | Full (views, clicks, conversion) |
-| Support | Priority email |
-| Badge | "Pro Seller" |
-
-### Business Tier
-
-**Target:** Small businesses (Stefan persona). Full Shopify-like backend.
-
-| Feature | Limit |
-|---------|-------|
-| Price | **[DECISION NEEDED]** €/month (suggestion: €14.99-29.99) |
-| Active listings | **[DECISION NEEDED]** (suggestion: 500-unlimited) |
-| Buyer protection fee | **[DECISION NEEDED]** (suggestion: 2.5% flat — charged to buyer, lowest tier) |
-| Boosts included | **[DECISION NEEDED]** (suggestion: 10-20/month) |
-| AI autofill | Yes + batch mode |
-| Analytics | Full + export |
-| Dashboard | Full business dashboard |
-| Support | Priority + chat |
-| Badge | "Verified Business" |
-| Custom URL | `/[business-name]` storefront |
+| Feature | Business Free | Business Pro | Business Enterprise |
+|---------|--------------|-------------|---------------------|
+| **Price** | €0 | **TBD** (~€9.99–14.99/mo) | **TBD** (~€24.99–29.99/mo) |
+| Active listings | 100 | 2,000 | Unlimited |
+| Seller fee | 1.5% | 1% | 0.5% |
+| Buyer protection rate | 3% + €0.35 (cap €12) | 2.5% + €0.25 (cap €10) | 2% + €0.20 (cap €8) |
+| Boost credits/month | 0 | 20× 24h | 50× 24h |
+| `/dashboard` access | No | Yes | Yes (full) |
+| Team seats | — | Up to 3 | Unlimited |
+| Analytics | None | Full | Full + export |
+| Priority support | No | Yes | Yes + dedicated |
+| Badge | None | "Business" | "Verified Business" |
 
 ---
 
 ## Pricing Strategy
 
-### Principles
+### Model: Hybrid Buyer Protection
 
-1. **Free must be useful.** People need to sell at least a few items without paying. This is how OLX wins — free listings. We can't compete without a free tier.
-2. **Pro must feel worth it.** The gap between free and pro should be clear: more listings, lower fees, boosts, AI. The monthly cost should be recoverable from 1-2 sales.
-3. **Business must replace Shopify.** Stefan pays €30+/month for Shopify. We should be cheaper with comparable value for his use case (no custom themes, but real storefront + payments).
-4. **Buyer protection fees fund operations.** Every sale generates revenue via a buyer-side fee (Vinted model). Free sellers still produce revenue per transaction. This is better than seller-side fees for growth — sellers see 100% of their price, buyers accept small protection fee for payment security.
+Revenue comes primarily from **buyer protection fees**, not seller commissions. Personal sellers pay 0%. This removes incentive to take deals off-platform (the #1 failure mode of C2C marketplaces that charge seller commissions).
 
-### Reference: Competitor Pricing
+Subscriptions are the **secondary** revenue stream. They unlock:
+- More listings
+- Lower buyer protection fees (making the seller's items cheaper for buyers)
+- Boost credits
+- Professional tools (dashboard, analytics, team seats)
 
-| Platform | Model |
-|----------|-------|
-| OLX Bulgaria | Limited free listings per subcategory (some categories: 1/year for business). Paid listing packages when limit exhausted. Promoted/VIP listings. No transaction fees. |
-| Bazar.bg | Free listings (more generous limits), VIP packages, promoted listings. No transaction fees. |
-| Vinted | Free to list, **5% + €0.70** buyer protection fee (buyer-side). Effective rate ~8.5% on €20 items, ~6% on €50 items, drops toward 5% on expensive items. Items >€500: ~2% + fixed fee. |
-| Facebook Marketplace | Free to list (in BG: no checkout, no fees) |
-| Shopify | €36/month (Basic), 2% transaction fee |
-| Etsy | €0.18/listing + 6.5% transaction + 3% payment |
+### Pricing Principles
 
-### Pricing Tensions
+1. **Free must be useful.** 30 personal listings or 100 business listings is enough to start. This is how OLX wins — free access. We can't compete without it.
+2. **Paid plans reduce buyer fees.** The #1 subscription incentive: upgrading makes your items cost less for buyers (lower buyer protection %). Unique and powerful.
+3. **Business tiers replace Shopify.** Stefan pays ~€36/month for Shopify. Our Business Pro at ~€14.99 with comparable value (storefront + payments + dashboard) is a clear win.
+4. **Bulgaria pricing.** Lower purchasing power than Western EU. Keep personal plans under €10, business plans under €30.
 
-- Too high free-tier fees → nobody lists → marketplace is empty → no buyers
-- Too low pro fees → no revenue → can't sustain
-- Too generous free tier → no reason to upgrade → no subscription revenue
-- Bulgaria market has lower purchasing power than Western EU → price accordingly
+### Competitor Reference
+
+| Platform | Model | Our Advantage |
+|----------|-------|---------------|
+| OLX Bulgaria | Paid listing packages, promoted listings. No payments. | We have payments + free listings up to 30 |
+| Bazar.bg | Free listings, VIP packages. No payments. | Modern UX + integrated payments |
+| Vinted | 5% + €0.70 buyer protection. Fashion only. | General marketplace, lower buyer fees |
+| Facebook Marketplace | Free, no checkout (BG). | Real checkout + tracking |
+| Shopify | €36/mo + 2% transaction. | Cheaper, marketplace traffic included |
+| Etsy | €0.18/listing + 6.5% + 3% payment. | 0% personal seller fee |
 
 ---
 
-## Feature Gate Implementation
+## Feature Gates
 
-Features are gated by plan tier in the database. The `plans` table stores tier → feature mapping.
+Features gated by plan tier in the database (`subscription_plans` table).
 
-**How it works in code:**
+**How it works:**
 - Plan tier stored on user profile
-- Server actions check tier before allowing gated operations
+- Server actions check tier before gated operations
 - Client shows upgrade prompts for gated features
 - Stripe Customer Portal for plan management
-
-**See:** `docs/features/checkout-payments.md` for technical implementation.
+- Fee components stored on order at purchase time (no retroactive changes)
 
 ---
 
 ## Billing
 
-- **Billing cycle:** Monthly (annual TBD)
-- **Payment method:** Stripe Checkout → Subscription
-- **Cancellation:** Immediate access until end of billing period
-- **Upgrade/downgrade:** Prorated via Stripe
-- **Trial:** **[DECISION NEEDED]** (suggestion: 14-day Pro trial for new users)
+| Aspect | Decision |
+|--------|----------|
+| Cycle | Monthly (annual TBD — if offered, ~20% discount) |
+| Payment | Stripe Checkout → Subscription |
+| Cancellation | Access until end of billing period |
+| Upgrade/downgrade | Prorated via Stripe |
+| Trial | **TBD** (suggestion: 14-day Pro trial for new users) |
+| Currency | EUR (Stripe) |
+
+---
+
+## Open Questions
+
+| ID | Question | Status |
+|----|----------|--------|
+| PLAN-001 | Exact monthly price per paid tier | Undecided — needs market testing |
+| PLAN-002 | Annual billing discount | Undecided — suggest 20% |
+| PLAN-003 | Free trial duration and tier | Undecided — suggest 14-day Pro |
+| PLAN-004 | AI autofill (which tiers?) | Deferred to V2 |
 
 ---
 
 *Last updated: 2026-02-23*
-*Status: Skeleton — awaiting pricing decisions*
+*Status: Tier structure and limits decided. Subscription prices pending market testing.*

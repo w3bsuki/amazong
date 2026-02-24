@@ -49,9 +49,8 @@ export function useBadges(): UseBadgesResult {
 
       const data = (await response.json()) as { badges?: BadgeWithMeta[] }
       setBadges(Array.isArray(data.badges) ? data.badges : [])
-    } catch (err) {
+    } catch {
       setError("Failed to load badges")
-      console.error("Error fetching badges:", err)
     } finally {
       setIsLoading(false)
     }
@@ -62,39 +61,34 @@ export function useBadges(): UseBadgesResult {
   }, [fetchBadges])
 
   const toggleFeatured = useCallback(async (badgeId: string): Promise<boolean> => {
-    try {
-      const response = await fetch(`/api/badges/feature/${badgeId}`, {
-        method: "PATCH",
-      })
+    const response = await fetch(`/api/badges/feature/${badgeId}`, {
+      method: "PATCH",
+    })
 
-      if (!response.ok) {
-        const data = (await response.json().catch(() => null)) as { error?: unknown } | null
-        const message = typeof data?.error === "string" ? data.error : "Failed to update badge"
-        throw new Error(message)
-      }
-
-      const data = (await response.json()) as unknown
-      const parsedResponse = toggleFeaturedResponseSchema.safeParse(data)
-      if (!parsedResponse.success) {
-        throw new Error("Invalid badge feature response: expected { is_featured: boolean }")
-      }
-
-      const isFeatured = parsedResponse.data.is_featured
-
-      // Update local state
-      setBadges((prev) =>
-        prev.map((badge) =>
-          badge.id === badgeId
-            ? { ...badge, is_featured: isFeatured }
-            : badge
-        )
-      )
-
-      return isFeatured
-    } catch (err) {
-      console.error("Error toggling badge feature:", err)
-      throw err
+    if (!response.ok) {
+      const data = (await response.json().catch(() => null)) as { error?: unknown } | null
+      const message = typeof data?.error === "string" ? data.error : "Failed to update badge"
+      throw new Error(message)
     }
+
+    const data = (await response.json()) as unknown
+    const parsedResponse = toggleFeaturedResponseSchema.safeParse(data)
+    if (!parsedResponse.success) {
+      throw new Error("Invalid badge feature response: expected { is_featured: boolean }")
+    }
+
+    const isFeatured = parsedResponse.data.is_featured
+
+    // Update local state
+    setBadges((prev) =>
+      prev.map((badge) =>
+        badge.id === badgeId
+          ? { ...badge, is_featured: isFeatured }
+          : badge
+      )
+    )
+
+    return isFeatured
   }, [])
 
   const evaluateBadges = useCallback(async (context?: string): Promise<string[]> => {
@@ -119,8 +113,7 @@ export function useBadges(): UseBadgesResult {
       return Array.isArray(data.awarded)
         ? data.awarded.filter((badgeId): badgeId is string => typeof badgeId === "string")
         : []
-    } catch (err) {
-      console.error("Error evaluating badges:", err)
+    } catch {
       return []
     }
   }, [fetchBadges])
@@ -134,4 +127,3 @@ export function useBadges(): UseBadgesResult {
     evaluateBadges,
   }
 }
-

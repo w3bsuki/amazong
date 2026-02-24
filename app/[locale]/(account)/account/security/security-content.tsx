@@ -18,14 +18,144 @@ import { CircleCheck as CheckCircle, Smartphone as DeviceMobile, Mail as Envelop
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { validatePassword, validateEmail } from "@/lib/validation/auth"
+import { logger } from "@/lib/logger"
 
 interface SecurityContentProps {
     locale: string
     userEmail: string
 }
 
+type SecurityCopy = {
+    passwordChanged: string
+    passwordChangeError: string
+    emailConfirmationSent: string
+    emailChangeError: string
+    emailLabel: string
+    passwordLabel: string
+    verified: string
+    change: string
+    twoFactorLabel: string
+    twoFactorStatus: string
+    soon: string
+    tips: string
+    uniquePasswordTip: string
+    neverSharePasswordTip: string
+    changePasswordTitle: string
+    changePasswordDescription: string
+    newPasswordLabel: string
+    hidePassword: string
+    showPassword: string
+    confirmPasswordLabel: string
+    cancel: string
+    changePasswordButton: string
+    changeEmailTitle: string
+    changeEmailDescription: string
+    currentEmailLabel: string
+    newEmailLabel: string
+    changeEmailButton: string
+    weak: string
+    fair: string
+    good: string
+    strong: string
+}
+
+const SECURITY_COPY_EN: SecurityCopy = {
+    passwordChanged: "Password changed successfully",
+    passwordChangeError: "Error changing password",
+    emailConfirmationSent: "A confirmation email has been sent to your new address",
+    emailChangeError: "Error changing email",
+    emailLabel: "Email",
+    passwordLabel: "Password",
+    verified: "Verified",
+    change: "Change",
+    twoFactorLabel: "2FA",
+    twoFactorStatus: "Not enabled",
+    soon: "Soon",
+    tips: "Tips",
+    uniquePasswordTip: "Use a unique password",
+    neverSharePasswordTip: "Never share your password",
+    changePasswordTitle: "Change Password",
+    changePasswordDescription: "Enter your new password",
+    newPasswordLabel: "New Password",
+    hidePassword: "Hide password",
+    showPassword: "Show password",
+    confirmPasswordLabel: "Confirm Password",
+    cancel: "Cancel",
+    changePasswordButton: "Change Password",
+    changeEmailTitle: "Change Email",
+    changeEmailDescription: "Enter your new email address. You will receive a confirmation email.",
+    currentEmailLabel: "Current Email",
+    newEmailLabel: "New Email",
+    changeEmailButton: "Change Email",
+    weak: "Weak",
+    fair: "Fair",
+    good: "Good",
+    strong: "Strong",
+}
+
+const SECURITY_COPY_BG: SecurityCopy = {
+    passwordChanged: "Паролата е променена успешно",
+    passwordChangeError: "Грешка при промяна на паролата",
+    emailConfirmationSent: "Изпратен е имейл за потвърждение на новия адрес",
+    emailChangeError: "Грешка при промяна на имейла",
+    emailLabel: "Имейл",
+    passwordLabel: "Парола",
+    verified: "Потвърден",
+    change: "Промени",
+    twoFactorLabel: "2FA",
+    twoFactorStatus: "Не е активирана",
+    soon: "Скоро",
+    tips: "Съвети",
+    uniquePasswordTip: "Използвайте уникална парола",
+    neverSharePasswordTip: "Никога не споделяйте паролата си",
+    changePasswordTitle: "Промяна на паролата",
+    changePasswordDescription: "Въведете новата си парола",
+    newPasswordLabel: "Нова парола",
+    hidePassword: "Скрий паролата",
+    showPassword: "Покажи паролата",
+    confirmPasswordLabel: "Потвърди паролата",
+    cancel: "Отказ",
+    changePasswordButton: "Промени паролата",
+    changeEmailTitle: "Промяна на имейл",
+    changeEmailDescription: "Въведете новия си имейл адрес. Ще получите имейл за потвърждение.",
+    currentEmailLabel: "Текущ имейл",
+    newEmailLabel: "Нов имейл",
+    changeEmailButton: "Промени имейла",
+    weak: "Слаба",
+    fair: "Средна",
+    good: "Добра",
+    strong: "Силна",
+}
+
+type PasswordStrength = {
+    label: string
+    color: "text-destructive" | "text-warning" | "text-info" | "text-success"
+    width: "w-1/4" | "w-2/4" | "w-3/4" | "w-full"
+}
+
+function getPasswordStrength(password: string, copy: SecurityCopy): PasswordStrength | null {
+    if (password.length === 0) return null
+
+    const hasLetter = /[a-zA-Z]/.test(password)
+    const hasNumber = /[0-9]/.test(password)
+    const hasSpecial = /[^a-zA-Z0-9]/.test(password)
+
+    let score = 0
+    if (password.length >= 8) score++
+    if (password.length >= 12) score++
+    if (hasLetter) score++
+    if (hasNumber) score++
+    if (hasSpecial) score++
+
+    if (score <= 2) return { label: copy.weak, color: "text-destructive", width: "w-1/4" }
+    if (score === 3) return { label: copy.fair, color: "text-warning", width: "w-2/4" }
+    if (score === 4) return { label: copy.good, color: "text-info", width: "w-3/4" }
+    return { label: copy.strong, color: "text-success", width: "w-full" }
+}
+
 export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
     const tAuth = useTranslations("Auth")
+    const copy = locale === "bg" ? SECURITY_COPY_BG : SECURITY_COPY_EN
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
     const [isChangeEmailOpen, setIsChangeEmailOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -64,12 +194,12 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
 
             if (error) throw error
 
-            toast.success(locale === 'bg' ? 'Паролата е променена успешно' : 'Password changed successfully')
+            toast.success(copy.passwordChanged)
             setIsChangePasswordOpen(false)
             setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
         } catch (error) {
-            console.error('Error changing password:', error)
-            const message = error instanceof Error ? error.message : (locale === 'bg' ? 'Грешка при промяна на паролата' : 'Error changing password')
+            logger.error("[account-security] change_password_failed", error)
+            const message = error instanceof Error ? error.message : copy.passwordChangeError
             toast.error(message)
         } finally {
             setIsLoading(false)
@@ -92,42 +222,16 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
 
             if (error) throw error
 
-            toast.success(
-                locale === 'bg' 
-                    ? 'Изпратен е имейл за потвърждение на новия адрес' 
-                    : 'A confirmation email has been sent to your new address'
-            )
+            toast.success(copy.emailConfirmationSent)
             setIsChangeEmailOpen(false)
             setEmailData({ newEmail: "" })
         } catch (error) {
-            console.error('Error changing email:', error)
-            const message = error instanceof Error ? error.message : (locale === 'bg' ? 'Грешка при промяна на имейла' : 'Error changing email')
+            logger.error("[account-security] change_email_failed", error)
+            const message = error instanceof Error ? error.message : copy.emailChangeError
             toast.error(message)
         } finally {
             setIsLoading(false)
         }
-    }
-
-    // Password strength indicator - uses validation rules
-    const getPasswordStrength = (password: string) => {
-        if (password.length === 0) return null
-        
-        const hasLetter = /[a-zA-Z]/.test(password)
-        const hasNumber = /[0-9]/.test(password)
-        const hasSpecial = /[^a-zA-Z0-9]/.test(password)
-        
-        // Calculate strength based on criteria met
-        let score = 0
-        if (password.length >= 8) score++
-        if (password.length >= 12) score++
-        if (hasLetter) score++
-        if (hasNumber) score++
-        if (hasSpecial) score++
-        
-        if (score <= 2) return { label: locale === 'bg' ? 'Слаба' : 'Weak', color: 'text-destructive', width: 'w-1/4' }
-        if (score === 3) return { label: locale === 'bg' ? 'Средна' : 'Fair', color: 'text-warning', width: 'w-2/4' }
-        if (score === 4) return { label: locale === 'bg' ? 'Добра' : 'Good', color: 'text-info', width: 'w-3/4' }
-        return { label: locale === 'bg' ? 'Силна' : 'Strong', color: 'text-success', width: 'w-full' }
     }
 
     // Get password validation errors for display
@@ -135,7 +239,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
         ? validatePassword(passwordData.newPassword).errors 
         : []
 
-    const passwordStrength = getPasswordStrength(passwordData.newPassword)
+    const passwordStrength = getPasswordStrength(passwordData.newPassword, copy)
     
     // Check if password meets minimum requirements for submit button
     const isPasswordValid = validatePassword(passwordData.newPassword).valid
@@ -154,12 +258,12 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                         <Envelope className="size-5 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">{locale === 'bg' ? 'Имейл' : 'Email'}</p>
+                        <p className="text-sm font-medium">{copy.emailLabel}</p>
                         <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-success">
                         <CheckCircle className="size-3.5" />
-                        <span className="hidden sm:inline">{locale === 'bg' ? 'Потвърден' : 'Verified'}</span>
+                        <span className="hidden sm:inline">{copy.verified}</span>
                     </div>
                 </button>
 
@@ -173,11 +277,11 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                         <Key className="size-5 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">{locale === 'bg' ? 'Парола' : 'Password'}</p>
+                        <p className="text-sm font-medium">{copy.passwordLabel}</p>
                         <p className="text-xs text-muted-foreground">••••••••</p>
                     </div>
                     <span className="text-xs text-muted-foreground">
-                        {locale === 'bg' ? 'Промени' : 'Change'}
+                        {copy.change}
                     </span>
                 </button>
 
@@ -187,13 +291,13 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                         <DeviceMobile className="size-5 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">{locale === 'bg' ? '2FA' : '2FA'}</p>
+                        <p className="text-sm font-medium">{copy.twoFactorLabel}</p>
                         <p className="text-xs text-muted-foreground">
-                            {locale === 'bg' ? 'Не е активирана' : 'Not enabled'}
+                            {copy.twoFactorStatus}
                         </p>
                     </div>
                     <Button variant="outline" size="sm" className="h-7 text-xs" disabled>
-                        {locale === 'bg' ? 'Скоро' : 'Soon'}
+                        {copy.soon}
                     </Button>
                 </div>
             </div>
@@ -202,20 +306,16 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
             <div className="rounded-lg border bg-surface-subtle p-3">
                 <div className="flex items-center gap-2 mb-2">
                     <Shield className="size-4 text-primary" />
-                    <span className="text-sm font-medium">{locale === 'bg' ? 'Съвети' : 'Tips'}</span>
+                    <span className="text-sm font-medium">{copy.tips}</span>
                 </div>
                 <ul className="space-y-1.5 text-xs text-muted-foreground">
                     <li className="flex items-start gap-2">
                         <CheckCircle className="size-3 text-success mt-0.5 shrink-0" />
-                        {locale === 'bg' 
-                            ? 'Използвайте уникална парола'
-                            : 'Use a unique password'}
+                        {copy.uniquePasswordTip}
                     </li>
                     <li className="flex items-start gap-2">
                         <CheckCircle className="size-3 text-success mt-0.5 shrink-0" />
-                        {locale === 'bg' 
-                            ? 'Никога не споделяйте паролата си'
-                            : 'Never share your password'}
+                        {copy.neverSharePasswordTip}
                     </li>
                 </ul>
             </div>
@@ -224,19 +324,13 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
             <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>
-                            {locale === 'bg' ? 'Промяна на паролата' : 'Change Password'}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {locale === 'bg' 
-                                ? 'Въведете новата си парола'
-                                : 'Enter your new password'}
-                        </DialogDescription>
+                        <DialogTitle>{copy.changePasswordTitle}</DialogTitle>
+                        <DialogDescription>{copy.changePasswordDescription}</DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label htmlFor="security-new-password">{locale === 'bg' ? 'Нова парола' : 'New Password'}</Label>
+                            <Label htmlFor="security-new-password">{copy.newPasswordLabel}</Label>
                             <div className="relative">
                                 <Input 
                                     id="security-new-password"
@@ -252,8 +346,8 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                                     className="absolute right-0 top-0 h-full px-3"
                                     onClick={() => setShowNewPassword(!showNewPassword)}
                                     aria-label={showNewPassword
-                                        ? (locale === "bg" ? "Скрий паролата" : "Hide password")
-                                        : (locale === "bg" ? "Покажи паролата" : "Show password")}
+                                        ? copy.hidePassword
+                                        : copy.showPassword}
                                 >
                                     {showNewPassword ? <EyeSlash className="size-4" /> : <Eye className="size-4" />}
                                 </Button>
@@ -278,7 +372,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="security-confirm-password">{locale === 'bg' ? 'Потвърди паролата' : 'Confirm Password'}</Label>
+                            <Label htmlFor="security-confirm-password">{copy.confirmPasswordLabel}</Label>
                             <Input 
                                 id="security-confirm-password"
                                 type="password"
@@ -296,14 +390,14 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
 
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsChangePasswordOpen(false)}>
-                            {locale === 'bg' ? 'Отказ' : 'Cancel'}
+                            {copy.cancel}
                         </Button>
                         <Button 
                             onClick={handleChangePassword} 
                             disabled={isLoading || passwordData.newPassword !== passwordData.confirmPassword || !isPasswordValid}
                         >
                             {isLoading && <SpinnerGap className="size-4 mr-2 animate-spin" />}
-                            {locale === 'bg' ? 'Промени паролата' : 'Change Password'}
+                            {copy.changePasswordButton}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -313,24 +407,18 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
             <Dialog open={isChangeEmailOpen} onOpenChange={setIsChangeEmailOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>
-                            {locale === 'bg' ? 'Промяна на имейл' : 'Change Email'}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {locale === 'bg' 
-                                ? 'Въведете новия си имейл адрес. Ще получите имейл за потвърждение.'
-                                : 'Enter your new email address. You will receive a confirmation email.'}
-                        </DialogDescription>
+                        <DialogTitle>{copy.changeEmailTitle}</DialogTitle>
+                        <DialogDescription>{copy.changeEmailDescription}</DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label htmlFor="security-current-email">{locale === 'bg' ? 'Текущ имейл' : 'Current Email'}</Label>
+                            <Label htmlFor="security-current-email">{copy.currentEmailLabel}</Label>
                             <Input id="security-current-email" value={userEmail} disabled />
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="security-new-email">{locale === 'bg' ? 'Нов имейл' : 'New Email'}</Label>
+                            <Label htmlFor="security-new-email">{copy.newEmailLabel}</Label>
                             <Input 
                                 id="security-new-email"
                                 type="email"
@@ -343,14 +431,14 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
 
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsChangeEmailOpen(false)}>
-                            {locale === 'bg' ? 'Отказ' : 'Cancel'}
+                            {copy.cancel}
                         </Button>
                         <Button 
                             onClick={handleChangeEmail} 
                             disabled={isLoading || !validateEmail(emailData.newEmail).valid}
                         >
                             {isLoading && <SpinnerGap className="size-4 mr-2 animate-spin" />}
-                            {locale === 'bg' ? 'Промени имейла' : 'Change Email'}
+                            {copy.changeEmailButton}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -33,12 +33,13 @@
 - [ ] **LAUNCH-004:** Enable leaked password protection + re-run Supabase Security Advisor
   - Context: `docs/features/auth.md`
   - Done: Supabase Security Advisor returns no critical findings
+  - Note (2026-02-23): Executed Supabase Management API checks against project `dhtzybnkvpimmomzwrce`. `password_hibp_enabled` is currently `false`; enabling it via `PATCH /v1/projects/{ref}/config/auth` failed with `402 Payment Required` (feature is Pro plan+). Security Advisor rerun result: 1 warning (`auth_leaked_password_protection`), 0 critical.
 
 ## Broken Areas
 
 > Known broken areas from launch readiness assessment. Need audit + fix.
 
-- [ ] **FIX-001:** Search is broken — needs investigation and repair
+- [x] **FIX-001:** Search is broken — needs investigation and repair
   - Context: `docs/features/search-filters.md`
   - Done: search returns relevant results, filters work, no console errors, mobile + desktop
 
@@ -57,7 +58,12 @@
 - [ ] **REFACTOR-001:** Domain 6 — lib/, actions/, api/ refactoring (auth/payment sensitive)
   - Context: `refactor/domains/06-lib-actions-api.md`
   - BLOCKED: Contains payment/auth action refactors. Needs human approval before execution.
+  - Note (2026-02-23): Completed a safe `lib/` hardening pass (JSON parse boundary, API response helper cleanup, server logging consistency). Full gate passes.
   - Done: domain refactored per plan, verification passes, no auth/payment regressions
+
+- [x] **REFACTOR-002:** Phase 5 — production audit/refactor for `hooks/`
+  - Context: `refactor/domains/06-lib-actions-api.md`
+  - Done: `hooks/` is audited (dead/unused, cleanup, exhaustive-deps, type safety); `pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit` pass
 
 ## Backlog
 

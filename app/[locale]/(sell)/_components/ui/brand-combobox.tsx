@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { ChevronRight as CaretRight, CheckIcon, Plus, ShieldCheck, X } from "lucide-react";
 
 
@@ -217,11 +218,7 @@ export function BrandCombobox({
               />
               {/* Brand logo */}
               {brand.logo_url ? (
-                <img
-                  src={brand.logo_url}
-                  alt=""
-                  className="size-5 object-contain"
-                />
+                <Image src={brand.logo_url} alt="" width={20} height={20} className="size-5 object-contain" />
               ) : (
                 <div className="size-5 rounded bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                   {brand.name[0]}
@@ -271,14 +268,10 @@ export function BrandCombobox({
         {t("brandCombobox.label")}
       </span>
       <div className="flex items-center justify-between w-full">
-        <span className="flex items-center gap-2.5 truncate pr-12">
-          {/* Brand logo if available */}
+          <span className="flex items-center gap-2.5 truncate pr-12">
+            {/* Brand logo if available */}
           {selectedBrand?.logo_url && (
-            <img
-              src={selectedBrand.logo_url}
-              alt=""
-              className="size-5 object-contain"
-            />
+            <Image src={selectedBrand.logo_url} alt="" width={20} height={20} className="size-5 object-contain" />
           )}
           <span className={cn(
             "text-sm font-semibold truncate",

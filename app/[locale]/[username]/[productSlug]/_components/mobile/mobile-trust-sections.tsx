@@ -47,9 +47,12 @@ export function MobileSafetyTips({ className }: MobileSafetyTipsProps) {
  */
 export function MobileReportButton({ onReport, className }: MobileReportButtonProps) {
   const t = useTranslations("Product")
+
+  if (!onReport) return null
   
   return (
     <button 
+      type="button"
       onClick={onReport}
       className={cn(
         "flex items-center justify-center gap-2 w-full py-3",

@@ -244,7 +244,6 @@ export function SearchFilters({
           onRatingChange={(value) => updateParams("minRating", value)}
         />
         <PriceFilterSection
-          locale={locale}
           currentMinPrice={currentMinPrice}
           currentMaxPrice={currentMaxPrice}
           priceMin={priceMin}

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
+import { noStoreJson } from "@/lib/api/response-helpers"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
+
+const DateParamSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+const SalesExportQuerySchema = z.object({
+  from: DateParamSchema,
+  to: DateParamSchema,
+})
+const EXPORT_FAILED_ERROR = "Failed to export sales"
 
 function csvEscape(value: unknown): string {
   const s = value == null ? "" : String(value)
@@ -8,10 +17,7 @@ function csvEscape(value: unknown): string {
   return s
 }
 
-function parseDateParam(value: string | null): Date | null {
-  if (!value) return null
-  // Accept YYYY-MM-DD only (from <input type="date">)
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null
+function parseDateParam(value: string): Date | null {
   const d = new Date(`${value}T00:00:00.000Z`)
   if (Number.isNaN(d.getTime())) return null
   return d
@@ -19,32 +25,33 @@ function parseDateParam(value: string | null): Date | null {
 
 export async function GET(req: NextRequest) {
   if (process.env.NEXT_PHASE === "phase-production-build") {
-    const res = NextResponse.json({ skipped: true }, { status: 200 })
-    res.headers.set("Cache-Control", "private, no-store")
-    res.headers.set("CDN-Cache-Control", "private, no-store")
-    res.headers.set("Vercel-CDN-Cache-Control", "private, no-store")
-    return res
+    return noStoreJson({ skipped: true }, { status: 200 })
   }
 
   try {
     const { supabase, applyCookies } = createRouteHandlerClient(req)
-    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-      applyCookies(NextResponse.json(body, init))
+    const noStore = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
+      applyCookies(noStoreJson(body, init))
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return json({ error: "Not authenticated" }, { status: 401 })
+      return noStore({ error: "Not authenticated" }, { status: 401 })
     }
 
-    const url = new URL(req.url)
-    const fromParam = url.searchParams.get("from")
-    const toParam = url.searchParams.get("to")
+    const { searchParams } = new URL(req.url)
+    const parsedQuery = SalesExportQuerySchema.safeParse({
+      from: searchParams.get("from"),
+      to: searchParams.get("to"),
+    })
+    if (!parsedQuery.success) {
+      return noStore({ error: "Invalid date range" }, { status: 400 })
+    }
 
-    const fromDate = parseDateParam(fromParam)
-    const toDate = parseDateParam(toParam)
+    const fromDate = parseDateParam(parsedQuery.data.from)
+    const toDate = parseDateParam(parsedQuery.data.to)
 
     if (!fromDate || !toDate || fromDate > toDate) {
-      return json({ error: "Invalid date range" }, { status: 400 })
+      return noStore({ error: "Invalid date range" }, { status: 400 })
     }
 
     // Make `to` inclusive by advancing one day
@@ -52,16 +59,21 @@ export async function GET(req: NextRequest) {
     toExclusive.setUTCDate(toExclusive.getUTCDate() + 1)
 
     // 1) Fetch seller order items (IDs only first)
-    const { data: items } = await supabase
+    const { data: items, error: itemsError } = await supabase
       .from("order_items")
       .select("id, order_id, product_id, quantity, price_at_purchase, status")
       .eq("seller_id", user.id)
+
+    if (itemsError) {
+      console.error("Sales export failed to fetch order items:", itemsError)
+      return noStore({ error: EXPORT_FAILED_ERROR }, { status: 500 })
+    }
 
     const orderIds = [...new Set((items || []).map((i) => i.order_id))]
     const productIds = [...new Set((items || []).map((i) => i.product_id))]
 
     // 2) Fetch orders within range
-    const { data: orders } = orderIds.length
+    const { data: orders, error: ordersError } = orderIds.length
       ? await supabase
           .from("orders")
           .select("id, created_at, status, user_id")
@@ -76,28 +88,44 @@ export async function GET(req: NextRequest) {
             status: string | null
             user_id: string
           }>,
+          error: null,
         }
+
+    if (ordersError) {
+      console.error("Sales export failed to fetch orders:", ordersError)
+      return noStore({ error: EXPORT_FAILED_ERROR }, { status: 500 })
+    }
 
     const orderMap = new Map((orders || []).map((o) => [o.id, o]))
 
     // 3) Fetch products
-    const { data: products } = productIds.length
+    const { data: products, error: productsError } = productIds.length
       ? await supabase
           .from("products")
           .select("id, title")
           .in("id", productIds)
-      : { data: [] as Array<{ id: string; title: string }> }
+      : { data: [] as Array<{ id: string; title: string }>, error: null }
+
+    if (productsError) {
+      console.error("Sales export failed to fetch products:", productsError)
+      return noStore({ error: EXPORT_FAILED_ERROR }, { status: 500 })
+    }
 
     const productMap = new Map((products || []).map((p) => [p.id, p]))
 
     // 4) Fetch buyers (for seller export)
     const buyerIds = [...new Set((orders || []).map((o) => o.user_id))]
-    const { data: buyers } = buyerIds.length
+    const { data: buyers, error: buyersError } = buyerIds.length
       ? await supabase
           .from("profiles")
           .select("id, full_name")
           .in("id", buyerIds)
-      : { data: [] as Array<{ id: string; full_name: string | null }> }
+      : { data: [] as Array<{ id: string; full_name: string | null }>, error: null }
+
+    if (buyersError) {
+      console.error("Sales export failed to fetch buyer profiles:", buyersError)
+      return noStore({ error: EXPORT_FAILED_ERROR }, { status: 500 })
+    }
 
     const buyerMap = new Map((buyers || []).map((b) => [b.id, b]))
 
@@ -146,7 +174,7 @@ export async function GET(req: NextRequest) {
     }
 
     const csv = rows.join("\n")
-    const filename = `sales-${fromParam}_to_${toParam}.csv`
+    const filename = `sales-${parsedQuery.data.from}_to_${parsedQuery.data.to}.csv`
 
     return applyCookies(
       new NextResponse(csv, {
@@ -159,12 +187,10 @@ export async function GET(req: NextRequest) {
     )
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) {
-      const res = NextResponse.json({ skipped: true }, { status: 200 })
-      res.headers.set("Cache-Control", "private, no-store")
-      return res
+      return noStoreJson({ skipped: true }, { status: 200 })
     }
 
     console.error("Sales export API error:", error)
-    return NextResponse.json({ error: "Failed to export sales" }, { status: 500 })
+    return noStoreJson({ error: EXPORT_FAILED_ERROR }, { status: 500 })
   }
 }

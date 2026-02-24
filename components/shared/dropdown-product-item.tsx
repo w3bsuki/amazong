@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { Package, Trash } from "lucide-react";
+import { IconButton } from "@/components/ui/icon-button"
 
 import type { ReactNode } from "react"
 
@@ -58,17 +59,19 @@ export function DropdownProductItem({
         </div>
         {children}
       </div>
-      <button
+      <IconButton
         type="button"
+        variant="ghost"
+        size="icon-sm"
         onClick={(e) => {
           e.preventDefault()
           onRemove()
         }}
-        className="size-6 self-start flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        className="self-start rounded-md text-muted-foreground hover:bg-destructive-subtle hover:text-destructive"
         aria-label={removeLabel}
       >
         <Trash size={14} />
-      </button>
+      </IconButton>
     </div>
   )
 }

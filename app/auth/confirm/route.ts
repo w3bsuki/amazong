@@ -2,6 +2,8 @@ import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { NextResponse, type NextRequest } from "next/server"
 import type { EmailOtpType } from "@supabase/supabase-js"
 
+type AuthConfirmSupabaseClient = ReturnType<typeof createRouteHandlerClient>["supabase"]
+
 function safeNextPath(input: string | null | undefined): string {
   if (!input) return "/"
   if (!input.startsWith("/")) return "/"
@@ -27,6 +29,89 @@ function resolveLocaleFromRequest(searchParams: URLSearchParams, nextPath: strin
   return "en"
 }
 
+function resolveRedirectBaseUrl(request: NextRequest, origin: string): string {
+  const forwardedHost = request.headers.get("x-forwarded-host")
+  const isLocalEnv = process.env.NODE_ENV === "development"
+
+  if (isLocalEnv) return origin
+  if (forwardedHost) return `https://${forwardedHost}`
+  return process.env.NEXT_PUBLIC_SITE_URL || origin
+}
+
+function onboardingRedirectUrl(redirectTo: string, locale: string): string {
+  return `${redirectTo}${withLocalePrefix(locale, "/")}/?onboarding=true`
+}
+
+async function needsOnboarding(supabase: AuthConfirmSupabaseClient): Promise<boolean> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return false
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("onboarding_completed")
+    .eq("id", user.id)
+    .single()
+
+  const profileData = profile as { onboarding_completed?: boolean | null } | null
+  return !profileData?.onboarding_completed
+}
+
+async function resolveCodeFlowRedirect(params: {
+  supabase: AuthConfirmSupabaseClient
+  code: string
+  redirectTo: string
+  locale: string
+  next: string
+}): Promise<string> {
+  const { supabase, code, redirectTo, locale, next } = params
+  const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+  if (error) {
+    console.error("Code exchange error:", error.message)
+    return `${redirectTo}${withLocalePrefix(locale, "/auth/error")}?error=invalid_code`
+  }
+
+  if (await needsOnboarding(supabase)) {
+    return onboardingRedirectUrl(redirectTo, locale)
+  }
+
+  return `${redirectTo}${withLocalePrefix(locale, next)}`
+}
+
+async function resolveTokenHashFlowRedirect(params: {
+  supabase: AuthConfirmSupabaseClient
+  token_hash: string
+  type: EmailOtpType
+  redirectTo: string
+  locale: string
+  next: string
+}): Promise<string | null> {
+  const { supabase, token_hash, type, redirectTo, locale, next } = params
+  const { error } = await supabase.auth.verifyOtp({
+    type,
+    token_hash,
+  })
+
+  if (error) {
+    console.error("Email verification error:", error.message)
+    return null
+  }
+
+  if (type === "signup" || type === "email") {
+    if (await needsOnboarding(supabase)) {
+      return onboardingRedirectUrl(redirectTo, locale)
+    }
+    return `${redirectTo}${withLocalePrefix(locale, next)}`
+  }
+  if (type === "recovery") {
+    return `${redirectTo}${withLocalePrefix(locale, "/auth/reset-password")}`
+  }
+  if (type === "email_change") {
+    return `${redirectTo}${withLocalePrefix(locale, "/account/settings")}?email_changed=true`
+  }
+  return `${redirectTo}${withLocalePrefix(locale, next)}`
+}
+
 /**
  * Handles email confirmation links from Supabase Auth.
  * 
@@ -49,94 +134,37 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type") as EmailOtpType | null
   const next = safeNextPath(searchParams.get("next"))
   const locale = resolveLocaleFromRequest(searchParams, next)
-  
-  // Handle the redirect URL for production vs development
-  const forwardedHost = request.headers.get("x-forwarded-host")
-  const isLocalEnv = process.env.NODE_ENV === "development"
-  
-  let redirectTo: string
-  if (isLocalEnv) {
-    redirectTo = origin
-  } else if (forwardedHost) {
-    redirectTo = `https://${forwardedHost}`
-  } else {
-    // Fallback to NEXT_PUBLIC_SITE_URL or origin
-    redirectTo = process.env.NEXT_PUBLIC_SITE_URL || origin
-  }
+  const redirectTo = resolveRedirectBaseUrl(request, origin)
   
   const { supabase, applyCookies } = createRouteHandlerClient(request)
   const redirectWithCookies = (url: string) => applyCookies(NextResponse.redirect(url))
   
   // Handle PKCE flow (code parameter) - this is what Supabase sends for email confirmation
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    
-    if (!error) {
-      // Check if this is a new user (first time confirming email)
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (user) {
-        // Check if user has completed onboarding
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("onboarding_completed")
-          .eq("id", user.id)
-          .single()
-        
-        // Cast to expected shape (column may not be in generated types yet)
-        const profileData = profile as { onboarding_completed?: boolean | null } | null
-        
-        // If onboarding not completed, redirect to home with onboarding modal trigger
-        if (!profileData?.onboarding_completed) {
-          return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/")}/?onboarding=true`)
-        }
-      }
-      
-      // Otherwise redirect to intended destination
-      return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, next)}`)
-    }
-    
-    console.error("Code exchange error:", error.message)
-    return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/auth/error")}?error=invalid_code`)
+    const target = await resolveCodeFlowRedirect({
+      supabase,
+      code,
+      redirectTo,
+      locale,
+      next,
+    })
+    return redirectWithCookies(target)
   }
   
   // Handle token_hash flow (older method)
   if (token_hash && type) {
-    const { error } = await supabase.auth.verifyOtp({
-      type,
+    const target = await resolveTokenHashFlowRedirect({
+      supabase,
       token_hash,
+      type,
+      redirectTo,
+      locale,
+      next,
     })
-    
-    if (!error) {
-      // Email verified successfully
-      if (type === "signup" || type === "email") {
-        // Check if user needs onboarding
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("onboarding_completed")
-            .eq("id", user.id)
-            .single()
-          
-          // Cast to expected shape
-          const profileData = profile as { onboarding_completed?: boolean | null } | null
-          
-          if (!profileData?.onboarding_completed) {
-            return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/")}/?onboarding=true`)
-          }
-        }
-        return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, next)}`)
-      } else if (type === "recovery") {
-        return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/auth/reset-password")}`)
-      } else if (type === "email_change") {
-        return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, "/account/settings")}?email_changed=true`)
-      }
-      
-      return redirectWithCookies(`${redirectTo}${withLocalePrefix(locale, next)}`)
+
+    if (target) {
+      return redirectWithCookies(target)
     }
-    
-    console.error("Email verification error:", error.message)
   }
   
   // If verification fails, redirect to an error page

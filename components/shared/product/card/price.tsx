@@ -27,7 +27,7 @@ interface ProductCardPriceProps {
   discountAsBadge?: boolean
   /** Visual presentation style for the price row */
   presentation?: "default" | "soft-strip" | "price-badge"
-  /** Force EUR symbol prefix for compact card readability (e.g., €67) */
+  /** Force currency symbol prefix for compact card readability */
   forceSymbolPrefix?: boolean
 }
 

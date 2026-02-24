@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { useMemo, useState, useTransition, useEffect } from "react"
+import { type FormEvent, useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -20,6 +20,22 @@ type ResetPasswordFormData = {
   confirmPassword: string
 }
 
+type ResetPasswordErrorKey =
+  | "passwordSameAsOld"
+  | "rateLimitError"
+  | "somethingWentWrong"
+
+function mapResetPasswordErrorKey(message: string): ResetPasswordErrorKey {
+  const normalizedMessage = message.toLowerCase()
+
+  if (normalizedMessage.includes("same as")) return "passwordSameAsOld"
+  if (normalizedMessage.includes("rate limit") || normalizedMessage.includes("too many requests")) {
+    return "rateLimitError"
+  }
+
+  return "somethingWentWrong"
+}
+
 export default function ResetPasswordPage() {
   const t = useTranslations("Auth")
   const [serverError, setServerError] = useState<string | null>(null)
@@ -29,6 +45,7 @@ export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const router = useRouter()
+  const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const resetPasswordSchema = useMemo(
     () =>
@@ -49,13 +66,23 @@ export default function ResetPasswordPage() {
     [t],
   )
 
-  const form = useForm<ResetPasswordFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: { password: "", confirmPassword: "" },
     mode: "onChange",
   })
 
-  const { isValid } = form.formState
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // Check if user has a valid recovery session
   useEffect(() => {
@@ -68,11 +95,11 @@ export default function ResetPasswordPage() {
     }, 5000)
 
     supabase.auth
-      .getSession()
-      .then(({ data }) => {
+      .getUser()
+      .then(({ data, error }) => {
         if (!isActive) return
         clearTimeout(timeoutId)
-        setIsValidSession(!!data.session)
+        setIsValidSession(!error && Boolean(data.user))
       })
       .catch(() => {
         if (!isActive) return
@@ -97,24 +124,28 @@ export default function ResetPasswordPage() {
         })
 
         if (error) {
-          if (error.message.includes("same as")) {
-            setServerError(t("passwordSameAsOld"))
-          } else {
-            setServerError(error.message)
-          }
+          const errorKey = mapResetPasswordErrorKey(error.message)
+          setServerError(t(errorKey))
           return
         }
 
         setIsSuccess(true)
 
         // Redirect to login after 3 seconds
-        setTimeout(() => {
+        if (redirectTimeoutRef.current) {
+          clearTimeout(redirectTimeoutRef.current)
+        }
+        redirectTimeoutRef.current = setTimeout(() => {
           router.push("/auth/login")
         }, 3000)
       } catch {
         setServerError(t("somethingWentWrong"))
       }
     })
+  }
+
+  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    void handleSubmit(onSubmit)(event)
   }
 
   // Loading state while checking session
@@ -190,27 +221,27 @@ export default function ResetPasswordPage() {
       footer={footer}
       showLogo={true}
     >
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleFormSubmit} className="space-y-4">
         {serverError && (
           <div className="p-3 text-sm text-destructive bg-destructive-subtle border border-destructive rounded-xl">
             {serverError}
           </div>
         )}
 
-        <Field data-invalid={!!form.formState.errors.password}>
+        <Field data-invalid={!!errors.password}>
           <FieldContent>
             <FieldLabel htmlFor="password">{t("newPassword")}</FieldLabel>
             <div className="relative">
               <Input
-                {...form.register("password")}
+                {...register("password")}
                 id="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 placeholder="••••••••"
                 className="pr-10"
-                aria-invalid={!!form.formState.errors.password}
+                aria-invalid={!!errors.password}
                 aria-describedby={
-                  form.formState.errors.password ? "password-error" : undefined
+                  errors.password ? "password-error" : undefined
                 }
               />
               <button
@@ -228,26 +259,26 @@ export default function ResetPasswordPage() {
             </div>
             <FieldError
               id="password-error"
-              errors={[form.formState.errors.password]}
+              errors={[errors.password]}
               className="text-xs"
             />
           </FieldContent>
         </Field>
 
-        <Field data-invalid={!!form.formState.errors.confirmPassword}>
+        <Field data-invalid={!!errors.confirmPassword}>
           <FieldContent>
             <FieldLabel htmlFor="confirmPassword">{t("confirmPassword")}</FieldLabel>
             <div className="relative">
               <Input
-                {...form.register("confirmPassword")}
+                {...register("confirmPassword")}
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 autoComplete="new-password"
                 placeholder="••••••••"
                 className="pr-10"
-                aria-invalid={!!form.formState.errors.confirmPassword}
+                aria-invalid={!!errors.confirmPassword}
                 aria-describedby={
-                  form.formState.errors.confirmPassword
+                  errors.confirmPassword
                     ? "confirmPassword-error"
                     : undefined
                 }
@@ -267,7 +298,7 @@ export default function ResetPasswordPage() {
             </div>
             <FieldError
               id="confirmPassword-error"
-              errors={[form.formState.errors.confirmPassword]}
+              errors={[errors.confirmPassword]}
               className="text-xs"
             />
           </FieldContent>

@@ -29,6 +29,11 @@ const statusColors: Record<string, string> = {
   cancelled: "bg-destructive-subtle text-destructive",
 }
 
+function getSaleProductHref(sale: SaleItem) {
+  if (!sale.product?.username) return "#"
+  return `/${sale.product.username}/${sale.product.slug || sale.product_id}`
+}
+
 export function SalesTable({ sales, locale }: SalesTableProps) {
   const t = useTranslations("SellerManagement")
   const statusLabels: Record<string, string> = {
@@ -49,11 +54,6 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
       style: "currency",
       currency: "EUR",
     }).format(value)
-  }
-
-  const getProductHref = (sale: SaleItem) => {
-    if (!sale.product?.username) return "#"
-    return `/${sale.product.username}/${sale.product.slug || sale.product_id}`
   }
 
   return (
@@ -93,7 +93,7 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
                   </div>
                   <div className="min-w-0">
                     <Link
-                      href={getProductHref(sale)}
+                      href={getSaleProductHref(sale)}
                       className="font-medium text-sm hover:underline line-clamp-1"
                     >
                       {sale.product?.title || t("sales.table.fallbackProductTitle")}
@@ -163,7 +163,7 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
               {/* Actions */}
               <TableCell className="pr-3 md:pr-6 text-right">
                 <Button asChild variant="ghost" size="sm">
-                  <Link href={`/account/orders/${sale.order_id}`}>
+                  <Link href={`/sell/orders`}>
                     <Eye className="size-4 mr-1.5" />
                     {t("sales.table.actions.view")}
                   </Link>

@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest } from "next/server"
 import { errorEnvelope, successEnvelope } from '@/lib/api/envelope'
 import { createRouteHandlerClient } from '@/lib/supabase/server'
 import { STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { stripe } from '@/lib/stripe'
+import { noStoreJson } from "@/lib/api/response-helpers"
 
 function getAppUrl() {
   return (
@@ -36,8 +37,8 @@ function inferLocaleFromRequest(req: Request): 'en' | 'bg' {
 
 export async function POST(req: NextRequest) {
   const { supabase, applyCookies } = createRouteHandlerClient(req)
-  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-    applyCookies(NextResponse.json(body, init))
+  const json = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
+    applyCookies(noStoreJson(body, init))
 
   try {
     const { data: { user } } = await supabase.auth.getUser()

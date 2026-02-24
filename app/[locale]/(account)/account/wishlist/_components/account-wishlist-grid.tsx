@@ -6,6 +6,7 @@ import { toast } from "sonner"
 
 import { useCart } from "@/components/providers/cart-context"
 import { createClient } from "@/lib/supabase/client"
+import { logger } from "@/lib/logger"
 import type { AccountWishlistGridProps, WishlistItem } from "./account-wishlist.types"
 
 import type { WishlistGridLabels } from "./account-wishlist-grid/account-wishlist-grid.types"
@@ -69,7 +70,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlist
       onRemove(productId)
       toast.success(locale === "bg" ? "Премахнато от любими" : "Removed from wishlist")
     } catch (error) {
-      console.error("Error removing from wishlist:", error)
+      logger.error("[account-wishlist] remove_item_failed", error)
       toast.error(locale === "bg" ? "Грешка при премахване" : "Failed to remove")
     } finally {
       setRemovingId(null)

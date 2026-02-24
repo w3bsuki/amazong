@@ -1,22 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest } from "next/server"
 import { errorEnvelope, successEnvelope } from '@/lib/api/envelope'
 import { createRouteHandlerClient } from '@/lib/supabase/server'
 import { STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { stripe } from '@/lib/stripe'
 import { isNextPrerenderInterrupted } from '@/lib/next/is-next-prerender-interrupted'
+import { noStoreJson } from "@/lib/api/response-helpers"
 
 export async function GET(request: NextRequest) {
   if (process.env.NEXT_PHASE === 'phase-production-build') {
-    const res = NextResponse.json(successEnvelope({ skipped: true }), { status: 200 })
-    res.headers.set('Cache-Control', 'private, no-store')
-    res.headers.set('CDN-Cache-Control', 'private, no-store')
-    res.headers.set('Vercel-CDN-Cache-Control', 'private, no-store')
-    return res
+    return noStoreJson(successEnvelope({ skipped: true }), { status: 200 })
   }
 
   const { supabase, applyCookies } = createRouteHandlerClient(request)
-  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-    applyCookies(NextResponse.json(body, init))
+  const json = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
+    applyCookies(noStoreJson(body, init))
 
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -127,9 +124,7 @@ export async function GET(request: NextRequest) {
     }))
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) {
-      const res = NextResponse.json(successEnvelope({ skipped: true }), { status: 200 })
-      res.headers.set('Cache-Control', 'private, no-store')
-      return res
+      return json(successEnvelope({ skipped: true }), { status: 200 })
     }
     console.error('Error fetching billing data:', error)
 

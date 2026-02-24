@@ -24,13 +24,32 @@ function subscribe(callback: () => void): () => void {
   const mql = window.matchMedia(MOBILE_MEDIA_QUERY)
   const onChange = () => callback()
 
-  mql.addEventListener('change', onChange)
+  const addMqlListener = () => {
+    if (typeof mql.addEventListener === 'function') {
+      mql.addEventListener('change', onChange)
+      return () => mql.removeEventListener('change', onChange)
+    }
+
+    const legacyMql = mql as MediaQueryList & {
+      addListener: (listener: () => void) => void
+      removeListener: (listener: () => void) => void
+    }
+
+    legacyMql.addListener(onChange)
+    return () => legacyMql.removeListener(onChange)
+  }
+
+  const removeMqlListener = addMqlListener()
   window.addEventListener('resize', onChange)
   // Force one immediate client snapshot pass after hydration.
-  queueMicrotask(callback)
+  if (typeof queueMicrotask === 'function') {
+    queueMicrotask(callback)
+  } else {
+    void Promise.resolve().then(callback)
+  }
 
   return () => {
-    mql.removeEventListener('change', onChange)
+    removeMqlListener()
     window.removeEventListener('resize', onChange)
   }
 }

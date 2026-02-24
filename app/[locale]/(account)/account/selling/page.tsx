@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
-import { bulkUpdateProductStatus } from "@/app/actions/products-bulk"
-import { clearProductDiscount, setProductDiscountPrice } from "@/app/actions/products-discounts"
-import { deleteProduct } from "@/app/actions/products-update"
+import { bulkUpdateProductStatus } from "../../../../actions/products-bulk"
+import { clearProductDiscount, setProductDiscountPrice } from "../../../../actions/products-discounts"
+import { deleteProduct } from "../../../../actions/products-update"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -34,16 +34,24 @@ interface Product {
   created_at: string
   is_boosted: boolean
   boost_expires_at: string | null
-  status?: 'active' | 'draft' | 'archived' | 'out_of_stock'
-  category?: {
+  status: 'active' | 'draft' | 'archived' | 'out_of_stock'
+  category: {
     name: string
     slug: string
   } | null
 }
 
-export const metadata = {
-  title: "Selling | Treido",
-  description: "Manage your listings and selling activity.",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "SellerManagement" })
+  return {
+    title: `${t("selling.pageTitle")} | Treido`,
+    description: t("selling.sections.manageListings"),
+  }
 }
 
 export default async function SellingPage({ params }: SellingPageProps) {
@@ -105,7 +113,41 @@ export default async function SellingPage({ params }: SellingPageProps) {
     .eq("seller_id", user.id)
     .order("created_at", { ascending: false })
 
-  const sellerProducts = (products || []) as unknown as Product[]
+  const sellerProducts: Product[] = (products ?? []).map((product): Product => {
+    const rawCategory = (product as { category?: unknown }).category
+    const categoryRecord =
+      Array.isArray(rawCategory) && rawCategory.length > 0
+        ? rawCategory[0]
+        : rawCategory
+
+    const category =
+      categoryRecord &&
+      typeof categoryRecord === "object" &&
+      "name" in categoryRecord &&
+      "slug" in categoryRecord &&
+      typeof (categoryRecord as { name?: unknown }).name === "string" &&
+      typeof (categoryRecord as { slug?: unknown }).slug === "string"
+        ? {
+            name: (categoryRecord as { name: string }).name,
+            slug: (categoryRecord as { slug: string }).slug,
+          }
+        : null
+
+    const statusRaw = (product as { status?: unknown }).status
+    const status: Product["status"] =
+      statusRaw === "active" ||
+      statusRaw === "draft" ||
+      statusRaw === "archived" ||
+      statusRaw === "out_of_stock"
+        ? statusRaw
+        : "draft"
+
+    return {
+      ...(product as Omit<Product, "status" | "category">),
+      status,
+      category,
+    } as Product
+  })
 
   // Calculate stats
   const totalProducts = sellerProducts.length

@@ -6,8 +6,9 @@ import {
     USER_PAYMENT_METHOD_VERIFICATION_SELECT,
 } from "@/lib/supabase/selects/billing"
 import { logError } from "@/lib/logger"
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { z } from "zod"
+import { noStoreJson } from "@/lib/api/response-helpers"
 
 const BodySchema = z
     .object({
@@ -18,8 +19,8 @@ const BodySchema = z
 
 async function handleDeletePaymentMethod(request: NextRequest) {
     const { supabase, applyCookies } = createRouteHandlerClient(request)
-    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-        applyCookies(NextResponse.json(body, init))
+    const json = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
+        applyCookies(noStoreJson(body, init))
 
     try {
         const { data: { user } } = await supabase.auth.getUser()

@@ -18,7 +18,7 @@ export function getOrderStatusFromItems(
   statuses: Array<OrderItemStatus | null | undefined>,
   fallback?: OrderStatusKey | null
 ): OrderStatusKey {
-  const normalized = statuses.filter(Boolean) as OrderItemStatus[]
+  const normalized = statuses.filter((status): status is OrderItemStatus => Boolean(status))
   if (normalized.length === 0) return fallback ?? 'pending'
 
   const active = normalized.filter((s) => s !== 'cancelled')

@@ -50,7 +50,8 @@ export function DesktopFilters({ attributes = [], categorySlug, categoryId }: De
       else params.set(key, value)
     }
     const queryString = params.toString()
-    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
+    const nextPath = queryString ? `${basePath}?${queryString}` : basePath
+    router.push(nextPath)
   }
 
   const priceRanges = [

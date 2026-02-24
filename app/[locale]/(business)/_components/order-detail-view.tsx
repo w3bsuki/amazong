@@ -112,6 +112,31 @@ function getStatusConfig(status: string): (typeof STATUS_CONFIG)[StatusKey] {
   return STATUS_CONFIG.pending
 }
 
+function getProduct(item: OrderItem): OrderProduct | null {
+  if (!item.product) return null
+  return Array.isArray(item.product) ? (item.product.at(0) ?? null) : item.product
+}
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("bg-BG", {
+    style: "currency",
+    currency: "BGN",
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+function formatAddress(address: Record<string, unknown> | null) {
+  if (!address) return null
+  const parts = [
+    address.street as string,
+    address.city as string,
+    address.state as string,
+    address.postal_code as string,
+    address.country as string,
+  ].filter(Boolean)
+  return parts.join(", ")
+}
+
 export function OrderDetailView({
   order,
   items,
@@ -119,12 +144,6 @@ export function OrderDetailView({
 }: OrderDetailViewProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)
-
-  // Helper to get nested data
-  const getProduct = (item: OrderItem): OrderProduct | null => {
-    if (!item.product) return null
-    return Array.isArray(item.product) ? (item.product.at(0) ?? null) : item.product
-  }
 
   const getCustomer = (): OrderCustomer | null => {
     if (!order.user) return null
@@ -139,14 +158,6 @@ export function OrderDetailView({
 
   const shippingCost = 0 // Shipping cost not stored in orders table yet
   const total = order.total_amount || (subtotal + shippingCost)
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('bg-BG', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 2,
-    }).format(value)
-  }
 
   const handleStatusUpdate = async (newStatus: string) => {
     setIsLoading(true)
@@ -166,18 +177,6 @@ export function OrderDetailView({
   const copyOrderId = () => {
     navigator.clipboard.writeText(order.id)
     toast.success("Order ID copied")
-  }
-
-  const formatAddress = (address: Record<string, unknown> | null) => {
-    if (!address) return null
-    const parts = [
-      address.street as string,
-      address.city as string,
-      address.state as string,
-      address.postal_code as string,
-      address.country as string,
-    ].filter(Boolean)
-    return parts.join(", ")
   }
 
   return (

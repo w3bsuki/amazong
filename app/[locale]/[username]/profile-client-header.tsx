@@ -159,6 +159,7 @@ export function buildProfileActions({
           variant="secondary"
           size="icon"
           className="hidden rounded-xl sm:inline-flex"
+          aria-label={tProfile("share")}
           onClick={onShare}
         >
           <ShareNetwork className="size-4" />

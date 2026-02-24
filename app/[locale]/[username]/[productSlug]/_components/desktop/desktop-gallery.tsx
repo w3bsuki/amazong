@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl"
 import Image from "next/image"
 import "photoswipe/style.css"
 import { Share2, ZoomIn } from "lucide-react"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import type { GalleryImage } from "@/lib/view-models/product-page"
@@ -37,6 +38,7 @@ export function DesktopGallery({
   className,
 }: DesktopGalleryProps) {
   const t = useTranslations("Product")
+  const tModal = useTranslations("ProductModal")
   const [activeIndex, setActiveIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
   const lightboxRef = useRef<LightboxHandle | null>(null)
@@ -82,6 +84,34 @@ export function DesktopGallery({
   const getAlt = (img: GalleryImage) =>
     t(img.altKey as never, img.altParams as never)
 
+  const handleShare = async () => {
+    if (typeof window === "undefined") return
+    const url = window.location.href
+    if (!url) return
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        const shareData: ShareData = { url }
+        if (activeImage) {
+          shareData.title = getAlt(activeImage)
+        }
+        await navigator.share(shareData)
+        return
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") return
+      }
+    }
+
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(url)
+        toast.success(tModal("linkCopied"))
+      } catch {
+        toast.error(tModal("copyFailed"))
+      }
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       {/* Hero Image */}
@@ -122,6 +152,9 @@ export function DesktopGallery({
             variant="secondary"
             size="icon"
             className="size-9 rounded-full bg-background border border-border-subtle hover:bg-hover"
+            onClick={() => {
+              void handleShare()
+            }}
             aria-label={t("share")}
           >
             <Share2 className="size-4 text-foreground" />

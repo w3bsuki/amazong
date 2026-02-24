@@ -3,7 +3,7 @@ import { Plane as Airplane, Zap as Lightning, Truck } from "lucide-react";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
-import { SHIPPING_COSTS, type ShippingMethod } from "./checkout-types";
+import { isShippingMethod, SHIPPING_COSTS, type ShippingMethod } from "./checkout-types";
 
 interface ShippingMethodSectionProps {
   shippingMethod: ShippingMethod;
@@ -48,7 +48,11 @@ export function ShippingMethodSection({
     return (
       <RadioGroup
         value={shippingMethod}
-        onValueChange={(v) => setShippingMethod(v as ShippingMethod)}
+        onValueChange={(value) => {
+          if (isShippingMethod(value)) {
+            setShippingMethod(value)
+          }
+        }}
         className="space-y-2"
       >
         {options.map((opt) => {
@@ -82,7 +86,15 @@ export function ShippingMethodSection({
   }
 
   return (
-    <RadioGroup value={shippingMethod} onValueChange={(v) => setShippingMethod(v as ShippingMethod)} className="space-y-2">
+    <RadioGroup
+      value={shippingMethod}
+      onValueChange={(value) => {
+        if (isShippingMethod(value)) {
+          setShippingMethod(value)
+        }
+      }}
+      className="space-y-2"
+    >
       {options.map((opt) => {
         const Icon = opt.icon;
         return (

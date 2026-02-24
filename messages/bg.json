@@ -1001,6 +1001,7 @@
         "shipping": "Доставка",
         "tax": "Такса ({percent}%)",
         "total": "Общо",
+        "totalFormula": "Общо = междинна сума на артикулите + такса за защита на купувача",
         "processing": "Обработка...",
         "proceedToPayment": "Продължи към плащане",
         "securePayment": "Сигурно плащане с SSL криптиране",
@@ -1808,6 +1809,195 @@
             "title": "Нещо се обърка",
             "description": "Не успяхме да заредим информацията за фактуриране. Моля, опитайте отново.",
             "retry": "Опитай отново"
+        },
+        "profileEditor": {
+            "meta": {
+                "title": "Профил | Treido",
+                "description": "Управлявайте информацията за вашия профил в Treido."
+            },
+            "tabs": {
+                "account": "Акаунт",
+                "public": "Публичен профил"
+            },
+            "defaults": {
+                "user": "Потребител"
+            },
+            "actions": {
+                "save": "Запази",
+                "saving": "Запазване...",
+                "cancel": "Отказ",
+                "change": "Промени",
+                "set": "Задай",
+                "reset": "Нулирай"
+            },
+            "toasts": {
+                "profileUpdated": "Профилът е обновен успешно",
+                "avatarUploaded": "Аватарът е качен успешно",
+                "avatarReset": "Аватарът е нулиран",
+                "avatarUpdated": "Аватарът е обновен",
+                "emailChangeSent": "Изпратен е имейл за потвърждение на новия адрес",
+                "passwordChanged": "Паролата е променена успешно",
+                "usernameChanged": "Потребителското име е променено успешно",
+                "publicProfileUpdated": "Публичният профил е обновен",
+                "bannerUploaded": "Банерът е качен успешно",
+                "businessUpgraded": "Профилът е надграден до бизнес",
+                "businessDowngraded": "Профилът е върнат до личен"
+            },
+            "passwordStrength": {
+                "weak": "Слаба",
+                "fair": "Средна",
+                "good": "Добра",
+                "strong": "Силна"
+            },
+            "personalInfo": {
+                "title": "Лична информация",
+                "description": "Актуализирайте информацията за вашия профил",
+                "fullNameLabel": "Име",
+                "fullNamePlaceholder": "Вашето име",
+                "phoneLabel": "Телефон",
+                "shippingRegionLabel": "Регион за доставка",
+                "shippingRegionPlaceholder": "Изберете регион",
+                "countryCodeLabel": "Код на държава"
+            },
+            "security": {
+                "title": "Сигурност",
+                "description": "Управлявайте имейла и паролата на акаунта",
+                "emailLabel": "Имейл",
+                "passwordLabel": "Парола",
+                "verified": "Потвърден"
+            },
+            "avatar": {
+                "title": "Профилна снимка",
+                "description": "Качете снимка за профила си. Максимален размер: 5MB",
+                "uploadAriaLabel": "Качи нова профилна снимка",
+                "chooseTitle": "Избери аватар",
+                "chooseDescription": "Бърз избор без качване",
+                "chooseAriaLabel": "Избери този аватар",
+                "generatedHint": "Можеш да избереш и генериран аватар по всяко време"
+            },
+            "emailDialog": {
+                "title": "Промяна на имейл",
+                "description": "Ще получите имейл за потвърждение на новия адрес",
+                "newEmailLabel": "Нов имейл"
+            },
+            "passwordDialog": {
+                "title": "Промяна на парола",
+                "description": "Въведете текущата и новата парола",
+                "currentPasswordLabel": "Текуща парола",
+                "newPasswordLabel": "Нова парола",
+                "confirmPasswordLabel": "Потвърди паролата",
+                "hidePassword": "Скрий паролата",
+                "showPassword": "Покажи паролата",
+                "passwordsDoNotMatch": "Паролите не съвпадат"
+            },
+            "username": {
+                "yourPublicProfile": "Твоят публичен профил",
+                "viewProfile": "Виж профила",
+                "title": "Потребителско име",
+                "description": "Уникалният ти идентификатор за URL и споменаване",
+                "notSet": "Не е зададено",
+                "set": "Задай",
+                "changeTitle": "Промени потребителско име",
+                "chooseTitle": "Избери потребителско име",
+                "changeRule": "Потребителското име може да се променя веднъж на 14 дни",
+                "newLabel": "Ново потребителско име",
+                "taken": "Това потребителско име е заето",
+                "rules": "Правила: 3-30 символа, само малки букви, цифри и долна черта",
+                "changeInDays": "Можеш да промениш отново след {days} дни"
+            },
+            "publicInfo": {
+                "title": "Публична информация",
+                "description": "Тази информация се показва на публичния ти профил",
+                "displayNameLabel": "Показвано име",
+                "displayNamePlaceholder": "Твоето име",
+                "displayNameHelp": "Показва се вместо @username",
+                "bioLabel": "Биография",
+                "bioPlaceholder": "Разкажи нещо за себе си...",
+                "locationLabel": "Локация",
+                "locationPlaceholder": "София, България",
+                "websiteLabel": "Уебсайт",
+                "socialFacebook": "Facebook",
+                "socialInstagram": "Instagram",
+                "socialTwitter": "Twitter/X",
+                "socialTiktok": "TikTok"
+            },
+            "banner": {
+                "title": "Банер на профила",
+                "description": "Препоръчителен размер: 1200x300 пиксела",
+                "alt": "Банер на профила"
+            },
+            "accountType": {
+                "title": "Тип акаунт",
+                "businessDescription": "Бизнес акаунт с разширени функции",
+                "personalDescription": "Личен акаунт",
+                "businessLabel": "Бизнес",
+                "personalLabel": "Личен",
+                "verified": "Верифициран",
+                "switchToPersonal": "Върни към личен",
+                "upgradeToBusiness": "Надгради до бизнес",
+                "upgradeDialogTitle": "Надгради до бизнес акаунт",
+                "upgradeDialogDescription": "Бизнес акаунтите имат допълнителни функции",
+                "businessNameLabel": "Име на бизнеса *",
+                "businessNamePlaceholder": "Вашият бизнес",
+                "vatNumberLabel": "ДДС номер (по желание)",
+                "profileInfoNotice": "Бизнес акаунтите показват допълнителна информация в профила - социални мрежи, уебсайт и др.",
+                "upgrade": "Надгради",
+                "businessNameValueLabel": "Име на бизнеса",
+                "vatNumberValueLabel": "ДДС номер"
+            },
+            "errors": {
+                "profile": {
+                    "NOT_AUTHENTICATED": "Моля, влезте в профила си, за да продължите.",
+                    "INVALID_INPUT": "Проверете въведените данни и опитайте отново.",
+                    "INVALID_EMAIL": "Моля, въведете валиден имейл адрес.",
+                    "EMAIL_UNCHANGED": "Новият имейл съвпада с текущия.",
+                    "EMAIL_ALREADY_REGISTERED": "Този имейл вече е регистриран.",
+                    "PROFILE_UPDATE_FAILED": "Неуспешно обновяване на профила.",
+                    "EMAIL_UPDATE_FAILED": "Неуспешна промяна на имейла.",
+                    "PASSWORD_UPDATE_UNAVAILABLE": "Промяната на парола не е налична за този акаунт.",
+                    "CURRENT_PASSWORD_INCORRECT": "Текущата парола е неправилна.",
+                    "PASSWORD_UPDATE_FAILED": "Неуспешна промяна на паролата.",
+                    "NO_FILE": "Моля, изберете файл.",
+                    "FILE_TOO_LARGE": "Файлът е твърде голям. Максималният размер е 5MB.",
+                    "INVALID_FILE_TYPE": "Неподдържан тип файл.",
+                    "AVATAR_UPLOAD_FAILED": "Неуспешно качване на аватар.",
+                    "AVATAR_PROFILE_UPDATE_FAILED": "Неуспешно запазване на аватара в профила.",
+                    "AVATAR_UPDATE_FAILED": "Неуспешно обновяване на аватара.",
+                    "AVATAR_RESET_FAILED": "Неуспешно нулиране на аватара.",
+                    "UNKNOWN_ERROR": "Възникна грешка. Моля, опитайте отново."
+                },
+                "usernameAvailability": {
+                    "INVALID_USERNAME": "Невалиден формат на потребителското име.",
+                    "USERNAME_RESERVED": "Това потребителско име е запазено.",
+                    "USERNAME_TAKEN": "Това потребителско име вече е заето.",
+                    "CHECK_FAILED": "Проверката за наличност не бе успешна."
+                },
+                "usernameAccount": {
+                    "NOT_AUTHENTICATED": "Моля, влезте в профила си, за да продължите.",
+                    "INVALID_USERNAME": "Невалиден формат на потребителското име.",
+                    "USERNAME_RESERVED": "Това потребителско име е запазено.",
+                    "USERNAME_COOLDOWN_ACTIVE": "Можете да промените потребителското име отново след {days} дни.",
+                    "USERNAME_TAKEN": "Това потребителско име вече е заето.",
+                    "USERNAME_UPDATE_FAILED": "Неуспешно обновяване на потребителското име.",
+                    "INVALID_BUSINESS_DATA": "Проверете бизнес данните и опитайте отново.",
+                    "ACCOUNT_UPGRADE_FAILED": "Неуспешно надграждане на акаунта.",
+                    "ACTIVE_BUSINESS_SUBSCRIPTION": "Първо прекратете активния бизнес абонамент преди понижаване.",
+                    "ACCOUNT_DOWNGRADE_FAILED": "Неуспешно понижаване на акаунта.",
+                    "UNKNOWN_ERROR": "Възникна грешка. Моля, опитайте отново."
+                },
+                "usernameProfile": {
+                    "NOT_AUTHENTICATED": "Моля, влезте в профила си, за да продължите.",
+                    "INVALID_PROFILE_DATA": "Проверете данните за профила и опитайте отново.",
+                    "NO_FILE": "Моля, изберете файл.",
+                    "FILE_TOO_LARGE": "Файлът е твърде голям. Максималният размер е 5MB.",
+                    "INVALID_FILE_TYPE": "Неподдържан тип файл. Използвайте JPEG, PNG или WebP.",
+                    "PUBLIC_PROFILE_UPDATE_FAILED": "Неуспешно обновяване на публичния профил.",
+                    "BANNER_UPLOAD_FAILED": "Неуспешно качване на банер.",
+                    "BANNER_SAVE_FAILED": "Неуспешно запазване на банера.",
+                    "PROFILE_NOT_FOUND": "Профилът не е намерен.",
+                    "UNKNOWN_ERROR": "Възникна грешка. Моля, опитайте отново."
+                }
+            }
         }
     },
     "ProductForm": {
@@ -2506,7 +2696,9 @@
         "viewProduct": "Виж продукта",
         "createYourOwn": "Създайте свой списък с желания",
         "signUpToCreate": "Регистрирайте се, за да запазите любимите си артикули и да ги споделите с приятели и семейство.",
-        "signUpFree": "Безплатна регистрация"
+        "signUpFree": "Безплатна регистрация",
+        "metadataTitle": "Споделен списък с любими | Treido",
+        "metadataDescription": "Вижте споделен списък с любими в Treido."
     },
     "Seller": {
         "aboutThisSeller": "За този продавач",
@@ -4440,15 +4632,21 @@
             "popular": "Популярен",
             "mostPopular": "Най-популярен",
             "feeLabel": "Такса при продажба",
+            "buyerFeeLabel": "Такса за купувача",
             "period": {
                 "mo": "/мес",
                 "yr": "/год"
+            },
+            "buyerFeeAdvantage": {
+                "title": "По-ниските такси за купувача увеличават продажбите",
+                "desc": "При надграждане защитата на купувача намалява, което прави обявите ти по-изгодни за купувачите."
             },
             "planFeatures": {
                 "listingsPerMonth": "обяви/мес",
                 "unlimitedListings": "Неограничени обяви",
                 "whenSoldShort": "при продажба",
                 "buyerProtection": "защита на купувача",
+                "capLabel": "таван",
                 "boostsShort": "буста/мес",
                 "analytics": "Аналитика"
             },
@@ -4895,5 +5093,9 @@
                 "Следи представянето на отстъпките в аналитиката"
             ]
         }
+    },
+    "MobileStepProgress": {
+        "ariaLabel": "Прогрес на стъпките",
+        "ariaValueText": "Стъпка {current} от {total}"
     }
 }

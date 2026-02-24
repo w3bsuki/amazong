@@ -1,4 +1,6 @@
 import { ProfileContent } from "./profile-content"
+import { getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
 import {
   deleteAvatar,
   setAvatarUrl,
@@ -6,20 +8,20 @@ import {
   updatePassword,
   updateProfile,
   uploadAvatar,
-} from "@/app/actions/profile-mutations"
+} from "../../../../actions/profile-mutations"
 import {
   checkUsernameAvailability,
   getUsernameChangeCooldown,
-} from "@/app/actions/username-availability"
+} from "../../../../actions/username-availability"
 import {
   downgradeToPersonalAccount,
   setUsername,
   upgradeToBusinessAccount,
-} from "@/app/actions/username-account"
+} from "../../../../actions/username-account"
 import {
   updatePublicProfile,
   uploadBanner,
-} from "@/app/actions/username-profile"
+} from "../../../../actions/username-profile"
 import { requireAccountPageContext } from "../_lib/require-account-page-context"
 
 interface ProfilePageProps {
@@ -38,9 +40,15 @@ function buildGeneratedAvatar(seed: string): string {
   return `boring-avatar:marble:${paletteIndex}:${safeSeed}`
 }
 
-export const metadata = {
-  title: "Profile | Treido",
-  description: "Manage your Treido profile information.",
+export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Account.profileEditor" })
+
+  return {
+    title: t("meta.title"),
+    description: t("meta.description"),
+  }
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {

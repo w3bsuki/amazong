@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { PageShell } from "../../_components/page-shell"
+import { normalizePlanTier } from "@/lib/subscriptions/normalize-tier"
 
 import { navItems } from "./plans-page-client.config"
 import { formatPrice } from "./plans-page-client.helpers"
@@ -48,7 +49,9 @@ export default function PlansPageClient(props: {
   const [yearly, setYearly] = useState(false)
   const [plans] = useState<SubscriptionPlanRow[]>(props.initialPlans)
   const [userId] = useState<string | null>(props.initialUserId)
-  const [currentTier, setCurrentTier] = useState<string>(props.initialCurrentTier || "free")
+  const [currentTier, setCurrentTier] = useState<string>(
+    normalizePlanTier(props.initialCurrentTier)
+  )
   const [subscribingId, setSubscribingId] = useState<string | null>(null)
   const [activeSection, setActiveSection] = useState("pricing")
 

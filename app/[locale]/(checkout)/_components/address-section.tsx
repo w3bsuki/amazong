@@ -13,7 +13,7 @@ interface AddressSectionProps {
   isLoadingAddresses: boolean;
   savedAddresses: SavedAddress[];
   selectedAddressId: string | null;
-  setSelectedAddressId: (id: string) => void;
+  setSelectedAddressId: (id: string | null) => void;
   useNewAddress: boolean;
   setUseNewAddress: (value: boolean) => void;
   newAddress: NewAddressForm;
@@ -87,7 +87,7 @@ export function AddressSection({
                     {addr.address_line2 && `, ${addr.address_line2}`}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {addr.city}, {addr.state} {addr.postal_code}
+                    {[addr.city, addr.state, addr.postal_code].filter(Boolean).join(", ")}
                   </p>
                 </div>
                 {isSelected && <Check className="size-5 shrink-0 text-primary" />}

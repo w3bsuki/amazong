@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { Database } from "@/lib/supabase/database.types"
 
@@ -20,6 +20,15 @@ type UseSupabasePostgresChangesOptions = {
   supabase?: ReturnType<typeof createClient>
 }
 
+function safeInvoke(task: () => void | Promise<void>) {
+  try {
+    const maybePromise = task()
+    void Promise.resolve(maybePromise).catch(() => {})
+  } catch {
+    return
+  }
+}
+
 export function useSupabasePostgresChanges({
   enabled,
   specs,
@@ -27,16 +36,27 @@ export function useSupabasePostgresChanges({
   onPayload,
   supabase: providedClient,
 }: UseSupabasePostgresChangesOptions) {
+  const onChangeRef = useRef(onChange)
+  const onPayloadRef = useRef(onPayload)
+
+  useEffect(() => {
+    onChangeRef.current = onChange
+  }, [onChange])
+
+  useEffect(() => {
+    onPayloadRef.current = onPayload
+  }, [onPayload])
+
   useEffect(() => {
     if (!enabled || specs.length === 0) return
 
     const supabase = providedClient ?? createClient()
     const handleChange = (payload: unknown) => {
-      if (onPayload) {
-        void onPayload(payload)
+      if (onPayloadRef.current) {
+        safeInvoke(() => onPayloadRef.current?.(payload))
       }
-      if (onChange) {
-        void onChange()
+      if (onChangeRef.current) {
+        safeInvoke(() => onChangeRef.current?.())
       }
     }
 
@@ -67,5 +87,5 @@ export function useSupabasePostgresChanges({
         supabase.removeChannel(channel)
       }
     }
-  }, [enabled, onChange, onPayload, providedClient, specs])
+  }, [enabled, providedClient, specs])
 }

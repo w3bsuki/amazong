@@ -1,7 +1,6 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { normalizeImageUrls } from "@/lib/normalize-image-url"
-import { NextResponse } from "next/server"
-import { cachedJsonResponse } from "@/lib/api/response-helpers"
+import { cachedJsonResponse, dbUnavailableResponse, errorResponse } from "@/lib/api/response-helpers"
 import { z } from "zod"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
@@ -19,7 +18,7 @@ export async function GET(request: Request) {
     })
 
     if (!parsed.success) {
-      return cachedJsonResponse({ products: [] })
+      return errorResponse(parsed.error.issues[0]?.message ?? "Invalid query", 400, { products: [], hasMore: false })
     }
 
     const query = parsed.data.q
@@ -27,7 +26,7 @@ export async function GET(request: Request) {
 
     const supabase = createStaticClient()
     if (!supabase) {
-      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
+      return dbUnavailableResponse({ products: [], hasMore: false })
     }
 
     // Use ILIKE for flexible search (supports Cyrillic/Bulgarian)
@@ -52,7 +51,7 @@ export async function GET(request: Request) {
 
     if (error) {
       console.error("Search error:", error)
-      return NextResponse.json({ products: [] })
+      return errorResponse("Failed to search products", 500, { products: [], hasMore: false })
     }
 
     // Transform to include storeSlug at top level for easier client consumption
@@ -73,7 +72,6 @@ export async function GET(request: Request) {
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
     console.error("Search API Error:", error)
-    const message = error instanceof Error ? error.message : "Internal Server Error"
-    return NextResponse.json({ error: message }, { status: 500 })
+    return errorResponse("Internal server error", 500, { products: [], hasMore: false })
   }
 }

@@ -1,12 +1,11 @@
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { cacheLife, cacheTag } from "next/cache"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
+import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
 import { resolveCategoryAttributes } from "@/lib/data/category-attributes"
+import { z } from "zod"
 
-// Align CDN cache headers with next.config.ts cacheLife.categories
-// (revalidate: 3600s, stale: 300s)
-const CACHE_TTL_SECONDS = 3600
-const CACHE_STALE_WHILE_REVALIDATE = 300
+const CategoryParamSchema = z.string().trim().min(1).max(64)
 
 async function getCategoryAttributesCached(slugOrId: string) {
   'use cache'
@@ -43,35 +42,32 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = await params
+    const { slug: rawSlug } = await params
+    const slugResult = CategoryParamSchema.safeParse(rawSlug)
 
-    if (!slug) {
-      return NextResponse.json({ error: "Category slug/ID is required" }, { status: 400 })
+    if (!slugResult.success) {
+      return noStoreJson({ error: "Category slug/ID is required" }, { status: 400 })
     }
+
+    const slug = slugResult.data
 
     const result = await getCategoryAttributesCached(slug)
     if (!result.ok) {
-      return NextResponse.json({ error: result.message }, { status: result.status })
+      return noStoreJson({ error: result.message }, { status: result.status })
     }
 
-    return NextResponse.json(
+    return cachedJsonResponse(
       {
         category_id: result.category_id,
         attributes: result.attributes,
         inherited_from: result.inherited_from,
         count: result.count,
       },
-      {
-        headers: {
-          "Cache-Control": `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`,
-          "CDN-Cache-Control": `public, max-age=${CACHE_TTL_SECONDS}`,
-          "Vercel-CDN-Cache-Control": `public, max-age=${CACHE_TTL_SECONDS}`,
-        },
-      }
+      "categories",
     )
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
     console.error("Unexpected error:", error)
-    return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 })
+    return noStoreJson({ error: "An unexpected error occurred" }, { status: 500 })
   }
 }

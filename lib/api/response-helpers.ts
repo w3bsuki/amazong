@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { z } from "zod"
 
 /**
  * Cache profiles for different API endpoint types.
@@ -9,8 +10,8 @@ export const CACHE_PROFILES = {
   products: { ttl: 300, swr: 60 },
   /** Deals: 2 min cache, 30s stale-while-revalidate (more dynamic) */
   deals: { ttl: 120, swr: 30 },
-  /** Categories: 10 min cache, 2 min stale-while-revalidate (rarely changes) */
-  categories: { ttl: 600, swr: 120 },
+  /** Categories: 1 hour cache, 5 min stale-while-revalidate (rarely changes) */
+  categories: { ttl: 3600, swr: 300 },
   /** Catalog-like endpoints: 1 hour cache, 5 min stale-while-revalidate */
   catalog: { ttl: 3600, swr: 300 },
   /** Shared/tokenized views: 1 min cache, 30s stale-while-revalidate */
@@ -58,22 +59,14 @@ export function errorResponse(
   status: number = 500,
   extra?: Record<string, unknown>
 ): NextResponse {
-  return NextResponse.json(
-    { 
-      error: message,
-      products: [],
-      hasMore: false,
-      ...extra 
-    },
-    { status }
-  )
+  return NextResponse.json({ error: message, ...extra }, { status })
 }
 
 /**
  * Database unavailable response (503 Service Unavailable).
  */
-export function dbUnavailableResponse(): NextResponse {
-  return errorResponse("Database unavailable", 503)
+export function dbUnavailableResponse(extra?: Record<string, unknown>): NextResponse {
+  return errorResponse("Database unavailable", 503, extra)
 }
 
 /**
@@ -84,12 +77,18 @@ export function parsePaginationParams(
   defaults: { page?: number; limit?: number; maxLimit?: number } = {}
 ): { page: number; limit: number; offset: number } {
   const { page: defaultPage = 1, limit: defaultLimit = 12, maxLimit = 24 } = defaults
-  
-  const page = Math.max(1, Number.parseInt(searchParams.get("page") || String(defaultPage), 10))
-  const requestedLimit = Number.parseInt(searchParams.get("limit") || String(defaultLimit), 10)
-  const limit = Math.min(Math.max(1, requestedLimit), maxLimit)
+
+  const page = z.coerce.number().int().min(1).catch(defaultPage).parse(searchParams.get("page") ?? defaultPage)
+  const requestedLimit = z.coerce
+    .number()
+    .int()
+    .min(1)
+    .catch(defaultLimit)
+    .parse(searchParams.get("limit") ?? defaultLimit)
+
+  const limit = Math.min(requestedLimit, maxLimit)
   const offset = (page - 1) * limit
-  
+
   return { page, limit, offset }
 }
 

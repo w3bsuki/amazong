@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getShippingRegion, type ShippingRegion } from '@/lib/shipping';
 import type { Locale } from '@/i18n/routing';
@@ -21,9 +21,29 @@ const COOKIE_NAMES = {
 const GEO_WELCOME_COMPLETE_EVENT = "treido:geo-welcome-complete";
 
 const SUPPORTED_LOCALES: readonly Locale[] = ['en', 'bg'] as const;
+const SUPPORTED_REGIONS: readonly ShippingRegion[] = ['BG', 'UK', 'EU', 'US', 'WW'] as const;
 
 function isSupportedLocale(value: string): value is Locale {
   return (SUPPORTED_LOCALES as readonly string[]).includes(value);
+}
+
+function isShippingRegion(value: string | null | undefined): value is ShippingRegion {
+  return typeof value === 'string' && (SUPPORTED_REGIONS as readonly string[]).includes(value);
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === 'string') return error;
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
+    return error.message;
+  }
+
+  return 'Unknown error';
 }
 
 function getCurrentLocaleFromPathname(pathname: string): Locale {
@@ -132,6 +152,7 @@ function dispatchGeoWelcomeCompleteEvent() {
  */
 export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcomeReturn {
   const { enabled = true } = options;
+  const isMountedRef = useRef(true);
   const [state, setState] = useState<GeoWelcomeState>({
     isOpen: false,
     detectedCountry: 'BG',
@@ -140,11 +161,36 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
     isLoading: true,
   });
 
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   // Initialize state on mount
   useEffect(() => {
-    if (!enabled) {
+    let isActive = true;
+    const canUpdateState = () => isActive && isMountedRef.current;
+    const setClosedState = () => {
+      if (!canUpdateState()) return;
       setState(prev => ({ ...prev, isOpen: false, isLoading: false }));
-      return;
+    };
+    const setOpenState = (countryCode: string, detectedRegion: ShippingRegion) => {
+      if (!canUpdateState()) return;
+      setState({
+        isOpen: true,
+        detectedCountry: countryCode,
+        detectedRegion,
+        selectedRegion: detectedRegion,
+        isLoading: false,
+      });
+    };
+
+    if (!enabled) {
+      setClosedState();
+      return () => {
+        isActive = false;
+      };
     }
 
     const initializeGeoWelcome = async () => {
@@ -152,18 +198,21 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
         // Check if already dismissed
         const dismissed = getLocalStorage(STORAGE_KEYS.DISMISSED);
         if (dismissed === 'true') {
-          setState(prev => ({ ...prev, isOpen: false, isLoading: false }));
+          setClosedState();
           return;
         }
 
         // Get detected country from cookie (set by proxy.ts)
         const countryCode = getCookie(COOKIE_NAMES.COUNTRY) || 'BG';
-        const zoneFromCookie = getCookie(COOKIE_NAMES.ZONE) as ShippingRegion | null;
-        const detectedRegion = zoneFromCookie || getShippingRegion(countryCode);
+        const zoneFromCookie = getCookie(COOKIE_NAMES.ZONE);
+        const detectedRegion = isShippingRegion(zoneFromCookie)
+          ? zoneFromCookie
+          : getShippingRegion(countryCode);
 
         // Check if user is authenticated and has a saved region preference
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
+        if (!canUpdateState()) return;
 
         if (user) {
           const { data: profile } = await supabase
@@ -171,37 +220,44 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
             .select('shipping_region, country_code')
             .eq('id', user.id)
             .single();
+          if (!canUpdateState()) return;
+
+          const profileRegion = isShippingRegion(profile?.shipping_region)
+            ? profile.shipping_region
+            : null;
 
           // If user has a saved preference, use it and don't show modal
-          if (profile?.shipping_region) {
+          if (profileRegion) {
             // Sync profile region to cookies
-            setCookie(COOKIE_NAMES.ZONE, profile.shipping_region);
-            if (profile.country_code) {
+            setCookie(COOKIE_NAMES.ZONE, profileRegion);
+            if (profile?.country_code) {
               setCookie(COOKIE_NAMES.COUNTRY, profile.country_code);
             }
             setLocalStorage(STORAGE_KEYS.DISMISSED, 'true');
-            setState(prev => ({ ...prev, isOpen: false, isLoading: false }));
+            setClosedState();
             return;
           }
         }
 
         // Show the modal for first-time visitors
-        setState({
-          isOpen: true,
-          detectedCountry: countryCode,
-          detectedRegion,
-          selectedRegion: detectedRegion,
-          isLoading: false,
-        });
+        setOpenState(countryCode, detectedRegion);
 
         // Record when modal was shown
         setLocalStorage(STORAGE_KEYS.LAST_SHOWN, Date.now().toString());
-      } catch {
-        setState(prev => ({ ...prev, isOpen: false, isLoading: false }));
+      } catch (error: unknown) {
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[useGeoWelcome] Failed to initialize geo welcome:', getErrorMessage(error));
+        }
+
+        setClosedState();
       }
     };
 
-    initializeGeoWelcome();
+    void initializeGeoWelcome();
+
+    return () => {
+      isActive = false;
+    };
   }, [enabled]);
 
   const { selectedRegion, detectedRegion, detectedCountry } = state;
@@ -241,22 +297,37 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
 
     // If authenticated, update Supabase profile
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        throw userError;
+      }
 
-    if (user) {
-      await supabase
-        .from('profiles')
-        .update({
-          shipping_region: selectedRegion,
-          country_code: countryCode,
-          region_auto_detected: isAutoDetected,
-          region_updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+      if (user) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            shipping_region: selectedRegion,
+            country_code: countryCode,
+            region_auto_detected: isAutoDetected,
+            region_updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id);
+
+        if (updateError) {
+          throw updateError;
+        }
+      }
+    } catch (error: unknown) {
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[useGeoWelcome] Failed to persist selected region:', getErrorMessage(error));
+      }
     }
 
     // Close modal
-    setState(prev => ({ ...prev, isOpen: false }));
+    if (isMountedRef.current) {
+      setState(prev => ({ ...prev, isOpen: false }));
+    }
     dispatchGeoWelcomeCompleteEvent();
 
     // Navigate to the correct locale route (BUG-001 fix).
@@ -278,7 +349,9 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
     setLocalStorage(STORAGE_KEYS.DISMISSED, 'true');
 
     // Close modal
-    setState(prev => ({ ...prev, isOpen: false }));
+    if (isMountedRef.current) {
+      setState(prev => ({ ...prev, isOpen: false }));
+    }
     dispatchGeoWelcomeCompleteEvent();
 
     // Navigate to /en to reflect "show all" behavior.
@@ -290,7 +363,9 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
    */
   const closeModal = useCallback(() => {
     setLocalStorage(STORAGE_KEYS.DISMISSED, 'true');
-    setState(prev => ({ ...prev, isOpen: false }));
+    if (isMountedRef.current) {
+      setState(prev => ({ ...prev, isOpen: false }));
+    }
     dispatchGeoWelcomeCompleteEvent();
   }, []);
 

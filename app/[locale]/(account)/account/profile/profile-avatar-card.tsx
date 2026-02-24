@@ -1,7 +1,9 @@
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { Camera, CircleX as XCircle, LoaderCircle as SpinnerGap, Trash } from "lucide-react"
+import Image from "next/image"
 
 interface ProfileAvatarCardProps {
   locale: string
@@ -17,17 +19,7 @@ interface ProfileAvatarCardProps {
 }
 
 function AvatarImg({ src, alt, size, className }: { src: string; alt: string; size: number; className?: string }) {
-  return (
-    <img
-      src={src}
-      alt={alt}
-      width={size}
-      height={size}
-      loading="lazy"
-      decoding="async"
-      className={className}
-    />
-  )
+  return <Image src={src} alt={alt} width={size} height={size} sizes={`${size}px`} className={className} />
 }
 
 export function ProfileAvatarCard({
@@ -42,15 +34,14 @@ export function ProfileAvatarCard({
   onChoosePresetAvatar,
   presetAvatars,
 }: ProfileAvatarCardProps) {
+  const t = useTranslations("Account.profileEditor")
+  void locale
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">{locale === "bg" ? "Профилна снимка" : "Profile Picture"}</CardTitle>
-        <CardDescription>
-          {locale === "bg"
-            ? "Качете снимка за вашия профил. Максимален размер: 5MB"
-            : "Upload a picture for your profile. Max size: 5MB"}
-        </CardDescription>
+        <CardTitle className="text-lg">{t("avatar.title")}</CardTitle>
+        <CardDescription>{t("avatar.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-4">
@@ -73,7 +64,7 @@ export function ProfileAvatarCard({
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploadingAvatar}
               className="absolute -bottom-1 -right-1 size-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-interactive-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              aria-label={locale === "bg" ? "Качи нова профилна снимка" : "Upload new profile picture"}
+              aria-label={t("avatar.uploadAriaLabel")}
             >
               <Camera className="size-4" />
             </button>
@@ -91,17 +82,15 @@ export function ProfileAvatarCard({
             {avatarPreview && (
               <Button variant="outline" size="sm" onClick={onDeleteAvatar} disabled={isUploadingAvatar}>
                 <Trash className="size-4 mr-1.5" />
-                {locale === "bg" ? "Нулирай" : "Reset"}
+                {t("actions.reset")}
               </Button>
             )}
           </div>
         </div>
 
         <div className="mt-5">
-          <p className="text-sm font-medium">{locale === "bg" ? "Избери аватар" : "Choose an avatar"}</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {locale === "bg" ? "Бърз избор без качване" : "Quick pick without uploading"}
-          </p>
+          <p className="text-sm font-medium">{t("avatar.chooseTitle")}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t("avatar.chooseDescription")}</p>
 
           <div className="mt-3 grid grid-cols-4 sm:grid-cols-8 gap-2">
             {presetAvatars.map((url) => (
@@ -111,7 +100,7 @@ export function ProfileAvatarCard({
                 onClick={() => onChoosePresetAvatar(url)}
                 disabled={isUploadingAvatar}
                 className="size-10 rounded-full overflow-hidden border bg-muted hover:bg-hover active:bg-active transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
-                aria-label={locale === "bg" ? "Избери този аватар" : "Choose this avatar"}
+                aria-label={t("avatar.chooseAriaLabel")}
               >
                 {url.startsWith("boring-avatar:") ? (
                   <UserAvatar
@@ -132,7 +121,7 @@ export function ProfileAvatarCard({
         {avatarPreview && !avatarPreview.startsWith("boring-avatar:") && (
           <div className="mt-3 text-xs text-muted-foreground flex items-center gap-1.5">
             <XCircle className="size-3.5" />
-            <span>{locale === "bg" ? "Можеш да избереш и генериран аватар" : "You can switch to a generated avatar anytime"}</span>
+            <span>{t("avatar.generatedHint")}</span>
           </div>
         )}
       </CardContent>

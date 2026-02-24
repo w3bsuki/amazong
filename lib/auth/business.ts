@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
 import { connection } from "next/server"
 import { getLocale } from "next-intl/server"
+import { logger } from "@/lib/logger"
 
 export type AccountType = 'personal' | 'business'
 
@@ -29,6 +30,31 @@ interface ProductRecord {
   images: string[] | null
   sku: string | null
 }
+
+type ProductPrivateSummaryRow = {
+  product_id: string | null
+  cost_price: number | null
+  sku: string | null
+  barcode: string | null
+}
+
+type CustomerOrderItemRow = {
+  quantity: number
+  price_at_purchase: number
+  order: {
+    user_id: string
+    created_at: string
+    user: {
+      id: string
+      full_name: string | null
+      avatar_url: string | null
+      created_at: string
+    } | null
+  }
+}
+
+type ProductIdRow = { id: string }
+type ProductPrivateIdRow = { product_id: string }
 
 // Tiers that have dashboard access (paid business plans)
 // starter = Business Starter (50лв), professional = Business Pro (100лв), enterprise = Business Enterprise (200лв)
@@ -72,6 +98,42 @@ type VariantSummary = {
   variantStock: number
 }
 
+function logSupabaseQueryError(scope: string, error: unknown, meta?: Record<string, unknown>) {
+  if (!error) return
+  logger.error(`[Business] ${scope} query failed`, error, meta)
+}
+
+async function getMatchedProductIdsForSearch(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  sellerId: string,
+  term: string,
+): Promise<string[]> {
+  const [titleMatches, privateMatches] = await Promise.all([
+    supabase
+      .from('products')
+      .select('id')
+      .eq('seller_id', sellerId)
+      .ilike('title', `%${term}%`),
+    supabase
+      .from('product_private')
+      .select('product_id')
+      .eq('seller_id', sellerId)
+      .or(`sku.ilike.%${term}%,barcode.ilike.%${term}%`),
+  ])
+
+  if (titleMatches.error) {
+    logSupabaseQueryError("dashboard.products_search_title", titleMatches.error, { sellerId, term })
+  }
+  if (privateMatches.error) {
+    logSupabaseQueryError("dashboard.products_search_private", privateMatches.error, { sellerId, term })
+  }
+
+  const ids = new Set<string>()
+  for (const row of (titleMatches.data || []) as ProductIdRow[]) ids.add(row.id)
+  for (const row of (privateMatches.data || []) as ProductPrivateIdRow[]) ids.add(row.product_id)
+  return [...ids]
+}
+
 async function getVariantSummaryByProductId(
   supabase: Awaited<ReturnType<typeof createClient>>,
   productIds: string[]
@@ -83,7 +145,10 @@ async function getVariantSummaryByProductId(
     .select('product_id, stock')
     .in('product_id', productIds)
 
-  if (error || !data) return new Map()
+  if (error || !data) {
+    logSupabaseQueryError("product_variants", error, { productIdsCount: productIds.length })
+    return new Map()
+  }
 
   const summary = new Map<string, VariantSummary>()
   for (const row of data) {
@@ -281,119 +346,6 @@ export async function requireDashboardAccess(
 }
 
 /**
- * Gets business seller info with subscription status (no redirect).
- * Useful for checking subscription status without forcing redirect.
- */
-async function getBusinessSellerWithSubscription(
-  sellerId: string
-): Promise<BusinessSellerWithSubscription | null> {
-  await connection()
-
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user || user.id !== sellerId) return null
-  
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select(
-      'id, username, display_name, account_type, is_verified_business, business_name, tier, avatar_url'
-    )
-    .eq('id', sellerId)
-    .single()
-  
-  if (!profile || profile.account_type !== 'business') {
-    return null
-  }
-
-  const subscription = await getActiveSubscription(sellerId)
-  const hasAccess = hasDashboardAccess(profile.tier ?? 'free', subscription)
-
-  return {
-    id: profile.id,
-    email: user.email || '',
-    store_name: profile.display_name || profile.business_name || profile.username || 'Business',
-    account_type: profile.account_type as AccountType,
-    is_verified_business: profile.is_verified_business ?? false,
-    business_name: profile.business_name,
-    tier: profile.tier ?? 'free',
-    avatar_url: profile.avatar_url ?? null,
-    subscription,
-    hasDashboardAccess: hasAccess,
-  }
-}
-
-/**
- * Checks if current user has a business account without redirecting.
- * Useful for conditional UI rendering.
- */
-async function isBusinessAccount(): Promise<boolean> {
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) return false
-    
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('account_type')
-      .eq('id', user.id)
-      .single()
-    
-    return profile?.account_type === 'business'
-  } catch {
-    return false
-  }
-}
-
-/**
- * Gets the current user's seller info including account type.
- * Returns null if user is not a seller.
- */
-async function getSellerInfo() {
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) return null
-    
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select(`
-        id, 
-        username,
-        display_name,
-        account_type, 
-        is_verified_business, 
-        business_name, 
-        tier,
-        avatar_url,
-        is_seller
-      `)
-      .eq('id', user.id)
-      .single()
-    
-    if (!profile) return null
-    
-    return {
-      id: profile.id,
-      store_name: profile.display_name || profile.business_name || profile.username || 'Seller',
-      account_type: profile.account_type,
-      is_verified_business: profile.is_verified_business,
-      business_name: profile.business_name,
-      tier: profile.tier,
-      avatar_url: profile.avatar_url,
-      is_seller: profile.is_seller,
-    }
-  } catch {
-    return null
-  }
-}
-
-/**
  * Gets business dashboard statistics for a seller
  * Uses the seller's ID to fetch their specific data
  */
@@ -410,27 +362,46 @@ export async function getBusinessDashboardStats(sellerId: string) {
     .from('products')
     .select('id', { count: 'exact', head: true })
     .eq('seller_id', sellerId)
+  if (productsResult.error) {
+    logSupabaseQueryError("dashboard.products_count", productsResult.error, { sellerId })
+  }
 
   // Total orders (as seller) - last 30 days
   const ordersResult = await supabase
     .from('order_items')
     .select('id, quantity, price_at_purchase', { count: 'exact' })
     .eq('seller_id', sellerId)
+  if (ordersResult.error) {
+    logSupabaseQueryError("dashboard.orders", ordersResult.error, { sellerId })
+  }
 
   // Recent orders (last 7 days) - no joins
-  const { data: recentOrderItems } = await supabase
+  const { data: recentOrderItems, error: recentOrderItemsError } = await supabase
     .from('order_items')
     .select('id, quantity, price_at_purchase, order_id, product_id')
     .eq('seller_id', sellerId)
     .limit(10)
+  if (recentOrderItemsError) {
+    logSupabaseQueryError("dashboard.recent_order_items", recentOrderItemsError, { sellerId })
+  }
 
   // Fetch related products and orders for recent orders
   const productIds = recentOrderItems?.map(i => i.product_id).filter(Boolean) || []
   const orderIds = recentOrderItems?.map(i => i.order_id).filter(Boolean) || []
-  const [{ data: products = [] }, { data: orders = [] }] = await Promise.all([
-    productIds.length ? supabase.from('products').select('id, title, images').in('id', productIds) : Promise.resolve({ data: [] }),
-    orderIds.length ? supabase.from('orders').select('id, created_at').in('id', orderIds) : Promise.resolve({ data: [] })
+  const [{ data: products = [], error: productsError }, { data: orders = [], error: ordersError }] = await Promise.all([
+    productIds.length
+      ? supabase.from('products').select('id, title, images').in('id', productIds)
+      : Promise.resolve({ data: [], error: null }),
+    orderIds.length
+      ? supabase.from('orders').select('id, created_at').in('id', orderIds)
+      : Promise.resolve({ data: [], error: null })
   ])
+  if (productsError) {
+    logSupabaseQueryError("dashboard.recent_order_products", productsError, { sellerId, productIdsCount: productIds.length })
+  }
+  if (ordersError) {
+    logSupabaseQueryError("dashboard.recent_orders", ordersError, { sellerId, orderIdsCount: orderIds.length })
+  }
   const productsMap = new Map((products || []).map(p => [p.id, p]))
   const ordersMap = new Map((orders || []).map(o => [o.id, o]))
   const recentOrders = (recentOrderItems || []).map(item => ({
@@ -447,6 +418,9 @@ export async function getBusinessDashboardStats(sellerId: string) {
     .gte('created_at', sevenDaysAgo)
     .order('created_at', { ascending: false })
     .limit(10)
+  if (recentProductsResult.error) {
+    logSupabaseQueryError("dashboard.recent_products", recentProductsResult.error, { sellerId, sevenDaysAgo })
+  }
 
   // Seller stats (rating, reviews, sales)
   const sellerStatsResult = await supabase
@@ -454,16 +428,24 @@ export async function getBusinessDashboardStats(sellerId: string) {
     .select('average_rating, total_reviews, total_sales')
     .eq('seller_id', sellerId)
     .single()
+  if (sellerStatsResult.error) {
+    logSupabaseQueryError("dashboard.seller_stats", sellerStatsResult.error, { sellerId })
+  }
 
   // Products count for views approximation
   const viewsResult = await supabase
     .from('products')
     .select('id', { count: 'exact', head: true })
     .eq('seller_id', sellerId)
+  if (viewsResult.error) {
+    logSupabaseQueryError("dashboard.views_count", viewsResult.error, { sellerId })
+  }
   
   // Calculate revenue from orders
-  const revenue = ordersResult.data?.reduce((sum, item) => 
-    sum + (Number((item as { price_at_purchase: number }).price_at_purchase) * (item as { quantity: number }).quantity), 0) || 0
+  const revenue = (ordersResult.data || []).reduce(
+    (sum, item) => sum + (Number(item.price_at_purchase ?? 0) * Number(item.quantity ?? 0)),
+    0,
+  )
   
   // Calculate total views (approximation - views column doesn't exist yet)
   const totalViews = (viewsResult.count || 0) * 10
@@ -549,33 +531,13 @@ export async function getBusinessProducts(
     query = query.eq('status', status)
   }
 
-  if (search) {
-    const term = search.trim()
-    if (term) {
-      const [titleMatches, privateMatches] = await Promise.all([
-        supabase
-          .from('products')
-          .select('id')
-          .eq('seller_id', sellerId)
-          .ilike('title', `%${term}%`),
-        supabase
-          .from('product_private')
-          .select('product_id')
-          .eq('seller_id', sellerId)
-          .or(`sku.ilike.%${term}%,barcode.ilike.%${term}%`),
-      ])
-
-      const ids = new Set<string>()
-      for (const row of (titleMatches.data || []) as Array<{ id: string }>) ids.add(row.id)
-      for (const row of (privateMatches.data || []) as Array<{ product_id: string }>) ids.add(row.product_id)
-
-      const matchedIds = [...ids]
-      if (matchedIds.length === 0) {
-        return { products: [], total: 0, page, limit, totalPages: 0, error: null }
-      }
-
-      query = query.in('id', matchedIds)
+  const term = search?.trim()
+  if (term) {
+    const matchedIds = await getMatchedProductIdsForSearch(supabase, sellerId, term)
+    if (matchedIds.length === 0) {
+      return { products: [], total: 0, page, limit, totalPages: 0, error: null }
     }
+    query = query.in('id', matchedIds)
   }
   
   if (category) {
@@ -588,17 +550,30 @@ export async function getBusinessProducts(
     .range((page - 1) * limit, page * limit - 1)
 
   const { data, count, error } = await query
+  if (error) {
+    logSupabaseQueryError("dashboard.products", error, { sellerId, page, limit })
+  }
 
   const productIds = (data || []).map((p) => p.id)
-  const privateRows = productIds.length
-    ? (await supabase
+  const privateRowsResult = productIds.length
+    ? await supabase
         .from('product_private')
         .select('product_id, cost_price, sku, barcode')
         .eq('seller_id', sellerId)
-        .in('product_id', productIds)).data
-    : []
+        .in('product_id', productIds)
+    : { data: [] as ProductPrivateSummaryRow[], error: null }
+  if (privateRowsResult.error) {
+    logSupabaseQueryError("dashboard.products_private", privateRowsResult.error, { sellerId, productIdsCount: productIds.length })
+  }
+  const privateRows = privateRowsResult.data || []
   const privateMap = new Map(
-    (privateRows || []).map((r) => [r.product_id as string, r as unknown as { cost_price: number | null; sku: string | null; barcode: string | null }])
+    privateRows
+      .filter((row): row is ProductPrivateSummaryRow & { product_id: string } => typeof row.product_id === 'string')
+      .map((row) => [row.product_id, {
+        cost_price: row.cost_price,
+        sku: row.sku,
+        barcode: row.barcode,
+      }])
   )
   const variantsSummary = await getVariantSummaryByProductId(supabase, productIds)
 
@@ -606,7 +581,10 @@ export async function getBusinessProducts(
   const categoryIds = (data || []).map(p => p.category_id).filter((id): id is string => id !== null)
   let categories: { id: string; name: string; slug: string }[] = []
   if (categoryIds.length) {
-    const { data: cats } = await supabase.from('categories').select('id, name, slug').in('id', categoryIds)
+    const { data: cats, error: categoriesError } = await supabase.from('categories').select('id, name, slug').in('id', categoryIds)
+    if (categoriesError) {
+      logSupabaseQueryError("dashboard.products_categories", categoriesError, { sellerId, categoryIdsCount: categoryIds.length })
+    }
     categories = cats || []
   }
   const categoriesMap = new Map(categories.map(c => [c.id, c]))
@@ -674,6 +652,9 @@ export async function getBusinessOrders(
     .range((page - 1) * limit, page * limit - 1)
 
   const { data, count, error } = await query
+  if (error) {
+    logSupabaseQueryError("dashboard.orders", error, { sellerId, page, limit })
+  }
 
   // Fetch related orders and products
   const orderIds = [...new Set((data || []).map((i) => i.order_id).filter(Boolean))]
@@ -681,16 +662,25 @@ export async function getBusinessOrders(
   let orders: OrderRecord[] = []
   let products: ProductRecord[] = []
   if (orderIds.length) {
-    const { data: o } = await supabase.from('orders').select('id, status, created_at, user_id, shipping_address').in('id', orderIds)
+    const { data: o, error: ordersError } = await supabase.from('orders').select('id, status, created_at, user_id, shipping_address').in('id', orderIds)
+    if (ordersError) {
+      logSupabaseQueryError("dashboard.orders_lookup", ordersError, { sellerId, orderIdsCount: orderIds.length })
+    }
     orders = (o || []) as OrderRecord[]
   }
   if (productIds.length) {
-    const { data: p } = await supabase.from('products').select('id, title, images').in('id', productIds)
-    const { data: privateRows } = await supabase
+    const { data: p, error: productsError } = await supabase.from('products').select('id, title, images').in('id', productIds)
+    if (productsError) {
+      logSupabaseQueryError("dashboard.order_products_lookup", productsError, { sellerId, productIdsCount: productIds.length })
+    }
+    const { data: privateRows, error: privateRowsError } = await supabase
       .from('product_private')
       .select('product_id, sku')
       .eq('seller_id', sellerId)
       .in('product_id', productIds)
+    if (privateRowsError) {
+      logSupabaseQueryError("dashboard.order_products_private_lookup", privateRowsError, { sellerId, productIdsCount: productIds.length })
+    }
 
     const privateSku = new Map((privateRows || []).map((r) => [r.product_id as string, r.sku as string | null]))
 
@@ -703,7 +693,10 @@ export async function getBusinessOrders(
   const userIds = [...new Set((orders || []).map((o) => o.user_id).filter(Boolean))]
   let users: UserRecord[] = []
   if (userIds.length) {
-    const { data: u } = await supabase.from('profiles').select('id, full_name').in('id', userIds)
+    const { data: u, error: usersError } = await supabase.from('profiles').select('id, full_name').in('id', userIds)
+    if (usersError) {
+      logSupabaseQueryError("dashboard.order_users_lookup", usersError, { sellerId, userIdsCount: userIds.length })
+    }
     users = (u || []) as UserRecord[]
   }
   const ordersMap = new Map(orders.map(o => [o.id, o]))
@@ -792,15 +785,22 @@ export async function getBusinessInventory(
     .range((page - 1) * limit, page * limit - 1)
 
   const { data, count, error } = await query
+  if (error) {
+    logSupabaseQueryError("dashboard.inventory", error, { sellerId, page, limit, stockLevel })
+  }
 
   const productIds = (data || []).map((p) => p.id)
-  const privateRows = productIds.length
-    ? (await supabase
+  const privateRowsResult = productIds.length
+    ? await supabase
         .from('product_private')
         .select('product_id, sku')
         .eq('seller_id', sellerId)
-        .in('product_id', productIds)).data
-    : []
+        .in('product_id', productIds)
+    : { data: [], error: null }
+  if (privateRowsResult.error) {
+    logSupabaseQueryError("dashboard.inventory_private", privateRowsResult.error, { sellerId, productIdsCount: productIds.length })
+  }
+  const privateRows = privateRowsResult.data || []
   const privateSku = new Map((privateRows || []).map((r) => [r.product_id as string, r.sku as string | null]))
   const variantsSummary = await getVariantSummaryByProductId(supabase, productIds)
 
@@ -816,10 +816,13 @@ export async function getBusinessInventory(
   })
   
   // Get stock summary
-  const { data: stockBaseRows } = await supabase
+  const { data: stockBaseRows, error: stockBaseError } = await supabase
     .from('products')
     .select('id, stock')
     .eq('seller_id', sellerId)
+  if (stockBaseError) {
+    logSupabaseQueryError("dashboard.inventory_stock_summary", stockBaseError, { sellerId })
+  }
 
   const baseProductIds = (stockBaseRows || []).map((p) => p.id)
   const allVariantsSummary = await getVariantSummaryByProductId(supabase, baseProductIds)
@@ -974,7 +977,7 @@ export async function getBusinessCustomers(
   
   // Get unique customers who have ordered from this seller
   // This aggregates order data by customer
-  const { data: orderItems } = await supabase
+  const { data: orderItems, error: orderItemsError } = await supabase
     .from('order_items')
     .select(`
       quantity,
@@ -986,6 +989,9 @@ export async function getBusinessCustomers(
       )
     `)
     .eq('seller_id', sellerId)
+  if (orderItemsError) {
+    logSupabaseQueryError("dashboard.customers_order_items", orderItemsError, { sellerId })
+  }
   
   if (!orderItems) {
     return { customers: [], total: 0 }
@@ -1002,11 +1008,8 @@ export async function getBusinessCustomers(
     last_order: string
   }>()
   
-  for (const item of orderItems as unknown as Array<{
-    quantity: number
-    price_at_purchase: number
-    order: { user_id: string; created_at: string; user: { id: string; full_name: string | null; avatar_url: string | null; created_at: string } | null }
-  }>) {
+  const typedOrderItems = (orderItems || []) as CustomerOrderItemRow[]
+  for (const item of typedOrderItems) {
     const order = item.order
     if (!order?.user) continue
     

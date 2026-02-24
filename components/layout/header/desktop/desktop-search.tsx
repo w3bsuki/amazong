@@ -1,8 +1,11 @@
+"use client"
+
 import * as React from "react"
-import { useRef, useCallback, useEffect } from "react"
+import { useRef, useCallback } from "react"
 import { Search as MagnifyingGlass, Bot as Robot, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { FieldLabel } from "@/components/shared/field"
@@ -18,6 +21,7 @@ import { useProductSearch } from "@/hooks/use-product-search"
 
 import { buildSearchHref } from "@/components/shared/search/search-context"
 import { getProductUrl } from "@/lib/url-utils"
+import { cn } from "@/lib/utils"
 import { DesktopSearchPopoverPanel } from "./desktop-search-popover-panel"
 
 export function DesktopSearch() {
@@ -26,12 +30,10 @@ export function DesktopSearch() {
   const tNav = useTranslations("Navigation")
   const tSearch = useTranslations("SearchOverlay")
   const inputRef = useRef<HTMLInputElement>(null)
-  const formRef = useRef<HTMLFormElement>(null)
   const searchInputId = "treido-desktop-search-input"
 
   const [isOpen, setIsOpen] = React.useState(false)
   const [aiMode, setAiMode] = React.useState(false)
-  const [popoverWidth, setPopoverWidth] = React.useState(0)
 
   const { products: recentlyViewed, clearProducts: clearRecentlyViewed } = useRecentlyViewed()
 
@@ -98,23 +100,11 @@ export function DesktopSearch() {
     inputRef.current?.focus()
   }, [setQuery])
 
-  useEffect(() => {
-    const measureWidth = () => {
-      if (formRef.current) {
-        setPopoverWidth(formRef.current.offsetWidth)
-      }
-    }
-    measureWidth()
-    window.addEventListener("resize", measureWidth)
-    return () => window.removeEventListener("resize", measureWidth)
-  }, [])
-
   return (
     <div className="w-full" data-desktop-search>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverAnchor asChild>
           <form
-            ref={formRef}
             onSubmit={handleSearch}
             action={`/${locale}/search`}
             method="get"
@@ -147,18 +137,23 @@ export function DesktopSearch() {
             />
 
             {query && (
-              <button
+              <IconButton
                 type="button"
+                variant="ghost"
+                size="icon-sm"
                 onClick={handleClearInput}
                 aria-label={tNav("clearSearch")}
-                className="absolute top-1/2 right-24 -translate-y-1/2 rounded-sm text-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                className="absolute top-1/2 right-24 -translate-y-1/2 rounded-sm text-foreground"
               >
                 <X size={16} />
-              </button>
+              </IconButton>
             )}
 
             <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-              <Robot size={14} className={aiMode ? "text-primary" : "text-muted-foreground"} />
+              <Robot
+                size={14}
+                className={cn(aiMode ? "text-primary" : "text-muted-foreground")}
+              />
               <Switch
                 checked={aiMode}
                 onCheckedChange={(checked) => {
@@ -171,7 +166,7 @@ export function DesktopSearch() {
 
             <Button
               type="submit"
-              variant="black"
+              variant="default"
               size="icon-sm"
               aria-label={tNav("search")}
               className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full focus-visible:outline-none"
@@ -182,8 +177,7 @@ export function DesktopSearch() {
         </PopoverAnchor>
 
         <PopoverContent
-          className="p-0 border border-border rounded-lg overflow-hidden"
-          style={{ width: popoverWidth > 0 ? popoverWidth : undefined }}
+          className="w-(--radix-popover-trigger-width) overflow-hidden rounded-lg border border-border p-0"
           align="start"
           sideOffset={4}
           onOpenAutoFocus={(e) => e.preventDefault()}

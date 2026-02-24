@@ -2,6 +2,7 @@
 
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
+import { logger } from "@/lib/logger"
 import {
   emailSchema,
   passwordSchema,
@@ -10,9 +11,25 @@ import {
 
 import {
   deleteAvatar as deleteAvatarInner,
+  type ProfileAvatarMutationErrorCode,
   setAvatarUrl as setAvatarUrlInner,
   uploadAvatar as uploadAvatarInner,
 } from "./profile-avatar-mutations"
+
+export type ProfileMutationErrorCode =
+  | "NOT_AUTHENTICATED"
+  | "INVALID_INPUT"
+  | "INVALID_EMAIL"
+  | "EMAIL_UNCHANGED"
+  | "EMAIL_ALREADY_REGISTERED"
+  | "PROFILE_UPDATE_FAILED"
+  | "EMAIL_UPDATE_FAILED"
+  | "PASSWORD_UPDATE_UNAVAILABLE"
+  | "CURRENT_PASSWORD_INCORRECT"
+  | "PASSWORD_UPDATE_FAILED"
+  | "UNKNOWN_ERROR"
+
+export type ProfileActionErrorCode = ProfileMutationErrorCode | ProfileAvatarMutationErrorCode
 
 export async function uploadAvatar(formData: FormData) {
   return uploadAvatarInner(formData)
@@ -36,12 +53,12 @@ export async function deleteAvatar() {
 // =====================================================
 export async function updateProfile(formData: FormData): Promise<{
   success: boolean
-  error?: string
+  errorCode?: ProfileMutationErrorCode
 }> {
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
 
     const { user, supabase } = auth
@@ -56,10 +73,7 @@ export async function updateProfile(formData: FormData): Promise<{
 
     const validationResult = profileSchema.safeParse(rawData)
     if (!validationResult.success) {
-      return {
-        success: false,
-        error: validationResult.error.issues[0]?.message || "Invalid input",
-      }
+      return { success: false, errorCode: "INVALID_INPUT" }
     }
 
     const { data: validatedData } = validationResult
@@ -92,15 +106,15 @@ export async function updateProfile(formData: FormData): Promise<{
     ])
 
     if (updateError || privateError) {
-      console.error("updateProfile error:", updateError || privateError)
-      return { success: false, error: "Failed to update profile" }
+      logger.error("[profile] update_profile_failed", updateError ?? privateError, { userId: user.id })
+      return { success: false, errorCode: "PROFILE_UPDATE_FAILED" }
     }
 
     await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     return { success: true }
   } catch (error) {
-    console.error("updateProfile error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[profile] update_profile_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
 
@@ -109,12 +123,12 @@ export async function updateProfile(formData: FormData): Promise<{
 // =====================================================
 export async function updateEmail(formData: FormData): Promise<{
   success: boolean
-  error?: string
+  errorCode?: ProfileMutationErrorCode
 }> {
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
 
     const { user, supabase } = auth
@@ -123,15 +137,12 @@ export async function updateEmail(formData: FormData): Promise<{
     const validationResult = emailSchema.safeParse({ email: newEmail })
 
     if (!validationResult.success) {
-      return {
-        success: false,
-        error: validationResult.error.issues[0]?.message || "Invalid email",
-      }
+      return { success: false, errorCode: "INVALID_EMAIL" }
     }
 
     // Check if email is already in use
     if (newEmail === user.email) {
-      return { success: false, error: "New email is the same as current email" }
+      return { success: false, errorCode: "EMAIL_UNCHANGED" }
     }
 
     // Update email - Supabase will send a confirmation email
@@ -140,19 +151,19 @@ export async function updateEmail(formData: FormData): Promise<{
     })
 
     if (updateError) {
-      console.error("updateEmail error:", updateError)
       if (updateError.message.includes("already registered")) {
-        return { success: false, error: "This email is already registered" }
+        return { success: false, errorCode: "EMAIL_ALREADY_REGISTERED" }
       }
-      return { success: false, error: "Failed to update email" }
+      logger.error("[profile] update_email_failed", updateError, { userId: user.id })
+      return { success: false, errorCode: "EMAIL_UPDATE_FAILED" }
     }
 
     return {
       success: true,
     }
   } catch (error) {
-    console.error("updateEmail error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[profile] update_email_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
 
@@ -161,12 +172,12 @@ export async function updateEmail(formData: FormData): Promise<{
 // =====================================================
 export async function updatePassword(formData: FormData): Promise<{
   success: boolean
-  error?: string
+  errorCode?: ProfileMutationErrorCode
 }> {
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
 
     const { user, supabase } = auth
@@ -179,15 +190,12 @@ export async function updatePassword(formData: FormData): Promise<{
 
     const validationResult = passwordSchema.safeParse(rawData)
     if (!validationResult.success) {
-      return {
-        success: false,
-        error: validationResult.error.issues[0]?.message || "Invalid input",
-      }
+      return { success: false, errorCode: "INVALID_INPUT" }
     }
 
     // Verify current password by attempting to sign in
     if (!user.email) {
-      return { success: false, error: "Password update is not available for this account" }
+      return { success: false, errorCode: "PASSWORD_UPDATE_UNAVAILABLE" }
     }
 
     const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -196,7 +204,7 @@ export async function updatePassword(formData: FormData): Promise<{
     })
 
     if (signInError) {
-      return { success: false, error: "Current password is incorrect" }
+      return { success: false, errorCode: "CURRENT_PASSWORD_INCORRECT" }
     }
 
     // Update password
@@ -205,13 +213,13 @@ export async function updatePassword(formData: FormData): Promise<{
     })
 
     if (updateError) {
-      console.error("updatePassword error:", updateError)
-      return { success: false, error: "Failed to update password" }
+      logger.error("[profile] update_password_failed", updateError, { userId: user.id })
+      return { success: false, errorCode: "PASSWORD_UPDATE_FAILED" }
     }
 
     return { success: true }
   } catch (error) {
-    console.error("updatePassword error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[profile] update_password_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }

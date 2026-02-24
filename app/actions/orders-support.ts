@@ -3,6 +3,7 @@
 import { z } from "zod"
 import { createAdminClient } from "@/lib/supabase/server"
 import { requireAuth } from "@/lib/auth/require-auth"
+import { logger } from "@/lib/logger"
 import { revalidateTag } from "next/cache"
 import type { IssueType } from "./orders-shared"
 
@@ -21,26 +22,58 @@ const ReportOrderIssueInputSchema = z.object({
   description: z.string(),
 })
 
+type OrdersSupportErrorCode =
+  | "invalid_input"
+  | "not_authenticated"
+  | "not_found"
+  | "not_authorized"
+  | "invalid_status"
+  | "already_exists"
+  | "validation_failed"
+  | "create_failed"
+  | "update_failed"
+  | "unexpected"
+
+type OrdersSupportFailure = {
+  success: false
+  error: string
+  code: OrdersSupportErrorCode
+}
+
+type OrdersSupportSuccess = {
+  success: true
+  conversationId?: string
+}
+
+type OrdersSupportResult = OrdersSupportSuccess | OrdersSupportFailure
+
+function supportFailure(
+  code: OrdersSupportErrorCode,
+  error: string
+): OrdersSupportFailure {
+  return { success: false, error, code }
+}
+
 /**
  * Request a return for an order item (buyer only)
  */
 export async function requestReturn(
   orderItemId: string,
   reason: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<OrdersSupportResult> {
   const parsedOrderItemId = OrderItemIdSchema.safeParse(orderItemId)
-  if (!parsedOrderItemId.success) return { success: false, error: "Invalid orderItemId" }
+  if (!parsedOrderItemId.success) return supportFailure("invalid_input", "Invalid orderItemId")
 
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return supportFailure("not_authenticated", "Not authenticated")
     }
     const { user, supabase } = auth
 
     const normalizedReason = (reason ?? "").trim()
     if (normalizedReason.length < 3) {
-      return { success: false, error: "Please provide a reason" }
+      return supportFailure("validation_failed", "Please provide a reason")
     }
 
     const { data: orderItem, error: fetchError } = await supabase
@@ -60,15 +93,15 @@ export async function requestReturn(
       }>()
 
     if (fetchError || !orderItem) {
-      return { success: false, error: "Order item not found" }
+      return supportFailure("not_found", "Order item not found")
     }
 
     if (orderItem.order.user_id !== user.id) {
-      return { success: false, error: "Not authorized to request a return for this order" }
+      return supportFailure("not_authorized", "Not authorized to request a return for this order")
     }
 
     if (orderItem.status !== "delivered") {
-      return { success: false, error: "Return requests are available after delivery" }
+      return supportFailure("invalid_status", "Return requests are available after delivery")
     }
 
     const { data: existingRequests, error: existingError } = await supabase
@@ -82,12 +115,15 @@ export async function requestReturn(
     const existingRequest = existingRequests?.[0] ?? null
 
     if (existingError) {
-      console.error("Error checking return requests:", existingError)
-      return { success: false, error: "Failed to submit return request" }
+      logger.error("[orders-support] return_request_lookup_failed", existingError, {
+        orderItemId: parsedOrderItemId.data,
+        buyerId: user.id,
+      })
+      return supportFailure("create_failed", "Failed to submit return request")
     }
 
     if (existingRequest?.id) {
-      return { success: false, error: "Return request already submitted" }
+      return supportFailure("already_exists", "Return request already submitted")
     }
 
     const { error: insertError } = await supabase.from("return_requests").insert({
@@ -100,8 +136,11 @@ export async function requestReturn(
     })
 
     if (insertError) {
-      console.error("Error creating return request:", insertError)
-      return { success: false, error: "Failed to submit return request" }
+      logger.error("[orders-support] return_request_create_failed", insertError, {
+        orderItemId: parsedOrderItemId.data,
+        buyerId: user.id,
+      })
+      return supportFailure("create_failed", "Failed to submit return request")
     }
 
     revalidateTag("orders", "max")
@@ -110,8 +149,10 @@ export async function requestReturn(
 
     return { success: true }
   } catch (error) {
-    console.error("Error in requestReturn:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[orders-support] request_return_unexpected", error, {
+      orderItemId: parsedOrderItemId.data,
+    })
+    return supportFailure("unexpected", "An unexpected error occurred")
   }
 }
 
@@ -121,14 +162,14 @@ export async function requestReturn(
 export async function requestOrderCancellation(
   orderItemId: string,
   reason?: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<OrdersSupportResult> {
   const parsedOrderItemId = OrderItemIdSchema.safeParse(orderItemId)
-  if (!parsedOrderItemId.success) return { success: false, error: "Invalid orderItemId" }
+  if (!parsedOrderItemId.success) return supportFailure("invalid_input", "Invalid orderItemId")
 
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return supportFailure("not_authenticated", "Not authenticated")
     }
     const { user, supabase } = auth
 
@@ -151,11 +192,11 @@ export async function requestOrderCancellation(
       }>()
 
     if (fetchError || !orderItem) {
-      return { success: false, error: "Order item not found" }
+      return supportFailure("not_found", "Order item not found")
     }
 
     if (orderItem.order.user_id !== user.id) {
-      return { success: false, error: "Not authorized to cancel this order" }
+      return supportFailure("not_authorized", "Not authorized to cancel this order")
     }
 
     const nonCancellableStatuses = ["shipped", "delivered"]
@@ -163,6 +204,7 @@ export async function requestOrderCancellation(
     if (nonCancellableStatuses.includes(currentStatus)) {
       return {
         success: false,
+        code: "invalid_status",
         error:
           currentStatus === "shipped"
             ? "Cannot cancel - item has already been shipped"
@@ -171,7 +213,7 @@ export async function requestOrderCancellation(
     }
 
     if (currentStatus === "cancelled") {
-      return { success: false, error: "This item has already been cancelled" }
+      return supportFailure("already_exists", "This item has already been cancelled")
     }
 
     const { error: updateError } = await supabase
@@ -182,8 +224,11 @@ export async function requestOrderCancellation(
       .eq("id", parsedOrderItemId.data)
 
     if (updateError) {
-      console.error("Error cancelling order item:", updateError)
-      return { success: false, error: "Failed to cancel order" }
+      logger.error("[orders-support] order_cancellation_update_failed", updateError, {
+        orderItemId: parsedOrderItemId.data,
+        buyerId: user.id,
+      })
+      return supportFailure("update_failed", "Failed to cancel order")
     }
 
     try {
@@ -205,18 +250,26 @@ export async function requestOrderCancellation(
       })
 
       if (notifyError) {
-        console.error("Error creating cancellation notification:", notifyError)
+        logger.error("[orders-support] cancellation_notification_failed", notifyError, {
+          orderItemId: parsedOrderItemId.data,
+          orderId: orderItem.order.id,
+        })
       }
     } catch (error) {
-      console.error("Error creating cancellation notification:", error)
+      logger.error("[orders-support] cancellation_notification_unexpected", error, {
+        orderItemId: parsedOrderItemId.data,
+        orderId: orderItem.order.id,
+      })
     }
 
     revalidateTag("orders", "max")
 
     return { success: true }
   } catch (error) {
-    console.error("Error in requestOrderCancellation:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[orders-support] request_order_cancellation_unexpected", error, {
+      orderItemId: parsedOrderItemId.data,
+    })
+    return supportFailure("unexpected", "An unexpected error occurred")
   }
 }
 
@@ -227,25 +280,25 @@ export async function reportOrderIssue(
   orderItemId: string,
   issueType: IssueType,
   description: string
-): Promise<{ success: boolean; error?: string; conversationId?: string }> {
+): Promise<OrdersSupportResult> {
   const parsedInput = ReportOrderIssueInputSchema.safeParse({
     orderItemId,
     issueType,
     description,
   })
   if (!parsedInput.success) {
-    return { success: false, error: "Invalid input" }
+    return supportFailure("invalid_input", "Invalid input")
   }
 
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return supportFailure("not_authenticated", "Not authenticated")
     }
     const { user, supabase } = auth
 
     if (!parsedInput.data.description || parsedInput.data.description.trim().length < 10) {
-      return { success: false, error: "Please provide a detailed description (minimum 10 characters)" }
+      return supportFailure("validation_failed", "Please provide a detailed description (minimum 10 characters)")
     }
 
     const { data: orderItem, error: fetchError } = await supabase
@@ -267,11 +320,11 @@ export async function reportOrderIssue(
       }>()
 
     if (fetchError || !orderItem) {
-      return { success: false, error: "Order item not found" }
+      return supportFailure("not_found", "Order item not found")
     }
 
     if (orderItem.order.user_id !== user.id) {
-      return { success: false, error: "Not authorized to report issues for this order" }
+      return supportFailure("not_authorized", "Not authorized to report issues for this order")
     }
 
     const issueSubjects: Record<IssueType, string> = {
@@ -283,7 +336,8 @@ export async function reportOrderIssue(
       other: "Order Issue",
     }
 
-    const subject = `${issueSubjects[parsedInput.data.issueType]}${orderItem.product?.title ? ` - ${orderItem.product.title}` : ""}`
+    const productTitleSuffix = orderItem.product?.title ? ` - ${orderItem.product.title}` : ""
+    const subject = `${issueSubjects[parsedInput.data.issueType]}${productTitleSuffix}`
 
     const { data: existingConversation } = await supabase
       .from("conversations")
@@ -312,8 +366,12 @@ export async function reportOrderIssue(
         .single()
 
       if (convError || !newConversation) {
-        console.error("Error creating conversation:", convError)
-        return { success: false, error: "Failed to create conversation" }
+        logger.error("[orders-support] issue_report_conversation_create_failed", convError, {
+          orderItemId: parsedInput.data.orderItemId,
+          orderId: orderItem.order.id,
+          sellerId: orderItem.seller_id,
+        })
+        return supportFailure("create_failed", "Failed to create conversation")
       }
 
       conversationId = newConversation.id
@@ -329,8 +387,11 @@ export async function reportOrderIssue(
     })
 
     if (messageError) {
-      console.error("Error creating message:", messageError)
-      return { success: false, error: "Failed to send issue report" }
+      logger.error("[orders-support] issue_report_message_create_failed", messageError, {
+        conversationId,
+        orderItemId: parsedInput.data.orderItemId,
+      })
+      return supportFailure("create_failed", "Failed to send issue report")
     }
 
     await supabase
@@ -360,10 +421,18 @@ export async function reportOrderIssue(
       })
 
       if (notifyError) {
-        console.error("Error creating issue report notification:", notifyError)
+        logger.error("[orders-support] issue_report_notification_failed", notifyError, {
+          conversationId,
+          orderItemId: parsedInput.data.orderItemId,
+          orderId: orderItem.order.id,
+        })
       }
     } catch (error) {
-      console.error("Error creating issue report notification:", error)
+      logger.error("[orders-support] issue_report_notification_unexpected", error, {
+        conversationId,
+        orderItemId: parsedInput.data.orderItemId,
+        orderId: orderItem.order.id,
+      })
     }
 
     revalidateTag("orders", "max")
@@ -372,7 +441,10 @@ export async function reportOrderIssue(
 
     return { success: true, conversationId }
   } catch (error) {
-    console.error("Error in reportOrderIssue:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[orders-support] report_order_issue_unexpected", error, {
+      orderItemId: parsedInput.data.orderItemId,
+      issueType: parsedInput.data.issueType,
+    })
+    return supportFailure("unexpected", "An unexpected error occurred")
   }
 }

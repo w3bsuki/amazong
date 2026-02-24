@@ -333,12 +333,31 @@ describe('Architecture Boundaries', () => {
       if (file.includes('.test.')) continue
 
       const content = await readFile(file, 'utf-8')
-      // If file has 'use server' and exported async functions, it should import zod
-      if (content.includes("'use server'") || content.includes('"use server"')) {
-        const hasExportedAsyncFn = /export\s+async\s+function/.test(content)
-        if (hasExportedAsyncFn && !content.includes('zod') && !content.includes('z.') && !content.includes('Schema')) {
-          violations.push(`${relative(ROOT, file)}: server action without Zod validation at boundary`)
+      // If file has 'use server' and exported async functions WITH params, it should validate input.
+      // No-arg server actions have no boundary inputs to parse.
+      if (!content.includes("'use server'") && !content.includes('"use server"')) continue
+
+      const exportedAsyncFnRe = /export\s+async\s+function\s+\w+\s*\(([^)]*)\)/g
+      let hasParametrizedExportedAsyncFn = false
+      let match: RegExpExecArray | null
+      while ((match = exportedAsyncFnRe.exec(content)) !== null) {
+        const params = (match[1] ?? '').trim()
+        if (params.length > 0) {
+          hasParametrizedExportedAsyncFn = true
+          break
         }
+      }
+
+      if (!hasParametrizedExportedAsyncFn) continue
+
+      const hasZodBoundaryParsing =
+        content.includes('from "zod"') ||
+        content.includes("from 'zod'") ||
+        content.includes('.safeParse(') ||
+        content.includes('.parse(')
+
+      if (!hasZodBoundaryParsing) {
+        violations.push(`${relative(ROOT, file)}: server action without Zod validation at boundary`)
       }
     }
 

@@ -1,7 +1,9 @@
 import { getCategoryType, type CategoryType } from "@/lib/utils/category-type";
+import { isUuid } from "@/lib/utils/is-uuid";
 import type { HeroSpec } from "@/lib/data/product-page";
 import { normalizeImageUrl, normalizeImageUrls, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url";
 export type { HeroSpec };
+export { isUuid };
 
 /**
  * Resolved hero spec ready for rendering.
@@ -96,16 +98,27 @@ export type ProductPageCategoryLike = {
   parent_id?: string | null;
 } & Record<string, unknown>;
 
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-export function isUuid(value: unknown): value is string {
-  return typeof value === "string" && UUID_REGEX.test(value);
-}
-
 function toRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
+}
+
+function toFiniteNumber(value: unknown): number | null {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function toStringAttributes(value: unknown): Record<string, string> {
+  const source = toRecord(value);
+  const normalized: Record<string, string> = {};
+
+  for (const [key, attributeValue] of Object.entries(source)) {
+    if (attributeValue == null) continue;
+    normalized[key] = String(attributeValue);
+  }
+
+  return normalized;
 }
 
 function buildItemSpecificsDetails(attributes: unknown, condition?: string | null) {
@@ -166,6 +179,10 @@ function getProductImages(product: ProductPageProductLike): string[] {
   return [PLACEHOLDER_IMAGE_PATH];
 }
 
+/**
+ * Build the product page view model from raw product/seller/category records.
+ * Normalizes gallery, item specifics, related products, and hero specs for UI rendering.
+ */
 export function buildProductPageViewModel(args: {
   username: string;
   product: ProductPageProductLike;
@@ -192,30 +209,42 @@ export function buildProductPageViewModel(args: {
     attributes: toRecord(product.attributes),
   } satisfies ProductPageItemSpecifics;
 
-  const relatedProducts = (Array.isArray(relatedProductsRaw) ? relatedProductsRaw : []).map((p) => {
+  const relatedProducts = (Array.isArray(relatedProductsRaw) ? relatedProductsRaw : []).flatMap((p) => {
+    if (!p || typeof p !== "object") return [];
+
     const row = p as Record<string, unknown>;
     const rowImages = row.images;
+    const id =
+      typeof row.id === "string" || typeof row.id === "number" ? String(row.id).trim() : "";
+    const title = typeof row.title === "string" ? row.title.trim() : "";
+    const price = toFiniteNumber(row.price);
 
-    return {
-      id: String(row.id ?? ""),
-      title: String(row.title ?? ""),
-      price: Number(row.price ?? 0),
-      originalPrice: row.list_price != null ? Number(row.list_price) : null,
+    if (!id || !title || price == null) {
+      return [];
+    }
+
+    const originalPrice = toFiniteNumber(row.list_price);
+
+    return [{
+      id,
+      title,
+      price,
+      originalPrice,
       image: normalizeImageUrl(
         (Array.isArray(rowImages) ? (rowImages[0] as string | undefined) : undefined) ?? null,
       ),
-      rating: Number(row.rating ?? 0),
-      reviews: Number(row.review_count ?? 0),
+      rating: toFiniteNumber(row.rating) ?? 0,
+      reviews: toFiniteNumber(row.review_count) ?? 0,
       sellerName,
       sellerVerified,
       sellerAvatarUrl,
-      condition: String(row.condition || ""),
+      condition: typeof row.condition === "string" ? row.condition : "",
       freeShipping: row.free_shipping === true,
-      categorySlug: String(row.category_id || ""),
-      attributes: (toRecord(row.attributes) as Record<string, string>) ?? {},
+      categorySlug: row.category_id == null ? "" : String(row.category_id),
+      attributes: toStringAttributes(row.attributes),
       storeSlug: (seller.username ?? username) ?? null,
-      slug: (row.slug as string | null | undefined) ?? null,
-    } satisfies SellerProductsGridItem;
+      slug: typeof row.slug === "string" ? row.slug : null,
+    } satisfies SellerProductsGridItem];
   });
 
   // Hero specs are database-driven via get_hero_specs RPC

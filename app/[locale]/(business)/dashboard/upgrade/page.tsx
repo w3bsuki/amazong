@@ -28,6 +28,15 @@ const translations = {
     perMonth: "/month",
     perYear: "/year",
     saveYearly: "Save 17% with yearly",
+    businessProDescription: "Professional tools for growing businesses",
+    businessEnterpriseDescription: "For brands and high-volume businesses",
+    currentBadge: "Current",
+    noDashboardAccess: "No dashboard access",
+    whatYouAreMissing: "What you're missing",
+    missingFullAnalytics: "Full analytics dashboard",
+    missingCustomerManagement: "Customer management",
+    missingOrderManagement: "Advanced order management",
+    missingMarketingPromotions: "Marketing & promotions",
     dashboardFeatures: [
       "Real-time analytics dashboard",
       "Advanced inventory management",
@@ -88,6 +97,15 @@ const translations = {
     perMonth: "/месец",
     perYear: "/година",
     saveYearly: "Спестете 17% с годишен план",
+    businessProDescription: "Професионални инструменти за растящи бизнеси",
+    businessEnterpriseDescription: "За марки и високообемни бизнеси",
+    currentBadge: "Текущ",
+    noDashboardAccess: "Без достъп до таблото",
+    whatYouAreMissing: "Какво пропускате",
+    missingFullAnalytics: "Пълно аналитично табло",
+    missingCustomerManagement: "Управление на клиенти",
+    missingOrderManagement: "Разширено управление на поръчки",
+    missingMarketingPromotions: "Маркетинг и промоции",
     dashboardFeatures: [
       "Аналитика в реално време",
       "Разширено управление на инвентара",
@@ -219,7 +237,7 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
               Business Pro
             </CardTitle>
             <CardDescription>
-              {locale === 'bg' ? 'Професионални инструменти за растящи бизнеси' : 'Professional tools for growing businesses'}
+              {t.businessProDescription}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -261,7 +279,7 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
               Business Enterprise
             </CardTitle>
             <CardDescription>
-              {locale === 'bg' ? 'За марки и високообемни бизнеси' : 'For brands and high-volume businesses'}
+              {t.businessEnterpriseDescription}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -328,7 +346,7 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
             <CardTitle className="text-lg flex items-center gap-2">
               <IconBuildingStore className="size-5 text-muted-foreground" />
               {t.freeTier}
-              <Badge variant="outline" className="ml-auto">Current</Badge>
+              <Badge variant="outline" className="ml-auto">{t.currentBadge}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -341,7 +359,7 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
               ))}
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <IconX className="size-4 text-destructive shrink-0" />
-                {locale === 'bg' ? 'Без достъп до таблото' : 'No dashboard access'}
+                {t.noDashboardAccess}
               </div>
             </div>
           </CardContent>
@@ -352,26 +370,26 @@ async function DashboardUpgradePageInner({ params }: UpgradePageProps) {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <IconRocket className="size-5 text-primary" />
-              {locale === 'bg' ? 'Какво пропускате' : "What you're missing"}
+              {t.whatYouAreMissing}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <IconChartBar className="size-4 text-primary shrink-0" />
-                {locale === 'bg' ? 'Пълно аналитично табло' : 'Full analytics dashboard'}
+                {t.missingFullAnalytics}
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <IconUsers className="size-4 text-primary shrink-0" />
-                {locale === 'bg' ? 'Управление на клиенти' : 'Customer management'}
+                {t.missingCustomerManagement}
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <IconShoppingCart className="size-4 text-primary shrink-0" />
-                {locale === 'bg' ? 'Разширено управление на поръчки' : 'Advanced order management'}
+                {t.missingOrderManagement}
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <IconSparkles className="size-4 text-primary shrink-0" />
-                {locale === 'bg' ? 'Маркетинг и промоции' : 'Marketing & promotions'}
+                {t.missingMarketingPromotions}
               </div>
             </div>
           </CardContent>

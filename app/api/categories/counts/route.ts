@@ -1,15 +1,12 @@
 import { getCategoryHierarchy, type CategoryWithChildren } from "@/lib/data/categories"
 import { createStaticClient } from "@/lib/supabase/server"
-import { NextResponse } from "next/server"
 import { cacheLife, cacheTag } from "next/cache"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
+import { cachedJsonResponse } from "@/lib/api/response-helpers"
 
 // This endpoint returns product counts for ALL categories (L0, L1, L2).
 // Used for sidebar category navigation to show listing counts
 
-// Cache for 1 hour, stale for 5 min (counts don't need to be real-time)
-const CACHE_TTL_SECONDS = 3600
-const CACHE_STALE_WHILE_REVALIDATE = 300
 const shouldLogCategoryCountsErrors =
   process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_E2E !== "true"
 let hasLoggedCategoryStatsError = false
@@ -113,16 +110,7 @@ export async function GET() {
       counts.map(c => [c.slug, c.count])
     )
 
-    return NextResponse.json(
-      { counts: countsMap },
-      {
-        headers: {
-          'Cache-Control': `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`,
-          'CDN-Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
-          'Vercel-CDN-Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
-        }
-      }
-    )
+    return cachedJsonResponse({ counts: countsMap }, "categories")
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
     
@@ -135,14 +123,6 @@ export async function GET() {
     
     // Return empty counts with success status (graceful degradation)
     // This prevents client-side fetch errors while still indicating no data
-    return NextResponse.json(
-      { counts: {} },
-      {
-        headers: {
-          // Shorter cache for error responses - allow quick retry
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
-        }
-      }
-    )
+    return cachedJsonResponse({ counts: {} }, "shared")
   }
 }

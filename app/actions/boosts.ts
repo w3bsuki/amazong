@@ -7,6 +7,9 @@ import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelop
 import { stripe } from "@/lib/stripe"
 import { STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
 import { revalidateTag } from "next/cache"
+import { normalizePlanTier } from "@/lib/subscriptions/normalize-tier"
+import type { Database } from "@/lib/supabase/database.types"
+import { z } from "zod"
 
 // =============================================================================
 // TYPES
@@ -23,12 +26,22 @@ export type CreateBoostCheckoutResult = Envelope<
   { error: string }
 >
 
-// Helper to get boost columns (not in generated types yet)
-interface ProfileBoostData {
+type ProfileBoostData = {
   boosts_remaining: number
   boosts_allocated: number
   boosts_reset_at: string | null
+  account_type: Database["public"]["Tables"]["profiles"]["Row"]["account_type"]
+  tier: Database["public"]["Tables"]["profiles"]["Row"]["tier"]
 }
+
+const BoostProductIdSchema = z.string().uuid()
+const BoostDurationDaysSchema = z.union([z.literal(7), z.literal(14), z.literal(30)])
+const BoostLocaleSchema = z.enum(["en", "bg"])
+const CreateBoostCheckoutInputSchema = z.object({
+  productId: BoostProductIdSchema,
+  durationDays: BoostDurationDaysSchema,
+  locale: BoostLocaleSchema.optional(),
+})
 
 function revalidateBoostCaches(productId: string, userId: string) {
   const tags = [
@@ -47,13 +60,13 @@ function revalidateBoostCaches(productId: string, userId: string) {
   }
 }
 
-async function getProfileBoosts(userId: string): Promise<ProfileBoostData | null> {
-  const supabase = await createClient()
-  if (!supabase) return null
-
+async function getProfileBoosts(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string
+): Promise<ProfileBoostData | null> {
   const { data } = await supabase
     .from("profiles")
-    .select("boosts_remaining, boosts_allocated, boosts_reset_at")
+    .select("boosts_remaining, boosts_allocated, boosts_reset_at, account_type, tier")
     .eq("id", userId)
     .single()
 
@@ -63,6 +76,96 @@ async function getProfileBoosts(userId: string): Promise<ProfileBoostData | null
     boosts_remaining: data.boosts_remaining ?? 0,
     boosts_allocated: data.boosts_allocated ?? 0,
     boosts_reset_at: data.boosts_reset_at ?? null,
+    account_type: data.account_type ?? null,
+    tier: data.tier ?? null,
+  }
+}
+
+function getNextMonthlyResetAtISO(baseDate: Date): string {
+  const nextUtcMonth = new Date(
+    Date.UTC(baseDate.getUTCFullYear(), baseDate.getUTCMonth() + 1, 1, 0, 0, 0, 0)
+  )
+  return nextUtcMonth.toISOString()
+}
+
+async function syncProfileBoostCredits(userId: string): Promise<ProfileBoostData | null> {
+  const supabase = await createClient()
+  const profileBoosts = await getProfileBoosts(supabase, userId)
+  if (!profileBoosts) return null
+
+  const accountType = profileBoosts.account_type === "business" ? "business" : "personal"
+  const { data: activeSubscription } = await supabase
+    .from("subscriptions")
+    .select("plan_type")
+    .eq("seller_id", userId)
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  const normalizedTier = normalizePlanTier(activeSubscription?.plan_type ?? profileBoosts.tier)
+
+  const { data: tierPlan } = await supabase
+    .from("subscription_plans")
+    .select("boosts_included")
+    .eq("tier", normalizedTier)
+    .eq("account_type", accountType)
+    .eq("is_active", true)
+    .maybeSingle()
+
+  let boostsIncluded = Number(tierPlan?.boosts_included ?? 0)
+  if (!tierPlan) {
+    const { data: freePlan } = await supabase
+      .from("subscription_plans")
+      .select("boosts_included")
+      .eq("tier", "free")
+      .eq("account_type", accountType)
+      .eq("is_active", true)
+      .maybeSingle()
+    boostsIncluded = Number(freePlan?.boosts_included ?? 0)
+  }
+
+  const now = new Date()
+  const parsedResetAt = profileBoosts.boosts_reset_at ? new Date(profileBoosts.boosts_reset_at) : null
+  const needsMonthlyReset =
+    !parsedResetAt || Number.isNaN(parsedResetAt.getTime()) || parsedResetAt <= now
+
+  const nextAllocated = boostsIncluded
+  const nextRemaining = needsMonthlyReset
+    ? boostsIncluded
+    : Math.min(profileBoosts.boosts_remaining, boostsIncluded)
+  const nextResetAt = needsMonthlyReset
+    ? getNextMonthlyResetAtISO(now)
+    : profileBoosts.boosts_reset_at
+
+  const changed =
+    nextAllocated !== profileBoosts.boosts_allocated ||
+    nextRemaining !== profileBoosts.boosts_remaining ||
+    nextResetAt !== profileBoosts.boosts_reset_at
+
+  if (changed) {
+    const adminSupabase = createAdminClient()
+    const profileUpdate: Database["public"]["Tables"]["profiles"]["Update"] = {
+      boosts_allocated: nextAllocated,
+      boosts_remaining: nextRemaining,
+      boosts_reset_at: nextResetAt,
+    }
+    const { error: syncError } = await adminSupabase
+      .from("profiles")
+      .update(profileUpdate)
+      .eq("id", userId)
+
+    if (syncError) {
+      console.error("Failed to sync subscription boost credits:", syncError)
+      return profileBoosts
+    }
+  }
+
+  return {
+    ...profileBoosts,
+    boosts_allocated: nextAllocated,
+    boosts_remaining: nextRemaining,
+    boosts_reset_at: nextResetAt,
   }
 }
 
@@ -72,6 +175,13 @@ async function getProfileBoosts(userId: string): Promise<ProfileBoostData | null
 // =============================================================================
 
 export async function useSubscriptionBoost(productId: string): Promise<BoostResult> {
+  const parsedProductId = BoostProductIdSchema.safeParse(productId)
+  if (!parsedProductId.success) {
+    return { success: false, error: "Invalid productId" }
+  }
+
+  const safeProductId = parsedProductId.data
+
   const auth = await requireAuth()
   if (!auth) {
     return { success: false, error: "Not authenticated" }
@@ -84,7 +194,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
   const { data: product, error: productError } = await supabase
     .from("products")
     .select("id, seller_id, is_boosted")
-    .eq("id", productId)
+    .eq("id", safeProductId)
     .single()
 
   if (productError || !product) {
@@ -99,8 +209,8 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
     return { success: false, error: "Product is already boosted" }
   }
 
-  // Get user's boost allocation
-  const boostData = await getProfileBoosts(userId)
+  // Sync boost allocation from active subscription plan + monthly reset cycle.
+  const boostData = await syncProfileBoostCredits(userId)
   if (!boostData) {
     return { success: false, error: "Profile not found" }
   }
@@ -115,9 +225,12 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
   const adminSupabase = createAdminClient()
 
   // 1. Deduct boost from profile
+  const deductUpdate: Database["public"]["Tables"]["profiles"]["Update"] = {
+    boosts_remaining: boostsRemaining - 1,
+  }
   const { error: deductError } = await adminSupabase
     .from("profiles")
-    .update({ boosts_remaining: boostsRemaining - 1 } as Record<string, unknown>)
+    .update(deductUpdate)
     .eq("id", userId)
 
   if (deductError) {
@@ -137,13 +250,16 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
       boost_expires_at: expiresAt.toISOString(),
       listing_type: "boosted",
     })
-    .eq("id", productId)
+    .eq("id", safeProductId)
 
   if (boostError) {
     // Rollback: restore the boost count
+    const rollbackUpdate: Database["public"]["Tables"]["profiles"]["Update"] = {
+      boosts_remaining: boostsRemaining,
+    }
     await adminSupabase
       .from("profiles")
-      .update({ boosts_remaining: boostsRemaining } as Record<string, unknown>)
+      .update(rollbackUpdate)
       .eq("id", userId)
 
     console.error("Failed to boost product:", boostError)
@@ -154,7 +270,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
   await adminSupabase
     .from("listing_boosts")
     .insert({
-      product_id: productId,
+      product_id: safeProductId,
       seller_id: userId,
       price_paid: 0, // Free from subscription
       duration_days: boostDuration,
@@ -163,7 +279,7 @@ export async function useSubscriptionBoost(productId: string): Promise<BoostResu
       currency: "EUR",
     })
 
-  revalidateBoostCaches(productId, userId)
+  revalidateBoostCaches(safeProductId, userId)
   const { data: sellerProfile } = await supabase
     .from("profiles")
     .select("username")
@@ -192,7 +308,12 @@ export async function createBoostCheckoutSession(args: {
     return errorEnvelope({ error: "Payment configuration is missing" })
   }
 
-  const { productId, durationDays, locale = "en" } = args
+  const parsedArgs = CreateBoostCheckoutInputSchema.safeParse(args)
+  if (!parsedArgs.success) {
+    return errorEnvelope({ error: "Invalid input" })
+  }
+
+  const { productId, durationDays, locale = "en" } = parsedArgs.data
 
   const auth = await requireAuth()
   if (!auth) {
@@ -308,6 +429,13 @@ export async function getBoostStatus(productId: string): Promise<{
   boostsRemaining?: number
   boostsAllocated?: number
 }> {
+  const parsedProductId = BoostProductIdSchema.safeParse(productId)
+  if (!parsedProductId.success) {
+    return { success: false, error: "Invalid productId" }
+  }
+
+  const safeProductId = parsedProductId.data
+
   const auth = await requireAuth()
   if (!auth) {
     return { success: false, error: "Not authenticated" }
@@ -319,7 +447,7 @@ export async function getBoostStatus(productId: string): Promise<{
   const { data: product, error: productError } = await supabase
     .from("products")
     .select("is_boosted, boost_expires_at, seller_id")
-    .eq("id", productId)
+    .eq("id", safeProductId)
     .single()
 
   if (productError || !product) {
@@ -331,7 +459,7 @@ export async function getBoostStatus(productId: string): Promise<{
   }
 
   // Get boost allocation
-  const boostData = await getProfileBoosts(user.id)
+  const boostData = await syncProfileBoostCredits(user.id)
 
   return {
     success: true,

@@ -33,10 +33,14 @@ interface CustomerReviewsHybridProps {
   submitReview?: SubmitReviewFn;
 }
 
-function formatDate(value: string) {
+function formatDate(value: string, locale: string) {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  return d.toLocaleDateString(locale === "bg" ? "bg-BG" : "en-IE", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 export function CustomerReviewsHybrid({ 
@@ -160,7 +164,7 @@ export function CustomerReviewsHybrid({
                           ))}
                         </div>
                         <span className="text-2xs text-muted-foreground">
-                          {formatDate(review.created_at)}
+                          {formatDate(review.created_at, locale)}
                         </span>
                       </div>
 

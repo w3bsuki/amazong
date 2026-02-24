@@ -1,8 +1,7 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
-import { notFound } from "next/navigation"
+import { locales, notFound } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
-import { locales } from "@/i18n/routing"
 import { OrderDetailView } from "../../../_components/order-detail-view"
 
 // Return placeholder param for build validation (required by cacheComponents)

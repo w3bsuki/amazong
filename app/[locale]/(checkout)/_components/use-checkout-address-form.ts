@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback, useState, type ChangeEvent } from "react"
 import type { useTranslations } from "next-intl"
 
 import type { NewAddressForm } from "./checkout-types"
@@ -47,7 +47,7 @@ export function useCheckoutAddressForm({
   )
 
   const updateNewAddress = useCallback(
-    (field: keyof NewAddressForm) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (field: keyof NewAddressForm) => (event: ChangeEvent<HTMLInputElement>) => {
       setNewAddress((prev) => ({ ...prev, [field]: event.target.value }))
       if (touched[field] && errors[field]) {
         setErrors((prev) => ({ ...prev, [field]: "" }))

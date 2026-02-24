@@ -8,6 +8,7 @@ import { Briefcase, Building2 as Buildings, House, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
+import { logger } from "@/lib/logger"
 import { AccountAddressesStats } from "../_components/account-addresses-stats"
 import { AccountAddressesGrid } from "../_components/account-addresses-grid"
 import { USER_ADDRESSES_SELECT } from "./_lib/selects"
@@ -154,7 +155,7 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
 
       if (data) setAddresses(data)
     } catch (error) {
-      console.error("Error saving address:", error)
+      logger.error("[account-addresses] save_address_failed", error)
       toast.error(t("toasts.saveError"))
     } finally {
       setIsLoading(false)
@@ -187,7 +188,7 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
 
       if (data) setAddresses(data)
     } catch (error) {
-      console.error("Error deleting address:", error)
+      logger.error("[account-addresses] delete_address_failed", error)
       toast.error(t("toasts.deleteError"))
     } finally {
       setIsLoading(false)
@@ -216,7 +217,7 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
 
       if (data) setAddresses(data)
     } catch (error) {
-      console.error("Error setting default:", error)
+      logger.error("[account-addresses] set_default_failed", error)
       toast.error(t("toasts.updateError"))
     } finally {
       setIsLoading(false)

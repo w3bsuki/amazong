@@ -21,6 +21,13 @@ import {
 import { BusinessEmptyState } from "../../_components/business-empty-state"
 import { Copy as IconCopy, DollarSign as IconCurrencyDollar, Pencil as IconPencil, Percent as IconPercentage, Plus as IconPlus, Tag as IconTag, Trash as IconTrash, Users as IconUsers } from "lucide-react";
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "BGN",
+    maximumFractionDigits: 2,
+  }).format(value)
+}
 
 // Placeholder function - would need actual discounts table
 async function getBusinessDiscounts() {
@@ -52,14 +59,6 @@ export default async function BusinessDiscountsPage() {
   // Requires paid business subscription
   await requireDashboardAccess()
   const { discounts, total } = await getBusinessDiscounts()
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 2,
-    }).format(value)
-  }
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -221,7 +220,12 @@ export default async function BusinessDiscountsPage() {
                       <code className="text-sm font-mono bg-muted px-2 py-0.5 rounded">
                         {discount.code}
                       </code>
-                      <Button variant="ghost" size="icon" className="size-6">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-6"
+                        aria-label={`Copy code ${discount.code}`}
+                      >
                         <IconCopy className="size-3" />
                       </Button>
                     </div>
@@ -257,10 +261,15 @@ export default async function BusinessDiscountsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon-sm">
+                      <Button variant="ghost" size="icon-sm" aria-label={`Edit ${discount.code}`}>
                         <IconPencil className="size-4" />
                       </Button>
-                      <Button variant="ghost" size="icon-sm" className="text-destructive">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="text-destructive"
+                        aria-label={`Delete ${discount.code}`}
+                      >
                         <IconTrash className="size-4" />
                       </Button>
                     </div>

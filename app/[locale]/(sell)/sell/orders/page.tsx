@@ -1,15 +1,28 @@
 import { createClient } from "@/lib/supabase/server"
 import { setRequestLocale } from "next-intl/server"
 import { redirect, validateLocale } from "@/i18n/routing"
-import { getOrderConversation, getSellerOrders, getSellerOrderStats } from "@/app/actions/orders-reads"
-import { canSellerRateBuyer } from "@/app/actions/orders-rating"
-import { updateOrderItemStatus } from "@/app/actions/orders-status"
-import { submitBuyerFeedback } from "@/app/actions/buyer-feedback"
+import type { Metadata } from "next"
+import { getOrderConversation, getSellerOrders, getSellerOrderStats } from "../../../../actions/orders-reads"
+import { canSellerRateBuyer } from "../../../../actions/orders-rating"
+import { updateOrderItemStatus } from "../../../../actions/orders-status"
+import { submitBuyerFeedback } from "../../../../actions/buyer-feedback"
 import { SellerOrdersClient } from "./seller-orders-client"
 
-export const metadata = {
-  title: "Your Orders | Seller Dashboard",
-  description: "Manage incoming orders, track shipments, and communicate with buyers",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+
+  return {
+    title: locale === "bg" ? "Поръчки от купувачи | Treido" : "Seller Orders | Treido",
+    description:
+      locale === "bg"
+        ? "Управлявайте входящи поръчки, доставки и комуникация с купувачи."
+        : "Manage incoming orders, track shipments, and communicate with buyers.",
+  }
 }
 
 export default async function SellerOrdersPage({

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { createClient } from "@/lib/supabase/client"
+import { logger } from "@/lib/logger"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
@@ -254,7 +255,7 @@ export function NotificationsContent({
       if (error) throw error
       setNotifications((data ?? []) as NotificationRow[])
     } catch (error) {
-      console.error("Error loading notifications:", error)
+      logger.error("[account-notifications] load_notifications_failed", error)
       toast.error(t("toasts.loadError"))
     } finally {
       setIsLoading(false)
@@ -308,7 +309,7 @@ export function NotificationsContent({
           { onConflict: "user_id" }
         )
     } catch (error) {
-      console.error("Error saving notification prefs:", error)
+      logger.error("[account-notifications] save_preferences_failed", error)
       toast.error(t("toasts.saveError"))
     }
   }

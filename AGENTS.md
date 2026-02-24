@@ -43,7 +43,7 @@ Read this file (~100 lines) + one doc for your task area. Only add more for comp
 
 Feature docs: auth, bottom-nav, checkout-payments, header, product-cards, search-filters, sell-flow.
 Business docs: plans-pricing, monetization, go-to-market, competitors, metrics-kpis, legal-compliance.
-Agent personas: `docs/agents/` — business-strategist, marketing-manager, finance-analyst, operations-manager.
+Business agent skill: `.agents/skills/treido-business-agent/SKILL.md` (unified strategy/finance/marketing/ops).
 
 ---
 

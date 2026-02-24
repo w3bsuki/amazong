@@ -8,6 +8,7 @@ import { Building2 as Buildings, Check, Crown, LoaderCircle as SpinnerGap, User 
 
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { logger } from "@/lib/logger"
 
 export type UpgradeContentServerActions = {
   createSubscriptionCheckoutSession: (args: {
@@ -111,7 +112,7 @@ export function UpgradeContent({
         window.location.href = url
       }
     } catch (error) {
-      console.error('Checkout error:', error)
+      logger.error("[account-plans-upgrade] checkout_session_failed", error)
       toast.error(
         locale === 'bg' 
           ? 'Грешка при създаване на плащане. Моля, опитайте отново.' 

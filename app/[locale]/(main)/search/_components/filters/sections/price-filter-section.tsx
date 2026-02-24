@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 interface PriceFilterSectionProps {
-  locale: string
   currentMinPrice: string | null
   currentMaxPrice: string | null
   priceMin: string
@@ -17,7 +16,6 @@ interface PriceFilterSectionProps {
 }
 
 export function PriceFilterSection({
-  locale,
   currentMinPrice,
   currentMaxPrice,
   priceMin,
@@ -30,11 +28,11 @@ export function PriceFilterSection({
   const t = useTranslations("SearchFilters")
 
   const presets = [
-    { label: locale === "bg" ? "Под 25" : "Under 25", min: null, max: "25" },
-    { label: "25-50", min: "25", max: "50" },
-    { label: "50-100", min: "50", max: "100" },
-    { label: "100-200", min: "100", max: "200" },
-    { label: locale === "bg" ? "Над 200" : "200+", min: "200", max: null },
+    { label: t("under25"), min: null, max: "25" },
+    { label: t("range2550"), min: "25", max: "50" },
+    { label: t("range50100"), min: "50", max: "100" },
+    { label: t("range100200"), min: "100", max: "200" },
+    { label: t("above200"), min: "200", max: null },
   ]
 
   return (

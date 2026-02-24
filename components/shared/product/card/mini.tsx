@@ -8,7 +8,7 @@ import { Link } from "@/i18n/routing"
 import { Card, CardContent } from "@/components/ui/card"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { cn } from "@/lib/utils"
-import { formatPrice } from "@/lib/price"
+import { formatCurrencyAmount } from "@/lib/price"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
 interface ProductMiniCardProps {
@@ -80,7 +80,10 @@ function MiniCardBody({
       <CardContent className="space-y-1.5 p-2">
         <p className="line-clamp-2 text-xs font-medium leading-tight text-foreground">{title}</p>
         <MarketplaceBadge variant="price" size="default" className="min-h-5 px-2 text-sm leading-none">
-          {formatPrice(price, { locale })}
+          {formatCurrencyAmount(price, locale, "BGN", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </MarketplaceBadge>
       </CardContent>
     </Card>

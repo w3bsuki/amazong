@@ -5,7 +5,7 @@
  * Supports env-based overrides and percentage-based rollouts.
  * 
  * Usage:
- *   import { isFeatureEnabled, getFeatureFlags } from "@/lib/feature-flags"
+ *   import { isFeatureEnabled, getEnabledDrawers } from "@/lib/feature-flags"
  *   
  *   if (isFeatureEnabled("drawerSystem")) {
  *     // Use new drawer system

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "sonner"
+import { logger } from "@/lib/logger"
 import { bg, enUS } from "date-fns/locale"
 import {
   ArrowRight,
@@ -125,7 +126,7 @@ export function BillingContent({
         setInvoices(Array.isArray(data.invoices) ? data.invoices : [])
         setCharges(Array.isArray(data.charges) ? data.charges : [])
       } catch (error) {
-        console.error("Error fetching billing data:", error)
+        logger.error("[account-billing] fetch_billing_data_failed", error)
         toast.error(t.loadingError)
       } finally {
         setIsLoading(false)
@@ -207,7 +208,7 @@ export function BillingContent({
         window.location.href = url
       }
     } catch (error) {
-      console.error("Portal error:", error)
+      logger.error("[account-billing] open_portal_failed", error)
       toast.error(t.portalOpenError)
     } finally {
       setIsPortalLoading(false)

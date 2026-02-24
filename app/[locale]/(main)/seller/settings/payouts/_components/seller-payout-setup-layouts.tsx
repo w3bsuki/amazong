@@ -32,6 +32,14 @@ interface CompactLayoutProps extends LayoutProps {
   compactDescription: string
 }
 
+const STEP_CIRCLE_BASE_CLASS = "size-5 rounded-full flex items-center justify-center"
+const STEP_CIRCLE_DONE_CLASS = "bg-success text-success-foreground"
+const STEP_CIRCLE_PENDING_CLASS = "bg-muted text-muted-foreground"
+
+function getStepCircleClass(isDone: boolean | undefined) {
+  return isDone ? STEP_CIRCLE_DONE_CLASS : STEP_CIRCLE_PENDING_CLASS
+}
+
 export function SellerPayoutSetupFull({
   t,
   isComplete,
@@ -104,7 +112,7 @@ export function SellerPayoutSetupFull({
       {hasStarted && !isComplete && (
         <div className="mt-8 w-full space-y-2">
           <div className="flex items-center gap-2 text-sm">
-            <div className={`size-5 rounded-full flex items-center justify-center ${payoutStatus?.details_submitted ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}`}>
+            <div className={cn(STEP_CIRCLE_BASE_CLASS, getStepCircleClass(payoutStatus?.details_submitted))}>
               {payoutStatus?.details_submitted ? <CheckCircle2 className="size-3" /> : <span className="text-xs">1</span>}
             </div>
             <span className={payoutStatus?.details_submitted ? "text-foreground" : "text-muted-foreground"}>
@@ -112,7 +120,7 @@ export function SellerPayoutSetupFull({
             </span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <div className={`size-5 rounded-full flex items-center justify-center ${payoutStatus?.charges_enabled ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}`}>
+            <div className={cn(STEP_CIRCLE_BASE_CLASS, getStepCircleClass(payoutStatus?.charges_enabled))}>
               {payoutStatus?.charges_enabled ? <CheckCircle2 className="size-3" /> : <span className="text-xs">2</span>}
             </div>
             <span className={payoutStatus?.charges_enabled ? "text-foreground" : "text-muted-foreground"}>
@@ -120,7 +128,7 @@ export function SellerPayoutSetupFull({
             </span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <div className={`size-5 rounded-full flex items-center justify-center ${payoutStatus?.payouts_enabled ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}`}>
+            <div className={cn(STEP_CIRCLE_BASE_CLASS, getStepCircleClass(payoutStatus?.payouts_enabled))}>
               {payoutStatus?.payouts_enabled ? <CheckCircle2 className="size-3" /> : <span className="text-xs">3</span>}
             </div>
             <span className={payoutStatus?.payouts_enabled ? "text-foreground" : "text-muted-foreground"}>

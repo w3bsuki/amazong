@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { createLoginLink, getConnectAccount, isAccountReady } from "@/lib/stripe-connect"
+import { noStoreJson } from "@/lib/api/response-helpers"
 
 /**
  * POST /api/connect/dashboard
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return noStoreJson({ error: "Unauthorized" }, { status: 401 })
     }
 
     // Get seller's Connect account ID
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (payoutError || !payoutStatus?.stripe_connect_account_id) {
-      return NextResponse.json(
+      return noStoreJson(
         { error: "No Connect account found. Please complete onboarding first." },
         { status: 404 }
       )
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
     const account = await getConnectAccount(payoutStatus.stripe_connect_account_id)
     
     if (!isAccountReady(account)) {
-      return NextResponse.json(
+      return noStoreJson(
         { error: "Account onboarding not complete. Please finish setting up your account." },
         { status: 400 }
       )
@@ -44,10 +45,10 @@ export async function POST(req: NextRequest) {
     // Create login link
     const loginLink = await createLoginLink(payoutStatus.stripe_connect_account_id)
 
-    return NextResponse.json({ url: loginLink.url })
+    return noStoreJson({ url: loginLink.url })
   } catch (error) {
     console.error("Connect dashboard error:", error)
-    return NextResponse.json(
+    return noStoreJson(
       { error: error instanceof Error ? error.message : "Failed to create dashboard link" },
       { status: 500 }
     )

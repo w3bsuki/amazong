@@ -10,6 +10,9 @@ import {
   revalidateProductCaches,
   requireProductAuth,
 } from "./products-shared"
+import { resolveLeafCategoryForListing } from "@/lib/sell/resolve-leaf-category"
+import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
+import { logger } from "@/lib/logger"
 
 /**
  * Create a new product
@@ -29,6 +32,28 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
 
     const data = validated.data
     const attributes = normalizeProductAttributes(input.attributes)
+    let resolvedCategoryId = data.categoryId ?? null
+
+    if (resolvedCategoryId) {
+      const categoryResolution = await resolveLeafCategoryForListing({
+        supabase,
+        selectedCategoryId: resolvedCategoryId,
+        context: {
+          title: data.title,
+          description: data.description,
+          attributes: attributes.map((attribute) => ({
+            name: attribute.name,
+            value: attribute.value,
+          })),
+        },
+      })
+
+      if (!categoryResolution.ok) {
+        return { success: false, error: categoryResolution.message }
+      }
+
+      resolvedCategoryId = categoryResolution.categoryId
+    }
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
@@ -42,6 +67,20 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
 
     if (!profile.username) {
       return { success: false, error: "You must set a username before listing products" }
+    }
+
+    if (data.status === "active") {
+      const listingLimits = await getSellerListingLimitSnapshot(supabase, user.id)
+      if (!listingLimits) {
+        return { success: false, error: "Failed to verify listing limits" }
+      }
+
+      if (listingLimits.needsUpgrade) {
+        return {
+          success: false,
+          error: `You have reached your listing limit (${listingLimits.currentListings} of ${listingLimits.maxListings}). Please upgrade your plan to add more listings.`,
+        }
+      }
     }
 
     const baseSlug = data.title
@@ -60,7 +99,7 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
         list_price: data.compareAtPrice || null,
         stock: data.stock,
         track_inventory: data.trackInventory,
-        category_id: data.categoryId || null,
+        category_id: resolvedCategoryId,
         status: data.status,
         weight: data.weight || null,
         weight_unit: data.weightUnit,
@@ -72,10 +111,19 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       .single()
 
     if (insertError) {
+      if (
+        insertError.code === "P0001" ||
+        insertError.message?.toLowerCase().includes("listing limit reached")
+      ) {
+        return {
+          success: false,
+          error: "You have reached your listing limit. Please upgrade your plan to add more listings.",
+        }
+      }
       if (isLeafCategoryError(insertError)) {
         return { success: false, error: LEAF_CATEGORY_ERROR_MESSAGE }
       }
-      console.error("[createProduct] Insert error:", insertError)
+      logger.error("[createProduct] Insert error", insertError)
       return { success: false, error: insertError.message || "Failed to create product" }
     }
 
@@ -88,7 +136,7 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
     })
 
     if (privateError) {
-      console.error("[createProduct] Product private insert error:", privateError)
+      logger.error("[createProduct] Product private insert error", privateError)
       await supabase.from("products").delete().eq("id", product.id)
       return { success: false, error: privateError.message || "Failed to save seller-only product fields" }
     }
@@ -105,7 +153,7 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       const { error: attributeError } = await supabase.from("product_attributes").insert(attributeRows)
 
       if (attributeError) {
-        console.error("[createProduct] Product attributes insert error:", attributeError)
+        logger.error("[createProduct] Product attributes insert error", attributeError)
         await supabase.from("products").delete().eq("id", product.id)
         return { success: false, error: attributeError.message || "Failed to create product" }
       }
@@ -115,13 +163,13 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       supabase,
       sellerId: user.id,
       productIds: [product.id],
-      categoryIds: [data.categoryId],
+      categoryIds: [resolvedCategoryId],
       invalidateTypes: ["newest"],
     })
 
     return { success: true, data: { id: product.id } }
   } catch (error) {
-    console.error("[createProduct] Error:", error)
+    logger.error("[createProduct] Error", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }
@@ -215,7 +263,7 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
     }
 
     if (insertError || !duplicate) {
-      console.error("[duplicateProduct] Insert error:", insertError)
+      logger.error("[duplicateProduct] Insert error", insertError)
       return { success: false, error: "Failed to duplicate product" }
     }
 
@@ -228,7 +276,7 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
     })
 
     if (privateError) {
-      console.error("[duplicateProduct] Product private insert error:", privateError)
+      logger.error("[duplicateProduct] Product private insert error", privateError)
       await supabase.from("products").delete().eq("id", duplicate.id)
       return { success: false, error: "Failed to duplicate seller-only product fields" }
     }
@@ -242,8 +290,7 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
 
     return { success: true, data: { id: duplicate.id } }
   } catch (error) {
-    console.error("[duplicateProduct] Error:", error)
+    logger.error("[duplicateProduct] Error", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }
-

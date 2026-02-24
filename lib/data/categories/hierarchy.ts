@@ -17,6 +17,15 @@ import {
 
 export { getCategoryBySlug, getCategoryContext } from "./context"
 
+function isMissingBrowseableColumnError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false
+
+  const record = error as Record<string, unknown>
+  const code = typeof record.code === "string" ? record.code : ""
+  const message = typeof record.message === "string" ? record.message : ""
+  return code === "42703" && message.includes("is_browseable")
+}
+
 /**
  * Fetch category hierarchy starting from root categories.
  *
@@ -43,12 +52,18 @@ export async function getCategoryHierarchy(
     const effectiveDepth = Math.min(depth, 2)
 
     // Fetch L0 categories (root)
-    const { data: rootCats, error: rootError } = await supabase
-      .from("categories")
-      .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
-      .is("parent_id", null)
-      .lt("display_order", 9000)
-      .order("display_order", { ascending: true })
+    const buildRootQuery = () =>
+      supabase
+        .from("categories")
+        .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+        .is("parent_id", null)
+        .lt("display_order", 9000)
+        .order("display_order", { ascending: true })
+
+    let { data: rootCats, error: rootError } = await buildRootQuery().eq("is_browseable", true)
+    if (rootError && isMissingBrowseableColumnError(rootError)) {
+      ;({ data: rootCats, error: rootError } = await buildRootQuery())
+    }
 
     if (rootError) {
       logger.error("[getCategoryHierarchy] Root query error", rootError)
@@ -66,13 +81,19 @@ export async function getCategoryHierarchy(
     }
 
     // Fetch L1 categories
-    const rootIds = (rootCats || []).map((c) => c.id)
-    const { data: l1Cats, error: l1Error } = await supabase
-      .from("categories")
-      .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
-      .in("parent_id", rootIds)
-      .lt("display_order", 9000)
-      .order("display_order", { ascending: true })
+    const rootIds = rootCats.map((c) => c.id)
+    const buildL1Query = () =>
+      supabase
+        .from("categories")
+        .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+        .in("parent_id", rootIds)
+        .lt("display_order", 9000)
+        .order("display_order", { ascending: true })
+
+    let { data: l1Cats, error: l1Error } = await buildL1Query().eq("is_browseable", true)
+    if (l1Error && isMissingBrowseableColumnError(l1Error)) {
+      ;({ data: l1Cats, error: l1Error } = await buildL1Query())
+    }
 
     if (l1Error) {
       logger.error("[getCategoryHierarchy] L1 query error", l1Error)
@@ -91,14 +112,22 @@ export async function getCategoryHierarchy(
       }
 
       const results = await Promise.all(
-        batches.map((batchIds) =>
-          supabase
-            .from("categories")
-            .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
-            .in("parent_id", batchIds)
-            .lt("display_order", 9000)
-            .order("display_order", { ascending: true }),
-        ),
+        batches.map(async (batchIds) => {
+          const buildL2Query = () =>
+            supabase
+              .from("categories")
+              .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+              .in("parent_id", batchIds)
+              .lt("display_order", 9000)
+              .order("display_order", { ascending: true })
+
+          let result = await buildL2Query().eq("is_browseable", true)
+          if (result.error && isMissingBrowseableColumnError(result.error)) {
+            result = await buildL2Query()
+          }
+
+          return result
+        }),
       )
 
       for (const result of results) {

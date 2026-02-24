@@ -154,7 +154,8 @@ export function ProductFormModal({
               variant="ghost"
               size="icon"
               onClick={() => onOpenChange(false)}
-              className="shrink-0 size-8"
+              className="shrink-0 size-8 min-h-11 min-w-11"
+              aria-label="Close product form"
             >
               <IconX className="size-5" />
             </Button>

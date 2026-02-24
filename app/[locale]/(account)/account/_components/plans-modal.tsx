@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { logger } from "@/lib/logger"
 
 // Reuse shared components from plan-card
 import { PlansGrid, PlansGridSkeleton, type Plan } from "./plan-card"
@@ -145,7 +146,7 @@ export function PlansModal({
           }
         }
       } catch (error) {
-        console.error("Failed to fetch plans:", error)
+        logger.error("[plans-modal] fetch_plans_failed", error)
       } finally {
         setLoading(false)
       }
@@ -185,7 +186,7 @@ export function PlansModal({
         throw new Error("No checkout URL returned")
       }
     } catch (error) {
-      console.error('Checkout error:', error)
+      logger.error("[plans-modal] checkout_session_failed", error)
       // On error, redirect to full plans page where user can see clearer error
       setIsOpen(false)
       router.push("/plans")

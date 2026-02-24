@@ -1,14 +1,23 @@
-import { ChartColumn as ChartBar, CreditCard, Crown, Rocket, ShieldCheck, Sparkles as Sparkle, Star, CircleHelp as Question, Store as Storefront, User, Zap as Lightning } from "lucide-react"
+import {
+  ChartColumn as ChartBar,
+  CircleHelp as Question,
+  CreditCard,
+  Crown,
+  Rocket,
+  ShieldCheck,
+  Sparkles as Sparkle,
+  Star,
+  User,
+  Zap as Lightning,
+} from "lucide-react"
 
 import type { PlansFeatureIconKey } from "./plans-page-client.types"
 
 export const planIcons: Record<string, React.ReactNode> = {
   free: <User className="size-4" />,
-  basic: <User className="size-4" />,
-  starter: <Storefront className="size-4" />,
-  premium: <Crown className="size-4" />,
+  plus: <Crown className="size-4" />,
   pro: <Star className="size-4" />,
-  ultimate: <Rocket className="size-4" />,
+  enterprise: <Rocket className="size-4" />,
 }
 
 export const navItems = [

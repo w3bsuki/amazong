@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,7 @@ interface PublicProfileUsernameCardProps {
   newUsername: string
   setNewUsername: (value: string) => void
   usernameAvailable: boolean | null
+  usernameStatusMessage?: string | null
   isCheckingUsername: boolean
   canChangeUsername: boolean
   daysUntilChange?: number | undefined
@@ -38,6 +40,7 @@ export function PublicProfileUsernameCard({
   newUsername,
   setNewUsername,
   usernameAvailable,
+  usernameStatusMessage,
   isCheckingUsername,
   canChangeUsername,
   daysUntilChange,
@@ -45,6 +48,9 @@ export function PublicProfileUsernameCard({
   onCheckUsername,
   onSubmitUsername,
 }: PublicProfileUsernameCardProps) {
+  const t = useTranslations("Account.profileEditor")
+  void locale
+
   return (
     <>
       {username && (
@@ -52,14 +58,12 @@ export function PublicProfileUsernameCard({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">
-                  {locale === "bg" ? "Твоят публичен профил" : "Your Public Profile"}
-                </p>
+                <p className="text-sm font-medium">{t("username.yourPublicProfile")}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">treido.eu/{username}</p>
               </div>
               <Link href={`/${username}`}>
                 <Button variant="outline" size="sm" className="gap-2">
-                  {locale === "bg" ? "Виж профила" : "View Profile"}
+                  {t("username.viewProfile")}
                   <ArrowRight className="size-4" />
                 </Button>
               </Link>
@@ -72,24 +76,16 @@ export function PublicProfileUsernameCard({
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <At className="size-5" />
-            {locale === "bg" ? "Потребителско име" : "Username"}
+            {t("username.title")}
           </CardTitle>
-          <CardDescription>
-            {locale === "bg"
-              ? "Уникалният ти идентификатор за URL и споменаване"
-              : "Your unique identifier for URLs and mentions"}
-          </CardDescription>
+          <CardDescription>{t("username.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-3">
             <div className="flex-1">
               <div className="flex items-center gap-2 text-lg font-medium">
                 <span className="text-muted-foreground">@</span>
-                {username || (
-                  <span className="text-muted-foreground italic">
-                    {locale === "bg" ? "Не е зададено" : "Not set"}
-                  </span>
-                )}
+                {username || <span className="text-muted-foreground italic">{t("username.notSet")}</span>}
               </div>
               {username && <p className="text-xs text-muted-foreground mt-1">treido.eu/u/{username}</p>}
             </div>
@@ -98,36 +94,18 @@ export function PublicProfileUsernameCard({
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" disabled={!canChangeUsername && !!username}>
                   <PencilSimple className="size-4 mr-1.5" />
-                  {username
-                    ? locale === "bg"
-                      ? "Промени"
-                      : "Change"
-                    : locale === "bg"
-                      ? "Задай"
-                      : "Set"}
+                  {username ? t("actions.change") : t("username.set")}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>
-                    {username
-                      ? locale === "bg"
-                        ? "Промени потребителско име"
-                        : "Change Username"
-                      : locale === "bg"
-                        ? "Избери потребителско име"
-                        : "Choose Username"}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {locale === "bg"
-                      ? "Потребителското име може да се променя веднъж на 14 дни"
-                      : "Username can be changed once every 14 days"}
-                  </DialogDescription>
+                  <DialogTitle>{username ? t("username.changeTitle") : t("username.chooseTitle")}</DialogTitle>
+                  <DialogDescription>{t("username.changeRule")}</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label>{locale === "bg" ? "Ново потребителско име" : "New Username"}</Label>
+                    <Label>{t("username.newLabel")}</Label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
                       <Input
@@ -148,9 +126,7 @@ export function PublicProfileUsernameCard({
                       )}
                     </div>
                     {usernameAvailable === false && (
-                      <p className="text-xs text-destructive">
-                        {locale === "bg" ? "Това име е заето" : "This username is taken"}
-                      </p>
+                      <p className="text-xs text-destructive">{usernameStatusMessage || t("username.taken")}</p>
                     )}
                     {newUsername && newUsername.length >= 3 && usernameAvailable === true && (
                       <p className="text-xs text-muted-foreground">treido.eu/u/{newUsername}</p>
@@ -159,24 +135,20 @@ export function PublicProfileUsernameCard({
 
                   <Alert>
                     <Info className="size-4" />
-                    <AlertDescription className="text-xs">
-                      {locale === "bg"
-                        ? "Правила: 3-30 символа, само малки букви, цифри и долна черта"
-                        : "Rules: 3-30 chars, lowercase letters, numbers, and underscores only"}
-                    </AlertDescription>
+                    <AlertDescription className="text-xs">{t("username.rules")}</AlertDescription>
                   </Alert>
                 </div>
 
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setUsernameDialogOpen(false)}>
-                    {locale === "bg" ? "Отказ" : "Cancel"}
+                    {t("actions.cancel")}
                   </Button>
                   <Button
                     onClick={onSubmitUsername}
                     disabled={isPending || !usernameAvailable || !newUsername || newUsername === username}
                   >
                     {isPending && <SpinnerGap className="size-4 mr-2 animate-spin" />}
-                    {locale === "bg" ? "Запази" : "Save"}
+                    {t("actions.save")}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -184,11 +156,7 @@ export function PublicProfileUsernameCard({
           </div>
 
           {!canChangeUsername && daysUntilChange && (
-            <p className="text-xs text-muted-foreground mt-2">
-              {locale === "bg"
-                ? `Можеш да промениш след ${daysUntilChange} дни`
-                : `Can change again in ${daysUntilChange} days`}
-            </p>
+            <p className="text-xs text-muted-foreground mt-2">{t("username.changeInDays", { days: daysUntilChange })}</p>
           )}
         </CardContent>
       </Card>

@@ -108,18 +108,18 @@ export function ProductFormMainColumn({
                 </Badge>
               )}
               <div className="absolute inset-0 bg-surface-overlay opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-7 bg-background hover:bg-hover text-foreground"
+                <div
+                  aria-hidden="true"
+                  className="inline-flex size-7 items-center justify-center rounded-xl bg-background text-foreground"
                 >
                   <IconGripVertical className="size-3.5" />
-                </Button>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="size-7 bg-background hover:bg-hover text-destructive"
                   onClick={() => onRemoveImage(index)}
+                  aria-label={`Remove image ${index + 1}`}
                 >
                   <IconTrash className="size-3.5" />
                 </Button>

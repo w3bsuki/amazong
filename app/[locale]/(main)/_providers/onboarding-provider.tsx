@@ -33,8 +33,12 @@ interface RawProfileData {
   account_type?: string | null
 }
 
+const ONBOARDING_ROUTE = "/onboarding"
+
 // Routes that should always be accessible without onboarding
-const BYPASS_PREFIXES = ["/onboarding", "/auth", "/api", "/terms", "/privacy", "/customer-service", "/search", "/cart", "/categories"]
+const BYPASS_PREFIXES = [ONBOARDING_ROUTE, "/auth", "/api", "/terms", "/privacy", "/customer-service", "/search", "/cart", "/categories"]
+
+function hideOnboarding() {}
 
 function stripLocale(pathname: string) {
   return pathname.replace(/^\/(en|bg)(?=\/|$)/, "") || "/"
@@ -53,7 +57,7 @@ export function OnboardingProvider({
   const pathname = usePathname()
   
   const [profile, setProfile] = useState<ProfileData | null>(null)
-  const [isChecking, setIsChecking] = useState(true)
+  const [, setIsChecking] = useState(true)
   const hasCheckedRef = useRef<string | null>(null)
   const hasRedirectedRef = useRef(false)
   const previousPathnameRef = useRef<string | null>(null)
@@ -75,8 +79,8 @@ export function OnboardingProvider({
     const previous = previousPathnameRef.current
     previousPathnameRef.current = pathWithoutLocale
 
-    const wasOnboarding = previous ? hasPrefix(previous, "/onboarding") : false
-    const isOnboarding = hasPrefix(pathWithoutLocale, "/onboarding")
+    const wasOnboarding = previous ? hasPrefix(previous, ONBOARDING_ROUTE) : false
+    const isOnboarding = hasPrefix(pathWithoutLocale, ONBOARDING_ROUTE)
 
     if (wasOnboarding && !isOnboarding) {
       hasCheckedRef.current = null
@@ -134,7 +138,7 @@ export function OnboardingProvider({
         // Redirect to onboarding if needed and haven't already
         if (needsOnboarding && !hasRedirectedRef.current && !shouldBypass) {
           hasRedirectedRef.current = true
-          router.push("/onboarding", { locale })
+          router.push(ONBOARDING_ROUTE, { locale })
         }
       } else {
         setProfile(null)
@@ -153,8 +157,7 @@ export function OnboardingProvider({
     }
   }, [pathWithoutLocale, shouldBypass])
 
-  const showOnboarding = () => router.push("/onboarding", { locale })
-  const hideOnboarding = () => {} // No-op for route-based onboarding
+  const showOnboarding = () => router.push(ONBOARDING_ROUTE, { locale })
 
   const isOnboardingComplete = profile?.onboarding_completed === true
 

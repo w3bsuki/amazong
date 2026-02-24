@@ -23,6 +23,13 @@ import { BusinessEmptyState } from "../../_components/business-empty-state"
 import { AvgOrderValueCard } from "../../_components/avg-order-value-card"
 import { DollarSign as IconCurrencyDollar, MessageCircle as IconMessage, TrendingUp as IconTrendingUp, Users as IconUsers } from "lucide-react";
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "BGN",
+    maximumFractionDigits: 2,
+  }).format(value)
+}
 
 export const metadata = {
   title: "Business Customers | Treido",
@@ -33,14 +40,6 @@ export default async function BusinessCustomersPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const { customers, total } = await getBusinessCustomers(businessSeller.id)
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 2,
-    }).format(value)
-  }
 
   // Calculate summary stats
   const totalRevenue = customers.reduce((sum, c) => sum + c.total_spent, 0)
@@ -192,7 +191,10 @@ export default async function BusinessCustomersPage() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon-sm" asChild>
-                        <Link href={`/chat?seller=${customer.id}`}>
+                        <Link
+                          href={`/chat?seller=${customer.id}`}
+                          aria-label={`Message ${customer.full_name || "customer"}`}
+                        >
                           <IconMessage className="size-4" />
                         </Link>
                       </Button>

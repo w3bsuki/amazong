@@ -41,6 +41,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
   const router = useRouter()
   const { toast } = useToast()
   const t = useTranslations("SellerManagement")
+  const tSell = useTranslations("Sell")
 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -65,6 +66,8 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
   const [shipsUSA, setShipsUSA] = useState(false)
   const [shipsWorldwide, setShipsWorldwide] = useState(false)
   const [sellerCity, setSellerCity] = useState<string>("")
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" }).format(value)
 
   useEffect(() => {
     async function fetchProduct() {
@@ -144,7 +147,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
     }
 
     fetchProduct()
-  }, [productId, router, locale, toast])
+  }, [productId, router, t, toast])
 
   const discountPercent = calculateSaleDiscount({ isOnSale, originalPrice, price })
 
@@ -152,13 +155,80 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
     if (!product) return
 
     setIsSaving(true)
+    const errorTitle = t("selling.edit.toast.errorTitle")
+    const normalizedTitle = title.trim()
+    const parsedPrice = Number.parseFloat(price)
+    const parsedStock = Number.parseInt(stock, 10)
+    const parsedOriginalPrice = Number.parseFloat(originalPrice)
+    const hasShippingDestination = shipsBulgaria || shipsEurope || shipsUSA || shipsWorldwide
+
+    if (normalizedTitle.length < 5) {
+      toast({
+        title: errorTitle,
+        description: tSell("validation.titleMin"),
+        variant: "destructive",
+      })
+      setIsSaving(false)
+      return
+    }
+
+    if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+      toast({
+        title: errorTitle,
+        description: tSell("validation.priceInvalid"),
+        variant: "destructive",
+      })
+      setIsSaving(false)
+      return
+    }
+
+    if (!Number.isInteger(parsedStock) || parsedStock < 0) {
+      toast({
+        title: errorTitle,
+        description: t("selling.edit.toast.failedToSave"),
+        variant: "destructive",
+      })
+      setIsSaving(false)
+      return
+    }
+
+    if (!hasShippingDestination) {
+      toast({
+        title: errorTitle,
+        description: tSell("validation.shippingRegionRequired"),
+        variant: "destructive",
+      })
+      setIsSaving(false)
+      return
+    }
+
+    if (shipsBulgaria && !sellerCity) {
+      toast({
+        title: errorTitle,
+        description: tSell("shipping.selectCityPlaceholder"),
+        variant: "destructive",
+      })
+      setIsSaving(false)
+      return
+    }
+
+    if (isOnSale && originalPrice && (!Number.isFinite(parsedOriginalPrice) || parsedOriginalPrice <= parsedPrice)) {
+      toast({
+        title: errorTitle,
+        description: tSell("validation.compareAtMustBeHigher"),
+        variant: "destructive",
+      })
+      setIsSaving(false)
+      return
+    }
+
     const supabase = createClient()
 
     const updateData: Record<string, unknown> = {
-      title,
+      title: normalizedTitle,
       description: description || null,
-      price: Number.parseFloat(price),
-      stock: Number.parseInt(stock),
+      price: parsedPrice,
+      stock: parsedStock,
       ships_to_bulgaria: shipsBulgaria,
       ships_to_europe: shipsEurope,
       ships_to_usa: shipsUSA,
@@ -168,7 +238,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
 
     // Handle discount pricing
     if (isOnSale && originalPrice) {
-      updateData.list_price = Number.parseFloat(originalPrice)
+      updateData.list_price = parsedOriginalPrice
       updateData.is_on_sale = true
       updateData.sale_percent = discountPercent
       updateData.sale_end_date = toSaleEndDateIso(saleEndDateLocal)
@@ -222,7 +292,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
       {/* Header */}
       <div className="flex items-center gap-4 mt-4 mb-6">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/account/selling">
+          <Link href="/account/selling" aria-label={t("selling.edit.breadcrumb.myStore")}>
             <ArrowLeft className="size-5" />
           </Link>
         </Button>
@@ -297,7 +367,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                 <Label htmlFor="price">
                   {isOnSale
                     ? t("selling.edit.fields.price.saleLabel")
-                    : t("selling.edit.fields.price.label")} (лв)
+                    : t("selling.edit.fields.price.label")} (EUR)
                 </Label>
                 <Input
                   id="price"
@@ -339,7 +409,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                 <div className="space-y-4 p-4 bg-destructive-subtle border border-destructive rounded-lg">
                   <div className="space-y-2">
                     <Label htmlFor="originalPrice" className="text-deal font-medium">
-                      {t("selling.edit.fields.originalPrice.label")} (лв)
+                      {t("selling.edit.fields.originalPrice.label")} (EUR)
                     </Label>
                     <Input
                       id="originalPrice"
@@ -475,11 +545,11 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
               <div className="mt-2">
                 {isOnSale && originalPrice ? (
                   <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-bold text-deal">{Number.parseFloat(price || "0").toFixed(2)} лв</span>
-                    <span className="text-sm text-muted-foreground line-through">{Number.parseFloat(originalPrice).toFixed(2)} лв</span>
+                    <span className="text-lg font-bold text-deal">{formatCurrency(Number.parseFloat(price || "0"))}</span>
+                    <span className="text-sm text-muted-foreground line-through">{formatCurrency(Number.parseFloat(originalPrice))}</span>
                   </div>
                 ) : (
-                  <span className="text-lg font-bold">{Number.parseFloat(price || "0").toFixed(2)} лв</span>
+                  <span className="text-lg font-bold">{formatCurrency(Number.parseFloat(price || "0"))}</span>
                 )}
               </div>
             </CardContent>
@@ -523,7 +593,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
           </Button>
 
           <Button variant="outline" className="w-full" asChild>
-            <Link href={sellerUsername ? `/${sellerUsername}/${product?.slug || productId}` : "#"}>
+            <Link href={sellerUsername ? `/${sellerUsername}/${product?.slug || productId}` : "/account/selling"}>
               {t("selling.edit.actions.viewProduct")}
             </Link>
           </Button>

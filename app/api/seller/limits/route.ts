@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
+import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
+import { noStoreJson } from "@/lib/api/response-helpers"
 
 /**
  * GET /api/seller/limits
@@ -8,17 +10,13 @@ import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interru
  */
 export async function GET(request: NextRequest) {
   if (process.env.NEXT_PHASE === 'phase-production-build') {
-    const res = NextResponse.json({ skipped: true }, { status: 200 })
-    res.headers.set('Cache-Control', 'private, no-store')
-    res.headers.set('CDN-Cache-Control', 'private, no-store')
-    res.headers.set('Vercel-CDN-Cache-Control', 'private, no-store')
-    return res
+    return noStoreJson({ skipped: true }, { status: 200 })
   }
-  try {
-    const { supabase, applyCookies } = createRouteHandlerClient(request)
-    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-      applyCookies(NextResponse.json(body, init))
 
+  const { supabase, applyCookies } = createRouteHandlerClient(request)
+  const json = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
+    applyCookies(noStoreJson(body, init))
+  try {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return json({ error: "Unauthorized" }, { status: 401 })
@@ -27,7 +25,7 @@ export async function GET(request: NextRequest) {
     // Get profile info
     const { data: profile } = await supabase
       .from("profiles")
-      .select("id, tier, account_type, username, display_name, business_name")
+      .select("id, username, display_name, business_name")
       .eq("id", user.id)
       .single()
 
@@ -41,48 +39,32 @@ export async function GET(request: NextRequest) {
       store_name: profile.display_name || profile.business_name || profile.username,
     }
 
-    // Get listing info using direct queries (no RPC needed)
-    const [{ count: currentListings }, { data: subscription }] = await Promise.all([
-      supabase
-        .from("products")
-        .select("id", { count: "exact", head: true })
-        .eq("seller_id", user.id)
-        .eq("status", "active"),
-      supabase
-        .from("subscriptions")
-        .select("plan_type, subscription_plans!inner(max_listings, tier)")
-        .eq("seller_id", user.id)
-        .eq("status", "active")
-        .single(),
-    ])
+    const listingLimits = await getSellerListingLimitSnapshot(supabase, user.id)
+    if (!listingLimits) {
+      return json({ error: "Unable to resolve listing limits" }, { status: 500 })
+    }
 
-    const subPlan = subscription?.subscription_plans as unknown as { max_listings: number; tier: string } | null
-    const maxListings = subPlan?.max_listings ?? 50
-    const tier = subPlan?.tier ?? "free"
-    const isUnlimited = maxListings === -1
-    const remaining = isUnlimited ? 999 : Math.max(maxListings - (currentListings ?? 0), 0)
+    const remaining = listingLimits.isUnlimited ? 999 : listingLimits.remainingListings
 
     return json({
       sellerId: seller.id,
       storeName: seller.store_name,
-      tier,
-      accountType: seller.account_type || "personal",
-      currentListings: currentListings ?? 0,
-      maxListings,
+      tier: listingLimits.tier,
+      accountType: listingLimits.accountType,
+      currentListings: listingLimits.currentListings,
+      maxListings: listingLimits.maxListings,
       remainingListings: remaining,
-      isUnlimited,
-      canAddListing: isUnlimited || remaining > 0,
-      needsUpgrade: !isUnlimited && remaining <= 0,
+      isUnlimited: listingLimits.isUnlimited,
+      canAddListing: listingLimits.canAddListing,
+      needsUpgrade: listingLimits.needsUpgrade,
     })
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) {
-      const res = NextResponse.json({ skipped: true }, { status: 200 })
-      res.headers.set('Cache-Control', 'private, no-store')
-      return res
+      return json({ skipped: true }, { status: 200 })
     }
     console.error("Seller limits API error:", error)
 
-    return NextResponse.json(
+    return json(
       { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 }
     )

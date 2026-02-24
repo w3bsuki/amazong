@@ -60,12 +60,13 @@ export function OrderDetailItemsCard({
             const itemStatus = item.status || "pending"
             const itemConfig = getStatusView(itemStatus)
             const firstImage = item.product?.images?.[0]
+            const chatHref = conversationId ? `/chat/${conversationId}` : `/chat?seller=${item.seller_id}`
 
             return (
               <OrderDetailItemShell
                 key={item.id}
                 imageSrc={firstImage}
-                imageAlt={item.product?.title || "Product"}
+                imageAlt={item.product?.title || (locale === "bg" ? "Продукт" : "Product")}
                 imageSizes="80px"
                 content={
                   <div>
@@ -79,7 +80,7 @@ export function OrderDetailItemsCard({
                           }
                           className="font-medium hover:underline line-clamp-2"
                         >
-                          {item.product?.title || "Unknown Product"}
+                          {item.product?.title || (locale === "bg" ? "Неизвестен продукт" : "Unknown Product")}
                         </Link>
                         {item.seller && (
                           <p className="text-sm text-muted-foreground">
@@ -121,7 +122,7 @@ export function OrderDetailItemsCard({
                     )}
 
                     <div className="mt-3 flex gap-2">
-                      <Link href={`/chat?seller=${item.seller_id}`}>
+                      <Link href={chatHref}>
                         <Button variant="outline" size="sm" className="h-7">
                           <ChatCircle className="size-3.5 mr-1" />
                           {locale === "bg" ? "Съобщение" : "Message"}

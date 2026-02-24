@@ -83,6 +83,7 @@ export function AccountOrdersToolbar({
   const buildUrl = useCallback(
     (next: { q?: string | null; status?: StatusKey | null }) => {
       const params = new URLSearchParams(searchParams?.toString() || "")
+      params.delete("page")
 
       if (next.q === null) params.delete("q")
       else if (typeof next.q === "string") {

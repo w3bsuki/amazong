@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
-import { notFound } from "next/navigation"
-import { redirect } from "@/i18n/routing"
+import { locales, notFound, redirect } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
-import { locales } from "@/i18n/routing"
+import type { Metadata } from "next"
 import { canBuyerRateSeller } from "../../../../../actions/orders-rating"
 import { requestOrderCancellation, reportOrderIssue, requestReturn } from "../../../../../actions/orders-support"
 import { buyerConfirmDelivery } from "../../../../../actions/orders-status"
@@ -24,9 +23,19 @@ interface OrderDetailPageProps {
   }>
 }
 
-export const metadata = {
-  title: "Order Details | Treido",
-  description: "View order details and delivery status.",
+export async function generateMetadata({
+  params,
+}: Pick<OrderDetailPageProps, "params">): Promise<Metadata> {
+  const { locale: localeParam, id } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+
+  return {
+    title: locale === "bg" ? `Поръчка #${id.slice(0, 8)} | Treido` : `Order #${id.slice(0, 8)} | Treido`,
+    description:
+      locale === "bg"
+        ? "Преглед на детайли за поръчката и статуса на доставката."
+        : "View order details and delivery status.",
+  }
 }
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {

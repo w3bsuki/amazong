@@ -13,6 +13,14 @@ import { ChartColumn as IconChartBar, DollarSign as IconCurrencyDollar, Eye as I
 import { BusinessEmptyState } from "../../_components/business-empty-state"
 import { AvgOrderValueCard } from "../../_components/avg-order-value-card"
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "BGN",
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
 export const metadata = {
   title: "Business Analytics | Treido",
   description: "Track your Treido store performance.",
@@ -25,14 +33,6 @@ export default async function BusinessAnalyticsPage() {
 
   if (stats.totals.orders === 0 && stats.totals.views === 0 && stats.totals.revenue === 0) {
     return <BusinessEmptyState type="analytics" />
-  }
-  
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 2,
-    }).format(value)
   }
 
   // Calculate average order value

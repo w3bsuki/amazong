@@ -101,7 +101,9 @@ async function AdminProductsContent() {
                   <TableHead>{t("table.headers.stock")}</TableHead>
                   <TableHead>{t("table.headers.status")}</TableHead>
                   <TableHead className="hidden md:table-cell">{t("table.headers.listed")}</TableHead>
-                  <TableHead className="w-12"></TableHead>
+                  <TableHead className="w-12">
+                    <span className="sr-only">{t("table.headers.product")}</span>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -140,7 +142,7 @@ async function AdminProductsContent() {
                               : "#"
                           }
                           target="_blank"
-                          aria-label={t("table.headers.product")}
+                          aria-label={`${t("table.headers.product")}: ${product.title}`}
                         >
                           <IconExternalLink className="size-4" />
                         </Link>

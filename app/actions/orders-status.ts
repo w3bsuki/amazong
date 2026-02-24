@@ -3,6 +3,7 @@
 import { z } from "zod"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidateTag } from "next/cache"
+import { logger } from "@/lib/logger"
 import { SHIPPING_CARRIER_VALUES } from "@/lib/order-status"
 import type { OrderItemStatus, ShippingCarrier } from "@/lib/order-status"
 
@@ -22,6 +23,35 @@ const UpdateOrderItemStatusInputSchema = z.object({
   shippingCarrier: z.enum(SHIPPING_CARRIER_VALUES).optional(),
 })
 
+type OrderStatusActionErrorCode =
+  | "invalid_input"
+  | "not_authenticated"
+  | "not_found"
+  | "not_authorized"
+  | "invalid_status"
+  | "update_failed"
+  | "unexpected"
+
+type OrderStatusActionFailure = {
+  success: false
+  error: string
+  code: OrderStatusActionErrorCode
+}
+
+type OrderStatusActionSuccess = {
+  success: true
+  sellerId?: string
+}
+
+type OrderStatusActionResult = OrderStatusActionSuccess | OrderStatusActionFailure
+
+function actionFailure(
+  code: OrderStatusActionErrorCode,
+  error: string
+): OrderStatusActionFailure {
+  return { success: false, error, code }
+}
+
 /**
  * Update the status of an order item (seller only)
  */
@@ -30,7 +60,7 @@ export async function updateOrderItemStatus(
   newStatus: OrderItemStatus,
   trackingNumber?: string,
   shippingCarrier?: ShippingCarrier
-): Promise<{ success: boolean; error?: string }> {
+): Promise<OrderStatusActionResult> {
   const parsedInput = UpdateOrderItemStatusInputSchema.safeParse({
     orderItemId,
     newStatus,
@@ -38,7 +68,7 @@ export async function updateOrderItemStatus(
     shippingCarrier,
   })
   if (!parsedInput.success) {
-    return { success: false, error: "Invalid input" }
+    return actionFailure("invalid_input", "Invalid input")
   }
 
   const {
@@ -51,7 +81,7 @@ export async function updateOrderItemStatus(
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return actionFailure("not_authenticated", "Not authenticated")
     }
     const { user, supabase } = auth
 
@@ -63,7 +93,7 @@ export async function updateOrderItemStatus(
       .single()
 
     if (existingError || !existingItem) {
-      return { success: false, error: "Order item not found" }
+      return actionFailure("not_found", "Order item not found")
     }
 
     const updateData: Record<string, unknown> = { status: safeNewStatus }
@@ -97,8 +127,12 @@ export async function updateOrderItemStatus(
       .eq("seller_id", user.id)
 
     if (updateError) {
-      console.error("Error updating order item status:", updateError)
-      return { success: false, error: "Failed to update order status" }
+      logger.error("[orders-status] update_order_item_status_failed", updateError, {
+        orderItemId: safeOrderItemId,
+        sellerId: user.id,
+        newStatus: safeNewStatus,
+      })
+      return actionFailure("update_failed", "Failed to update order status")
     }
 
     revalidateTag("orders", "max")
@@ -107,8 +141,11 @@ export async function updateOrderItemStatus(
 
     return { success: true }
   } catch (error) {
-    console.error("Error in updateOrderItemStatus:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[orders-status] update_order_item_status_unexpected", error, {
+      orderItemId: safeOrderItemId,
+      newStatus: safeNewStatus,
+    })
+    return actionFailure("unexpected", "An unexpected error occurred")
   }
 }
 
@@ -117,16 +154,16 @@ export async function updateOrderItemStatus(
  */
 export async function buyerConfirmDelivery(
   orderItemId: string
-): Promise<{ success: boolean; error?: string; sellerId?: string }> {
+): Promise<OrderStatusActionResult> {
   const parsedOrderItemId = z.string().uuid().safeParse(orderItemId)
   if (!parsedOrderItemId.success) {
-    return { success: false, error: "Invalid orderItemId" }
+    return actionFailure("invalid_input", "Invalid orderItemId")
   }
 
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return actionFailure("not_authenticated", "Not authenticated")
     }
     const { user, supabase } = auth
 
@@ -147,16 +184,17 @@ export async function buyerConfirmDelivery(
       }>()
 
     if (fetchError || !orderItem) {
-      return { success: false, error: "Order item not found" }
+      return actionFailure("not_found", "Order item not found")
     }
 
     if (orderItem.order.user_id !== user.id) {
-      return { success: false, error: "Not authorized to update this order" }
+      return actionFailure("not_authorized", "Not authorized to update this order")
     }
 
     if (orderItem.status !== "shipped") {
       return {
         success: false,
+        code: "invalid_status",
         error:
           orderItem.status === "delivered"
             ? "Order already marked as delivered"
@@ -173,15 +211,20 @@ export async function buyerConfirmDelivery(
       .eq("id", parsedOrderItemId.data)
 
     if (updateError) {
-      console.error("Error confirming delivery:", updateError)
-      return { success: false, error: "Failed to confirm delivery" }
+      logger.error("[orders-status] buyer_confirm_delivery_update_failed", updateError, {
+        orderItemId: parsedOrderItemId.data,
+        buyerId: user.id,
+      })
+      return actionFailure("update_failed", "Failed to confirm delivery")
     }
 
     revalidateTag("orders", "max")
 
     return { success: true, sellerId: orderItem.seller_id }
   } catch (error) {
-    console.error("Error in buyerConfirmDelivery:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[orders-status] buyer_confirm_delivery_unexpected", error, {
+      orderItemId: parsedOrderItemId.data,
+    })
+    return actionFailure("unexpected", "An unexpected error occurred")
   }
 }

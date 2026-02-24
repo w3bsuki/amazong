@@ -1,4 +1,6 @@
 import type { NextRequest } from "next/server"
+import { z } from "zod"
+
 import { createRouteJsonHelpers } from "@/lib/api/route-json"
 
 const BADGE_DEFINITIONS_SELECT =
@@ -38,35 +40,70 @@ const BUYER_BADGE_CATEGORIES = [
   "subscription",
 ] as const satisfies readonly string[]
 
+const EvaluationContextSchema = z.preprocess(
+  (value) => (typeof value === "string" ? value.trim().toLowerCase() : value),
+  z
+    .enum(["sale", "review", "listing", "signup", "subscription", "general"])
+    .catch("general")
+    .default("general")
+)
+
+const EvaluationRequestSchema = z
+  .object({
+    user_id: z.string().trim().uuid().optional(),
+    context: EvaluationContextSchema,
+  })
+  .passthrough()
+
+const BadgeCriteriaSchema = z
+  .object({
+    account_type: z.string().trim().min(1).optional(),
+    min_sales: z.coerce.number().optional(),
+    min_listings: z.coerce.number().optional(),
+    min_rating: z.coerce.number().optional(),
+    min_reviews: z.coerce.number().optional(),
+    min_positive_feedback_pct: z.coerce.number().optional(),
+    email_verified: z.boolean().optional(),
+    phone_verified: z.boolean().optional(),
+    id_verified: z.boolean().optional(),
+    min_months: z.coerce.number().optional(),
+    min_followers: z.coerce.number().optional(),
+    min_response_rate: z.coerce.number().optional(),
+    min_repeat_customers_pct: z.coerce.number().optional(),
+  })
+  .passthrough()
+
+const NO_ROWS_ERROR_CODE = "PGRST116"
+
 // Types for badge evaluation
 interface BadgeCriteria {
-  account_type?: string
-  min_sales?: number
-  min_listings?: number
-  min_rating?: number
-  min_reviews?: number
-  min_positive_feedback_pct?: number
-  email_verified?: boolean
-  phone_verified?: boolean
-  id_verified?: boolean
-  min_months?: number
-  min_followers?: number
-  min_response_rate?: number
-  min_repeat_customers_pct?: number
+  account_type?: string | undefined
+  min_sales?: number | undefined
+  min_listings?: number | undefined
+  min_rating?: number | undefined
+  min_reviews?: number | undefined
+  min_positive_feedback_pct?: number | undefined
+  email_verified?: boolean | undefined
+  phone_verified?: boolean | undefined
+  id_verified?: boolean | undefined
+  min_months?: number | undefined
+  min_followers?: number | undefined
+  min_response_rate?: number | undefined
+  min_repeat_customers_pct?: number | undefined
 }
 
 interface UserStats {
-  total_sales?: number
-  total_purchases?: number
-  total_listings?: number
-  average_rating?: number
-  total_reviews?: number
-  reviews_given?: number
-  positive_feedback_pct?: number
-  follower_count?: number
-  response_rate_pct?: number
-  repeat_customer_pct?: number
-  created_at?: string
+  total_sales?: number | undefined
+  total_purchases?: number | undefined
+  total_listings?: number | undefined
+  average_rating?: number | undefined
+  total_reviews?: number | undefined
+  reviews_given?: number | undefined
+  positive_feedback_pct?: number | undefined
+  follower_count?: number | undefined
+  response_rate_pct?: number | undefined
+  repeat_customer_pct?: number | undefined
+  created_at?: string | undefined
 }
 
 interface UserVerification {
@@ -77,22 +114,200 @@ interface UserVerification {
   created_at?: string | null
 }
 
+interface BadgeDefinitionRow {
+  id: string
+  code: string
+  criteria: unknown
+}
+
+interface EvaluationProfileRow {
+  id: string
+  account_type: string | null
+  is_seller: boolean | null
+}
+
+interface SellerStatsRow {
+  total_sales: number | null
+  total_listings: number | null
+  average_rating: number | null
+  total_reviews: number | null
+  positive_feedback_pct: number | null
+  follower_count: number | null
+  response_rate_pct: number | null
+  repeat_customer_pct: number | null
+  first_sale_at: string | null
+}
+
+interface BuyerStatsRow {
+  total_orders: number | null
+  average_rating: number | null
+  reviews_written: number | null
+  first_purchase_at: string | null
+}
+
+interface UserVerificationRow {
+  email_verified: boolean | null
+  phone_verified: boolean | null
+  id_verified: boolean | null
+  address_verified: boolean | null
+  created_at: string | null
+}
+
+interface ParsedEvaluationRequest {
+  userId: string
+  context: string
+}
+
+interface EvaluationRequestError {
+  error: string
+  status: number
+}
+
+function parseEvaluationRequestBody(
+  body: unknown,
+  fallbackUserId: string
+): ParsedEvaluationRequest | EvaluationRequestError {
+  const parsed = EvaluationRequestSchema.safeParse(body)
+
+  if (!parsed.success) {
+    return { error: "Invalid request", status: 400 }
+  }
+
+  return {
+    userId: parsed.data.user_id ?? fallbackUserId,
+    context: parsed.data.context,
+  }
+}
+
+function isNoRowsError(error: { code?: string } | null): boolean {
+  return Boolean(error?.code === NO_ROWS_ERROR_CODE)
+}
+
+function parseBadgeCriteria(criteria: unknown): BadgeCriteria | null {
+  const parsed = BadgeCriteriaSchema.safeParse(criteria)
+  return parsed.success ? parsed.data : null
+}
+
+function toSellerUserStats(stats: SellerStatsRow | null): UserStats | null {
+  if (!stats) return null
+
+  return {
+    total_sales: stats.total_sales ?? undefined,
+    total_listings: stats.total_listings ?? undefined,
+    average_rating: stats.average_rating ?? undefined,
+    total_reviews: stats.total_reviews ?? undefined,
+    positive_feedback_pct: stats.positive_feedback_pct ?? undefined,
+    follower_count: stats.follower_count ?? undefined,
+    response_rate_pct: stats.response_rate_pct ?? undefined,
+    repeat_customer_pct: stats.repeat_customer_pct ?? undefined,
+    created_at: stats.first_sale_at ?? undefined,
+  }
+}
+
+function toBuyerUserStats(stats: BuyerStatsRow | null): UserStats | null {
+  if (!stats) return null
+
+  return {
+    total_purchases: stats.total_orders ?? undefined,
+    average_rating: stats.average_rating ?? undefined,
+    reviews_given: stats.reviews_written ?? undefined,
+    created_at: stats.first_purchase_at ?? undefined,
+  }
+}
+
+function toUserVerification(verification: UserVerificationRow | null): UserVerification | null {
+  if (!verification) return null
+
+  return {
+    email_verified: verification.email_verified,
+    phone_verified: verification.phone_verified,
+    id_verified: verification.id_verified,
+    address_verified: verification.address_verified,
+    created_at: verification.created_at,
+  }
+}
+
+function resolveBadgeCategories(params: {
+  isSeller: boolean
+  accountType: string | null | undefined
+}): readonly string[] {
+  const { isSeller, accountType } = params
+
+  if (!isSeller) return BUYER_BADGE_CATEGORIES
+  if (accountType === "business") return SELLER_BADGE_CATEGORIES_BUSINESS
+  return SELLER_BADGE_CATEGORIES_PERSONAL
+}
+
+function collectEarnedBadges(params: {
+  badges: BadgeDefinitionRow[] | null
+  existingBadgeIds: Set<string>
+  stats: UserStats | null
+  verification: UserVerification | null
+  accountType: string | null | undefined
+}): Array<{ badge_id: string; badge_code: string }> {
+  const { badges, existingBadgeIds, stats, verification, accountType } = params
+  const newBadges: Array<{ badge_id: string; badge_code: string }> = []
+
+  for (const badge of badges || []) {
+    if (existingBadgeIds.has(badge.id)) continue
+
+    const criteria = parseBadgeCriteria(badge.criteria)
+    if (!criteria) continue
+
+    const earned = stats
+      ? evaluateCriteria(criteria, stats, verification, accountType ?? undefined)
+      : verification
+        ? evaluateCriteria(criteria, {}, verification, "personal")
+        : false
+
+    if (earned) {
+      newBadges.push({ badge_id: badge.id, badge_code: badge.code })
+    }
+  }
+
+  return newBadges
+}
+
+function meetsMinimum(value: number, minimum: number | undefined): boolean {
+  return minimum === undefined || value >= minimum
+}
+
+function meetsVerificationRequirement(
+  required: boolean | undefined,
+  actual: boolean | null | undefined
+): boolean {
+  return !required || Boolean(actual)
+}
+
+function meetsMinMonths(minMonths: number | undefined, createdAt: string | null | undefined): boolean {
+  if (minMonths === undefined) return true
+  if (!createdAt) return false
+
+  const monthsSince = Math.floor(
+    (Date.now() - new Date(createdAt).getTime()) / (30 * 24 * 60 * 60 * 1000)
+  )
+  return monthsSince >= minMonths
+}
+
 /**
  * POST /api/badges/evaluate
  * Evaluates and awards badges to a user based on their current stats
- * 
+ *
  * Body: { user_id: string, context?: "sale" | "review" | "listing" | "signup" | "subscription" }
  */
 export async function POST(request: NextRequest) {
-  const { supabase, json } = createRouteJsonHelpers(request)
+  const { supabase, noStore: json } = createRouteJsonHelpers(request)
 
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
       return json({ error: "Unauthorized" }, { status: 401 })
     }
-    
+
     let body: unknown = {}
     try {
       body = await request.json()
@@ -100,140 +315,149 @@ export async function POST(request: NextRequest) {
       return json({ error: "Invalid JSON" }, { status: 400 })
     }
 
-    if (typeof body !== "object" || body === null || Array.isArray(body)) {
-      return json({ error: "Invalid request" }, { status: 400 })
+    const parsedRequest = parseEvaluationRequestBody(body, user.id)
+    if ("error" in parsedRequest) {
+      return json({ error: parsedRequest.error }, { status: parsedRequest.status })
     }
+    const { userId, context } = parsedRequest
 
-    const rawUserId = (body as Record<string, unknown>).user_id
-    const rawContext = (body as Record<string, unknown>).context
-
-    const userId = typeof rawUserId === "string" && rawUserId ? rawUserId : user.id
-    const context = typeof rawContext === "string" && rawContext ? rawContext : "general"
-    
     // Security: Only allow users to evaluate their own badges unless admin
     // For now, only self-evaluation is allowed
     if (userId !== user.id) {
       return json({ error: "Forbidden" }, { status: 403 })
     }
-    
+
     // Get the user's profile (seller fields are now on profiles)
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("id, account_type")
+      .select("id, account_type, is_seller")
       .eq("id", userId)
-      .single()
-    
+      .single<EvaluationProfileRow>()
+
+    if (profileError && !isNoRowsError(profileError)) {
+      console.error("Failed to fetch profile:", profileError)
+      return json({ error: "Failed to fetch profile" }, { status: 500 })
+    }
+
     // Get applicable badge definitions based on context
     let badgeQuery = supabase
       .from("badge_definitions")
       .select(BADGE_DEFINITIONS_SELECT)
       .eq("is_active", true)
-    
-    const badgeCategories = profile
-      ? profile.account_type === "business"
-        ? SELLER_BADGE_CATEGORIES_BUSINESS
-        : SELLER_BADGE_CATEGORIES_PERSONAL
-      : BUYER_BADGE_CATEGORIES
 
+    const accountType = profile?.account_type ?? null
+    const isSeller = profile?.is_seller === true
+
+    const badgeCategories = resolveBadgeCategories({ isSeller, accountType })
     badgeQuery = badgeQuery.in("category", badgeCategories)
-    
+
     const { data: badges, error: badgesError } = await badgeQuery
-    
+
     if (badgesError) {
       console.error("Failed to fetch badge definitions:", badgesError)
       return json({ error: "Failed to fetch badges" }, { status: 500 })
     }
-    
+
     // Get user's current badges
-    const { data: existingBadges } = await supabase
+    const { data: existingBadges, error: existingBadgesError } = await supabase
       .from("user_badges")
       .select("badge_id")
       .eq("user_id", userId)
-    
-    const existingBadgeIds = new Set((existingBadges || []).map(b => b.badge_id))
-    
+
+    if (existingBadgesError) {
+      console.error("Failed to fetch existing user badges:", existingBadgesError)
+      return json({ error: "Failed to fetch existing badges" }, { status: 500 })
+    }
+
+    const existingBadgeIds = new Set((existingBadges ?? []).map((badge) => badge.badge_id))
+
     // Get stats based on user type
     let stats: UserStats | null = null
-    
-    if (profile) {
+
+    if (isSeller) {
       // Get seller stats
-      const { data: sellerStats } = await supabase
+      const { data: sellerStats, error: sellerStatsError } = await supabase
         .from("seller_stats")
         .select(SELLER_STATS_SELECT)
-        .eq("seller_id", profile.id)
-        .single()
-      
-      stats = sellerStats as UserStats | null
+        .eq("seller_id", userId)
+        .single<SellerStatsRow>()
+
+      if (sellerStatsError && !isNoRowsError(sellerStatsError)) {
+        console.error("Failed to fetch seller stats:", sellerStatsError)
+        return json({ error: "Failed to fetch seller stats" }, { status: 500 })
+      }
+
+      stats = toSellerUserStats(sellerStats)
     } else {
       // Get buyer stats
-      const { data: buyerStats } = await supabase
+      const { data: buyerStats, error: buyerStatsError } = await supabase
         .from("buyer_stats")
         .select(BUYER_STATS_SELECT)
         .eq("user_id", userId)
-        .single()
-      
-      stats = buyerStats as UserStats | null
+        .single<BuyerStatsRow>()
+
+      if (buyerStatsError && !isNoRowsError(buyerStatsError)) {
+        console.error("Failed to fetch buyer stats:", buyerStatsError)
+        return json({ error: "Failed to fetch buyer stats" }, { status: 500 })
+      }
+
+      stats = toBuyerUserStats(buyerStats)
     }
-    
+
     // Get verification status
-    const { data: verification } = await supabase
+    const { data: verificationRow, error: verificationError } = await supabase
       .from("user_verification")
       .select(USER_VERIFICATION_SELECT)
       .eq("user_id", userId)
-      .single()
-    
-    // Evaluate each badge
-    const awardedBadges: string[] = []
-    const newBadges: { badge_id: string; badge_code: string }[] = []
-    
-    for (const badge of badges || []) {
-      // Skip if already has this badge
-      if (existingBadgeIds.has(badge.id)) continue
-      
-      // Evaluate criteria
-      const criteria = badge.criteria as BadgeCriteria
-      let earned = false
-      
-      if (stats) {
-        earned = evaluateCriteria(criteria, stats, verification, profile?.account_type ?? undefined)
-      } else if (verification) {
-        // Verification-only badges for new users
-        earned = evaluateCriteria(criteria, {}, verification, "personal")
-      }
-      
-      if (earned) {
-        newBadges.push({ badge_id: badge.id, badge_code: badge.code })
-      }
+      .single<UserVerificationRow>()
+
+    if (verificationError && !isNoRowsError(verificationError)) {
+      console.error("Failed to fetch user verification:", verificationError)
+      return json({ error: "Failed to fetch verification" }, { status: 500 })
     }
-    
+
+    const badgeRows: BadgeDefinitionRow[] = (badges ?? [])
+      .filter((badge) => typeof badge.id === "string" && typeof badge.code === "string")
+      .map((badge) => ({
+        id: badge.id,
+        code: badge.code,
+        criteria: badge.criteria,
+      }))
+
+    const newBadges = collectEarnedBadges({
+      badges: badgeRows,
+      existingBadgeIds,
+      stats,
+      verification: toUserVerification(verificationRow),
+      accountType: isSeller ? accountType : null,
+    })
+    const awardedBadges: string[] = []
+
     // Award new badges
     if (newBadges.length > 0) {
-      const badgesToInsert = newBadges.map(b => ({
+      const badgesToInsert = newBadges.map((badge) => ({
         user_id: userId,
-        badge_id: b.badge_id,
+        badge_id: badge.badge_id,
         earned_at: new Date().toISOString(),
         awarded_by: "system",
         reason: `Auto-awarded from ${context} event`,
       }))
-      
-      const { error: insertError } = await supabase
-        .from("user_badges")
-        .insert(badgesToInsert)
-      
+
+      const { error: insertError } = await supabase.from("user_badges").insert(badgesToInsert)
+
       if (insertError) {
         console.error("Failed to insert badges:", insertError)
         return json({ error: "Failed to award badges" }, { status: 500 })
       }
-      
-      awardedBadges.push(...newBadges.map(b => b.badge_code))
+
+      awardedBadges.push(...newBadges.map((badge) => badge.badge_code))
     }
-    
+
     return json({
       success: true,
       awarded: awardedBadges,
       total_awarded: awardedBadges.length,
     })
-    
   } catch (error) {
     console.error("Badge evaluation error:", error)
     return json({ error: "Internal server error" }, { status: 500 })
@@ -250,64 +474,26 @@ function evaluateCriteria(
   accountType?: string
 ): boolean {
   if (!criteria) return false
-  
+
   // Account type check
   if (criteria.account_type && criteria.account_type !== accountType) {
     return false
   }
-  
-  // Minimum sales
-  if (criteria.min_sales !== undefined) {
-    const totalSales = stats?.total_sales || stats?.total_purchases || 0
-    if (totalSales < criteria.min_sales) return false
-  }
-  
-  // Minimum listings
-  if (criteria.min_listings !== undefined && (stats?.total_listings || 0) < criteria.min_listings) return false
-  
-  // Minimum rating
-  if (criteria.min_rating !== undefined && (stats?.average_rating || 0) < criteria.min_rating) return false
-  
-  // Minimum reviews
-  if (criteria.min_reviews !== undefined) {
-    const reviews = stats?.total_reviews || stats?.reviews_given || 0
-    if (reviews < criteria.min_reviews) return false
-  }
-  
-  // Minimum positive feedback percentage
-  if (criteria.min_positive_feedback_pct !== undefined && (stats?.positive_feedback_pct || 0) < criteria.min_positive_feedback_pct) return false
-  
-  // Email verification
-  if (criteria.email_verified && !verification?.email_verified) return false
-  
-  // Phone verification
-  if (criteria.phone_verified && !verification?.phone_verified) return false
-  
-  // ID verification
-  if (criteria.id_verified && !verification?.id_verified) return false
-  
-  // Minimum months as member
-  if (criteria.min_months !== undefined) {
-    const createdAt = stats?.created_at || verification?.created_at
-    if (createdAt) {
-      const monthsSince = Math.floor(
-        (Date.now() - new Date(createdAt).getTime()) / (30 * 24 * 60 * 60 * 1000)
-      )
-      if (monthsSince < criteria.min_months) return false
-    } else {
-      return false
-    }
-  }
-  
-  // Minimum follower count
-  if (criteria.min_followers !== undefined && (stats?.follower_count || 0) < criteria.min_followers) return false
-  
-  // Minimum response rate
-  if (criteria.min_response_rate !== undefined && (stats?.response_rate_pct || 0) < criteria.min_response_rate) return false
-  
-  // Minimum repeat customers percentage
-  if (criteria.min_repeat_customers_pct !== undefined && (stats?.repeat_customer_pct || 0) < criteria.min_repeat_customers_pct) return false
-  
-  // All criteria passed
-  return true
+
+  const checks = [
+    meetsMinimum(stats?.total_sales || stats?.total_purchases || 0, criteria.min_sales),
+    meetsMinimum(stats?.total_listings || 0, criteria.min_listings),
+    meetsMinimum(stats?.average_rating || 0, criteria.min_rating),
+    meetsMinimum(stats?.total_reviews || stats?.reviews_given || 0, criteria.min_reviews),
+    meetsMinimum(stats?.positive_feedback_pct || 0, criteria.min_positive_feedback_pct),
+    meetsMinimum(stats?.follower_count || 0, criteria.min_followers),
+    meetsMinimum(stats?.response_rate_pct || 0, criteria.min_response_rate),
+    meetsMinimum(stats?.repeat_customer_pct || 0, criteria.min_repeat_customers_pct),
+    meetsVerificationRequirement(criteria.email_verified, verification?.email_verified),
+    meetsVerificationRequirement(criteria.phone_verified, verification?.phone_verified),
+    meetsVerificationRequirement(criteria.id_verified, verification?.id_verified),
+    meetsMinMonths(criteria.min_months, stats?.created_at || verification?.created_at),
+  ]
+
+  return checks.every(Boolean)
 }

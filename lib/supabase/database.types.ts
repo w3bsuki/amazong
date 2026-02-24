@@ -572,6 +572,7 @@ export type Database = {
           icon: string | null
           id: string
           image_url: string | null
+          is_browseable: boolean
           name: string
           name_bg: string | null
           parent_id: string | null
@@ -585,6 +586,7 @@ export type Database = {
           icon?: string | null
           id?: string
           image_url?: string | null
+          is_browseable?: boolean
           name: string
           name_bg?: string | null
           parent_id?: string | null
@@ -598,6 +600,7 @@ export type Database = {
           icon?: string | null
           id?: string
           image_url?: string | null
+          is_browseable?: boolean
           name?: string
           name_bg?: string | null
           parent_id?: string | null
@@ -625,6 +628,7 @@ export type Database = {
           inherit_scope:
             | Database["public"]["Enums"]["category_attribute_inherit_scope"]
             | null
+          is_active: boolean
           is_badge_spec: boolean | null
           is_filterable: boolean | null
           is_hero_spec: boolean | null
@@ -650,6 +654,7 @@ export type Database = {
           inherit_scope?:
             | Database["public"]["Enums"]["category_attribute_inherit_scope"]
             | null
+          is_active?: boolean
           is_badge_spec?: boolean | null
           is_filterable?: boolean | null
           is_hero_spec?: boolean | null
@@ -675,6 +680,7 @@ export type Database = {
           inherit_scope?:
             | Database["public"]["Enums"]["category_attribute_inherit_scope"]
             | null
+          is_active?: boolean
           is_badge_spec?: boolean | null
           is_filterable?: boolean | null
           is_hero_spec?: boolean | null
@@ -2799,7 +2805,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      check_subscription_expiry: { Args: never; Returns: undefined }
       cleanup_expired_boosts: { Args: never; Returns: undefined }
       cleanup_sold_wishlist_items: { Args: never; Returns: undefined }
       create_subscription_expiry_notifications: {
@@ -2817,14 +2822,12 @@ export type Database = {
           share_url: string
         }[]
       }
-      expire_listing_boosts: { Args: never; Returns: undefined }
       expire_subscriptions: { Args: never; Returns: undefined }
       generate_product_slug: {
         Args: { product_id: string; title: string }
         Returns: string
       }
       generate_share_token: { Args: never; Returns: string }
-      generate_store_slug: { Args: { store_name: string }; Returns: string }
       get_badge_specs: {
         Args: { p_locale?: string; p_product_id: string }
         Returns: {
@@ -2977,7 +2980,7 @@ export type Database = {
         Args: { p_order_id: string }
         Returns: undefined
       }
-      refresh_category_stats: { Args: never; Returns: undefined }
+      refresh_browseable_categories: { Args: never; Returns: undefined }
       reset_monthly_boosts: { Args: never; Returns: undefined }
       sync_product_attributes_jsonb: {
         Args: { p_product_id: string }

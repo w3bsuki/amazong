@@ -2,8 +2,11 @@
 
 import { z } from "zod"
 import { sellFormSchemaV4 } from "@/lib/sell/schema"
-import { createAdminClient, createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
+import { resolveLeafCategoryForListing } from "@/lib/sell/resolve-leaf-category"
+import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
+import { logger } from "@/lib/logger"
 
 export type CreateListingResult =
   | {
@@ -23,25 +26,57 @@ export type CreateListingResult =
       upgradeRequired?: boolean
     }
 
-export async function createListing(args: { sellerId: string; data: unknown }): Promise<CreateListingResult> {
-  const schema = z.object({ sellerId: z.string().min(1), data: z.unknown() })
-  const parsedArgs = schema.safeParse(args)
-  if (!parsedArgs.success) {
-    return { success: false, error: "Invalid input" }
+type CreateListingFailure = Extract<CreateListingResult, { success: false }>
+type SellFormData = z.infer<typeof sellFormSchemaV4>
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>
+type SellerAccess = { userId: string; username: string }
+type PricingResult = {
+  price: number
+  listPrice: number | null
+  hasDiscount: boolean
+  salePercent: number
+}
+
+const createListingArgsSchema = z.object({
+  sellerId: z.string().min(1),
+  data: z.unknown(),
+})
+type CreateListingArgs = z.infer<typeof createListingArgsSchema>
+
+function mapValidationFailure(error: z.ZodError): CreateListingFailure {
+  return {
+    success: false,
+    error: "Validation failed",
+    issues: error.issues.map((issue) => ({ path: issue.path.map(String), message: issue.message })),
   }
+}
 
-  const { sellerId, data } = parsedArgs.data
+function isCreateListingFailure(value: unknown): value is CreateListingFailure {
+  if (!value || typeof value !== "object") return false
+  if (!("success" in value)) return false
+  return value.success === false
+}
 
+function parseArgs(args: { sellerId: string; data: unknown }): CreateListingArgs | CreateListingFailure {
+  const parsedArgs = createListingArgsSchema.safeParse(args)
+  if (!parsedArgs.success) {
+    return { success: false, error: "Invalid input" } satisfies CreateListingFailure
+  }
+  return parsedArgs.data
+}
+
+function parseForm(data: unknown): SellFormData | CreateListingFailure {
   const parsed = sellFormSchemaV4.safeParse(data)
   if (!parsed.success) {
-    return {
-      success: false,
-      error: "Validation failed",
-      issues: parsed.error.issues.map((i) => ({ path: i.path.map(String), message: i.message })),
-    }
+    return mapValidationFailure(parsed.error)
   }
+  return parsed.data
+}
 
-  const supabase = await createClient()
+async function verifySellerAccess(
+  supabase: SupabaseClient,
+  sellerId: string
+): Promise<SellerAccess | CreateListingFailure> {
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -54,7 +89,6 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     return { success: false, error: "Forbidden" }
   }
 
-  // Ensure user has username
   const { data: profile } = await supabase
     .from("profiles")
     .select("id, username")
@@ -65,48 +99,44 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     return { success: false, error: "You must set up a username to sell items" }
   }
 
-  // Enforce listing limit using direct queries (no RPC needed)
-  const [{ count: currentListings }, { data: subscription }] = await Promise.all([
-    supabase
-      .from("products")
-      .select("id", { count: "exact", head: true })
-      .eq("seller_id", user.id)
-      .eq("status", "active"),
-    supabase
-      .from("subscriptions")
-      .select("plan_type, subscription_plans!inner(max_listings)")
-      .eq("seller_id", user.id)
-      .eq("status", "active")
-      .single(),
-  ])
+  return { userId: user.id, username: profile.username }
+}
 
-  const subPlan = subscription?.subscription_plans as unknown as { max_listings: number } | null
-  const maxListings = subPlan?.max_listings ?? 10
-  const isUnlimited = maxListings === -1
-  const remaining = isUnlimited ? Number.POSITIVE_INFINITY : Math.max(maxListings - (currentListings ?? 0), 0)
+async function verifyListingLimits(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<CreateListingFailure | null> {
+  const listingLimits = await getSellerListingLimitSnapshot(supabase, userId)
+  if (!listingLimits) {
+    return { success: false, error: "Failed to verify listing limits" }
+  }
 
-  if (!isUnlimited && remaining <= 0) {
+  if (listingLimits.needsUpgrade) {
     return {
       success: false,
       error: "LISTING_LIMIT_REACHED",
-      message: `You have reached your listing limit (${currentListings} of ${maxListings}). Please upgrade your plan to add more listings.`,
+      message: `You have reached your listing limit (${listingLimits.currentListings} of ${listingLimits.maxListings}). Please upgrade your plan to add more listings.`,
       upgradeRequired: true,
     }
   }
 
-  const form = parsed.data
+  return null
+}
 
-  const imageUrls = (form.images || []).map((img) => img.url)
-
-  // Build attributes JSONB (canonical keys).
-  // Keep `condition` in JSONB too, so filters/hero specs can rely on a single key.
+async function buildAttributesPayload(
+  supabase: SupabaseClient,
+  form: SellFormData
+): Promise<{ attributesJson: Record<string, string>; condition: string }> {
   const attributesJson: Record<string, string> = {}
+  const formAttributes = form.attributes || []
 
-  const attributeIds = [...new Set(
-      (form.attributes || [])
-        .map((attr) => attr.attributeId)
-        .filter((id): id is string => typeof id === "string" && id.length > 0),
-    )]
+  const attributeIds = [
+    ...new Set(
+      formAttributes
+        .map((attribute) => attribute.attributeId)
+        .filter((id): id is string => typeof id === "string" && id.length > 0)
+    ),
+  ]
 
   const attributeKeyById = new Map<string, string>()
   if (attributeIds.length > 0) {
@@ -116,41 +146,42 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
       .in("id", attributeIds)
 
     if (defsError) {
-      console.error("[sell:createListing] Failed to resolve attribute_key:", defsError)
+      logger.error("[sell:createListing] Failed to resolve attribute_key", defsError)
     } else {
       for (const def of defs || []) {
         const key = (def.attribute_key ?? normalizeAttributeKey(def.name ?? "")).trim()
-        if (def.id && key) attributeKeyById.set(def.id, key)
+        if (def.id && key) {
+          attributeKeyById.set(def.id, key)
+        }
       }
     }
   }
 
-  for (const attr of form.attributes || []) {
-    const keyFromId = attr.attributeId ? attributeKeyById.get(attr.attributeId) : null
-    const key = (keyFromId ?? normalizeAttributeKey(attr.name)).trim()
+  for (const attribute of formAttributes) {
+    const keyFromId = attribute.attributeId ? attributeKeyById.get(attribute.attributeId) : null
+    const key = (keyFromId ?? normalizeAttributeKey(attribute.name)).trim()
     if (!key) continue
-    attributesJson[key] = attr.value
+    attributesJson[key] = attribute.value
   }
 
   const conditionRaw = typeof form.condition === "string" ? form.condition.trim() : ""
   const condition = conditionRaw || attributesJson.condition || "new"
   attributesJson.condition = condition
 
+  return { attributesJson, condition }
+}
+
+function validatePricing(form: SellFormData): PricingResult | CreateListingFailure {
   const price = Number.parseFloat(form.price)
   if (!Number.isFinite(price) || price <= 0) {
     return {
       success: false,
       error: "Validation failed",
-      issues: [
-        {
-          path: ["price"],
-          message: "Enter a valid price greater than 0",
-        },
-      ],
-    }
+      issues: [{ path: ["price"], message: "validation.priceInvalid" }],
+    } satisfies CreateListingFailure
   }
-  const listPrice = form.compareAtPrice ? Number.parseFloat(form.compareAtPrice) : null
 
+  const listPrice = form.compareAtPrice ? Number.parseFloat(form.compareAtPrice) : null
   const hasDiscount =
     Number.isFinite(price) &&
     typeof listPrice === "number" &&
@@ -161,34 +192,165 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     return {
       success: false,
       error: "Validation failed",
-      issues: [
-        {
-          path: ["compareAtPrice"],
-          message: "Compare at price must be higher than your price",
-        },
-      ],
+      issues: [{ path: ["compareAtPrice"], message: "validation.compareAtMustBeHigher" }],
+    } satisfies CreateListingFailure
+  }
+
+  const salePercent =
+    hasDiscount && listPrice > 0
+      ? Math.round(((listPrice - price) / listPrice) * 100)
+      : 0
+
+  return {
+    price,
+    listPrice,
+    hasDiscount,
+    salePercent,
+  }
+}
+
+function mapInsertError(error: { message?: string; code?: string }): CreateListingFailure {
+  if (error.message?.includes("LISTING_LIMIT_REACHED") || error.code === "P0001") {
+    return {
+      success: false,
+      error: "LISTING_LIMIT_REACHED",
+      message: "You have reached your listing limit. Please upgrade your plan to add more listings.",
+      upgradeRequired: true,
     }
   }
 
-  const salePercent = hasDiscount && listPrice > 0
-    ? Math.round(((listPrice - price) / listPrice) * 100)
-    : 0
+  if (error.code === "23514" && error.message?.includes("Category must be a leaf category")) {
+    return {
+      success: false,
+      error: "LEAF_CATEGORY_REQUIRED",
+      message: "Please select a more specific category (leaf category)",
+    }
+  }
+
+  return { success: false, error: error.message || "Failed to create product" }
+}
+
+async function insertOptionalProductImages(
+  supabase: SupabaseClient,
+  productId: string,
+  form: SellFormData
+) {
+  const imageRecords = (form.images || []).map((image, index) => ({
+    product_id: productId,
+    image_url: image.url,
+    thumbnail_url: image.thumbnailUrl || image.url,
+    display_order: index,
+    is_primary: index === 0,
+  }))
+
+  if (imageRecords.length > 0) {
+    const { error: imagesError } = await supabase.from("product_images").insert(imageRecords)
+    if (imagesError) {
+      // Non-critical: product created but images failed
+    }
+  }
+}
+
+async function insertOptionalProductAttributes(
+  supabase: SupabaseClient,
+  productId: string,
+  form: SellFormData
+) {
+  if (!form.attributes || form.attributes.length === 0) return
+
+  const attributeRecords = form.attributes.map((attribute) => ({
+    product_id: productId,
+    attribute_id: attribute.attributeId || null,
+    name: attribute.name,
+    value: attribute.value,
+    is_custom: attribute.isCustom ?? false,
+  }))
+
+  const { error: attrError } = await supabase.from("product_attributes").insert(attributeRecords)
+  if (attrError) {
+    // Non-critical: product created but attributes failed
+  }
+}
+
+async function updateDefaultSellerCity(
+  supabase: SupabaseClient,
+  userId: string,
+  city: string | undefined
+) {
+  if (!city) return
+
+  try {
+    await supabase
+      .from("profiles")
+      .update({ default_city: city })
+      .eq("id", userId)
+      .is("default_city", null)
+  } catch {
+    // ignore
+  }
+}
+
+export async function createListing(args: { sellerId: string; data: unknown }): Promise<CreateListingResult> {
+  const parsedArgs = parseArgs(args)
+  if (isCreateListingFailure(parsedArgs)) return parsedArgs
+
+  const { sellerId, data } = parsedArgs
+  const parsedForm = parseForm(data)
+  if (isCreateListingFailure(parsedForm)) return parsedForm
+  const form = parsedForm
+
+  const supabase = await createClient()
+  const sellerAccessResult = await verifySellerAccess(supabase, sellerId)
+  if (isCreateListingFailure(sellerAccessResult)) return sellerAccessResult
+  const sellerAccess = sellerAccessResult
+
+  const listingLimitsFailure = await verifyListingLimits(supabase, sellerAccess.userId)
+  if (listingLimitsFailure) return listingLimitsFailure
+
+  const pricingResult = validatePricing(form)
+  if (isCreateListingFailure(pricingResult)) return pricingResult
+  const pricing = pricingResult
+
+  const categoryResolution = await resolveLeafCategoryForListing({
+    supabase,
+    selectedCategoryId: form.categoryId || null,
+    context: {
+      title: form.title,
+      description: form.description,
+      tags: form.tags,
+      attributes: (form.attributes || []).map((attribute) => ({
+        name: attribute.name,
+        value: attribute.value,
+      })),
+    },
+  })
+  if (!categoryResolution.ok) {
+    return {
+      success: false,
+      error: categoryResolution.error,
+      message: categoryResolution.message,
+    }
+  }
+
+  const { attributesJson, condition } = await buildAttributesPayload(supabase, form)
+  const imageUrls = (form.images || []).map((img) => img.url)
 
   const productData = {
-    seller_id: user.id,
+    seller_id: sellerAccess.userId,
     title: form.title,
     description: form.description || "",
-    price,
-    list_price: hasDiscount ? listPrice : null,
-    is_on_sale: hasDiscount,
-    sale_percent: salePercent,
+    price: pricing.price,
+    list_price: pricing.hasDiscount ? pricing.listPrice : null,
+    is_on_sale: pricing.hasDiscount,
+    sale_percent: pricing.salePercent,
     sale_end_date: null,
-    category_id: form.categoryId || null,
+    category_id: categoryResolution.categoryId,
     brand_id: form.brandId || null,
     tags: form.tags || [],
     images: imageUrls,
     stock: form.quantity ?? 1,
     listing_type: "normal",
+    status: "active",
     is_boosted: false,
     boost_expires_at: null,
     seller_city: form.sellerCity || null,
@@ -211,72 +373,17 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     .single()
 
   if (error) {
-    if (error.message?.includes("LISTING_LIMIT_REACHED") || error.code === "P0001") {
-      return {
-        success: false,
-        error: "LISTING_LIMIT_REACHED",
-        message: "You have reached your listing limit. Please upgrade your plan to add more listings.",
-        upgradeRequired: true,
-      }
-    }
-
-    if (error.code === "23514" && error.message?.includes("Category must be a leaf category")) {
-      return {
-        success: false,
-        error: "LEAF_CATEGORY_REQUIRED",
-        message: "Please select a more specific category (leaf category)",
-      }
-    }
-    return { success: false, error: error.message || "Failed to create product" }
+    return mapInsertError(error)
   }
 
-  const imageRecords = (form.images || []).map((img, index) => ({
-    product_id: product.id,
-    image_url: img.url,
-    thumbnail_url: img.thumbnailUrl || img.url,
-    display_order: index,
-    is_primary: index === 0,
-  }))
-
-  if (imageRecords.length > 0) {
-    const { error: imagesError } = await supabase.from("product_images").insert(imageRecords)
-    if (imagesError) {
-      // Non-critical: product created but images failed
-    }
-  }
-
-  if (form.attributes && form.attributes.length > 0) {
-    const attributeRecords = form.attributes.map((attr) => ({
-      product_id: product.id,
-      attribute_id: attr.attributeId || null,
-      name: attr.name,
-      value: attr.value,
-      is_custom: attr.isCustom ?? false,
-    }))
-
-    const { error: attrError } = await supabase.from("product_attributes").insert(attributeRecords)
-    if (attrError) {
-      // Non-critical: product created but attributes failed
-    }
-  }
-
-  // Default city hint
-  if (form.sellerCity) {
-    try {
-      await supabase
-        .from("profiles")
-        .update({ default_city: form.sellerCity })
-        .eq("id", user.id)
-        .is("default_city", null)
-    } catch {
-      // ignore
-    }
-  }
+  await insertOptionalProductImages(supabase, product.id, form)
+  await insertOptionalProductAttributes(supabase, product.id, form)
+  await updateDefaultSellerCity(supabase, sellerAccess.userId, form.sellerCity || undefined)
 
   return {
     success: true,
     id: product.id,
-    sellerUsername: profile.username,
+    sellerUsername: sellerAccess.username,
     product: {
       id: product.id,
       slug: product.slug ?? null,

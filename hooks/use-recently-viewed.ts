@@ -18,6 +18,29 @@ export interface RecentlyViewedProduct {
 
 const STORAGE_KEY = "recentlyViewedProducts"
 const MAX_ITEMS = 10
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
+
+function isNullableString(value: unknown): value is string | null | undefined {
+  return typeof value === "string" || value === null || value === undefined
+}
+
+function isRecentlyViewedProduct(value: unknown): value is RecentlyViewedProduct {
+  if (typeof value !== "object" || value === null) return false
+
+  const product = value as Record<string, unknown>
+  return (
+    typeof product.id === "string" &&
+    typeof product.title === "string" &&
+    typeof product.price === "number" &&
+    Number.isFinite(product.price) &&
+    (typeof product.image === "string" || product.image === null) &&
+    typeof product.slug === "string" &&
+    typeof product.viewedAt === "number" &&
+    Number.isFinite(product.viewedAt) &&
+    isNullableString(product.username) &&
+    isNullableString(product.storeSlug)
+  )
+}
 
 export function useRecentlyViewed() {
   const [products, setProducts] = useState<RecentlyViewedProduct[]>([])
@@ -31,13 +54,29 @@ export function useRecentlyViewed() {
         if (saved) {
           const parsed = safeJsonParse<unknown>(saved)
           if (!Array.isArray(parsed)) {
-            localStorage.removeItem(STORAGE_KEY)
+            try {
+              localStorage.removeItem(STORAGE_KEY)
+            } catch {
+              // Ignore storage errors
+            }
             setIsLoaded(true)
             return
           }
+
+          const validProducts = parsed.filter(isRecentlyViewedProduct)
+          if (validProducts.length !== parsed.length) {
+            try {
+              localStorage.removeItem(STORAGE_KEY)
+            } catch {
+              // Ignore storage errors
+            }
+          }
+
           // Filter out items older than 30 days
-          const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000
-          const filtered = (parsed as RecentlyViewedProduct[]).filter((p) => p.viewedAt > thirtyDaysAgo)
+          const thirtyDaysAgo = Date.now() - THIRTY_DAYS_MS
+          const filtered = validProducts
+            .filter((product) => product.viewedAt > thirtyDaysAgo)
+            .slice(0, MAX_ITEMS)
           setProducts(filtered)
         }
       } catch {
@@ -50,7 +89,11 @@ export function useRecentlyViewed() {
   // Save to localStorage when products change
   useEffect(() => {
     if (isLoaded && typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(products))
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(products))
+      } catch {
+        // Ignore storage errors
+      }
     }
   }, [products, isLoaded])
 
@@ -72,7 +115,11 @@ export function useRecentlyViewed() {
   const clearProducts = useCallback(() => {
     setProducts([])
     if (typeof window !== "undefined") {
-      localStorage.removeItem(STORAGE_KEY)
+      try {
+        localStorage.removeItem(STORAGE_KEY)
+      } catch {
+        // Ignore storage errors
+      }
     }
   }, [])
 

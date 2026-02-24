@@ -22,6 +22,7 @@ import {
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { Heart, ChevronLeft } from "lucide-react"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { getConditionBadgeVariant } from "@/components/shared/product/condition"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
@@ -63,10 +64,12 @@ export function MobileGallery({
   className,
 }: MobileGalleryProps) {
   const t = useTranslations("Product")
+  const tCommon = useTranslations("Common")
   const [activeIndex, setActiveIndex] = useState(0)
   const galleryRef = useRef<HTMLDivElement>(null)
   
   const { isInWishlist, toggleWishlist } = useWishlist()
+  const [isWishlistPending, setIsWishlistPending] = useState(false)
   const isWishlisted = product ? isInWishlist(product.id) : false
   const normalizedImageSources = useMemo(
     () => images.map((img) => normalizeImageUrl(img.src)),
@@ -138,14 +141,22 @@ export function MobileGallery({
   }, [])
 
   // Handle wishlist toggle
-  const handleWishlistToggle = () => {
+  const handleWishlistToggle = async () => {
     if (!product) return
-    toggleWishlist({
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      image: getImageSrc(0),
-    })
+    if (isWishlistPending) return
+    setIsWishlistPending(true)
+    try {
+      await toggleWishlist({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: getImageSrc(0),
+      })
+    } catch {
+      toast.error(tCommon("error"))
+    } finally {
+      setIsWishlistPending(false)
+    }
   }
 
   if (!images || images.length === 0) {
@@ -184,12 +195,16 @@ export function MobileGallery({
               {product && (
                 <button
                   type="button"
-                  onClick={handleWishlistToggle}
+                  onClick={() => {
+                    void handleWishlistToggle()
+                  }}
+                  disabled={isWishlistPending}
                   className={cn(
                     "size-touch-lg rounded-full shadow-sm flex items-center justify-center",
                     isWishlisted 
                       ? "bg-destructive text-destructive-foreground" 
-                      : "bg-surface-floating active:bg-background"
+                      : "bg-surface-floating active:bg-background",
+                    isWishlistPending && "opacity-70"
                   )}
                   aria-label={isWishlisted ? t("removeFromWishlist") : t("addToWishlist")}
                 >

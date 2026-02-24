@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger"
 import {
   RESERVED_USERNAMES,
   normalizeUsername,
@@ -8,23 +9,29 @@ import {
   usernameSchema,
 } from "./username-shared"
 
+export type UsernameAvailabilityErrorCode =
+  | "INVALID_USERNAME"
+  | "USERNAME_RESERVED"
+  | "USERNAME_TAKEN"
+  | "CHECK_FAILED"
+
 /**
  * Check whether a username can be used.
  */
 export async function checkUsernameAvailability(username: string): Promise<{
   available: boolean
-  error?: string
+  errorCode?: UsernameAvailabilityErrorCode
 }> {
   try {
     const normalizedUsername = normalizeUsername(username)
 
     const validation = usernameSchema.safeParse(normalizedUsername)
     if (!validation.success) {
-      return { available: false, error: validation.error.issues[0]?.message ?? "Invalid username" }
+      return { available: false, errorCode: "INVALID_USERNAME" }
     }
 
     if (RESERVED_USERNAMES.includes(normalizedUsername)) {
-      return { available: false, error: "This username is reserved" }
+      return { available: false, errorCode: "USERNAME_RESERVED" }
     }
 
     const supabase = await createClient()
@@ -36,13 +43,13 @@ export async function checkUsernameAvailability(username: string): Promise<{
       .maybeSingle()
 
     if (existing) {
-      return { available: false, error: "This username is already taken" }
+      return { available: false, errorCode: "USERNAME_TAKEN" }
     }
 
     return { available: true }
   } catch (error) {
-    console.error("checkUsernameAvailability error:", error)
-    return { available: false, error: "Failed to check username" }
+    logger.error("[username-availability] check_failed", error)
+    return { available: false, errorCode: "CHECK_FAILED" }
   }
 }
 
@@ -102,4 +109,3 @@ export async function getUsernameChangeCooldown(): Promise<{
     return { canChange: false }
   }
 }
-

@@ -10,12 +10,12 @@
 
 | Doc | Purpose | Status |
 |-----|---------|--------|
-| [plans-pricing.md](plans-pricing.md) | Subscription tiers, features per tier, pricing strategy | Skeleton — needs decisions |
-| [monetization.md](monetization.md) | Revenue streams, fee structure, unit economics | Skeleton — needs decisions |
-| [go-to-market.md](go-to-market.md) | Launch strategy, phasing, channels, markets | Skeleton — needs strategy |
-| [competitors.md](competitors.md) | Market landscape, positioning vs OLX/Vinted/etc. | Skeleton — needs research |
-| [metrics-kpis.md](metrics-kpis.md) | Success metrics, targets, measurement | Skeleton — needs targets |
-| [legal-compliance.md](legal-compliance.md) | GDPR, EU marketplace regs, ToS scope | Skeleton — needs review |
+| [plans-pricing.md](plans-pricing.md) | 6 tiers (Personal Free/Plus/Pro + Business Free/Pro/Enterprise), limits, fees | Decided (subscription prices TBD) |
+| [monetization.md](monetization.md) | Hybrid Buyer Protection model, fee table, unit economics, escrow payout | Decided |
+| [go-to-market.md](go-to-market.md) | Launch phases, channels, positioning, messaging | Decided (wedge categories TBD) |
+| [competitors.md](competitors.md) | Market landscape, positioning vs OLX/Vinted/Bazar/Shopify | Complete |
+| [metrics-kpis.md](metrics-kpis.md) | Funnel KPIs, trust metrics, targets, operational cadence | Decided |
+| [legal-compliance.md](legal-compliance.md) | GDPR, DSA, KYC/KYB, compliance checklist | Requirements mapped |
 
 ## How to Use
 
@@ -25,14 +25,11 @@
 
 **Updating:** When a decision is made, update both the business doc AND the PRD open questions table. Keep them in sync.
 
-## Codex Skills (Optional)
+## Agent Skill
 
-If you're using Codex Skills, invoke one of these personas:
+One unified business agent skill handles all strategy/finance/marketing/operations questions:
 
-- `$treido-business-strategist`
-- `$treido-finance-analyst`
-- `$treido-marketing-manager`
-- `$treido-operations-manager`
+- `.agents/skills/treido-business-agent/SKILL.md`
 
 ---
 

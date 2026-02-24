@@ -44,12 +44,16 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
   }
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("[SellErrorBoundary] Error caught:", error, errorInfo);
-
     // Check if there's a draft saved
     if (this.props.sellerId) {
-      const draftKey = `sell-draft-${this.props.sellerId}`;
-      const hasDraft = !!localStorage.getItem(draftKey);
+      const scopedDraftKey = `sell-form-draft-v4:${this.props.sellerId}`;
+      const legacyScopedDraftKey = `sell-draft-${this.props.sellerId}`;
+      const legacySharedDraftKey = "sell-form-draft-v4";
+      const hasDraft = Boolean(
+        localStorage.getItem(scopedDraftKey) ||
+        localStorage.getItem(legacyScopedDraftKey) ||
+        localStorage.getItem(legacySharedDraftKey)
+      );
       this.setState({ hasDraft });
     }
 

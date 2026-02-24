@@ -45,8 +45,70 @@ export interface MembersPageClientProps {
   locale: string
 }
 
+const MEMBERS_PAGE_COPY = {
+  bg: {
+    home: "Начало",
+    community: "Общност",
+    discover: "Открий продавачи и купувачи",
+    members: "членове",
+    sellers: "продавачи",
+    searchByName: "Търси по име",
+    searchByNamePlaceholder: "Търси по име...",
+    searchButton: "Търси",
+    sortBy: "Сортирай по",
+    sortRecentlyActive: "Наскоро активни",
+    sortHighestRated: "Най-високо оценени",
+    sortMostSales: "Най-много продажби",
+    sortMostPurchases: "Най-много покупки",
+    sortNewest: "Най-нови",
+    filterAll: "Всички",
+    filterSellers: "Продавачи",
+    filterBuyers: "Купувачи",
+    filterBusiness: "Бизнес",
+    results: "резултата",
+    forLabel: "за",
+    noMembersFound: "Няма намерени членове",
+    previous: "Предишна",
+    next: "Следваща",
+    page: "Страница",
+    of: "от",
+  },
+  en: {
+    home: "Home",
+    community: "Community",
+    discover: "Discover sellers and buyers",
+    members: "members",
+    sellers: "sellers",
+    searchByName: "Search by name",
+    searchByNamePlaceholder: "Search by name...",
+    searchButton: "Search",
+    sortBy: "Sort by",
+    sortRecentlyActive: "Recently Active",
+    sortHighestRated: "Highest Rated",
+    sortMostSales: "Most Sales",
+    sortMostPurchases: "Most Purchases",
+    sortNewest: "Newest",
+    filterAll: "All",
+    filterSellers: "Sellers",
+    filterBuyers: "Buyers",
+    filterBusiness: "Business",
+    results: "results",
+    forLabel: "for",
+    noMembersFound: "No members found",
+    previous: "Previous",
+    next: "Next",
+    page: "Page",
+    of: "of",
+  },
+} as const
+
+function getMembersPageCopy(locale: string) {
+  return locale === "bg" ? MEMBERS_PAGE_COPY.bg : MEMBERS_PAGE_COPY.en
+}
+
 function MemberCard({ member, locale }: { member: Member; locale: string }) {
   const displayName = member.display_name || member.username || "Unknown"
+  const copy = getMembersPageCopy(locale)
 
   return (
     <Link href={`/${member.username || "unknown"}`}>
@@ -104,7 +166,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
             {member.account_type === "business" && (
               <Badge variant="secondary" className="text-2xs px-1.5 py-0">
                 <Storefront className="size-3 mr-0.5" />
-                {locale === "bg" ? "Бизнес" : "Business"}
+                {copy.filterBusiness}
               </Badge>
             )}
             <span className="text-2xs text-muted-foreground">
@@ -131,6 +193,7 @@ export default function MembersPageClient({
   locale,
 }: MembersPageClientProps) {
   const router = useRouter()
+  const copy = getMembersPageCopy(locale)
   const [isPending, startTransition] = useTransition()
   const [search, setSearch] = useState(searchQuery)
 
@@ -158,10 +221,10 @@ export default function MembersPageClient({
           <div className="[&_nav]:border-border-subtle [&_nav]:mb-2 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
             <AppBreadcrumb
               items={[
-                { label: locale === "bg" ? "Начало" : "Home", href: "/" },
-                { label: locale === "bg" ? "Общност" : "Community" },
+                { label: copy.home, href: "/" },
+                { label: copy.community },
               ]}
-              homeLabel={locale === "bg" ? "Начало" : "Treido"}
+              homeLabel={copy.home}
             />
           </div>
 
@@ -170,9 +233,9 @@ export default function MembersPageClient({
               <Users className="size-6 sm:size-7 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-4xl font-bold tracking-tight">{locale === "bg" ? "Общност" : "Community"}</h1>
+              <h1 className="text-2xl sm:text-4xl font-bold tracking-tight">{copy.community}</h1>
               <p className="text-foreground text-sm sm:text-base mt-1">
-                {locale === "bg" ? "Открий продавачи и купувачи" : "Discover sellers and buyers"}
+                {copy.discover}
               </p>
             </div>
           </div>
@@ -180,11 +243,11 @@ export default function MembersPageClient({
           <div className="flex gap-4 mt-4 text-sm">
             <div>
               <span className="text-2xl font-bold">{totalMembers.toLocaleString()}</span>
-              <p className="text-foreground">{locale === "bg" ? "членове" : "members"}</p>
+              <p className="text-foreground">{copy.members}</p>
             </div>
             <div>
               <span className="text-2xl font-bold">{totalSellers.toLocaleString()}</span>
-              <p className="text-foreground">{locale === "bg" ? "продавачи" : "sellers"}</p>
+              <p className="text-foreground">{copy.sellers}</p>
             </div>
           </div>
         </div>
@@ -196,11 +259,11 @@ export default function MembersPageClient({
             <div className="relative">
               <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <FieldLabel htmlFor="members-search" className="sr-only">
-                {locale === "bg" ? "Търси по име" : "Search by name"}
+                {copy.searchByName}
               </FieldLabel>
               <Input
                 id="members-search"
-                placeholder={locale === "bg" ? "Търси по име..." : "Search by name..."}
+                placeholder={copy.searchByNamePlaceholder}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9 pr-20"
@@ -213,10 +276,8 @@ export default function MembersPageClient({
               >
                 {isPending ? (
                   <SpinnerGap className="size-4 animate-spin" />
-                ) : locale === "bg" ? (
-                  "Търси"
                 ) : (
-                  "Search"
+                  copy.searchButton
                 )}
               </Button>
             </div>
@@ -224,14 +285,14 @@ export default function MembersPageClient({
 
           <Select value={sort} onValueChange={(value) => updateParams({ sort: value, page: "1" })}>
             <SelectTrigger className="w-full sm:w-(--members-sort-w-sm)">
-              <SelectValue placeholder={locale === "bg" ? "Сортирай по" : "Sort by"} />
+              <SelectValue placeholder={copy.sortBy} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="active">{locale === "bg" ? "Наскоро активни" : "Recently Active"}</SelectItem>
-              <SelectItem value="rating">{locale === "bg" ? "Най-високо оценени" : "Highest Rated"}</SelectItem>
-              <SelectItem value="sales">{locale === "bg" ? "Най-много продажби" : "Most Sales"}</SelectItem>
-              <SelectItem value="purchases">{locale === "bg" ? "Най-много покупки" : "Most Purchases"}</SelectItem>
-              <SelectItem value="newest">{locale === "bg" ? "Най-нови" : "Newest"}</SelectItem>
+              <SelectItem value="active">{copy.sortRecentlyActive}</SelectItem>
+              <SelectItem value="rating">{copy.sortHighestRated}</SelectItem>
+              <SelectItem value="sales">{copy.sortMostSales}</SelectItem>
+              <SelectItem value="purchases">{copy.sortMostPurchases}</SelectItem>
+              <SelectItem value="newest">{copy.sortNewest}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -244,26 +305,26 @@ export default function MembersPageClient({
         >
           <ToggleGroupItem value="all" className="gap-2">
             <Users className="size-4" />
-            {locale === "bg" ? "Всички" : "All"}
+            {copy.filterAll}
           </ToggleGroupItem>
           <ToggleGroupItem value="sellers" className="gap-2">
             <Package className="size-4" />
-            {locale === "bg" ? "Продавачи" : "Sellers"}
+            {copy.filterSellers}
           </ToggleGroupItem>
           <ToggleGroupItem value="buyers" className="gap-2">
             <ShoppingBag className="size-4" />
-            {locale === "bg" ? "Купувачи" : "Buyers"}
+            {copy.filterBuyers}
           </ToggleGroupItem>
           <ToggleGroupItem value="business" className="gap-2">
             <Storefront className="size-4" />
-            {locale === "bg" ? "Бизнес" : "Business"}
+            {copy.filterBusiness}
           </ToggleGroupItem>
         </ToggleGroup>
 
         <p className="text-sm text-muted-foreground mb-4">
           <span className="font-semibold text-foreground">{totalCount.toLocaleString()}</span>{" "}
-          {locale === "bg" ? "резултата" : "results"}
-          {searchQuery && <span> {locale === "bg" ? "за" : "for"} &quot;{searchQuery}&quot;</span>}
+          {copy.results}
+          {searchQuery && <span> {copy.forLabel} &quot;{searchQuery}&quot;</span>}
         </p>
 
         {members.length > 0 ? (
@@ -275,7 +336,7 @@ export default function MembersPageClient({
         ) : (
           <div className="py-12 text-center text-muted-foreground">
             <Users className="size-12 mx-auto mb-3 opacity-50" />
-            <p>{locale === "bg" ? "Няма намерени членове" : "No members found"}</p>
+            <p>{copy.noMembersFound}</p>
           </div>
         )}
 
@@ -288,11 +349,11 @@ export default function MembersPageClient({
               onClick={() => updateParams({ page: String(currentPage - 1) })}
             >
               <ArrowLeft className="size-4 mr-1" />
-              {locale === "bg" ? "Предишна" : "Previous"}
+              {copy.previous}
             </Button>
 
             <span className="text-sm text-muted-foreground px-4">
-              {locale === "bg" ? "Страница" : "Page"} {currentPage} {locale === "bg" ? "от" : "of"} {totalPages}
+              {copy.page} {currentPage} {copy.of} {totalPages}
             </span>
 
             <Button
@@ -301,7 +362,7 @@ export default function MembersPageClient({
               disabled={currentPage >= totalPages || isPending}
               onClick={() => updateParams({ page: String(currentPage + 1) })}
             >
-              {locale === "bg" ? "Следваща" : "Next"}
+              {copy.next}
               <ArrowRight className="size-4 ml-1" />
             </Button>
           </div>

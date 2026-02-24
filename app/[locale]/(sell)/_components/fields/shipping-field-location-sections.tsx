@@ -37,11 +37,13 @@ export type ShippingRegionValues = {
 export function ShippingRegionsSection({
   values,
   hasError,
+  errorMessage,
   onToggle,
   tSell,
 }: {
   values: ShippingRegionValues
   hasError: boolean
+  errorMessage?: string
   onToggle: (field: keyof ShippingRegionValues) => void
   tSell: (key: string) => string
 }) {
@@ -121,7 +123,7 @@ export function ShippingRegionsSection({
           )
         })}
       </div>
-      {hasError && <FieldError>{tSell("validation.shippingRegionRequired")}</FieldError>}
+      {hasError && <FieldError>{errorMessage || tSell("validation.shippingRegionRequired")}</FieldError>}
     </div>
   )
 }
@@ -135,6 +137,7 @@ export function ShippingCitySection({
   isDrawerOpen,
   onDrawerOpenChange,
   onCityChange,
+  errorMessage,
   tSell,
 }: {
   compact: boolean
@@ -145,6 +148,7 @@ export function ShippingCitySection({
   isDrawerOpen: boolean
   onDrawerOpenChange: (open: boolean) => void
   onCityChange: (city: string) => void
+  errorMessage?: string
   tSell: (key: string) => string
 }) {
   if (!shipsToBulgaria && !pickupOnly) return null
@@ -222,6 +226,7 @@ export function ShippingCitySection({
         </>
       )}
       <p className="text-xs text-muted-foreground font-medium px-1">{tSell("shipping.shipsFromHint")}</p>
+      {errorMessage ? <FieldError>{errorMessage}</FieldError> : null}
     </div>
   )
 }

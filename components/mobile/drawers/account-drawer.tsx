@@ -27,6 +27,7 @@ import { useWishlist } from "@/components/providers/wishlist-context"
 import { useDrawer } from "@/components/providers/drawer-context"
 import { DrawerShell } from "@/components/shared/drawer-shell"
 import { createClient } from "@/lib/supabase/client"
+import { logger } from "@/lib/logger"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { cn } from "@/lib/utils"
 
@@ -114,7 +115,7 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
           activeListings: productsResult.count ?? 0,
         })
       } catch (error) {
-        console.error("Failed to fetch account drawer data:", error)
+        logger.error("[account-drawer] fetch_data_failed", error, { userId: user.id })
       } finally {
         if (mounted) setIsLoadingData(false)
       }

@@ -1,7 +1,21 @@
 import { test, expect } from './fixtures/test'
 import { getTestUserCredentials, loginWithPassword } from './fixtures/auth'
+import type { AppFixture } from './fixtures/base'
+import type { Page, Route } from '@playwright/test'
 
-async function openBoostDialogOrSkip({ page, app }: { page: any; app: any }, locale: 'en' | 'bg') {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function getString(record: Record<string, unknown>, key: string): string | undefined {
+  const value = record[key]
+  return typeof value === 'string' && value.trim().length > 0 ? value : undefined
+}
+
+async function openBoostDialogOrSkip(
+  { page, app }: { page: Page; app: AppFixture },
+  locale: 'en' | 'bg'
+) {
   await app.clearAuthSession()
 
   const creds = getTestUserCredentials()
@@ -32,23 +46,28 @@ async function openBoostDialogOrSkip({ page, app }: { page: any; app: any }, loc
   await lightningButtons.first().click()
 }
 
-async function mockBoostCheckout(page: any) {
+async function mockBoostCheckout(page: Page) {
   const requests: Array<{ locale?: string; durationDays?: string; productId?: string }> = []
 
-  await page.route('**/api/boost/checkout', async (route: any) => {
+  await page.route('**/api/boost/checkout', async (route: Route) => {
     const req = route.request()
-    const postData = (req.postDataJSON?.() ?? {}) as any
+    const postData: unknown = req.postDataJSON?.()
+    const parsed = isRecord(postData) ? postData : {}
+
+    const locale = getString(parsed, 'locale')
+    const durationDays = getString(parsed, 'durationDays')
+    const productId = getString(parsed, 'productId')
 
     requests.push({
-      locale: postData.locale,
-      durationDays: postData.durationDays,
-      productId: postData.productId,
+      locale,
+      durationDays,
+      productId,
     })
 
     const durationKey =
-      postData.durationDays === '1'
+      durationDays === '1'
         ? 'duration24h'
-        : postData.durationDays === '7'
+        : durationDays === '7'
           ? 'duration7d'
           : 'duration30d'
 

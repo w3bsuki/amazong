@@ -15,6 +15,11 @@ interface SupportChatWidgetProps {
   hideTrigger?: boolean
 }
 
+function formatSupportMessageTime(dateStr: string) {
+  const date = new Date(dateStr)
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+}
+
 export function SupportChatWidget({
   className,
   isOpen: controlledIsOpen,
@@ -235,11 +240,6 @@ export function SupportChatWidget({
     }
   }
 
-  const formatTime = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  }
-
   return (
     <SupportChatWidgetView
       className={className}
@@ -254,7 +254,7 @@ export function SupportChatWidget({
       setNewMessage={setNewMessage}
       handleKeyDown={handleKeyDown}
       handleSend={handleSend}
-      formatTime={formatTime}
+      formatTime={formatSupportMessageTime}
       scrollRef={scrollRef}
       inputRef={inputRef}
       t={t}

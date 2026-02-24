@@ -48,8 +48,7 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
 
   const canContinue = useMemo(() => {
     if (currentStep === 1) {
-      const hasPhotos = Boolean(images && images.length > 0);
-      return hasPhotos;
+      return Boolean(images && images.length > 0);
     }
 
     if (currentStep === 2) {

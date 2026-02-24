@@ -14,6 +14,8 @@
 
 import "client-only"
 
+import { logger } from "@/lib/logger"
+
 export type DrawerType =
   | "product_quick_view"
   | "cart"
@@ -70,7 +72,7 @@ declare global {
 function sendAnalytics(eventName: string, data: Record<string, unknown>) {
   // Always log in development
   if (isDev) {
-    console.log(`[Analytics] ${eventName}`, data)
+    logger.debug(`[Analytics] ${eventName}`, data)
   }
   
   // Send to GA4 in production

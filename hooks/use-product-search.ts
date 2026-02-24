@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useLocale } from "next-intl"
+import * as nextIntl from "next-intl"
 import { safeJsonParse } from "@/lib/safe-json"
+import { z } from "zod"
+import { normalizeSearchQuery } from "@/lib/filters/search-query"
 
 /* =============================================================================
    TYPES & INTERFACES
@@ -14,7 +16,7 @@ export interface SearchProduct {
   price: number
   images: string[]
   slug: string
-  storeSlug?: string | null
+  storeSlug: string | null
 }
 
 /* =============================================================================
@@ -46,8 +48,43 @@ interface RecentSearchedProduct {
   price: number
   image: string | null
   slug: string
-  storeSlug?: string | null
+  storeSlug: string | null
   searchedAt: number
+}
+
+type SaveSearchProductInput = Omit<SearchProduct, "storeSlug"> & {
+  storeSlug?: string | null
+}
+
+const SearchProductSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  price: z.number(),
+  images: z.array(z.string()),
+  slug: z.string(),
+  storeSlug: z.string().nullable().optional().default(null),
+})
+
+const ProductSearchResponseSchema = z.object({
+  products: z.array(SearchProductSchema).default([]),
+})
+
+const RecentSearchesSchema = z.array(z.string())
+
+const RecentSearchedProductSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  price: z.number(),
+  image: z.string().nullable(),
+  slug: z.string(),
+  storeSlug: z.string().nullable().optional().default(null),
+  searchedAt: z.number(),
+})
+
+const RecentProductsSchema = z.array(RecentSearchedProductSchema)
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError"
 }
 
 /* =============================================================================
@@ -76,7 +113,11 @@ function useDebounce<T>(value: T, delay: number): T {
  * Used by both DesktopSearch and MobileSearchOverlay
  */
 export function useProductSearch(maxResults: number = 8) {
-  const locale = useLocale()
+  const locale = nextIntl.useLocale()
+  const useTranslations = (
+    nextIntl as { useTranslations?: (namespace: string) => (key: string) => string }
+  ).useTranslations
+  const tSearch = useTranslations?.("SearchOverlay")
   
   const [query, setQuery] = useState("")
   const [products, setProducts] = useState<SearchProduct[]>([])
@@ -88,11 +129,13 @@ export function useProductSearch(maxResults: number = 8) {
 
   // Trending searches (localized)
   const trendingSearches = [
-    locale === "bg" ? "Черен петък оферти" : "Black Friday deals",
-    "iPhone 15 Pro",
-    locale === "bg" ? "Коледни подаръци" : "Christmas gifts",
-    "PlayStation 5",
-    "AirPods Pro",
+    ...new Set([
+      tSearch?.("aiSuggestionOne") ?? (locale === "bg" ? "Черен петък оферти" : "Black Friday deals"),
+      tSearch?.("aiSuggestionTwo") ?? "iPhone 15 Pro",
+      tSearch?.("aiSuggestionThree") ?? (locale === "bg" ? "Коледни подаръци" : "Christmas gifts"),
+      "iPhone 15 Pro",
+      "PlayStation 5",
+    ]),
   ]
 
   // Format price based on locale
@@ -114,8 +157,9 @@ export function useProductSearch(maxResults: number = 8) {
       const saved = localStorage.getItem(RECENT_SEARCHES_KEY)
       if (saved) {
         const parsed = safeJsonParse<unknown>(saved)
-        if (Array.isArray(parsed)) {
-          setRecentSearches(parsed.slice(0, MAX_RECENT_SEARCHES) as string[])
+        const validated = RecentSearchesSchema.safeParse(parsed)
+        if (validated.success) {
+          setRecentSearches(validated.data.slice(0, MAX_RECENT_SEARCHES))
         } else {
           localStorage.removeItem(RECENT_SEARCHES_KEY)
         }
@@ -129,8 +173,9 @@ export function useProductSearch(maxResults: number = 8) {
       const savedProducts = localStorage.getItem(RECENT_PRODUCTS_KEY)
       if (savedProducts) {
         const parsed = safeJsonParse<unknown>(savedProducts)
-        if (Array.isArray(parsed)) {
-          setRecentProducts(parsed.slice(0, MAX_RECENT_PRODUCTS) as RecentSearchedProduct[])
+        const validated = RecentProductsSchema.safeParse(parsed)
+        if (validated.success) {
+          setRecentProducts(validated.data.slice(0, MAX_RECENT_PRODUCTS))
         } else {
           localStorage.removeItem(RECENT_PRODUCTS_KEY)
         }
@@ -142,41 +187,61 @@ export function useProductSearch(maxResults: number = 8) {
 
   // Fetch products when debounced query changes
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < MIN_SEARCH_LENGTH) {
+    const normalizedQuery = normalizeSearchQuery(debouncedQuery)
+
+    if (!normalizedQuery || normalizedQuery.length < MIN_SEARCH_LENGTH) {
       setProducts([])
+      setIsSearching(false)
       return
     }
 
     const controller = new AbortController()
+    let isActive = true
 
-    setIsSearching(true)
-    fetch(
-      `/api/products/search?q=${encodeURIComponent(debouncedQuery)}&limit=${maxResults}`,
-      { signal: controller.signal }
-    )
-      .then(async (res) => {
-        if (!res.ok) return null
+    const runSearch = async () => {
+      setIsSearching(true)
+
+      try {
+        const res = await fetch(
+          `/api/products/search?q=${encodeURIComponent(normalizedQuery)}&limit=${maxResults}`,
+          { signal: controller.signal }
+        )
+
+        if (!res.ok) {
+          if (isActive && !controller.signal.aborted) {
+            setProducts([])
+          }
+          return
+        }
+
+        let data: unknown = null
         try {
-          return await res.json()
+          data = await res.json()
         } catch {
-          return null
+          data = null
         }
-      })
-      .then((data) => {
-        setProducts((data && Array.isArray((data as { products?: unknown }).products))
-          ? ((data as { products: SearchProduct[] }).products)
-          : [])
-      })
-      .catch((err) => {
-        if (err.name !== "AbortError") {
-          setProducts([])
-        }
-      })
-      .finally(() => {
-        setIsSearching(false)
-      })
 
-    return () => controller.abort()
+        if (!isActive || controller.signal.aborted) return
+
+        const validated = ProductSearchResponseSchema.safeParse(data)
+        setProducts(validated.success ? validated.data.products : [])
+      } catch (error: unknown) {
+        if (!isActive || controller.signal.aborted || isAbortError(error)) return
+
+        setProducts([])
+      } finally {
+        if (isActive && !controller.signal.aborted) {
+          setIsSearching(false)
+        }
+      }
+    }
+
+    void runSearch()
+
+    return () => {
+      isActive = false
+      controller.abort()
+    }
   }, [debouncedQuery, maxResults])
 
   // Save search to recent searches
@@ -207,7 +272,7 @@ export function useProductSearch(maxResults: number = 8) {
 
   // Save product to recent products
   const saveProduct = useCallback(
-    (product: SearchProduct) => {
+    (product: SaveSearchProductInput) => {
       const recentProduct: RecentSearchedProduct = {
         id: product.id,
         title: product.title,

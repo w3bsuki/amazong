@@ -19,6 +19,13 @@ import {
 } from "@/components/ui/table"
 import { Calculator as IconCalculator, DollarSign as IconCurrencyDollar, Download as IconDownload, FileSpreadsheet as IconFileSpreadsheet, Percent as IconPercentage, Receipt as IconReceipt } from "lucide-react";
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "BGN",
+    maximumFractionDigits: 2,
+  }).format(value)
+}
 
 async function getAccountingData(sellerId: string) {
   const supabase = await createClient()
@@ -72,14 +79,6 @@ export default async function BusinessAccountingPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const accountingData = await getAccountingData(businessSeller.id)
-  
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 2,
-    }).format(value)
-  }
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">

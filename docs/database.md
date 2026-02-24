@@ -8,8 +8,8 @@
 
 ## Overview
 
-Supabase Postgres with Row-Level Security (RLS). 47 tables, 152 policies, 135 indexes.
-Generated types: `lib/supabase/database.types.ts`. Regenerate with `node scripts/generate-db-schema.mjs`.
+Supabase Postgres with Row-Level Security (RLS). 47 tables, 152 policies, 149 indexes.
+Generated types: `lib/supabase/database.types.ts`. Regenerate with `pnpm -s supabase gen types --linked --lang typescript --schema public > lib/supabase/database.types.ts` (or `--local` when running local Supabase).
 
 ---
 
@@ -34,9 +34,9 @@ Generated types: `lib/supabase/database.types.ts`. Regenerate with `node scripts
 | `products` | Core product listing (title, description, price, status, seller, category) |
 | `product_images` | Product photo references |
 | `product_variants` / `variant_options` | Size/color variants |
-| `product_attributes` / `category_attributes` | Dynamic attributes per category |
+| `product_attributes` / `category_attributes` | Dynamic attributes per category (`category_attributes.is_active` flags unused definitions) |
 | `product_private` | Seller-only product data |
-| `categories` | 4-level category tree (24 top-level categories) |
+| `categories` | 4-level category tree (24 top-level categories). Browse UI uses `is_browseable` (seed products normalized to leaf categories) |
 | `category_stats` | Cached category counts (no RLS — public data) |
 | `brands` | Brand registry |
 

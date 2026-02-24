@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
 
@@ -75,7 +75,7 @@ export function AccountWishlistToolbar({
     [locale]
   )
 
-  const buildUrl = (next: WishlistUrlParams) => {
+  const buildUrl = useCallback((next: WishlistUrlParams) => {
     const params = new URLSearchParams(searchParams?.toString() || "")
 
     // Handle search query
@@ -96,14 +96,14 @@ export function AccountWishlistToolbar({
 
     const qs = params.toString()
     return qs ? `${basePathname}?${qs}` : basePathname
-  }
+  }, [searchParams, basePathname])
 
-  const applyUrl = (next: WishlistUrlParams) => {
+  const applyUrl = useCallback((next: WishlistUrlParams) => {
     const url = buildUrl(next)
     startTransition(() => {
       router.replace(url, { scroll: false })
     })
-  }
+  }, [buildUrl, router, startTransition])
 
   const debouncedSearchStateRef = useRef({
     applyUrl,

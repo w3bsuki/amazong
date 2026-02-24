@@ -2,13 +2,14 @@ import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
 import { stripe } from "@/lib/stripe"
 import { STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
-import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { buildLocaleUrl, inferLocaleFromRequest } from "@/lib/stripe-locale"
+import { noStoreJson } from "@/lib/api/response-helpers"
 
-export async function POST(request: import("next/server").NextRequest) {
+export async function POST(request: NextRequest) {
     const { supabase, applyCookies } = createRouteHandlerClient(request)
-    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-        applyCookies(NextResponse.json(body, init))
+    const json = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
+        applyCookies(noStoreJson(body, init))
 
     try {
         const { data: { user } } = await supabase.auth.getUser()

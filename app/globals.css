@@ -909,8 +909,7 @@ select:-webkit-autofill {
   --color-rating: var(--color-muted-foreground);
   --color-rating-empty: var(--color-border);
 
-  /* === COLORS: Notification badges === */
-  --color-notification: var(--color-primary);
+  /* === COLORS: Badge aliases === */
   --color-cart-badge: var(--color-primary);
 
   /* === COLORS: Wishlist - Warm red === */

@@ -50,7 +50,7 @@ export function OrderItemsSection({ items, formatPrice }: OrderItemsSectionProps
       <div className="flex -space-x-1.5">
         {items.slice(0, 4).map((item, i) => (
           <div
-            key={item.id}
+            key={`${item.id}-${item.variantId ?? "base"}-${i}`}
             className="size-9 rounded border-2 border-card bg-muted overflow-hidden shrink-0"
             style={{ zIndex: 4 - i }}
           >
@@ -84,8 +84,8 @@ export function OrderItemsSectionDesktop({ items, formatPrice }: OrderItemsSecti
 
   return (
     <div className="space-y-3">
-      {items.map((item) => (
-        <div key={item.id} className="flex gap-3">
+      {items.map((item, index) => (
+        <div key={`${item.id}-${item.variantId ?? "base"}-${index}`} className="flex gap-3">
           <div className="size-14 rounded border border-border bg-muted overflow-hidden shrink-0">
             <OrderItemThumb src={item.image} alt={item.title} size={56} />
           </div>

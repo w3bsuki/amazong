@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import { ArrowRight, Heart, ShoppingCart, Trash } from "lucide-react";
 

@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -33,19 +34,20 @@ export function ProfilePasswordDialog({
   isPending,
   onSubmit,
 }: ProfilePasswordDialogProps) {
+  const t = useTranslations("Account.profileEditor")
+  void locale
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{locale === "bg" ? "Промяна на парола" : "Change Password"}</DialogTitle>
-          <DialogDescription>
-            {locale === "bg" ? "Въведете текущата и новата парола" : "Enter your current and new password"}
-          </DialogDescription>
+          <DialogTitle>{t("passwordDialog.title")}</DialogTitle>
+          <DialogDescription>{t("passwordDialog.description")}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <Field>
             <FieldContent>
-              <FieldLabel htmlFor="currentPassword">{locale === "bg" ? "Текуща парола" : "Current Password"}</FieldLabel>
+              <FieldLabel htmlFor="currentPassword">{t("passwordDialog.currentPasswordLabel")}</FieldLabel>
               <Input
                 id="currentPassword"
                 name="currentPassword"
@@ -62,7 +64,7 @@ export function ProfilePasswordDialog({
           </Field>
           <Field>
             <FieldContent>
-              <FieldLabel htmlFor="newPassword">{locale === "bg" ? "Нова парола" : "New Password"}</FieldLabel>
+              <FieldLabel htmlFor="newPassword">{t("passwordDialog.newPasswordLabel")}</FieldLabel>
               <div className="relative">
                 <Input
                   id="newPassword"
@@ -80,15 +82,7 @@ export function ProfilePasswordDialog({
                   type="button"
                   onClick={() => setShowNewPassword((prev) => !prev)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-                  aria-label={
-                    showNewPassword
-                      ? locale === "bg"
-                        ? "Скрий паролата"
-                        : "Hide password"
-                      : locale === "bg"
-                        ? "Покажи паролата"
-                        : "Show password"
-                  }
+                  aria-label={showNewPassword ? t("passwordDialog.hidePassword") : t("passwordDialog.showPassword")}
                 >
                   {showNewPassword ? <EyeSlash className="size-4" /> : <Eye className="size-4" />}
                 </button>
@@ -103,15 +97,9 @@ export function ProfilePasswordDialog({
               )}
             </FieldContent>
           </Field>
-          <Field
-            data-invalid={
-              !!passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword
-            }
-          >
+          <Field data-invalid={!!passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword}>
             <FieldContent>
-              <FieldLabel htmlFor="confirmPassword">
-                {locale === "bg" ? "Потвърди паролата" : "Confirm Password"}
-              </FieldLabel>
+              <FieldLabel htmlFor="confirmPassword">{t("passwordDialog.confirmPasswordLabel")}</FieldLabel>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -126,9 +114,7 @@ export function ProfilePasswordDialog({
               />
               <FieldError className="text-xs">
                 {passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword
-                  ? locale === "bg"
-                    ? "Паролите не съвпадат"
-                    : "Passwords do not match"
+                  ? t("passwordDialog.passwordsDoNotMatch")
                   : null}
               </FieldError>
             </FieldContent>
@@ -136,14 +122,14 @@ export function ProfilePasswordDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {locale === "bg" ? "Отказ" : "Cancel"}
+            {t("actions.cancel")}
           </Button>
           <Button
             onClick={onSubmit}
             disabled={isPending || !isPasswordValid || passwordData.newPassword !== passwordData.confirmPassword}
           >
             {isPending ? <SpinnerGap className="size-4 mr-2 animate-spin" /> : null}
-            {locale === "bg" ? "Промени" : "Change"}
+            {t("actions.change")}
           </Button>
         </DialogFooter>
       </DialogContent>

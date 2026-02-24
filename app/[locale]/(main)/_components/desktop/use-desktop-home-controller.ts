@@ -48,6 +48,99 @@ function toGridProduct(product: DesktopHomeProduct, boostedOverride?: boolean): 
   }
 }
 
+function getOptionalNumber(value: unknown): number | undefined {
+  return typeof value === "number" ? value : undefined
+}
+
+function getOptionalString(value: unknown): string | undefined {
+  return typeof value === "string" ? value : undefined
+}
+
+function getProductImage(product: Record<string, unknown>) {
+  const image = getOptionalString(product.image)
+  if (image) return image
+
+  const images = Array.isArray(product.images) ? (product.images as string[]) : []
+  return images[0] ?? "/placeholder.svg"
+}
+
+function getSellerTier(value: unknown): "business" | "premium" | "basic" {
+  if (value === "business") return "business"
+  if (value === "premium") return "premium"
+  return "basic"
+}
+
+function getCreatedAt(product: Record<string, unknown>) {
+  const createdAt = getOptionalString(product.createdAt)
+  if (createdAt) return createdAt
+  return getOptionalString(product.created_at) ?? null
+}
+
+function getCategoryPath(
+  value: unknown
+): { slug: string; name: string; nameBg?: string | null }[] | undefined {
+  return Array.isArray(value)
+    ? (value as { slug: string; name: string; nameBg?: string | null }[])
+    : undefined
+}
+
+function getAttributes(value: unknown): Record<string, unknown> | undefined {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>
+  }
+  return undefined
+}
+
+function applyOptionalFeedFields(
+  product: Record<string, unknown>,
+  transformed: DesktopHomeProduct
+) {
+  const listPrice = getOptionalNumber(product.listPrice) ?? getOptionalNumber(product.list_price)
+  const rating = getOptionalNumber(product.rating)
+  const reviews = getOptionalNumber(product.reviews)
+  const categoryRootSlug = getOptionalString(product.categoryRootSlug)
+  const categoryPath = getCategoryPath(product.categoryPath)
+  const attributes = getAttributes(product.attributes)
+  const location = getOptionalString(product.location)
+  const condition = getOptionalString(product.condition)
+  const salePercent = getOptionalNumber(product.salePercent)
+
+  if (typeof listPrice === "number") transformed.listPrice = listPrice
+  if (typeof rating === "number") transformed.rating = rating
+  if (typeof reviews === "number") transformed.reviews = reviews
+  if (typeof categoryRootSlug === "string") transformed.categoryRootSlug = categoryRootSlug
+  if (categoryPath) transformed.categoryPath = categoryPath
+  if (attributes) transformed.attributes = attributes
+  if (typeof location === "string") transformed.location = location
+  if (typeof condition === "string") transformed.condition = condition
+  if (typeof salePercent === "number") transformed.salePercent = salePercent
+}
+
+function transformFeedProduct(product: Record<string, unknown>): DesktopHomeProduct {
+  const transformed: DesktopHomeProduct = {
+    id: product.id as string,
+    title: product.title as string,
+    price: typeof product.price === "number" ? product.price : Number(product.price ?? 0),
+    image: getProductImage(product),
+    slug: (product.slug as string | null) ?? null,
+    storeSlug: (product.storeSlug as string | null) ?? (product.store_slug as string | null) ?? null,
+    sellerId: typeof product.sellerId === "string" ? product.sellerId : null,
+    sellerName: typeof product.sellerName === "string" ? product.sellerName : null,
+    sellerAvatarUrl: typeof product.sellerAvatarUrl === "string" ? product.sellerAvatarUrl : null,
+    sellerTier: getSellerTier(product.sellerTier),
+    sellerVerified: Boolean(product.sellerVerified),
+    isBoosted: Boolean(product.isBoosted || product.is_boosted),
+    createdAt: getCreatedAt(product),
+    tags: Array.isArray(product.tags) ? (product.tags as string[]) : [],
+    isOnSale: Boolean(product.isOnSale),
+    saleEndDate: typeof product.saleEndDate === "string" ? product.saleEndDate : null,
+  }
+
+  applyOptionalFeedFields(product, transformed)
+
+  return transformed
+}
+
 export function useDesktopHomeController({
   locale,
   categories,
@@ -182,48 +275,26 @@ export function useDesktopHomeController({
         const response = await fetch(`/api/products/feed?${params.toString()}`)
         if (!response.ok) return
 
-        const data = await response.json()
-        if (!Array.isArray(data.products)) return
+        const data: unknown = await response.json()
+        if (!data || typeof data !== "object") return
 
-        const transformed: DesktopHomeProduct[] = data.products.map((product: Record<string, unknown>) => ({
-          id: product.id as string,
-          title: product.title as string,
-          price: typeof product.price === "number" ? product.price : Number(product.price ?? 0),
-          image: (product.image as string) ?? (Array.isArray(product.images) ? (product.images as string[])[0] : "/placeholder.svg") ?? "/placeholder.svg",
-          slug: (product.slug as string | null) ?? null,
-          storeSlug: (product.storeSlug as string | null) ?? (product.store_slug as string | null) ?? null,
-          sellerId: typeof product.sellerId === "string" ? product.sellerId : null,
-          sellerName: typeof product.sellerName === "string" ? product.sellerName : null,
-          sellerAvatarUrl: typeof product.sellerAvatarUrl === "string" ? product.sellerAvatarUrl : null,
-          sellerTier:
-            product.sellerTier === "business"
-              ? "business"
-              : product.sellerTier === "premium"
-                ? "premium"
-                : "basic",
-          sellerVerified: Boolean(product.sellerVerified),
-          isBoosted: Boolean(product.isBoosted || product.is_boosted),
-          listPrice: typeof product.listPrice === "number" ? product.listPrice : typeof product.list_price === "number" ? product.list_price : undefined,
-          rating: typeof product.rating === "number" ? product.rating : undefined,
-          reviews: typeof product.reviews === "number" ? product.reviews : undefined,
-          createdAt: typeof product.createdAt === "string" ? product.createdAt : typeof product.created_at === "string" ? product.created_at : null,
-          tags: Array.isArray(product.tags) ? (product.tags as string[]) : [],
-          categoryRootSlug: typeof product.categoryRootSlug === "string" ? product.categoryRootSlug : undefined,
-          categoryPath: Array.isArray(product.categoryPath) ? product.categoryPath as { slug: string; name: string; nameBg?: string | null }[] : undefined,
-          attributes: (product.attributes && typeof product.attributes === "object" && !Array.isArray(product.attributes)) ? product.attributes as Record<string, unknown> : undefined,
-          location: typeof product.location === "string" ? product.location : undefined,
-          condition: typeof product.condition === "string" ? product.condition : undefined,
-          isOnSale: Boolean(product.isOnSale),
-          salePercent: typeof product.salePercent === "number" ? product.salePercent : undefined,
-          saleEndDate: typeof product.saleEndDate === "string" ? product.saleEndDate : null,
-        }))
+        const { products: rawProducts, hasMore: rawHasMore } = data as {
+          products?: unknown
+          hasMore?: unknown
+        }
+        if (!Array.isArray(rawProducts)) return
+
+        const transformed: DesktopHomeProduct[] = rawProducts.map(
+          (product: Record<string, unknown>) => transformFeedProduct(product)
+        )
 
         if (append) {
           setProducts((previous) => [...previous, ...transformed])
         } else {
           setProducts(transformed)
         }
-        setHasMore(data.hasMore ?? transformed.length === limit)
+        const hasMore = typeof rawHasMore === "boolean" ? rawHasMore : transformed.length === limit
+        setHasMore(hasMore)
       } catch {
       } finally {
         setIsLoading(false)
@@ -260,7 +331,7 @@ export function useDesktopHomeController({
     }
   }, [activeTab, activeCategorySlug, userCity, filters.quickFilters, fetchProducts])
 
-  const handleCategorySelect = useCallback((path: CategoryPath[], _category: CategoryTreeNode | null) => {
+  const handleCategorySelect = useCallback((path: CategoryPath[]) => {
     setCategoryPath(path)
   }, [])
 

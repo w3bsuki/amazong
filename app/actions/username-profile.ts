@@ -2,26 +2,39 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
+import { logger } from "@/lib/logger"
 import { publicProfileSchema, requireUsernameAuth } from "./username-shared"
 import type { z } from "zod"
+
+export type UsernameProfileErrorCode =
+  | "NOT_AUTHENTICATED"
+  | "INVALID_PROFILE_DATA"
+  | "NO_FILE"
+  | "FILE_TOO_LARGE"
+  | "INVALID_FILE_TYPE"
+  | "PUBLIC_PROFILE_UPDATE_FAILED"
+  | "BANNER_UPLOAD_FAILED"
+  | "BANNER_SAVE_FAILED"
+  | "PROFILE_NOT_FOUND"
+  | "UNKNOWN_ERROR"
 
 /**
  * Update authenticated user's public profile fields.
  */
 export async function updatePublicProfile(data: z.infer<typeof publicProfileSchema>): Promise<{
   success: boolean
-  error?: string
+  errorCode?: UsernameProfileErrorCode
 }> {
   try {
     const auth = await requireUsernameAuth()
     if ("error" in auth) {
-      return { success: false, error: auth.error }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
     const { userId, supabase } = auth
 
     const validation = publicProfileSchema.safeParse(data)
     if (!validation.success) {
-      return { success: false, error: validation.error.issues[0]?.message ?? "Invalid profile data" }
+      return { success: false, errorCode: "INVALID_PROFILE_DATA" }
     }
 
     const updateData: Record<string, unknown> = {
@@ -37,15 +50,15 @@ export async function updatePublicProfile(data: z.infer<typeof publicProfileSche
     const { error: updateError } = await supabase.from("profiles").update(updateData).eq("id", userId)
 
     if (updateError) {
-      console.error("updatePublicProfile error:", updateError)
-      return { success: false, error: "Failed to update profile" }
+      logger.error("[username-profile] public_profile_update_failed", updateError, { userId })
+      return { success: false, errorCode: "PUBLIC_PROFILE_UPDATE_FAILED" }
     }
 
     await revalidatePublicProfileTagsForUser(supabase, userId, "max")
     return { success: true }
   } catch (error) {
-    console.error("updatePublicProfile error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[username-profile] public_profile_update_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
 
@@ -55,28 +68,28 @@ export async function updatePublicProfile(data: z.infer<typeof publicProfileSche
 export async function uploadBanner(formData: FormData): Promise<{
   success: boolean
   bannerUrl?: string
-  error?: string
+  errorCode?: UsernameProfileErrorCode
 }> {
   try {
     const auth = await requireUsernameAuth()
     if ("error" in auth) {
-      return { success: false, error: auth.error }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
     const { userId, supabase } = auth
 
     const file = formData.get("banner") as File | null
     if (!file || file.size === 0) {
-      return { success: false, error: "No file provided" }
+      return { success: false, errorCode: "NO_FILE" }
     }
 
     const maxSize = 5 * 1024 * 1024
     if (file.size > maxSize) {
-      return { success: false, error: "File too large. Maximum size is 5MB" }
+      return { success: false, errorCode: "FILE_TOO_LARGE" }
     }
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
     if (!allowedTypes.includes(file.type)) {
-      return { success: false, error: "Invalid file type. Use JPEG, PNG, or WebP" }
+      return { success: false, errorCode: "INVALID_FILE_TYPE" }
     }
 
     const ext = file.name.split(".").pop()?.toLowerCase() || "jpg"
@@ -87,8 +100,8 @@ export async function uploadBanner(formData: FormData): Promise<{
       .upload(filename, file, { upsert: true })
 
     if (uploadError) {
-      console.error("uploadBanner storage error:", uploadError)
-      return { success: false, error: "Failed to upload banner" }
+      logger.error("[username-profile] banner_upload_failed", uploadError, { userId })
+      return { success: false, errorCode: "BANNER_UPLOAD_FAILED" }
     }
 
     const {
@@ -106,15 +119,15 @@ export async function uploadBanner(formData: FormData): Promise<{
       .eq("id", userId)
 
     if (updateError) {
-      console.error("uploadBanner profile error:", updateError)
-      return { success: false, error: "Failed to save banner URL" }
+      logger.error("[username-profile] banner_save_failed", updateError, { userId })
+      return { success: false, errorCode: "BANNER_SAVE_FAILED" }
     }
 
     await revalidatePublicProfileTagsForUser(supabase, userId, "max")
     return { success: true, bannerUrl }
   } catch (error) {
-    console.error("uploadBanner error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[username-profile] banner_upload_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
 
@@ -140,7 +153,7 @@ export async function getPublicProfile(username: string): Promise<{
     social_links: Record<string, string> | null
     created_at: string
   }
-  error?: string
+  errorCode?: UsernameProfileErrorCode
 }> {
   try {
     const supabase = await createClient()
@@ -168,7 +181,7 @@ export async function getPublicProfile(username: string): Promise<{
       .single()
 
     if (error || !profile) {
-      return { success: false, error: "Profile not found" }
+      return { success: false, errorCode: "PROFILE_NOT_FOUND" }
     }
 
     const socialLinksData =
@@ -197,8 +210,8 @@ export async function getPublicProfile(username: string): Promise<{
       },
     }
   } catch (error) {
-    console.error("getPublicProfile error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[username-profile] get_public_profile_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
 
@@ -254,4 +267,3 @@ export async function getCurrentUserProfile() {
     return null
   }
 }
-

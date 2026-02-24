@@ -80,7 +80,7 @@ export function DesktopBuyBox({
   title,
   price,
   originalPrice,
-  currency = "EUR",
+  currency = "BGN",
   condition,
   stock,
   seller,
@@ -91,12 +91,15 @@ export function DesktopBuyBox({
   className,
 }: DesktopBuyBoxProps) {
   const t = useTranslations("Product")
+  const tModal = useTranslations("ProductModal")
+  const tCommon = useTranslations("Common")
   const locale = useLocale()
   const { addToCart } = useCart()
   const { isInWishlist, toggleWishlist } = useWishlist()
   const { toast } = useToast()
 
   const [quantity, setQuantity] = useState(1)
+  const [wishlistPending, setWishlistPending] = useState(false)
 
   const isRealEstate = categoryType === "real-estate"
   const isAutomotive = categoryType === "automotive"
@@ -145,6 +148,54 @@ export function DesktopBuyBox({
   const handleBuyNow = () => {
     handleAddToCart()
     // Navigate to checkout would happen here.
+  }
+
+  const handleWishlistToggle = async () => {
+    if (wishlistPending) return
+    setWishlistPending(true)
+    try {
+      await toggleWishlist(cartProduct)
+    } catch {
+      toast({
+        variant: "destructive",
+        title: tCommon("error"),
+      })
+    } finally {
+      setWishlistPending(false)
+    }
+  }
+
+  const handleShare = async () => {
+    if (typeof window === "undefined") return
+    const url = window.location.href
+    if (!url) return
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ title, url })
+        return
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+          return
+        }
+      }
+    }
+
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(url)
+        toast({
+          title: t("share"),
+          description: tModal("linkCopied"),
+        })
+      } catch {
+        toast({
+          variant: "destructive",
+          title: t("share"),
+          description: tModal("copyFailed"),
+        })
+      }
+    }
   }
 
   // Category-adaptive CTA labels
@@ -199,7 +250,10 @@ export function DesktopBuyBox({
           <IconButton
             type="button"
             variant="ghost"
-            onClick={() => toggleWishlist(cartProduct)}
+            onClick={() => {
+              void handleWishlistToggle()
+            }}
+            disabled={wishlistPending}
             aria-label={
               productInWishlist ? t("removeFromWatchlist") : t("addToWatchlist")
             }
@@ -216,6 +270,9 @@ export function DesktopBuyBox({
           <IconButton
             type="button"
             variant="ghost"
+            onClick={() => {
+              void handleShare()
+            }}
             aria-label={t("share")}
             className="text-muted-foreground hover:text-foreground"
           >

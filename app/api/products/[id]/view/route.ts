@@ -1,5 +1,13 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
+import { noStoreJson } from "@/lib/api/response-helpers"
+import { z } from "zod"
+
+const ProductViewParamsSchema = z
+  .object({
+    id: z.string().uuid(),
+  })
+  .strict()
 
 /**
  * POST /api/products/[id]/view
@@ -12,11 +20,12 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
-
-  if (!id || !/^[0-9a-f-]{36}$/i.test(id)) {
-    return NextResponse.json({ error: "Invalid product ID" }, { status: 400 })
+  const parsedParams = ProductViewParamsSchema.safeParse(await params)
+  if (!parsedParams.success) {
+    return noStoreJson({ error: "Invalid product ID" }, { status: 400 })
   }
+
+  const { id } = parsedParams.data
 
   // Check if user already viewed this product in this session
   const viewedKey = `viewed_${id}`
@@ -24,7 +33,7 @@ export async function POST(
 
   if (viewedCookie) {
     // Already counted this view in current session
-    return NextResponse.json({ success: true, already_counted: true })
+    return noStoreJson({ success: true, already_counted: true })
   }
 
   const supabase = createStaticClient()
@@ -40,7 +49,7 @@ export async function POST(
   }
 
   // Set cookie to prevent duplicate counts (expires in 1 hour)
-  const response = NextResponse.json({ success: true })
+  const response = noStoreJson({ success: true })
   response.cookies.set(viewedKey, "1", {
     maxAge: 3600, // 1 hour
     httpOnly: true,

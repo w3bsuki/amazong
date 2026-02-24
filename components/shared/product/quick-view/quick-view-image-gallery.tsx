@@ -145,7 +145,7 @@ export function QuickViewImageGallery({
                 key={`thumb-${i}`}
                 type="button"
                 onClick={() => setCurrentIndex(i)}
-                aria-label={`${title} ${i + 1}/${images.length}`}
+                aria-label={`${tProduct("goToImage", { index: i + 1 })} ${tProduct("of")} ${images.length}`}
                 className={cn(
                   "relative size-20 shrink-0 overflow-hidden rounded-xl border border-border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
                   i === currentIndex
@@ -238,7 +238,7 @@ export function QuickViewImageGallery({
               key={`thumb-${i}`}
               type="button"
               onClick={() => setCurrentIndex(i)}
-              aria-label={`${title} ${i + 1}/${images.length}`}
+              aria-label={`${tProduct("goToImage", { index: i + 1 })} ${tProduct("of")} ${images.length}`}
               className={cn(
                 "relative size-(--control-default) shrink-0 overflow-hidden rounded-lg border border-border-subtle bg-surface-subtle transition-all touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
                 i === currentIndex

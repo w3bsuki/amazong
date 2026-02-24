@@ -1,14 +1,13 @@
 # Legal & Compliance — Treido
 
 > EU regulatory requirements, GDPR, marketplace obligations.
-> This doc tracks what we need to be compliant, not the legal text itself.
-> **Disclaimer:** This is a planning doc, not legal advice. Consult a lawyer for final ToS/Privacy Policy.
+> Planning doc, not legal advice. Consult a lawyer for final ToS/Privacy Policy.
 
 ---
 
 ## GDPR Compliance
 
-### What We Collect
+### Data We Collect
 
 | Data Type | Purpose | Legal Basis | Retention |
 |-----------|---------|-------------|-----------|
@@ -16,74 +15,85 @@
 | Address | Shipping/checkout | Contract | Until order lifecycle complete |
 | Payment info | Processing payments | Contract | Handled by Stripe (PCI compliant) |
 | Product photos | Listing display | Contract | Until listing deleted |
-| Chat messages | Buyer-seller communication | Legitimate interest | **[DECISION NEEDED]** |
+| Chat messages | Buyer-seller communication | Legitimate interest | Dispute window + 90 days |
 | Usage analytics | Product improvement | Legitimate interest | Aggregated, no PII retained |
 | Cookies | Session, preferences | Consent | Session / 1 year |
 
-### GDPR Requirements
+### GDPR Checklist
 
-- [ ] **Privacy Policy** — Published at treido.eu/privacy
-- [ ] **Cookie consent banner** — Before non-essential cookies
-- [ ] **Data export** — User can request their data (GDPR Art. 15)
-- [ ] **Right to deletion** — User can request account + data deletion (Art. 17)
-- [ ] **Data processing agreements** — With Supabase, Stripe, Vercel
-- [ ] **Breach notification** — Process for notifying within 72 hours (Art. 33)
-- [ ] **DPO** — **[DECISION NEEDED]** Data Protection Officer needed? (<250 employees likely exempt)
+- [ ] Privacy Policy published at treido.eu/privacy
+- [ ] Cookie consent banner (before non-essential cookies)
+- [ ] Data export (user can request their data — Art. 15)
+- [ ] Right to deletion (user can request account + data deletion — Art. 17)
+- [ ] Data processing agreements (with Supabase, Stripe, Vercel)
+- [ ] Breach notification process (within 72 hours — Art. 33)
+
+**DPO:** Not required (<250 employees, no large-scale special category processing).
 
 ---
 
 ## EU Marketplace Regulations
 
-### Digital Services Act (DSA, 2024+)
+### Digital Services Act (DSA)
 
-Applies to online marketplaces. Key obligations:
+Key obligations for smaller platforms:
+- [ ] Transparency: Business sellers must display business info
+- [ ] Notice and action: Mechanism for reporting illegal content/listings
+- [ ] Terms of Service: Clear, accessible, applied consistently
 
-- [ ] **Transparency of sellers** — Business sellers must display business info
-- [ ] **Notice and action** — Mechanism for reporting illegal content/listings
-- [ ] **Trusted flaggers** — Process for handling reports
-- [ ] **Terms of Service** — Clear, accessible, applied consistently
-
-*Note: Most DSA obligations for smaller platforms are lighter. Full compliance requirements scale with platform size (>45M EU users = "very large platform" — we're far from that).*
+*Full DSA obligations scale with platform size. We're far from "very large platform" (45M+ EU users).*
 
 ### Consumer Rights Directive
 
 - [ ] 14-day withdrawal right for cross-border B2C sales
 - [ ] Clear pre-contractual information (price, seller identity, delivery)
-- [ ] Confirmation of purchase via email
+- [ ] Purchase confirmation via email
 
 ### Payment Services
 
-- Stripe handles PSD2/SCA compliance (Strong Customer Authentication)
-- We don't handle card data directly → no PCI DSS scope for us
+- Stripe handles PSD2/SCA (Strong Customer Authentication)
+- No card data handled directly → no PCI DSS scope for us
 - Stripe Connect handles seller KYC/AML
 
 ---
 
-## Terms of Service
+## KYC / KYB / AML
 
-### Key Sections Needed
+### What Stripe Covers
+- Connect onboarding collects identity/banking info for payouts
+- Businesses provide KYB details via Stripe
 
-- [ ] Platform role (marketplace, not seller — we facilitate, not sell directly)
+### What Platform Covers
+- Phone verification (anti-spam, account recovery)
+- Seller limits for new accounts (listing caps, price caps)
+- Manual reviews for first sales / flagged disputes
+- Minimize stored sensitive data (prefer Stripe-hosted onboarding)
+
+---
+
+## Terms of Service — Key Sections
+
+- [ ] Platform role (marketplace facilitator, not seller)
 - [ ] User obligations (accurate listings, no prohibited items)
-- [ ] Prohibited items list (weapons, drugs, counterfeit, etc.)
+- [ ] Prohibited items list
 - [ ] Fee structure (reference plans-pricing.md)
 - [ ] Dispute resolution process
 - [ ] Liability limitations
 - [ ] Account termination conditions
 - [ ] Governing law (Bulgarian law + EU regulations)
 
-### Prohibited Items Policy
+### Prohibited Items
 
-**[DECISION NEEDED]** — What can't be sold? Standard list:
+Always prohibited:
 - Weapons, ammunition
 - Drugs, tobacco, alcohol
-- Counterfeit goods
+- Counterfeit goods / replicas
 - Stolen property
-- Adult content
-- Live animals
+- Hacked accounts, credentials, codes
 - Hazardous materials
-- Personal data / accounts
-- Digital-only goods? **[DECISION NEEDED]**
+- Live animals
+
+**Digital-only goods:** TBD (likely V2).
 
 ---
 
@@ -91,20 +101,15 @@ Applies to online marketplaces. Key obligations:
 
 | Item | Status |
 |------|--------|
-| Company registration (Bulgaria) | **[DECISION NEEDED]** — EAD/EOOD? |
-| Tax registration (VAT) | **[DECISION NEEDED]** — Required above BGN 100K revenue |
+| Company registration (Bulgaria) | **Decision needed** — EAD/EOOD |
+| Tax registration (VAT) | Required above BGN 100K revenue |
 | Stripe account (business) | Active (test mode) |
 | Domain ownership | treido.eu — registered |
+| Professional liability insurance | **Decision needed** |
 
 ---
 
-## Insurance
-
-**[DECISION NEEDED]** — Professional liability insurance for marketplace operators?
-
----
-
-## Compliance Checklist (Pre-Launch)
+## Pre-Launch Compliance Checklist
 
 - [ ] Privacy Policy published
 - [ ] Terms of Service published
@@ -114,8 +119,9 @@ Applies to online marketplaces. Key obligations:
 - [ ] Report/takedown mechanism exists
 - [ ] Stripe production environment verified
 - [ ] Legal entity established
+- [ ] Support playbooks written
 
 ---
 
 *Last updated: 2026-02-23*
-*Status: Skeleton — needs legal review*
+*Status: Requirements mapped. Legal entity and ToS/Privacy still needed.*

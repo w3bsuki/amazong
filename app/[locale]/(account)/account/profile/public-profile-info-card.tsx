@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -36,40 +37,35 @@ export function PublicProfileInfoCard({
   setProfileData,
   onSave,
 }: PublicProfileInfoCardProps) {
+  const t = useTranslations("Account.profileEditor")
+  void locale
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <User className="size-5" />
-          {locale === "bg" ? "Публична информация" : "Public Information"}
+          {t("publicInfo.title")}
         </CardTitle>
-        <CardDescription>
-          {locale === "bg"
-            ? "Тази информация се показва на публичния ти профил"
-            : "This information is visible on your public profile"}
-        </CardDescription>
+        <CardDescription>{t("publicInfo.description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label>{locale === "bg" ? "Показвано име" : "Display Name"}</Label>
+          <Label>{t("publicInfo.displayNameLabel")}</Label>
           <Input
             value={profileData.display_name}
-            onChange={(event) =>
-              setProfileData((prev) => ({ ...prev, display_name: event.target.value }))
-            }
-            placeholder={profileUsername || (locale === "bg" ? "Твоето име" : "Your name")}
+            onChange={(event) => setProfileData((prev) => ({ ...prev, display_name: event.target.value }))}
+            placeholder={profileUsername || t("publicInfo.displayNamePlaceholder")}
           />
-          <p className="text-xs text-muted-foreground">
-            {locale === "bg" ? "Показва се вместо @username" : "Shown instead of @username"}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("publicInfo.displayNameHelp")}</p>
         </div>
 
         <div className="space-y-2">
-          <Label>{locale === "bg" ? "Биография" : "Bio"}</Label>
+          <Label>{t("publicInfo.bioLabel")}</Label>
           <Textarea
             value={profileData.bio}
             onChange={(event) => setProfileData((prev) => ({ ...prev, bio: event.target.value }))}
-            placeholder={locale === "bg" ? "Разкажи нещо за себе си..." : "Tell us about yourself..."}
+            placeholder={t("publicInfo.bioPlaceholder")}
             rows={3}
             maxLength={500}
           />
@@ -79,12 +75,12 @@ export function PublicProfileInfoCard({
         <div className="space-y-2">
           <Label className="flex items-center gap-1.5">
             <MapPin className="size-4" />
-            {locale === "bg" ? "Локация" : "Location"}
+            {t("publicInfo.locationLabel")}
           </Label>
           <Input
             value={profileData.location}
             onChange={(event) => setProfileData((prev) => ({ ...prev, location: event.target.value }))}
-            placeholder={locale === "bg" ? "София, България" : "Sofia, Bulgaria"}
+            placeholder={t("publicInfo.locationPlaceholder")}
           />
         </div>
 
@@ -95,14 +91,12 @@ export function PublicProfileInfoCard({
             <div className="space-y-2">
               <Label className="flex items-center gap-1.5">
                 <Globe className="size-4" />
-                {locale === "bg" ? "Уебсайт" : "Website"}
+                {t("publicInfo.websiteLabel")}
               </Label>
               <Input
                 type="url"
                 value={profileData.website_url}
-                onChange={(event) =>
-                  setProfileData((prev) => ({ ...prev, website_url: event.target.value }))
-                }
+                onChange={(event) => setProfileData((prev) => ({ ...prev, website_url: event.target.value }))}
                 placeholder="https://example.com"
               />
             </div>
@@ -111,7 +105,7 @@ export function PublicProfileInfoCard({
               <div className="space-y-2">
                 <Label className="flex items-center gap-1.5">
                   <FacebookLogo className="size-4" />
-                  Facebook
+                  {t("publicInfo.socialFacebook")}
                 </Label>
                 <Input
                   value={profileData.social_links.facebook}
@@ -127,7 +121,7 @@ export function PublicProfileInfoCard({
               <div className="space-y-2">
                 <Label className="flex items-center gap-1.5">
                   <InstagramLogo className="size-4" />
-                  Instagram
+                  {t("publicInfo.socialInstagram")}
                 </Label>
                 <Input
                   value={profileData.social_links.instagram}
@@ -143,7 +137,7 @@ export function PublicProfileInfoCard({
               <div className="space-y-2">
                 <Label className="flex items-center gap-1.5">
                   <TwitterLogo className="size-4" />
-                  Twitter/X
+                  {t("publicInfo.socialTwitter")}
                 </Label>
                 <Input
                   value={profileData.social_links.twitter}
@@ -159,7 +153,7 @@ export function PublicProfileInfoCard({
               <div className="space-y-2">
                 <Label className="flex items-center gap-1.5">
                   <TiktokLogo className="size-4" />
-                  TikTok
+                  {t("publicInfo.socialTiktok")}
                 </Label>
                 <Input
                   value={profileData.social_links.tiktok}
@@ -178,7 +172,7 @@ export function PublicProfileInfoCard({
 
         <Button onClick={onSave} disabled={isPending} className="w-full">
           {isPending && <SpinnerGap className="size-4 mr-2 animate-spin" />}
-          {locale === "bg" ? "Запази промените" : "Save Changes"}
+          {t("actions.save")}
         </Button>
       </CardContent>
     </Card>

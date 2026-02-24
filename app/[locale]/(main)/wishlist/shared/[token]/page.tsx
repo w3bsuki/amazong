@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
-import { notFound } from "next/navigation"
 import Image from "next/image"
-import { Link } from "@/i18n/routing"
+import { Link, notFound } from "@/i18n/routing"
+import type { Metadata } from "next"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Gift, ShoppingCart } from "lucide-react";
@@ -20,16 +20,21 @@ interface SharedWishlistPageProps {
   }>
 }
 
-export const metadata = {
-  title: "Shared Wishlist | Treido",
-  description: "View a shared Treido wishlist.",
+export async function generateMetadata({ params }: SharedWishlistPageProps): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "SharedWishlist" })
+  return {
+    title: t("metadataTitle"),
+    description: t("metadataDescription"),
+  }
 }
 
 export default async function SharedWishlistPage({ params }: SharedWishlistPageProps) {
   const { token, locale } = await params
   setRequestLocale(locale)
   const supabase = await createClient()
-  const t = await getTranslations('SharedWishlist')
+  const t = await getTranslations({ locale, namespace: "SharedWishlist" })
+  const tWishlist = await getTranslations({ locale, namespace: "Wishlist" })
 
   if (!supabase) {
     notFound()
@@ -123,7 +128,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
                 <div className="relative aspect-square bg-muted">
                   <Image
                     src={item.product_image || "/placeholder.svg"}
-                    alt={item.product_title || "Product"}
+                    alt={item.product_title || tWishlist("unknownProduct")}
                     fill
                     className="object-contain p-4"
                   />

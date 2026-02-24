@@ -128,6 +128,8 @@ export function ProductsTableToolbar({
                 variant="ghost"
                 size="icon"
                 className="absolute right-0.5 top-1/2 -translate-y-1/2 size-7"
+                type="button"
+                aria-label="Clear search"
                 onClick={() => onSearchQueryChange("")}
               >
                 <IconX className="size-3" />

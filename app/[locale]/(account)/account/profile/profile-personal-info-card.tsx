@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Field, FieldContent, FieldLabel } from "@/components/shared/field"
@@ -24,13 +25,13 @@ export function ProfilePersonalInfoCard({
   isPending,
   onSubmit,
 }: ProfilePersonalInfoCardProps) {
+  const t = useTranslations("Account.profileEditor")
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">{locale === "bg" ? "Лична информация" : "Personal Information"}</CardTitle>
-        <CardDescription>
-          {locale === "bg" ? "Актуализирайте информацията за вашия профил" : "Update your profile information"}
-        </CardDescription>
+        <CardTitle className="text-lg">{t("personalInfo.title")}</CardTitle>
+        <CardDescription>{t("personalInfo.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="space-y-4">
@@ -39,7 +40,7 @@ export function ProfilePersonalInfoCard({
               <FieldContent>
                 <FieldLabel htmlFor="full_name">
                   <User className="size-4 inline mr-1.5" />
-                  {locale === "bg" ? "Име" : "Full Name"}
+                  {t("personalInfo.fullNameLabel")}
                 </FieldLabel>
                 <Input
                   id="full_name"
@@ -51,7 +52,7 @@ export function ProfilePersonalInfoCard({
                       full_name: event.target.value,
                     }))
                   }
-                  placeholder={locale === "bg" ? "Вашето име" : "Your name"}
+                  placeholder={t("personalInfo.fullNamePlaceholder")}
                 />
               </FieldContent>
             </Field>
@@ -59,16 +60,14 @@ export function ProfilePersonalInfoCard({
               <FieldContent>
                 <FieldLabel htmlFor="phone">
                   <Phone className="size-4 inline mr-1.5" />
-                  {locale === "bg" ? "Телефон" : "Phone"}
+                  {t("personalInfo.phoneLabel")}
                 </FieldLabel>
                 <Input
                   id="phone"
                   name="phone"
                   type="tel"
                   value={profileData.phone}
-                  onChange={(event) =>
-                    setProfileData((prev) => ({ ...prev, phone: event.target.value }))
-                  }
+                  onChange={(event) => setProfileData((prev) => ({ ...prev, phone: event.target.value }))}
                   placeholder="+359 888 123 456"
                 />
               </FieldContent>
@@ -80,18 +79,14 @@ export function ProfilePersonalInfoCard({
               <FieldContent>
                 <FieldLabel htmlFor="shipping_region">
                   <MapPin className="size-4 inline mr-1.5" />
-                  {locale === "bg" ? "Регион за доставка" : "Shipping Region"}
+                  {t("personalInfo.shippingRegionLabel")}
                 </FieldLabel>
                 <Select
                   value={profileData.shipping_region}
-                  onValueChange={(value) =>
-                    setProfileData((prev) => ({ ...prev, shipping_region: value }))
-                  }
+                  onValueChange={(value) => setProfileData((prev) => ({ ...prev, shipping_region: value }))}
                 >
                   <SelectTrigger id="shipping_region">
-                    <SelectValue
-                      placeholder={locale === "bg" ? "Изберете регион" : "Select region"}
-                    />
+                    <SelectValue placeholder={t("personalInfo.shippingRegionPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {shippingRegions.map((region) => (
@@ -107,7 +102,7 @@ export function ProfilePersonalInfoCard({
               <FieldContent>
                 <FieldLabel htmlFor="country_code">
                   <Globe className="size-4 inline mr-1.5" />
-                  {locale === "bg" ? "Държава" : "Country Code"}
+                  {t("personalInfo.countryCodeLabel")}
                 </FieldLabel>
                 <Input
                   id="country_code"
@@ -130,10 +125,10 @@ export function ProfilePersonalInfoCard({
             {isPending ? (
               <>
                 <SpinnerGap className="size-4 mr-2 animate-spin" />
-                {locale === "bg" ? "Запазване..." : "Saving..."}
+                {t("actions.saving")}
               </>
             ) : (
-              locale === "bg" ? "Запази промените" : "Save Changes"
+              t("actions.save")
             )}
           </Button>
         </form>

@@ -5,6 +5,8 @@ import { getStripeConnectWebhookSecrets } from "@/lib/env"
 import { logError, logEvent } from "@/lib/logger"
 import type Stripe from "stripe"
 
+const WEBHOOK_ROUTE = "api/connect/webhook"
+
 /**
  * POST /api/connect/webhook
  * 
@@ -23,7 +25,7 @@ export async function POST(req: Request) {
 
   if (!sig) {
     logError("stripe_connect_webhook_missing_signature", null, {
-      route: "api/connect/webhook",
+      route: WEBHOOK_ROUTE,
     })
     return NextResponse.json({ error: "Missing signature" }, { status: 400 })
   }
@@ -50,7 +52,7 @@ export async function POST(req: Request) {
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error"
     logError("stripe_connect_webhook_signature_verification_failed", err, {
-      route: "api/connect/webhook",
+      route: WEBHOOK_ROUTE,
       message: errorMessage,
     })
     return NextResponse.json(
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
     const sellerId = account.metadata?.seller_id
     if (!sellerId) {
       logEvent("warn", "stripe_connect_webhook_missing_seller_metadata", {
-        route: "api/connect/webhook",
+        route: WEBHOOK_ROUTE,
       })
       // Try to find by account ID
       const { data: existingStatus } = await supabase
@@ -80,7 +82,7 @@ export async function POST(req: Request) {
 
       if (!existingStatus) {
         logError("stripe_connect_webhook_seller_not_found_for_account", null, {
-          route: "api/connect/webhook",
+          route: WEBHOOK_ROUTE,
         })
         return NextResponse.json({ received: true })
       }
@@ -99,14 +101,13 @@ export async function POST(req: Request) {
 
     if (updateError) {
       logError("stripe_connect_webhook_update_seller_payout_status_failed", updateError, {
-        route: "api/connect/webhook",
+        route: WEBHOOK_ROUTE,
       })
     }
   }
 
   // Handle account.application.deauthorized - seller disconnected the platform
   if (event.type === "account.application.deauthorized") {
-    const application = event.data.object as Stripe.Application
     const accountId = event.account // The connected account ID is in the event
 
     if (accountId) {
@@ -122,7 +123,7 @@ export async function POST(req: Request) {
 
       if (updateError) {
         logError("stripe_connect_webhook_handle_deauthorization_failed", updateError, {
-          route: "api/connect/webhook",
+          route: WEBHOOK_ROUTE,
         })
       }
     }

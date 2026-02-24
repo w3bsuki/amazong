@@ -29,7 +29,7 @@ function normalizeCategoryNode(input: unknown): Product["categories"] {
  * Extracted to avoid duplication across getProducts/getProductsByCategorySlug.
  */
 export function mapRowToProduct(p: unknown): Product {
-  const row = p as unknown as Record<string, unknown>
+  const row = p && typeof p === "object" ? (p as Record<string, unknown>) : {}
   const categories = normalizeCategoryNode(row.categories)
   const seller =
     row.seller && typeof row.seller === "object" ? (row.seller as Record<string, unknown>) : null
@@ -41,10 +41,11 @@ export function mapRowToProduct(p: unknown): Product {
           : seller.user_verification) as Record<string, unknown>)
       : null
 
-  const rawProduct = p as unknown as { is_boosted?: boolean | null }
+  const rawProduct = row as { is_boosted?: boolean | null }
+  const baseProduct = row as Partial<Product>
 
   return {
-    ...(p as unknown as Product),
+    ...baseProduct,
     is_boosted: rawProduct.is_boosted ?? null,
     categories,
     category_slug: categories?.slug ?? null,

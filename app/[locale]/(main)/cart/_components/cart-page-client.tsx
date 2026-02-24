@@ -20,6 +20,17 @@ import {
 
 const CART_READY_TIMEOUT = 3000
 
+function getProductUrl(item: {
+  id: string
+  slug?: string | null
+  username?: string | null
+  storeSlug?: string | null
+}) {
+  const sellerSlug = item.username ?? item.storeSlug
+  if (!sellerSlug) return "#"
+  return `/${sellerSlug}/${item.slug ?? item.id}`
+}
+
 export default function CartPageClient() {
   const { items, isReady, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
   const router = useRouter()
@@ -50,17 +61,6 @@ export default function CartPageClient() {
   }
 
   const formatPrice = (price: number) => formatCurrencyPrice(price, { locale })
-
-  const getProductUrl = (item: {
-    id: string
-    slug?: string | null
-    username?: string | null
-    storeSlug?: string | null
-  }) => {
-    const sellerSlug = item.username ?? item.storeSlug
-    if (!sellerSlug) return "#"
-    return `/${sellerSlug}/${item.slug ?? item.id}`
-  }
 
   if (!effectivelyReady) {
     return (

@@ -1,6 +1,9 @@
-import { NextResponse } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
 import { logError } from "@/lib/logger"
+import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
+
+const PRERENDER_FETCH_REJECTION_MESSAGE =
+  "During prerendering, fetch() rejects when the prerender is complete."
 
 /**
  * GET /api/seller/top
@@ -32,6 +35,22 @@ interface SellerQueryRow {
   products: { id: string; rating: number | null }[]
 }
 
+function isExpectedPrerenderFetchRejection(error: unknown): boolean {
+  if (error instanceof Error) {
+    return error.message.includes(PRERENDER_FETCH_REJECTION_MESSAGE)
+  }
+
+  if (typeof error === "object" && error !== null) {
+    const record = error as Record<string, unknown>
+    const details = [record.message, record.details, record.hint]
+      .filter((value): value is string => typeof value === "string")
+      .join(" ")
+    return details.includes(PRERENDER_FETCH_REJECTION_MESSAGE)
+  }
+
+  return false
+}
+
 export async function GET() {
   try {
     const supabase = createStaticClient()
@@ -59,8 +78,10 @@ export async function GET() {
       .order("created_at", { ascending: false })
 
     if (error) {
-      logError("[api/seller/top] Supabase query failed", error)
-      return NextResponse.json({ sellers: [] }, { status: 500 })
+      if (!isExpectedPrerenderFetchRejection(error)) {
+        logError("[api/seller/top] Supabase query failed", error)
+      }
+      return noStoreJson({ sellers: [] }, { status: 500 })
     }
 
     const rows = (data ?? []) as SellerQueryRow[]
@@ -88,16 +109,11 @@ export async function GET() {
       .sort((a, b) => b.product_count - a.product_count)
       .slice(0, 20)
 
-    return NextResponse.json(
-      { sellers },
-      {
-        headers: {
-          "Cache-Control": "public, s-maxage=600, stale-while-revalidate=120",
-        },
-      },
-    )
+    return cachedJsonResponse({ sellers }, "categories")
   } catch (err) {
-    logError("[api/seller/top] Unexpected error", err instanceof Error ? err : new Error(String(err)))
-    return NextResponse.json({ sellers: [] }, { status: 500 })
+    if (!isExpectedPrerenderFetchRejection(err)) {
+      logError("[api/seller/top] Unexpected error", err instanceof Error ? err : new Error(String(err)))
+    }
+    return noStoreJson({ sellers: [] }, { status: 500 })
   }
 }

@@ -3,6 +3,7 @@ import 'server-only'
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from "@/lib/supabase/server"
 import type { Database } from "@/lib/supabase/database.types"
+import { isUuid } from "@/lib/utils/is-uuid"
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"]
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"]
@@ -45,10 +46,6 @@ export type ProductPageProduct = ProductRow & {
   product_images?: ProductImage[]
   product_variants?: ProductVariantRow[]
 }
-
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-const isUuid = (value: unknown): value is string => typeof value === 'string' && UUID_REGEX.test(value)
 
 const PRODUCT_SELECT =
   'id,title,slug,price,list_price,description,condition,images,attributes,meta_description,rating,review_count,stock,pickup_only,seller_city,seller_id,category_id,view_count,created_at' as const
@@ -142,14 +139,14 @@ export async function fetchProductByUsernameAndSlug(
       .eq("username", safeUsername)
       .maybeSingle()
 
-    const profile = (exactProfile as unknown as ProductSeller | null)
+    const profile = (exactProfile as ProductSeller | null)
       ?? (
         await supabase
           .from("profiles")
           .select("id, username, display_name, avatar_url, verified, is_seller, created_at, last_active")
           .ilike("username", safeUsername)
           .maybeSingle()
-      ).data as unknown as ProductSeller | null
+      ).data as ProductSeller | null
 
     if (!profile) return null
 
@@ -185,7 +182,7 @@ export async function fetchProductByUsernameAndSlug(
         .select("id, name, name_bg, slug, parent_id, icon, image_url")
         .eq("id", fallbackProduct.category_id)
         .single()
-      category = (data as unknown as ProductCategory | null) ?? null
+      category = (data as ProductCategory | null) ?? null
     }
 
     const { data: sellerStats } = await supabase
@@ -215,7 +212,7 @@ export async function fetchProductByUsernameAndSlug(
           .order("sort_order", { ascending: true })
           .order("created_at", { ascending: true })
         ).data ?? []
-      ) as unknown as ProductVariantRow[],
+      ) as ProductVariantRow[],
     }
 
     addEntityTags(enriched)
@@ -258,7 +255,7 @@ export async function fetchProductByUsernameAndSlug(
         if (ao !== bo) return ao - bo
 
         return String(a.name ?? "").localeCompare(String(b.name ?? ""))
-      }) as unknown as ProductVariantRow[],
+      }) as ProductVariantRow[],
   }
 
   addEntityTags(enriched)

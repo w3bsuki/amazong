@@ -44,12 +44,18 @@ export type PlansPageContent = {
   popular: string
   mostPopular: string
   feeLabel: string
+  buyerFeeLabel: string
   period: { mo: string; yr: string }
+  buyerFeeAdvantage: {
+    title: string
+    desc: string
+  }
   planFeatures: {
     listingsPerMonth: string
     unlimitedListings: string
     whenSoldShort: string
     buyerProtection: string
+    capLabel: string
     boostsShort: string
     analytics: string
   }

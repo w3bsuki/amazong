@@ -27,11 +27,135 @@ import {
 
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { logger } from "@/lib/logger"
 import { PlansGrid, type Plan } from "../_components/plan-card"
 import {
   mapSubscriptionPlanToPlan,
   type PlansContentProps,
 } from "./plans-content.types"
+
+type PlansContentCopy = {
+  subscriptionActivated: string
+  paymentCancelled: string
+  cancelAtPeriodEnd: string
+  genericError: string
+  subscriptionReactivated: string
+  freePlanInfo: string
+  checkoutError: string
+  portalError: string
+  headerTitle: string
+  headerDescription: string
+  currentPlanPrefix: string
+  cancelling: string
+  accessEndsOn: (date: string) => string
+  nextBilling: (date: string) => string
+  cancellationWarning: string
+  reactivate: string
+  cancelSubscription: string
+  cancelDialogTitle: string
+  cancelDialogDescription: string
+  accessExpiresOn: (date: string) => string
+  resubscribeHint: string
+  keepSubscription: string
+  cancelConfirm: string
+  processing: string
+  paymentMethods: string
+  freeTierHint: string
+  monthly: string
+  yearly: string
+  boostTitle: string
+  boostDescription: string
+  boostBest: string
+  boostFootnote: string
+  contactPrefix: string
+  contactUs: string
+  days7: string
+  days14: string
+  days30: string
+}
+
+const PLANS_CONTENT_COPY_EN: PlansContentCopy = {
+  subscriptionActivated: "Subscription activated successfully!",
+  paymentCancelled: "Payment was cancelled",
+  cancelAtPeriodEnd: "Subscription will be cancelled at the end of the billing period",
+  genericError: "Error",
+  subscriptionReactivated: "Subscription reactivated!",
+  freePlanInfo: "This is a free plan",
+  checkoutError: "Error creating payment. Please try again.",
+  portalError: "Error opening portal. Please try again.",
+  headerTitle: "Choose a Seller Plan",
+  headerDescription: "Upgrade your account for lower fees and more features",
+  currentPlanPrefix: "Current plan: ",
+  cancelling: "Cancelling",
+  accessEndsOn: (date) => `Access ends on ${date}`,
+  nextBilling: (date) => `Next billing: ${date}`,
+  cancellationWarning: "After this date, you'll be moved to the free plan. You can resubscribe anytime.",
+  reactivate: "Reactivate",
+  cancelSubscription: "Cancel Subscription",
+  cancelDialogTitle: "Cancel Subscription",
+  cancelDialogDescription:
+    "Are you sure? Your subscription will remain active until the end of the current billing period.",
+  accessExpiresOn: (date) => `Your access will expire on ${date}`,
+  resubscribeHint: "You can resubscribe anytime to restore your access.",
+  keepSubscription: "Keep Subscription",
+  cancelConfirm: "Yes, Cancel",
+  processing: "Processing...",
+  paymentMethods: "Payment Methods",
+  freeTierHint: "Upgrade your plan for lower fees and more listings",
+  monthly: "Monthly",
+  yearly: "Yearly",
+  boostTitle: "Boost Your Listings",
+  boostDescription: "Show your products to more people",
+  boostBest: "Best",
+  boostFootnote: 'Boosted listings appear in "Recommended" and rank higher in search.',
+  contactPrefix: "Have questions? ",
+  contactUs: "Contact us",
+  days7: "7 days",
+  days14: "14 days",
+  days30: "30 days",
+}
+
+const PLANS_CONTENT_COPY_BG: PlansContentCopy = {
+  subscriptionActivated: "Абонаментът е активиран успешно!",
+  paymentCancelled: "Плащането беше отменено",
+  cancelAtPeriodEnd: "Абонаментът ще бъде прекратен в края на периода",
+  genericError: "Грешка",
+  subscriptionReactivated: "Абонаментът е активиран отново!",
+  freePlanInfo: "Това е безплатен план",
+  checkoutError: "Грешка при създаване на плащане. Моля, опитайте отново.",
+  portalError: "Грешка при отваряне на портала. Моля, опитайте отново.",
+  headerTitle: "Изберете план за продавач",
+  headerDescription: "Надградете акаунта си за по-ниски такси и повече възможности",
+  currentPlanPrefix: "Текущ план: ",
+  cancelling: "Отменен",
+  accessEndsOn: (date) => `Достъпът приключва на ${date}`,
+  nextBilling: (date) => `Следващо плащане: ${date}`,
+  cancellationWarning:
+    "След тази дата ще бъдете прехвърлени към безплатния план. Можете да се абонирате отново по всяко време.",
+  reactivate: "Активирай отново",
+  cancelSubscription: "Отмени абонамент",
+  cancelDialogTitle: "Отмяна на абонамента",
+  cancelDialogDescription:
+    "Сигурни ли сте? Вашият абонамент ще остане активен до края на текущия период за плащане.",
+  accessExpiresOn: (date) => `Достъпът ви ще изтече на ${date}`,
+  resubscribeHint: "Можете да се абонирате отново по всяко време, за да възстановите достъпа си.",
+  keepSubscription: "Откажи",
+  cancelConfirm: "Да, отмени",
+  processing: "Обработка...",
+  paymentMethods: "Методи за плащане",
+  freeTierHint: "Надградете плана си за по-ниски такси и повече обяви",
+  monthly: "Месечно",
+  yearly: "Годишно",
+  boostTitle: "Промотирай обявите си",
+  boostDescription: "Покажи продуктите си на повече хора",
+  boostBest: "Най-добра",
+  boostFootnote: 'Промотираните обяви се показват в секцията "Препоръчани" и имат по-високо позициониране.',
+  contactPrefix: "Имате въпроси? ",
+  contactUs: "Свържете се с нас",
+  days7: "7 дни",
+  days14: "14 дни",
+  days30: "30 дни",
+}
 
 export function PlansContent({
   locale,
@@ -41,6 +165,7 @@ export function PlansContent({
   currentSubscription,
   actions,
 }: PlansContentProps) {
+  const copy = locale === "bg" ? PLANS_CONTENT_COPY_BG : PLANS_CONTENT_COPY_EN
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly")
   const [isPending, startTransition] = useTransition()
@@ -63,35 +188,23 @@ export function PlansContent({
   // Show toast notifications based on URL params (from Stripe redirect)
   useEffect(() => {
     if (searchParams.get("success") === "true") {
-      toast.success(
-        locale === "bg"
-          ? "Абонаментът е активиран успешно!"
-          : "Subscription activated successfully!"
-      )
+      toast.success(copy.subscriptionActivated)
       window.history.replaceState({}, "", window.location.pathname)
     } else if (searchParams.get("canceled") === "true") {
-      toast.info(
-        locale === "bg"
-          ? "Плащането беше отменено"
-          : "Payment was cancelled"
-      )
+      toast.info(copy.paymentCancelled)
       window.history.replaceState({}, "", window.location.pathname)
     }
-  }, [searchParams, locale])
+  }, [searchParams, copy])
 
   // Handle subscription cancellation
   const handleCancelSubscription = () => {
     startTransition(async () => {
       const result = await actions.cancelSubscription()
       if (result.success) {
-        toast.success(
-          locale === "bg"
-            ? "Абонаментът ще бъде прекратен в края на периода"
-            : "Subscription will be cancelled at the end of the billing period"
-        )
+        toast.success(copy.cancelAtPeriodEnd)
         setCancelDialogOpen(false)
       } else {
-        toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
+        toast.error(result.error || copy.genericError)
       }
     })
   }
@@ -101,20 +214,16 @@ export function PlansContent({
     startTransition(async () => {
       const result = await actions.reactivateSubscription()
       if (result.success) {
-        toast.success(
-          locale === "bg"
-            ? "Абонаментът е активиран отново!"
-            : "Subscription reactivated!"
-        )
+        toast.success(copy.subscriptionReactivated)
       } else {
-        toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
+        toast.error(result.error || copy.genericError)
       }
     })
   }
 
   const handleSelectPlan = async (plan: Plan) => {
     if (plan.price_monthly === 0) {
-      toast.info(locale === "bg" ? "Това е безплатен план" : "This is a free plan")
+      toast.info(copy.freePlanInfo)
       return
     }
 
@@ -135,12 +244,8 @@ export function PlansContent({
         window.location.href = url
       }
     } catch (err) {
-      console.error("Checkout error:", err)
-      toast.error(
-        locale === "bg"
-          ? "Грешка при създаване на плащане. Моля, опитайте отново."
-          : "Error creating payment. Please try again."
-      )
+      logger.error("[account-plans] checkout_session_failed", err)
+      toast.error(copy.checkoutError)
     } finally {
       setLoadingPlanId(null)
     }
@@ -160,12 +265,8 @@ export function PlansContent({
         window.location.href = url
       }
     } catch (err) {
-      console.error("Portal error:", err)
-      toast.error(
-        locale === "bg"
-          ? "Грешка при отваряне на портала. Моля, опитайте отново."
-          : "Error opening portal. Please try again."
-      )
+      logger.error("[account-plans] portal_open_failed", err)
+      toast.error(copy.portalError)
     }
   }
 
@@ -178,12 +279,10 @@ export function PlansContent({
       {/* Header */}
       <div className="text-center">
         <h1 className="text-2xl sm:text-3xl font-semibold mb-2">
-          {locale === "bg" ? "Изберете план за продавач" : "Choose a Seller Plan"}
+          {copy.headerTitle}
         </h1>
         <p className="text-muted-foreground">
-          {locale === "bg"
-            ? "Надградете акаунта си за по-ниски такси и повече възможности"
-            : "Upgrade your account for lower fees and more features"}
+          {copy.headerDescription}
         </p>
       </div>
 
@@ -199,12 +298,12 @@ export function PlansContent({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Badge variant={isCancelledButActive ? "outline" : "secondary"} className="text-sm px-3 py-1">
-                    {locale === "bg" ? "Текущ план: " : "Current plan: "}
+                    {copy.currentPlanPrefix}
                     <span className="font-semibold capitalize ml-1">{currentTier}</span>
                   </Badge>
                   {isCancelledButActive && (
                     <Badge variant="outline" className="text-warning border-warning/50">
-                      {locale === "bg" ? "Отменен" : "Cancelling"}
+                      {copy.cancelling}
                     </Badge>
                   )}
                 </div>
@@ -214,19 +313,7 @@ export function PlansContent({
               {expiryDate && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CalendarBlank className="size-4" />
-                  {isCancelledButActive ? (
-                    <span>
-                      {locale === "bg"
-                        ? `Достъпът приключва на ${expiryDate}`
-                        : `Access ends on ${expiryDate}`}
-                    </span>
-                  ) : (
-                    <span>
-                      {locale === "bg"
-                        ? `Следващо плащане: ${expiryDate}`
-                        : `Next billing: ${expiryDate}`}
-                    </span>
-                  )}
+                  <span>{isCancelledButActive ? copy.accessEndsOn(expiryDate) : copy.nextBilling(expiryDate)}</span>
                 </div>
               )}
 
@@ -234,11 +321,7 @@ export function PlansContent({
               {isCancelledButActive && (
                 <div className="flex items-start gap-2 p-2 rounded-md bg-warning/10 text-warning text-xs">
                   <Warning className="size-4 shrink-0 mt-0.5" />
-                  <span>
-                    {locale === "bg"
-                      ? "След тази дата ще бъдете прехвърлени към безплатния план. Можете да се абонирате отново по всяко време."
-                      : "After this date, you'll be moved to the free plan. You can resubscribe anytime."}
-                  </span>
+                  <span>{copy.cancellationWarning}</span>
                 </div>
               )}
 
@@ -253,7 +336,7 @@ export function PlansContent({
                     className="gap-1.5"
                   >
                     <ArrowsClockwise className={cn("size-4", isPending && "animate-spin")} />
-                    {locale === "bg" ? "Активирай отново" : "Reactivate"}
+                    {copy.reactivate}
                   </Button>
                 ) : (
                   // Show Cancel button for active subscriptions
@@ -261,46 +344,34 @@ export function PlansContent({
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm" className="gap-1.5 text-muted-foreground">
                         <X className="size-4" />
-                        {locale === "bg" ? "Отмени абонамент" : "Cancel Subscription"}
+                        {copy.cancelSubscription}
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {locale === "bg" ? "Отмяна на абонамента" : "Cancel Subscription"}
-                        </AlertDialogTitle>
+                        <AlertDialogTitle>{copy.cancelDialogTitle}</AlertDialogTitle>
                         <AlertDialogDescription className="space-y-2">
-                          <p>
-                            {locale === "bg"
-                              ? "Сигурни ли сте? Вашият абонамент ще остане активен до края на текущия период за плащане."
-                              : "Are you sure? Your subscription will remain active until the end of the current billing period."}
-                          </p>
+                          <p>{copy.cancelDialogDescription}</p>
                           {expiryDate && (
                             <p className="font-medium">
-                              {locale === "bg"
-                                ? `Достъпът ви ще изтече на ${expiryDate}`
-                                : `Your access will expire on ${expiryDate}`}
+                              {copy.accessExpiresOn(expiryDate)}
                             </p>
                           )}
                           <p className="text-xs text-muted-foreground">
-                            {locale === "bg"
-                              ? "Можете да се абонирате отново по всяко време, за да възстановите достъпа си."
-                              : "You can resubscribe anytime to restore your access."}
+                            {copy.resubscribeHint}
                           </p>
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>
-                          {locale === "bg" ? "Откажи" : "Keep Subscription"}
-                        </AlertDialogCancel>
+                        <AlertDialogCancel>{copy.keepSubscription}</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={handleCancelSubscription}
                           disabled={isPending}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive"
                         >
                           {isPending
-                            ? (locale === "bg" ? "Обработка..." : "Processing...")
-                            : (locale === "bg" ? "Да, отмени" : "Yes, Cancel")}
+                            ? copy.processing
+                            : copy.cancelConfirm}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -315,7 +386,7 @@ export function PlansContent({
                     onClick={handleManageSubscription}
                     className="text-xs"
                   >
-                    {locale === "bg" ? "Методи за плащане" : "Payment Methods"}
+                    {copy.paymentMethods}
                   </Button>
                 )}
               </div>
@@ -328,13 +399,11 @@ export function PlansContent({
       {seller && !hasActiveSubscription && (
         <div className="flex flex-col items-center gap-3">
           <Badge variant="secondary" className="text-sm px-3 py-1">
-            {locale === "bg" ? "Текущ план: " : "Current plan: "}
+            {copy.currentPlanPrefix}
             <span className="font-semibold capitalize ml-1">{currentTier}</span>
           </Badge>
           <p className="text-sm text-muted-foreground text-center max-w-md">
-            {locale === "bg"
-              ? "Надградете плана си за по-ниски такси и повече обяви"
-              : "Upgrade your plan for lower fees and more listings"}
+            {copy.freeTierHint}
           </p>
         </div>
       )}
@@ -353,7 +422,7 @@ export function PlansContent({
             onClick={() => setBillingPeriod("monthly")}
             aria-pressed={billingPeriod === "monthly"}
           >
-            {locale === "bg" ? "Месечно" : "Monthly"}
+            {copy.monthly}
           </button>
           <button
             type="button"
@@ -366,7 +435,7 @@ export function PlansContent({
             onClick={() => setBillingPeriod("yearly")}
             aria-pressed={billingPeriod === "yearly"}
           >
-            {locale === "bg" ? "Годишно" : "Yearly"}
+            {copy.yearly}
             <Badge variant="secondary" className="text-xs bg-selected text-primary">
               -17%
             </Badge>
@@ -395,12 +464,10 @@ export function PlansContent({
               </div>
               <div>
                 <CardTitle className="text-base md:text-lg">
-                  {locale === 'bg' ? 'Промотирай обявите си' : 'Boost Your Listings'}
+                  {copy.boostTitle}
                 </CardTitle>
                 <CardDescription className="text-xs md:text-sm">
-                  {locale === 'bg'
-                    ? 'Покажи продуктите си на повече хора'
-                    : 'Show your products to more people'}
+                  {copy.boostDescription}
                 </CardDescription>
               </div>
             </div>
@@ -410,24 +477,22 @@ export function PlansContent({
             <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory sm:grid sm:grid-cols-3 sm:overflow-visible">
               <div className="border border-border rounded-md p-3 text-center shrink-0 w-24 snap-center sm:w-auto">
                 <p className="text-lg font-semibold">2.99 лв</p>
-                <p className="text-xs text-muted-foreground">{locale === 'bg' ? '7 дни' : '7 days'}</p>
+                <p className="text-xs text-muted-foreground">{copy.days7}</p>
               </div>
               <div className="border border-primary rounded-md p-3 text-center relative shrink-0 w-24 snap-center sm:w-auto">
                 <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-2xs px-1.5 py-0">
-                  {locale === 'bg' ? 'Най-добра' : 'Best'}
+                  {copy.boostBest}
                 </Badge>
                 <p className="text-lg font-semibold">4.99 лв</p>
-                <p className="text-xs text-muted-foreground">{locale === 'bg' ? '14 дни' : '14 days'}</p>
+                <p className="text-xs text-muted-foreground">{copy.days14}</p>
               </div>
               <div className="border border-border rounded-md p-3 text-center shrink-0 w-24 snap-center sm:w-auto">
                 <p className="text-lg font-semibold">8.99 лв</p>
-                <p className="text-xs text-muted-foreground">{locale === 'bg' ? '30 дни' : '30 days'}</p>
+                <p className="text-xs text-muted-foreground">{copy.days30}</p>
               </div>
             </div>
             <p className="text-2xs md:text-xs text-muted-foreground mt-3 text-center">
-              {locale === 'bg'
-                ? 'Промотираните обяви се показват в секцията "Препоръчани" и имат по-високо позициониране.'
-                : 'Boosted listings appear in "Recommended" and rank higher in search.'}
+              {copy.boostFootnote}
             </p>
           </CardContent>
         </Card>
@@ -436,9 +501,9 @@ export function PlansContent({
       {/* FAQ or Help */}
       <div className="mt-8 text-center">
         <p className="text-sm text-muted-foreground">
-          {locale === 'bg' ? 'Имате въпроси? ' : 'Have questions? '}
+          {copy.contactPrefix}
           <Link href="/customer-service" className="text-link hover:underline">
-            {locale === 'bg' ? 'Свържете се с нас' : 'Contact us'}
+            {copy.contactUs}
           </Link>
         </p>
       </div>

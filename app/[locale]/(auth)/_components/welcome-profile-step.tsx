@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { COLOR_PALETTES, type AvatarVariant } from "@/lib/avatar-palettes"
 import { ArrowRight, LoaderCircle as SpinnerGap } from "lucide-react"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 import { StepHeader } from "./welcome-step-header"
 
 export function WelcomeProfileStep({
@@ -37,6 +38,9 @@ export function WelcomeProfileStep({
   onDisplayNameChange: (value: string) => void
   onBioChange: (value: string) => void
 }) {
+  const tOnboarding = useTranslations("Onboarding")
+  const tSell = useTranslations("Sell")
+
   return (
     <motion.div
       key="profile"
@@ -47,8 +51,8 @@ export function WelcomeProfileStep({
     >
       <StepHeader
         onBack={onBack}
-        title="Tell us about yourself"
-        description="This helps other users know who you are"
+        title={tOnboarding("profile.title")}
+        description={tOnboarding("profile.subtitle")}
       />
 
       <div className="p-4 space-y-4">
@@ -56,7 +60,7 @@ export function WelcomeProfileStep({
           {useCustomAvatar && avatarPreview ? (
             <Image
               src={avatarPreview}
-              alt="Avatar"
+              alt={tOnboarding("profile.profileImageLabel")}
               width={64}
               height={64}
               className="size-16 rounded-full object-cover"
@@ -72,34 +76,36 @@ export function WelcomeProfileStep({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1.5">Display Name</label>
+          <label className="block text-sm font-medium text-foreground mb-1.5">{tOnboarding("profile.displayNameLabel")}</label>
           <Input
             value={displayName}
             onChange={(e) => onDisplayNameChange(e.target.value)}
-            placeholder={profileUsername || "Your name"}
+            placeholder={profileUsername || tOnboarding("profile.displayNamePlaceholder")}
             className="h-11"
           />
-          <p className="text-xs text-muted-foreground mt-1">This is how other users will see you</p>
+          <p className="text-xs text-muted-foreground mt-1">{tOnboarding("profile.displayNameHint")}</p>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-foreground mb-1.5">
-            Bio <span className="text-muted-foreground font-normal">(optional)</span>
+            {tSell("sellerOnboardingWizard.bioLabel")}
           </label>
           <Textarea
             value={bio}
             onChange={(e) => onBioChange(e.target.value)}
-            placeholder="Tell others a bit about yourself..."
+            placeholder={tSell("sellerOnboardingWizard.bioPlaceholder")}
             rows={3}
             className="resize-none"
             maxLength={200}
           />
-          <p className="text-xs text-muted-foreground mt-1 text-right">{bio.length}/200</p>
+          <p className="text-xs text-muted-foreground mt-1 text-right">
+            {bio.length}/200 · {tSell("sellerOnboardingWizard.bioHint")}
+          </p>
         </div>
 
         <div className="flex gap-3 pt-4">
           <Button variant="outline" onClick={onBack} className="flex-1">
-            Back
+            {tOnboarding("common.back")}
           </Button>
           <Button
             onClick={onContinue}
@@ -110,7 +116,7 @@ export function WelcomeProfileStep({
               <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
             ) : (
               <>
-                Save & Continue <ArrowRight className="size-4 ml-2" />
+                {tOnboarding("common.continue")} <ArrowRight className="size-4 ml-2" />
               </>
             )}
           </Button>

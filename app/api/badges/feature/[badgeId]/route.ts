@@ -1,5 +1,13 @@
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { noStoreJson } from "@/lib/api/response-helpers"
+import { z } from "zod"
+
+const BadgeFeatureParamsSchema = z
+  .object({
+    badgeId: z.string().uuid(),
+  })
+  .strict()
 
 interface RouteContext {
   params: Promise<{ badgeId: string }>
@@ -21,11 +29,16 @@ function isMissingIsFeaturedColumnError(error: { code?: string; message?: string
  */
 export async function PATCH(request: NextRequest, { params }: RouteContext) {
   const { supabase, applyCookies } = createRouteHandlerClient(request)
-  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-    applyCookies(NextResponse.json(body, init))
+  const json = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
+    applyCookies(noStoreJson(body, init))
 
   try {
-    const { badgeId } = await params
+    const parsedParams = BadgeFeatureParamsSchema.safeParse(await params)
+    if (!parsedParams.success) {
+      return json({ error: "Invalid badge ID" }, { status: 400 })
+    }
+
+    const { badgeId } = parsedParams.data
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {

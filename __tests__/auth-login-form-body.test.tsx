@@ -48,7 +48,7 @@ describe("LoginFormBody", () => {
     render(<LoginFormBody action={action} />)
     const form = screen.getAllByTestId("login-form")[0]
     const root = form.parentElement
-    expect(root).toBeTruthy()
+    expect(root).not.toBeNull()
 
     const sectionOrder = [
       ...(root as HTMLElement).querySelectorAll(

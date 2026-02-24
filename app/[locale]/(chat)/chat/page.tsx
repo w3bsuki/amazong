@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server"
 import { redirect } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { MessagesPageClient } from "../_components/messages-page-client"
-import { blockUser } from "@/app/actions/blocked-users"
+import { blockUser } from "../../../actions/blocked-users"
 import { reportConversation } from "../_actions/report-conversation"
 import { AuthGateCard } from "../../_components/auth/auth-gate-card"
 

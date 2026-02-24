@@ -4,14 +4,21 @@ import {
   type ConsoleMessage,
   type Locator,
   type Page,
-  type Response,
+type Response,
 } from '@playwright/test'
 
 // ============================================================================
 // Types
 // ============================================================================
 
-type GotoWithRetriesOptions = Parameters<Page['goto']>[1] & { retries?: number }
+export type GotoWithRetriesOptions = Parameters<Page['goto']>[1] & { retries?: number }
+
+export type AppFixture = {
+  goto: (url: string, options?: GotoWithRetriesOptions) => Promise<Response | null>
+  clearAuthSession: () => Promise<void>
+  waitForHydration: () => Promise<void>
+  assertNoConsoleErrors: () => void
+}
 
 export type ConsoleCapture = {
   errors: ConsoleMessage[]
@@ -27,12 +34,7 @@ type StrictFixtures = {
   consoleCapture: ConsoleCapture
 
   /** App utilities for common operations */
-  app: {
-    goto: (url: string, options?: GotoWithRetriesOptions) => Promise<Response | null>
-    clearAuthSession: () => Promise<void>
-    waitForHydration: () => Promise<void>
-    assertNoConsoleErrors: () => void
-  }
+  app: AppFixture
 }
 
 // ============================================================================

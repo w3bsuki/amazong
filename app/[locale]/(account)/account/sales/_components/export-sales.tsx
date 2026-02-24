@@ -58,8 +58,7 @@ export function ExportSales({ defaultFrom, defaultTo }: ExportSalesProps) {
       a.click()
       a.remove()
       URL.revokeObjectURL(href)
-    } catch (err) {
-      console.error(err)
+    } catch {
       toast.error(t("sales.export.errors.failed"))
     } finally {
       setIsDownloading(false)

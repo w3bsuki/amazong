@@ -3,7 +3,7 @@ import { redirect, routing } from "@/i18n/routing";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AccountLayoutContent } from "./_components/account-layout-content";
 import { headers } from "next/headers";
-import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads";
+import { createSubscriptionCheckoutSession } from "../../actions/subscriptions-reads";
 import { connection } from "next/server";
 import { CommerceProviders } from "../_providers/commerce-providers";
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider";

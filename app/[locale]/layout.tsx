@@ -1,6 +1,5 @@
 import { hasLocale } from 'next-intl';
-import { notFound } from 'next/navigation';
-import { routing } from '@/i18n/routing';
+import { notFound, routing } from '@/i18n/routing';
 import { Inter } from "next/font/google";
 import "../globals.css";
 import type { Metadata } from 'next';
@@ -24,60 +23,81 @@ const inter = Inter({
   adjustFontFallback: true,
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://treido.eu'),
-  title: {
-    template: '%s | Treido',
-    default: 'Treido',
+const METADATA_COPY = {
+  en: {
+    description: "Discover the best products at affordable prices.",
+    ogAlt: "Treido marketplace",
   },
-  description: 'Discover the best products at affordable prices.',
-  authors: [{ name: 'Treido', url: 'https://treido.eu' }],
-  creator: 'Treido',
-  publisher: 'Treido',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+  bg: {
+    description: "Открий най-добрите продукти на достъпни цени.",
+    ogAlt: "Treido маркетплейс",
+  },
+} as const
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const resolvedLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale
+  const copy = METADATA_COPY[resolvedLocale]
+
+  return {
+    metadataBase: new URL('https://treido.eu'),
+    title: {
+      template: '%s | Treido',
+      default: 'Treido',
+    },
+    description: copy.description,
+    authors: [{ name: 'Treido', url: 'https://treido.eu' }],
+    creator: 'Treido',
+    publisher: 'Treido',
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  icons: {
-    icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/icon-dark-32x32.png', sizes: '32x32', type: 'image/png' },
-    ],
-    apple: '/apple-icon.png',
-  },
-  openGraph: {
-    title: 'Treido',
-    description: 'Discover the best products at affordable prices.',
-    type: 'website',
-    siteName: 'Treido',
-    images: [
-      {
-        url: '/og-image.svg',
-        width: 1200,
-        height: 630,
-        alt: 'Treido',
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Treido',
-    description: 'Discover the best products at affordable prices.',
-    images: ['/og-image.svg'],
-  },
-  alternates: {
-    languages: {
-      'en-IE': 'https://treido.eu/en',
-      'bg-BG': 'https://treido.eu/bg',
     },
-  },
+    icons: {
+      icon: [
+        { url: '/icon.svg', type: 'image/svg+xml' },
+        { url: '/icon-dark-32x32.png', sizes: '32x32', type: 'image/png' },
+      ],
+      apple: '/apple-icon.png',
+    },
+    openGraph: {
+      title: 'Treido',
+      description: copy.description,
+      type: 'website',
+      siteName: 'Treido',
+      images: [
+        {
+          url: '/og-image.svg',
+          width: 1200,
+          height: 630,
+          alt: copy.ogAlt,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Treido',
+      description: copy.description,
+      images: ['/og-image.svg'],
+    },
+    alternates: {
+      languages: {
+        en: 'https://treido.eu/en',
+        bg: 'https://treido.eu/bg',
+      },
+    },
+  }
 }
 
 /**

@@ -1,4 +1,4 @@
-export const DEFAULT_SUPABASE_FETCH_TIMEOUT_MS = 8000
+const DEFAULT_SUPABASE_FETCH_TIMEOUT_MS = 8000
 
 export function getPublicSupabaseEnvOptional(): { url: string; anonKey: string } | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -15,7 +15,7 @@ export function getPublicSupabaseEnv(): { url: string; anonKey: string } {
   return env
 }
 
-export function getSupabaseFetchTimeoutMs(): number {
+function getSupabaseFetchTimeoutMs(): number {
   const parsed = Number.parseInt(process.env.SUPABASE_FETCH_TIMEOUT_MS ?? "8000", 10)
   if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_SUPABASE_FETCH_TIMEOUT_MS
   return parsed

@@ -33,6 +33,6 @@ describe("CategoryBadge", () => {
       />
     )
 
-    expect(queryByText("📱")).toBeTruthy()
+    expect(queryByText("📱")).toBeInTheDocument()
   })
 })

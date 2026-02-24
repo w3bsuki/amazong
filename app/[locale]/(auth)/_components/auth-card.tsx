@@ -24,7 +24,6 @@ export function AuthCard({
           <Link
             href="/"
             className="mx-auto inline-flex min-h-11 items-center justify-center text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors"
-            aria-label="Treido home"
           >
             treido.
           </Link>

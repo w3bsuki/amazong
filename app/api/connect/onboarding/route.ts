@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { createAdminClient, createRouteHandlerClient } from "@/lib/supabase/server"
 import { createConnectAccount, createAccountLink } from "@/lib/stripe-connect"
 import { buildLocaleUrlFromRequest, inferLocaleFromRequest } from "@/lib/stripe-locale"
+import { noStoreJson } from "@/lib/api/response-helpers"
 
 /**
  * POST /api/connect/onboarding
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return noStoreJson({ error: "Unauthorized" }, { status: 401 })
     }
 
     // Get seller profile
@@ -26,11 +27,11 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (profileError || !profile) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 })
+      return noStoreJson({ error: "Profile not found" }, { status: 404 })
     }
 
     if (profile.role !== "seller" && profile.role !== "admin") {
-      return NextResponse.json({ error: "Only sellers can onboard" }, { status: 403 })
+      return noStoreJson({ error: "Only sellers can onboard" }, { status: 403 })
     }
 
     const adminSupabase = createAdminClient()
@@ -75,10 +76,10 @@ export async function POST(req: NextRequest) {
       returnUrl,
     })
 
-    return NextResponse.json({ url: accountLink.url })
+    return noStoreJson({ url: accountLink.url })
   } catch (error) {
     console.error("Connect onboarding error:", error)
-    return NextResponse.json(
+    return noStoreJson(
       { error: error instanceof Error ? error.message : "Failed to create onboarding link" },
       { status: 500 }
     )

@@ -109,8 +109,9 @@ export function BusinessSetupGuide({
             <Button
               variant="ghost"
               size="icon"
-              className="size-7 shrink-0"
+              className="size-7 min-h-11 min-w-11 shrink-0"
               onClick={handleDismiss}
+              aria-label="Dismiss setup guide"
             >
               <IconX className="size-4" />
             </Button>

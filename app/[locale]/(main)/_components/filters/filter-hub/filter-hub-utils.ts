@@ -14,6 +14,84 @@ import type {
 
 type TranslateFn = (key: string, values?: Record<string, string | number>) => string
 
+interface SectionSummaryContext {
+  pending: PendingFilters
+  pendingCategorySlug: string | null
+  subcategories: FilterHubSubcategory[]
+  locale: string
+  t: TranslateFn
+  tHub: TranslateFn
+  getPendingAttrValues: (attrName: string) => string[]
+}
+
+function getCategorySummary({
+  pendingCategorySlug,
+  subcategories,
+  locale,
+}: Pick<SectionSummaryContext, "pendingCategorySlug" | "subcategories" | "locale">): string | null {
+  if (!pendingCategorySlug) return null
+  const subcat = subcategories.find((item) => item.slug === pendingCategorySlug)
+  if (!subcat) return null
+  return locale === "bg" && subcat.name_bg ? subcat.name_bg : subcat.name
+}
+
+function getRatingSummary({
+  pending,
+  t,
+}: Pick<SectionSummaryContext, "pending" | "t">): string | null {
+  return pending.minRating ? `${pending.minRating}+ ${t("stars")}` : null
+}
+
+function getPriceSummary({
+  pending,
+  t,
+}: Pick<SectionSummaryContext, "pending" | "t">): string | null {
+  if (pending.minPrice && pending.maxPrice) {
+    return `$${pending.minPrice} - $${pending.maxPrice}`
+  }
+  if (pending.minPrice) return `$${pending.minPrice}+`
+  if (pending.maxPrice) return `${t("under")} $${pending.maxPrice}`
+  return null
+}
+
+function getAvailabilitySummary({
+  pending,
+  t,
+}: Pick<SectionSummaryContext, "pending" | "t">): string | null {
+  return pending.availability === "instock" ? t("inStock") : null
+}
+
+function getLocationSummary({
+  pending,
+  locale,
+  t,
+}: Pick<SectionSummaryContext, "pending" | "locale" | "t">): string | null {
+  const parts: string[] = []
+  if (pending.city) {
+    const cityData = BULGARIAN_CITIES.find((city) => city.value === pending.city)
+    if (cityData) {
+      parts.push(locale === "bg" ? cityData.labelBg : cityData.label)
+    }
+  }
+  if (pending.nearby === "true") {
+    parts.push(t("nearMe"))
+  }
+  return parts.length > 0 ? parts.join(", ") : null
+}
+
+function getAttributeSummary({
+  section,
+  tHub,
+  getPendingAttrValues,
+}: Pick<SectionSummaryContext, "tHub" | "getPendingAttrValues"> & { section: FilterSection }): string | null {
+  if (!("attribute" in section) || !section.attribute) return null
+
+  const values = getPendingAttrValues(getCategoryAttributeKey(section.attribute))
+  if (values.length === 0) return null
+  if (values.length === 1) return values[0] ?? null
+  return `${values.length} ${tHub("selected")}`
+}
+
 export function buildFilterSections({
   locale,
   t,
@@ -68,52 +146,30 @@ export function getSectionSelectedSummary({
   tHub: TranslateFn
   getPendingAttrValues: (attrName: string) => string[]
 }): string | null {
-  if (section.id === "category") {
-    if (!pendingCategorySlug) return null
-    const subcat = subcategories.find((item) => item.slug === pendingCategorySlug)
-    if (!subcat) return null
-    return locale === "bg" && subcat.name_bg ? subcat.name_bg : subcat.name
+  const context: SectionSummaryContext = {
+    pending,
+    pendingCategorySlug,
+    subcategories,
+    locale,
+    t,
+    tHub,
+    getPendingAttrValues,
   }
 
-  if (section.id === "rating") {
-    return pending.minRating ? `${pending.minRating}+ ${t("stars")}` : null
+  switch (section.id) {
+    case "category":
+      return getCategorySummary(context)
+    case "rating":
+      return getRatingSummary(context)
+    case "price":
+      return getPriceSummary(context)
+    case "availability":
+      return getAvailabilitySummary(context)
+    case "location":
+      return getLocationSummary(context)
+    default:
+      return getAttributeSummary({ section, ...context })
   }
-
-  if (section.id === "price") {
-    if (pending.minPrice && pending.maxPrice) {
-      return `$${pending.minPrice} - $${pending.maxPrice}`
-    }
-    if (pending.minPrice) return `$${pending.minPrice}+`
-    if (pending.maxPrice) return `${t("under")} $${pending.maxPrice}`
-    return null
-  }
-
-  if (section.id === "availability") {
-    return pending.availability === "instock" ? t("inStock") : null
-  }
-
-  if (section.id === "location") {
-    const parts: string[] = []
-    if (pending.city) {
-      const cityData = BULGARIAN_CITIES.find((city) => city.value === pending.city)
-      if (cityData) {
-        parts.push(locale === "bg" ? cityData.labelBg : cityData.label)
-      }
-    }
-    if (pending.nearby === "true") {
-      parts.push(t("nearMe"))
-    }
-    return parts.length > 0 ? parts.join(", ") : null
-  }
-
-  if ("attribute" in section && section.attribute) {
-    const values = getPendingAttrValues(getCategoryAttributeKey(section.attribute))
-    if (values.length === 0) return null
-    if (values.length === 1) return values[0] ?? null
-    return `${values.length} ${tHub("selected")}`
-  }
-
-  return null
 }
 
 export function buildFilterApplyResult({

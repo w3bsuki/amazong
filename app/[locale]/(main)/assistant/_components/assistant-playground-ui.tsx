@@ -208,7 +208,7 @@ export function WelcomeScreen({
 
 export function TypingIndicator({ text }: { text: string }) {
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex items-start gap-3" role="status" aria-live="polite">
       <AssistantAvatar size="md" />
       <div className="rounded-2xl rounded-bl-md border border-border-subtle bg-surface-subtle px-4 py-3">
         <span className="flex items-center gap-2 text-sm text-muted-foreground">

@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { RefreshCw as ArrowClockwise, CircleAlert as WarningCircle } from "lucide-react";
 
@@ -33,10 +32,6 @@ function GlobalErrorContent({
   locale: Locale
 }) {
   const t = useTranslations("GlobalError")
-
-  useEffect(() => {
-    console.error("[global-error]", error.digest ?? "no-digest")
-  }, [error])
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background p-4">

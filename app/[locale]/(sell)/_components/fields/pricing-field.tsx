@@ -22,17 +22,14 @@ import { SelectDrawer } from "../ui/select-drawer";
 import { useTranslations } from "next-intl";
 
 // ============================================================================
-// Constants - V1: BGN only (Cash on Delivery in Bulgaria)
+// Constants
 // ============================================================================
 const CURRENCY_SYMBOLS: Record<string, string> = {
-  BGN: "лв",
   EUR: "€",
-  USD: "$",
 };
 
-// V1: Only BGN for cash on delivery in Bulgaria
 const CURRENCIES = [
-  { value: "BGN", label: "BGN (лв)" },
+  { value: "EUR", label: "EUR (€)" },
 ];
 
 // ============================================================================
@@ -393,8 +390,8 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
       <div
         role="button"
         tabIndex={0}
-        onClick={() => setValue("acceptOffers", !acceptOffers)}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setValue("acceptOffers", !acceptOffers); } }}
+        onClick={() => setValue("acceptOffers", !acceptOffers, { shouldDirty: true })}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setValue("acceptOffers", !acceptOffers, { shouldDirty: true }); } }}
         className={cn(
           "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-colors cursor-pointer",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -412,21 +409,20 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
           <Handshake className="size-5" />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <span className={cn(
-            "text-base font-semibold block",
-            acceptOffers ? "text-foreground" : "text-foreground"
-          )}>
+          <span className="text-base font-semibold block text-foreground">
             {tSell("steps.pricing.acceptOffersTitle")}
           </span>
           <span className="text-sm text-muted-foreground line-clamp-1">
             {tSell("steps.pricing.acceptOffersDescription")}
           </span>
         </div>
-        <Switch 
-          checked={acceptOffers} 
-          onCheckedChange={(checked) => setValue("acceptOffers", checked)}
-          className="shrink-0 scale-110"
-        />
+        <div onClick={(event) => event.stopPropagation()}>
+          <Switch 
+            checked={acceptOffers} 
+            onCheckedChange={(checked) => setValue("acceptOffers", checked, { shouldDirty: true })}
+            className="shrink-0 scale-110"
+          />
+        </div>
       </div>
     </FieldContent>
   );

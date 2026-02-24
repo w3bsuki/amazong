@@ -14,7 +14,8 @@ function toBase64(value: string): string {
     return globalThis.btoa(value)
   }
 
-  const buffer = (globalThis as unknown as { Buffer?: BufferLike }).Buffer
+  const globalScope = globalThis as typeof globalThis & { Buffer?: BufferLike }
+  const buffer = globalScope.Buffer
   if (buffer?.from) return buffer.from(value, "utf8").toString("base64")
 
   throw new Error("Base64 encoding is not available in this environment")

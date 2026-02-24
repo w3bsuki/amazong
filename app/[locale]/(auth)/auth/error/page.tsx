@@ -1,25 +1,42 @@
-import { Link } from "@/i18n/routing"
-import { getTranslations } from "next-intl/server"
+import { Link, validateLocale } from "@/i18n/routing"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { ArrowLeft, CircleAlert as WarningCircle } from "lucide-react";
+import type { Metadata } from "next"
 
 import { Button } from "@/components/ui/button"
 import { AuthCard } from "../../_components/auth-card"
 
-export const metadata = {
-  title: "Authentication Error | Treido",
-  description: "An error occurred during authentication.",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "Auth" })
+
+  return {
+    title: t("errorTitle"),
+    description: t("errorSubtitle"),
+  }
 }
 
 export default async function AuthErrorPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ error?: string; error_description?: string }>
 }) {
-  const params = await searchParams
-  const t = await getTranslations('Auth')
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  setRequestLocale(locale)
 
-  const getErrorMessage = (error?: string, description?: string) => {
-    if (description) return description
+  const query = await searchParams
+  const t = await getTranslations({ locale, namespace: "Auth" })
+
+  const getErrorMessage = (error?: string) => {
     switch (error) {
       case 'access_denied': return t('errorAccessDenied')
       case 'invalid_request': return t('errorInvalidRequest')
@@ -41,10 +58,10 @@ export default async function AuthErrorPage({
         </div>
 
         <div className="rounded-xl border border-destructive bg-destructive-subtle p-4 text-left">
-          <p className="text-sm text-destructive">{getErrorMessage(params.error, params.error_description)}</p>
-          {params.error && (
+          <p className="text-sm text-destructive">{getErrorMessage(query.error)}</p>
+          {query.error && (
             <p className="mt-2 text-xs text-muted-foreground">
-              {t("errorCode")}: {params.error}
+              {t("errorCode")}: {query.error}
             </p>
           )}
         </div>

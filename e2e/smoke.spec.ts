@@ -7,6 +7,7 @@ import {
 } from './fixtures/base'
 import { getTestUserCredentials, loginWithPassword } from './fixtures/auth'
 import type { Page } from './fixtures/base'
+import { pickAnyProductFromNewestApi } from './fixtures/products'
 
 async function ensureUserCanSell(page: Page, locale: 'en' | 'bg' = 'en') {
   // If the Sell page redirects to the legacy "Set Up Your Username" gate, follow
@@ -334,17 +335,11 @@ test.describe('Smoke Tests - Critical Path', () => {
   })
 
   test('product page loads without errors @smoke @critical', async ({ page, app, request }) => {
-    const response = await request.get('/api/products/newest')
-    expect(response.status()).toBe(200)
-
-    const data = await response.json()
-    const products: unknown[] = Array.isArray(data?.products) ? data.products : []
-
-    const first = products.find((p: any) => p?.storeSlug && (p?.slug || p?.id)) as any | undefined
+    const first = await pickAnyProductFromNewestApi(request)
     test.skip(!first, 'No products returned from /api/products/newest')
 
-    const seller = String(first.storeSlug)
-    const productSlug = String(first.slug || first.id)
+    const seller = first.storeSlug
+    const productSlug = first.slug ?? first.id
 
     await app.goto(`/en/${seller}/${productSlug}`)
     await app.waitForHydration()

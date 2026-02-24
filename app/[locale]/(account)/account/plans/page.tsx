@@ -7,8 +7,8 @@ import {
   PRIVATE_PROFILE_SELECT_FOR_UPGRADE,
   PROFILE_SELECT_FOR_PLANS,
 } from "@/lib/data/plans"
-import { cancelSubscription, reactivateSubscription } from "@/app/actions/subscriptions-mutations"
-import { createBillingPortalSession, createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads"
+import { cancelSubscription, reactivateSubscription } from "../../../../actions/subscriptions-mutations"
+import { createBillingPortalSession, createSubscriptionCheckoutSession } from "../../../../actions/subscriptions-reads"
 
 interface PlansPageProps {
   params: Promise<{

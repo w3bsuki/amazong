@@ -188,6 +188,7 @@ export function OrdersTableView({
               </DropdownMenuContent>
             </DropdownMenu>
             <Button variant="ghost" size="sm" className="h-7" onClick={clearSelection}>
+              <span className="sr-only">Clear selected orders</span>
               <IconX className="size-3.5" />
             </Button>
           </div>
@@ -326,6 +327,7 @@ export function OrdersTableView({
                             variant="ghost"
                             size="icon"
                             className="size-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                            aria-label={`Open actions for order ${order?.id?.slice(0, 8) ?? ""}`}
                           >
                             <IconDotsVertical className="size-4" />
                           </Button>

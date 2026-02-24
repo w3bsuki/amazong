@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/routing"
 import { CircleCheck as CheckCircle, Mail as EnvelopeSimple } from "lucide-react";
 
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useCallback, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -11,46 +11,56 @@ import { AuthCard } from "../../_components/auth-card"
 
 export default function SignUpSuccessClient() {
   const t = useTranslations("Auth")
+  const locale = useLocale()
   const [isResending, setIsResending] = useState(false)
+  const [resendFeedback, setResendFeedback] = useState<"success" | "error" | null>(null)
 
   const handleResend = useCallback(async () => {
     if (isResending) return
 
+    setResendFeedback(null)
+
     let email: string | null = null
-    let locale: string | null = null
+    let storedLocale: string | null = null
 
     try {
       email = sessionStorage.getItem("lastSignupEmail")
-      locale = sessionStorage.getItem("lastSignupLocale")
+      storedLocale = sessionStorage.getItem("lastSignupLocale")
     } catch {
       email = null
-      locale = null
+      storedLocale = null
     }
 
     // If we don't have an email (e.g. direct navigation), fall back to sign-in.
-    if (!email) return
+    if (!email) {
+      setResendFeedback("error")
+      return
+    }
 
     setIsResending(true)
     try {
       const supabase = createClient()
       const origin = window.location.origin
-      const resolvedLocale = locale || "en"
+      const resolvedLocale = storedLocale || locale
 
       // Resend a signup confirmation email.
       // Note: Supabase may not send emails for existing/confirmed accounts.
-      await supabase.auth.resend({
+      const { error } = await supabase.auth.resend({
         type: "signup",
         email,
         options: {
           emailRedirectTo: `${origin}/auth/confirm?locale=${encodeURIComponent(resolvedLocale)}&next=${encodeURIComponent("/")}`,
         },
       })
+
+      setResendFeedback(error ? "error" : "success")
     } catch (e) {
-      console.error("Failed to resend confirmation email:", e)
+      void e
+      setResendFeedback("error")
     } finally {
       setIsResending(false)
     }
-  }, [isResending])
+  }, [isResending, locale])
 
   return (
     <AuthCard
@@ -93,6 +103,14 @@ export default function SignUpSuccessClient() {
             {t("resendEmail")}
           </button>
         </p>
+
+        {resendFeedback === "success" ? (
+          <p className="text-xs text-center text-success">{t("checkYourEmail")}</p>
+        ) : null}
+
+        {resendFeedback === "error" ? (
+          <p className="text-xs text-center text-destructive">{t("somethingWentWrong")}</p>
+        ) : null}
       </div>
     </AuthCard>
   )

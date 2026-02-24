@@ -1,7 +1,9 @@
 "use server"
 
 import { z } from "zod"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { requireAuth } from "@/lib/auth/require-auth"
+import { logger } from "@/lib/logger"
 import type { OrderItemStatus } from "@/lib/order-status"
 import {
   ORDER_ITEM_DETAIL_SELECT,
@@ -19,22 +21,63 @@ const OrderItemStatusSchema = z.enum([
 ])
 const SellerOrdersStatusFilterSchema = z.union([OrderItemStatusSchema, z.literal("all")]).optional()
 const OrderIdSchema = z.string().uuid()
+const NOT_AUTHENTICATED_ERROR = "Not authenticated"
+const UNEXPECTED_ERROR = "An unexpected error occurred"
+
+type OrdersReadResult = Envelope<
+  { orders: OrderItem[] },
+  { orders: OrderItem[]; error: string }
+>
+
+type SellerOrderStats = {
+  pending: number
+  received: number
+  processing: number
+  shipped: number
+  delivered: number
+  cancelled: number
+  total: number
+}
+
+type SellerOrderStatsResult = Envelope<
+  SellerOrderStats,
+  SellerOrderStats & { error: string }
+>
+
+type OrderConversationResult = Envelope<
+  { conversationId: string | null },
+  { conversationId: string | null; error: string }
+>
+
+type BuyerOrderDetails = {
+  id: string
+  status: string
+  total_amount: number
+  shipping_address: Record<string, unknown> | null
+  created_at: string
+  items: OrderItem[]
+}
+
+type BuyerOrderDetailsResult = Envelope<
+  { order: BuyerOrderDetails },
+  { order: null; error: string }
+>
 
 /**
  * Get all order items for the current seller
  */
 export async function getSellerOrders(
   statusFilter?: OrderItemStatus | "all"
-): Promise<{ orders: OrderItem[]; error?: string }> {
+): Promise<OrdersReadResult> {
   const parsedStatusFilter = SellerOrdersStatusFilterSchema.safeParse(statusFilter)
   if (!parsedStatusFilter.success) {
-    return { orders: [], error: "Invalid status filter" }
+    return errorEnvelope({ orders: [], error: "Invalid status filter" })
   }
 
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { orders: [], error: "Not authenticated" }
+      return errorEnvelope({ orders: [], error: NOT_AUTHENTICATED_ERROR })
     }
     const { user, supabase } = auth
 
@@ -52,8 +95,10 @@ export async function getSellerOrders(
     const { data: orderItems, error: fetchError } = await query
 
     if (fetchError) {
-      console.error("Error fetching seller orders:", fetchError)
-      return { orders: [], error: "Failed to fetch orders" }
+      logger.error("[orders-reads] get_seller_orders_fetch_failed", fetchError, {
+        sellerId: user.id,
+      })
+      return errorEnvelope({ orders: [], error: "Failed to fetch orders" })
     }
 
     const buyerIds = [
@@ -98,26 +143,18 @@ export async function getSellerOrders(
       })(),
     }))
 
-    return { orders: ordersWithBuyers as OrderItem[] }
+    return successEnvelope({ orders: ordersWithBuyers as OrderItem[] })
   } catch (error) {
-    console.error("Error in getSellerOrders:", error)
-    return { orders: [], error: "An unexpected error occurred" }
+    logger.error("[orders-reads] get_seller_orders_unexpected", error)
+    return errorEnvelope({ orders: [], error: UNEXPECTED_ERROR })
   }
 }
 
 /**
  * Get order counts by status for dashboard stats
  */
-export async function getSellerOrderStats(): Promise<{
-  pending: number
-  received: number
-  processing: number
-  shipped: number
-  delivered: number
-  cancelled: number
-  total: number
-}> {
-  const defaultStats = {
+export async function getSellerOrderStats(): Promise<SellerOrderStatsResult> {
+  const defaultStats: SellerOrderStats = {
     pending: 0,
     received: 0,
     processing: 0,
@@ -129,7 +166,9 @@ export async function getSellerOrderStats(): Promise<{
 
   try {
     const auth = await requireAuth()
-    if (!auth) return defaultStats
+    if (!auth) {
+      return errorEnvelope({ ...defaultStats, error: NOT_AUTHENTICATED_ERROR })
+    }
     const { user, supabase } = auth
 
     const { data: orderItems } = await supabase
@@ -137,7 +176,7 @@ export async function getSellerOrderStats(): Promise<{
       .select("status")
       .eq("seller_id", user.id)
 
-    if (!orderItems) return defaultStats
+    if (!orderItems) return successEnvelope(defaultStats)
 
     const stats = { ...defaultStats }
     orderItems.forEach((item) => {
@@ -148,20 +187,20 @@ export async function getSellerOrderStats(): Promise<{
       stats.total++
     })
 
-    return stats
+    return successEnvelope(stats)
   } catch {
-    return defaultStats
+    return errorEnvelope({ ...defaultStats, error: UNEXPECTED_ERROR })
   }
 }
 
 /**
  * Get all orders for the current buyer
  */
-export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: string }> {
+export async function getBuyerOrders(): Promise<OrdersReadResult> {
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { orders: [], error: "Not authenticated" }
+      return errorEnvelope({ orders: [], error: NOT_AUTHENTICATED_ERROR })
     }
     const { user, supabase } = auth
 
@@ -171,12 +210,12 @@ export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: s
       .eq("user_id", user.id)
 
     if (ordersError) {
-      return { orders: [], error: "Failed to fetch orders" }
+      return errorEnvelope({ orders: [], error: "Failed to fetch orders" })
     }
 
     const orderIds = orders?.map((order) => order.id) || []
     if (orderIds.length === 0) {
-      return { orders: [] }
+      return successEnvelope({ orders: [] })
     }
 
     const { data: orderItems, error: itemsError } = await supabase
@@ -187,7 +226,7 @@ export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: s
       .limit(200)
 
     if (itemsError) {
-      return { orders: [], error: "Failed to fetch order items" }
+      return errorEnvelope({ orders: [], error: "Failed to fetch order items" })
     }
 
     const itemsWithCreatedAt = (orderItems ?? []).map((item) => ({
@@ -195,10 +234,10 @@ export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: s
       created_at: item.order?.created_at ?? new Date().toISOString(),
     }))
 
-    return { orders: itemsWithCreatedAt as OrderItem[] }
+    return successEnvelope({ orders: itemsWithCreatedAt as OrderItem[] })
   } catch (error) {
-    console.error("Error in getBuyerOrders:", error)
-    return { orders: [], error: "An unexpected error occurred" }
+    logger.error("[orders-reads] get_buyer_orders_unexpected", error)
+    return errorEnvelope({ orders: [], error: UNEXPECTED_ERROR })
   }
 }
 
@@ -207,29 +246,41 @@ export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: s
  */
 export async function getOrderConversation(
   orderId: string
-): Promise<{ conversationId: string | null; error?: string }> {
+): Promise<OrderConversationResult> {
   const parsedOrderId = OrderIdSchema.safeParse(orderId)
   if (!parsedOrderId.success) {
-    return { conversationId: null, error: "Invalid orderId" }
+    return errorEnvelope({ conversationId: null, error: "Invalid orderId" })
   }
 
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { conversationId: null, error: "Not authenticated" }
+      return errorEnvelope({ conversationId: null, error: NOT_AUTHENTICATED_ERROR })
     }
     const { user, supabase } = auth
 
-    const { data: conversation } = await supabase
+    const { data: conversation, error } = await supabase
       .from("conversations")
       .select("id")
       .eq("order_id", parsedOrderId.data)
       .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
       .single()
 
-    return { conversationId: conversation?.id || null }
+    if (error) {
+      if (error.code === "PGRST116") {
+        return successEnvelope({ conversationId: null })
+      }
+
+      logger.error("[orders-reads] get_order_conversation_failed", error, {
+        orderId: parsedOrderId.data,
+        userId: user.id,
+      })
+      return errorEnvelope({ conversationId: null, error: "Failed to fetch conversation" })
+    }
+
+    return successEnvelope({ conversationId: conversation?.id || null })
   } catch {
-    return { conversationId: null }
+    return errorEnvelope({ conversationId: null, error: UNEXPECTED_ERROR })
   }
 }
 
@@ -238,26 +289,16 @@ export async function getOrderConversation(
  */
 export async function getBuyerOrderDetails(
   orderId: string
-): Promise<{
-  order: {
-    id: string
-    status: string
-    total_amount: number
-    shipping_address: Record<string, unknown> | null
-    created_at: string
-    items: OrderItem[]
-  } | null
-  error?: string
-}> {
+): Promise<BuyerOrderDetailsResult> {
   const parsedOrderId = OrderIdSchema.safeParse(orderId)
   if (!parsedOrderId.success) {
-    return { order: null, error: "Invalid orderId" }
+    return errorEnvelope({ order: null, error: "Invalid orderId" })
   }
 
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { order: null, error: "Not authenticated" }
+      return errorEnvelope({ order: null, error: NOT_AUTHENTICATED_ERROR })
     }
     const { user, supabase } = auth
 
@@ -285,10 +326,10 @@ export async function getBuyerOrderDetails(
       }>()
 
     if (orderError || !order) {
-      return { order: null, error: "Order not found" }
+      return errorEnvelope({ order: null, error: "Order not found" })
     }
 
-    return {
+    return successEnvelope({
       order: {
         id: order.id,
         status: order.status || "pending",
@@ -297,9 +338,11 @@ export async function getBuyerOrderDetails(
         created_at: order.created_at,
         items: order.order_items.map((item) => ({ ...item, created_at: order.created_at })) as OrderItem[],
       },
-    }
+    })
   } catch (error) {
-    console.error("Error in getBuyerOrderDetails:", error)
-    return { order: null, error: "An unexpected error occurred" }
+    logger.error("[orders-reads] get_buyer_order_details_unexpected", error, {
+      orderId: parsedOrderId.data,
+    })
+    return errorEnvelope({ order: null, error: UNEXPECTED_ERROR })
   }
 }

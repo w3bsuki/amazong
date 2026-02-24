@@ -2,6 +2,7 @@ import "server-only"
 
 import { cacheLife, cacheTag } from "next/cache"
 import { createStaticClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger"
 
 export type MembersFilter = "all" | "sellers" | "buyers" | "business"
 
@@ -89,16 +90,24 @@ export async function getMembersPageData(searchParams: MembersSearchParams) {
 
   const totalPages = Math.ceil((count || 0) / PAGE_SIZE)
 
-  const { count: totalMembers } = await supabase
+  const { count: totalMembers, error: totalMembersError } = await supabase
     .from("profiles")
     .select("id", { count: "exact", head: true })
     .not("username", "is", null)
 
-  const { count: totalSellers } = await supabase
+  if (totalMembersError) {
+    logger.error("[members] failed to fetch total member count", totalMembersError)
+  }
+
+  const { count: totalSellers, error: totalSellersError } = await supabase
     .from("profiles")
     .select("id", { count: "exact", head: true })
     .eq("is_seller", true)
     .not("username", "is", null)
+
+  if (totalSellersError) {
+    logger.error("[members] failed to fetch total seller count", totalSellersError)
+  }
 
   return {
     members: members || [],

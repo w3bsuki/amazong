@@ -1,19 +1,54 @@
+export type UsernameAvailabilityErrorCode =
+  | "INVALID_USERNAME"
+  | "USERNAME_RESERVED"
+  | "USERNAME_TAKEN"
+  | "CHECK_FAILED"
+
+export type UsernameAccountErrorCode =
+  | "NOT_AUTHENTICATED"
+  | "INVALID_USERNAME"
+  | "USERNAME_RESERVED"
+  | "USERNAME_COOLDOWN_ACTIVE"
+  | "USERNAME_TAKEN"
+  | "USERNAME_UPDATE_FAILED"
+  | "INVALID_BUSINESS_DATA"
+  | "ACCOUNT_UPGRADE_FAILED"
+  | "ACTIVE_BUSINESS_SUBSCRIPTION"
+  | "ACCOUNT_DOWNGRADE_FAILED"
+  | "UNKNOWN_ERROR"
+
+export type UsernameProfileErrorCode =
+  | "NOT_AUTHENTICATED"
+  | "INVALID_PROFILE_DATA"
+  | "NO_FILE"
+  | "FILE_TOO_LARGE"
+  | "INVALID_FILE_TYPE"
+  | "PUBLIC_PROFILE_UPDATE_FAILED"
+  | "BANNER_UPLOAD_FAILED"
+  | "BANNER_SAVE_FAILED"
+  | "PROFILE_NOT_FOUND"
+  | "UNKNOWN_ERROR"
+
 export type PublicProfileEditorServerActions = {
   checkUsernameAvailability: (
     username: string
-  ) => Promise<{ available: boolean; error?: string }>
-  setUsername: (username: string) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<{ available: boolean; errorCode?: UsernameAvailabilityErrorCode }>
+  setUsername: (username: string) => Promise<{
+    success: boolean
+    errorCode?: UsernameAccountErrorCode
+    daysRemaining?: number
+  }>
   updatePublicProfile: (data: {
     display_name?: string | null
     bio?: string | null
     location?: string | null
     website_url?: string | null
     social_links?: Record<string, string | null | undefined> | null
-  }) => Promise<{ success: boolean; error?: string }>
+  }) => Promise<{ success: boolean; errorCode?: UsernameProfileErrorCode }>
   uploadBanner: (formData: FormData) => Promise<{
     success: boolean
     bannerUrl?: string
-    error?: string
+    errorCode?: UsernameProfileErrorCode
   }>
   upgradeToBusinessAccount: (data: {
     business_name: string
@@ -22,8 +57,15 @@ export type PublicProfileEditorServerActions = {
     website_url?: string | null
     change_username?: boolean
     new_username?: string
-  }) => Promise<{ success: boolean; error?: string }>
-  downgradeToPersonalAccount: () => Promise<{ success: boolean; error?: string }>
+  }) => Promise<{
+    success: boolean
+    errorCode?: UsernameAccountErrorCode
+    daysRemaining?: number
+  }>
+  downgradeToPersonalAccount: () => Promise<{
+    success: boolean
+    errorCode?: UsernameAccountErrorCode
+  }>
   getUsernameChangeCooldown: () => Promise<{
     canChange: boolean
     daysRemaining?: number

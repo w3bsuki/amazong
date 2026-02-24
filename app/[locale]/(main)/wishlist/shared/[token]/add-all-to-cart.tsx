@@ -26,7 +26,7 @@ export function AddAllToCartButton({ items }: { items: SharedWishlistCartItem[] 
       for (const item of items) {
         addToCart({
           id: item.product_id,
-          title: item.product_title || "Product",
+          title: item.product_title || t("unknownProduct"),
           price: item.product_price ?? 0,
           image: item.product_image || "/placeholder.svg",
           quantity: 1,

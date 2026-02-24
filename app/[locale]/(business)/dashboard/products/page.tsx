@@ -1,8 +1,8 @@
 import { requireDashboardAccess, getBusinessProducts } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
-import { bulkDeleteProducts, bulkUpdateProductStatus } from "@/app/actions/products-bulk"
-import { createProduct, duplicateProduct } from "@/app/actions/products-create"
-import { deleteProduct, updateProduct } from "@/app/actions/products-update"
+import { bulkDeleteProducts, bulkUpdateProductStatus } from "../../../../actions/products-bulk"
+import { createProduct, duplicateProduct } from "../../../../actions/products-create"
+import { deleteProduct, updateProduct } from "../../../../actions/products-update"
 import { ProductsTable } from "../../_components/products-table"
 import { getBusinessDashboardCategories } from "../_lib/categories"
 

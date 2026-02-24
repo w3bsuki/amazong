@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 
 export function useUsernameAvailability(
@@ -12,35 +12,52 @@ export function useUsernameAvailability(
 
   const [isCheckingUsername, setIsCheckingUsername] = useState(false)
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
+  const requestIdRef = useRef(0)
 
   useEffect(() => {
-    let cancelled = false
+    requestIdRef.current += 1
+    const requestId = requestIdRef.current
 
-    const timeoutId = setTimeout(async () => {
-      const cleaned = username.trim().toLowerCase()
-      if (!cleaned || cleaned.length < minLength) {
-        if (!cancelled) setUsernameAvailable(null)
-        return
-      }
+    setIsCheckingUsername(false)
+    setUsernameAvailable(null)
 
-      if (!cancelled) setIsCheckingUsername(true)
+    const cleaned = username.trim().toLowerCase()
+    if (!cleaned || cleaned.length < minLength) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(async () => {
+      if (requestId !== requestIdRef.current) return
+
+      setIsCheckingUsername(true)
       try {
         const supabase = createClient()
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("profiles")
           .select("id")
           .ilike("username", cleaned)
           .maybeSingle()
 
-        if (!cancelled) setUsernameAvailable(!data)
+        if (requestId !== requestIdRef.current) return
+
+        if (error) {
+          setUsernameAvailable(null)
+          return
+        }
+
+        setUsernameAvailable(!data)
+      } catch {
+        if (requestId !== requestIdRef.current) return
+        setUsernameAvailable(null)
       } finally {
-        if (!cancelled) setIsCheckingUsername(false)
+        if (requestId === requestIdRef.current) {
+          setIsCheckingUsername(false)
+        }
       }
     }, debounceMs)
 
     return () => {
-      cancelled = true
-      clearTimeout(timeoutId)
+      window.clearTimeout(timeoutId)
     }
   }, [debounceMs, minLength, username])
 

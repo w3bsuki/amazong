@@ -3,8 +3,13 @@
 import { Link } from "@/i18n/routing"
 import { motion } from "framer-motion"
 import { ArrowRight, Check, CircleUser as UserCircle, ShoppingBag, Store as Storefront } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 export function WelcomeCompleteStep({ username }: { username: string | null | undefined }) {
+  const tOnboarding = useTranslations("Onboarding")
+  const tNavigation = useTranslations("Navigation")
+  const profileHref = username ? `/${username}` : "/"
+
   return (
     <motion.div
       key="complete"
@@ -22,8 +27,8 @@ export function WelcomeCompleteStep({ username }: { username: string | null | un
           <Check className="size-10 text-primary" />
         </motion.div>
 
-        <h2 className="text-xl font-semibold text-foreground mb-2">You&apos;re all set! 🎉</h2>
-        <p className="text-muted-foreground mb-6">Your profile is ready. What would you like to do next?</p>
+        <h2 className="text-xl font-semibold text-foreground mb-2">{tOnboarding("complete.title")}</h2>
+        <p className="text-muted-foreground mb-6">{tOnboarding("complete.subtitle")}</p>
 
         <div className="space-y-3 text-left">
           <Link href="/" className="block">
@@ -36,8 +41,8 @@ export function WelcomeCompleteStep({ username }: { username: string | null | un
                 <ShoppingBag className="size-6 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-foreground">Browse Products</h3>
-                <p className="text-sm text-muted-foreground">Discover amazing deals</p>
+                <h3 className="font-medium text-foreground">{tOnboarding("complete.startBrowsing")}</h3>
+                <p className="text-sm text-muted-foreground">{tOnboarding("complete.subtitle")}</p>
               </div>
               <ArrowRight className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />
             </motion.div>
@@ -53,14 +58,14 @@ export function WelcomeCompleteStep({ username }: { username: string | null | un
                 <Storefront className="size-6 text-primary-foreground" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-foreground">Start Selling</h3>
-                <p className="text-sm text-muted-foreground">List your first product</p>
+                <h3 className="font-medium text-foreground">{tOnboarding("complete.listFirstItem")}</h3>
+                <p className="text-sm text-muted-foreground">{tOnboarding("complete.completeStore")}</p>
               </div>
               <ArrowRight className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />
             </motion.div>
           </Link>
 
-          <Link href={`/${username}`} className="block">
+          <Link href={profileHref} className="block">
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -70,8 +75,8 @@ export function WelcomeCompleteStep({ username }: { username: string | null | un
                 <UserCircle className="size-6 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-foreground">View Your Profile</h3>
-                <p className="text-sm text-muted-foreground">/{username}</p>
+                <h3 className="font-medium text-foreground">{tNavigation("profile")}</h3>
+                <p className="text-sm text-muted-foreground">{username ? `/${username}` : tOnboarding("complete.completeStore")}</p>
               </div>
               <ArrowRight className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />
             </motion.div>
@@ -81,4 +86,3 @@ export function WelcomeCompleteStep({ username }: { username: string | null | un
     </motion.div>
   )
 }
-

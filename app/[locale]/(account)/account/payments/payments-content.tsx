@@ -18,6 +18,7 @@ import {
 import { CreditCard, Lock, Plus, Shield, LoaderCircle as SpinnerGap, Star, Trash } from "lucide-react";
 
 import { toast } from "sonner"
+import { logger } from "@/lib/logger"
 
 export type PaymentsContentServerActions = {
     createPaymentMethodSetupSession: (input?: { locale?: "en" | "bg" }) => Promise<{
@@ -66,6 +67,17 @@ const cardBrandStyles = {
     default: { bg: 'bg-muted-foreground', text: 'text-background' }
 } as const
 
+function getCardBrandDisplay(brand: string | null) {
+    if (!brand) return "Card"
+    return brand.charAt(0).toUpperCase() + brand.slice(1)
+}
+
+function getCardStyle(brand: string | null): (typeof cardBrandStyles)[keyof typeof cardBrandStyles] {
+    const key = brand?.toLowerCase()
+    if (key && key in cardBrandStyles) return cardBrandStyles[key as keyof typeof cardBrandStyles]
+    return cardBrandStyles.default
+}
+
 export function PaymentsContent({
     locale,
     initialPaymentMethods,
@@ -96,7 +108,7 @@ export function PaymentsContent({
                 throw new Error("Missing setup session URL")
             }
         } catch (error) {
-            console.error('Error adding card:', error)
+            logger.error("[account-payments] add_card_failed", error)
             toast.error(locale === 'bg' ? 'Грешка при добавяне на карта' : 'Error adding card')
         } finally {
             setIsAddingCard(false)
@@ -128,7 +140,7 @@ export function PaymentsContent({
             setPaymentMethods(prev => prev.filter(m => m.id !== deletingMethodId))
             router.refresh()
         } catch (error) {
-            console.error('Error deleting payment method:', error)
+            logger.error("[account-payments] delete_payment_method_failed", error)
             toast.error(locale === 'bg' ? 'Грешка при премахване' : 'Error removing card')
         } finally {
             setIsLoading(false)
@@ -159,22 +171,11 @@ export function PaymentsContent({
             })))
             router.refresh()
         } catch (error) {
-            console.error('Error setting default:', error)
+            logger.error("[account-payments] set_default_payment_method_failed", error)
             toast.error(locale === 'bg' ? 'Грешка при промяна' : 'Error updating')
         } finally {
             setIsLoading(false)
         }
-    }
-
-    const getCardBrandDisplay = (brand: string | null) => {
-        if (!brand) return 'Card'
-        return brand.charAt(0).toUpperCase() + brand.slice(1)
-    }
-
-    const getCardStyle = (brand: string | null): (typeof cardBrandStyles)[keyof typeof cardBrandStyles] => {
-        const key = brand?.toLowerCase()
-        if (key && key in cardBrandStyles) return cardBrandStyles[key as keyof typeof cardBrandStyles]
-        return cardBrandStyles.default
     }
 
     return (

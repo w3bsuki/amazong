@@ -82,33 +82,37 @@ export function WriteReviewDialog({
     }
 
     startTransition(async () => {
-      const trimmedComment = comment.trim()
-      const result = await submitReview({
-        productId,
-        rating,
-        ...(trimmedComment ? { comment: trimmedComment } : {}),
-      });
+      try {
+        const trimmedComment = comment.trim()
+        const result = await submitReview({
+          productId,
+          rating,
+          ...(trimmedComment ? { comment: trimmedComment } : {}),
+        });
 
-      if (result.success) {
-        toast.success(tReviews("reviewSuccess"));
-        setOpen(false);
-        setRating(0);
-        setComment("");
-        onReviewSubmitted?.();
-      } else {
-        if (result.error?.includes("logged in")) {
-          const next = stripLocalePrefix(pathname, locale)
-          toast.error(tReviews("signInRequired"), {
-            action: {
-              label: tAuth("signIn"),
-              onClick: () => {
-                router.push({ pathname: "/auth/login", query: { next } })
-              },
-            },
-          });
+        if (result.success) {
+          toast.success(tReviews("reviewSuccess"));
+          setOpen(false);
+          setRating(0);
+          setComment("");
+          onReviewSubmitted?.();
         } else {
-          toast.error(result.error || tReviews("reviewFailed"));
+          if (result.error?.includes("logged in")) {
+            const next = stripLocalePrefix(pathname, locale)
+            toast.error(tReviews("signInRequired"), {
+              action: {
+                label: tAuth("signIn"),
+                onClick: () => {
+                  router.push({ pathname: "/auth/login", query: { next } })
+                },
+              },
+            });
+          } else {
+            toast.error(result.error || tReviews("reviewFailed"));
+          }
         }
+      } catch {
+        toast.error(tReviews("reviewFailed"));
       }
     });
   };

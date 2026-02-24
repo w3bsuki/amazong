@@ -110,16 +110,25 @@ export function PlansPricingGrid({
 }) {
   return (
     <section className="mb-16">
+      <div className="mb-5 rounded-md border border-selected-border bg-selected p-4">
+        <p className="text-sm font-semibold">{t.buyerFeeAdvantage.title}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{t.buyerFeeAdvantage.desc}</p>
+      </div>
+
       <div className="-mx-4 flex gap-4 overflow-x-auto overflow-y-visible px-4 pb-4 pt-3 snap-x snap-mandatory no-scrollbar touch-pan-x md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4 xl:grid-cols-5">
         {filteredPlans.map((plan) => {
           const price = yearly ? (plan.price_yearly ?? 0) : (plan.price_monthly ?? 0)
           const originalPrice = yearly ? (plan.price_monthly ?? 0) * 12 : null
-          const isCurrent =
-            plan.tier === currentTier || (currentTier === "free" && plan.tier === "basic")
-          const isPopular = plan.tier === "plus" || plan.tier === "professional"
-          const features = buildPlanFeatureList(locale, t, plan).slice(0, 5)
+          const isCurrent = plan.tier === currentTier
+          const isPopular = plan.tier === "plus" || plan.tier === "pro"
+          const features = buildPlanFeatureList(locale, t, plan)
           const sellerFee = Number(plan.seller_fee_percent ?? 0)
-          const icon = planIcons[plan.tier?.toLowerCase() ?? "basic"] ?? <User className="size-4" />
+          const buyerProtection = Number(plan.buyer_protection_percent ?? 0)
+          const buyerFixed = Number(plan.buyer_protection_fixed ?? 0)
+          const buyerCap = Number(plan.buyer_protection_cap ?? 0)
+          const capSuffix =
+            buyerCap > 0 ? ` (${t.planFeatures.capLabel} €${buyerCap.toFixed(2)})` : ""
+          const icon = planIcons[plan.tier?.toLowerCase() ?? "free"] ?? <User className="size-4" />
 
           return (
             <PricingCard.Card
@@ -150,8 +159,10 @@ export function PlansPricingGrid({
                   )}
                 </PricingCard.Price>
                 <PricingCard.Fee>
-                  {sellerFee}% {t.feeLabel}
+                  {t.buyerFeeLabel}: {buyerProtection}% + €{buyerFixed.toFixed(2)}
+                  {capSuffix}
                 </PricingCard.Fee>
+                {sellerFee > 0 && <PricingCard.Fee>{sellerFee}% {t.feeLabel}</PricingCard.Fee>}
                 <Button
                   className="mt-3 w-full"
                   disabled={isCurrent || subscribingId === plan.id}
@@ -254,12 +265,12 @@ function PlansComparisonTable({
         <TableBody>
           {filteredPlans.map((plan, index) => {
             const price = yearly ? (plan.price_yearly ?? 0) : (plan.price_monthly ?? 0)
-            const isCurrent =
-              plan.tier === currentTier || (currentTier === "free" && plan.tier === "basic")
-            const isPopular = plan.tier === "plus" || plan.tier === "professional"
+            const isCurrent = plan.tier === currentTier
+            const isPopular = plan.tier === "plus" || plan.tier === "pro"
             const sellerFee = Number(plan.seller_fee_percent ?? 0)
             const buyerProtection = Number(plan.buyer_protection_percent ?? 0)
             const buyerFixed = Number(plan.buyer_protection_fixed ?? 0)
+            const buyerCap = Number(plan.buyer_protection_cap ?? 0)
 
             return (
               <TableRow
@@ -314,6 +325,7 @@ function PlansComparisonTable({
                 <TableCell className="text-center">
                   <span className="font-semibold tabular-nums">
                     {buyerProtection}% + €{buyerFixed.toFixed(2)}
+                    {buyerCap > 0 ? ` (${t.planFeatures.capLabel} €${buyerCap.toFixed(2)})` : ""}
                   </span>
                 </TableCell>
                 <TableCell className="text-center tabular-nums">

@@ -4,7 +4,7 @@ import { getUpgradeData } from "./_lib/get-upgrade-data"
 import { ArrowLeft } from "lucide-react";
 
 import { Link } from "@/i18n/routing"
-import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions-reads"
+import { createSubscriptionCheckoutSession } from "../../../../../actions/subscriptions-reads"
 
 /**
  * Full Upgrade Page

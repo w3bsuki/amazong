@@ -24,7 +24,11 @@ interface ShippingFieldProps {
 }
 
 export function ShippingField({ className, compact = false }: ShippingFieldProps) {
-  const { setValue, watch } = useSellForm();
+  const {
+    setValue,
+    watch,
+    formState: { errors },
+  } = useSellForm();
   const { isBg } = useSellFormContext();
   const tSell = useTranslations("Sell");
 
@@ -41,7 +45,16 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
 
   const regionValues: ShippingRegionValues = { shipsToBulgaria, pickupOnly };
   const anyRegionSelected = Object.values(regionValues).some(Boolean);
-  const hasError = !anyRegionSelected;
+  const shippingRegionErrorMessage =
+    typeof errors.shipsToBulgaria?.message === "string"
+      ? tSell(errors.shipsToBulgaria.message as never)
+      : null;
+  const sellerCityErrorMessage =
+    typeof errors.sellerCity?.message === "string"
+      ? tSell(errors.sellerCity.message as never)
+      : null;
+  const hasRegionSelectionError = !anyRegionSelected || !!shippingRegionErrorMessage;
+  const hasError = hasRegionSelectionError || !!sellerCityErrorMessage;
 
   const cleanDimensions = dimensions
     ? {
@@ -56,8 +69,11 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
     <FieldContent className={cn("space-y-6", !compact && "p-6")}>
       <ShippingRegionsSection
         values={regionValues}
-        hasError={hasError}
-        onToggle={(field) => setValue(field, !regionValues[field], { shouldValidate: true })}
+        hasError={hasRegionSelectionError}
+        {...(shippingRegionErrorMessage ? { errorMessage: shippingRegionErrorMessage } : {})}
+        onToggle={(field) =>
+          setValue(field, !regionValues[field], { shouldValidate: true, shouldDirty: true })
+        }
         tSell={(key) => tSell(key as never)}
       />
 
@@ -69,7 +85,8 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         isBg={isBg}
         isDrawerOpen={isCityDrawerOpen}
         onDrawerOpenChange={setIsCityDrawerOpen}
-        onCityChange={(city) => setValue("sellerCity", city)}
+        onCityChange={(city) => setValue("sellerCity", city, { shouldValidate: true, shouldDirty: true })}
+        {...(sellerCityErrorMessage ? { errorMessage: sellerCityErrorMessage } : {})}
         tSell={(key) => tSell(key as never)}
       />
 
@@ -77,10 +94,10 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         freeShipping={freeShipping}
         shippingPrice={shippingPrice || ""}
         onFreeShippingChange={(checked) => {
-          setValue("freeShipping", checked);
-          if (checked) setValue("shippingPrice", "0");
+          setValue("freeShipping", checked, { shouldValidate: true, shouldDirty: true });
+          if (checked) setValue("shippingPrice", "0", { shouldValidate: true, shouldDirty: true });
         }}
-        onShippingPriceChange={(value) => setValue("shippingPrice", value)}
+        onShippingPriceChange={(value) => setValue("shippingPrice", value, { shouldValidate: true, shouldDirty: true })}
         tSell={(key) => tSell(key as never)}
       />
 
@@ -95,7 +112,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                 ...(next.weightKg !== undefined ? { weightKg: next.weightKg } : {}),
               }
             : undefined;
-          setValue("dimensions", normalized);
+          setValue("dimensions", normalized, { shouldDirty: true });
         }}
         tSell={(key) => tSell(key as never)}
       />
@@ -106,7 +123,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         isBg={isBg}
         isDrawerOpen={isProcessingDrawerOpen}
         onDrawerOpenChange={setIsProcessingDrawerOpen}
-        onChange={(days) => setValue("processingDays", days)}
+        onChange={(days) => setValue("processingDays", days, { shouldValidate: true, shouldDirty: true })}
         tSell={(key, values) => tSell(key as never, values as never)}
       />
     </FieldContent>

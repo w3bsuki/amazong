@@ -193,7 +193,7 @@ export default async function BusinessInventoryPage() {
                     </TableCell>
                     <TableCell>
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/dashboard/products/${product.id}/edit`}>
+                        <Link href={`/dashboard/products/${product.id}/edit`} aria-label={`Edit ${product.title}`}>
                           <IconPencil className="size-4" />
                         </Link>
                       </Button>

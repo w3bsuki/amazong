@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { BillingContent } from "./billing-content"
-import { createBillingPortalSession } from "@/app/actions/subscriptions-reads"
+import { createBillingPortalSession } from "../../../../actions/subscriptions-reads"
 
 interface BillingPageProps {
   params: Promise<{

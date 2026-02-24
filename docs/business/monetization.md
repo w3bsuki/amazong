@@ -1,126 +1,170 @@
 # Monetization Model — Treido
 
 > How Treido makes money. Revenue streams, fee structure, unit economics.
-> This doc owns the *business model*. For technical payment implementation, see `docs/features/checkout-payments.md`.
+> For technical payment implementation, see `docs/features/checkout-payments.md`.
+
+---
+
+## Model: Hybrid Buyer Protection
+
+Treido uses a **buyer-funded** model (Vinted-style), adapted for a general marketplace with business sellers:
+
+- **Buyers** pay a transparent Buyer Protection fee on every purchase (primary revenue)
+- **Personal sellers** pay **0% seller fee** — they keep 100% of the item price
+- **Business sellers** pay a small seller fee (0.5–1.5% depending on plan)
+- **Escrow payout**: funds release to seller only after delivery confirmation or dispute resolution
+
+**Why this model:**
+- Seller commissions in C2C are routinely bypassed (sellers take deals off-platform) → 0% personal seller fee removes that incentive
+- Buyers accept a protection fee when the value is clear (escrow + dispute handling + refund guarantee)
+- Businesses can justify fees against the professional tooling they get (dashboard, analytics, team seats)
 
 ---
 
 ## Revenue Streams
 
-Three primary streams, ordered by expected contribution at maturity:
+Three streams, ordered by expected contribution:
 
-### 1. Buyer Protection Fee (Primary)
+### 1. Buyer Protection Fees (Primary)
 
-Every sale on Treido incurs a buyer-side protection fee (% of sale price), charged ON TOP of the item price (Vinted model). Sellers receive 100% of their listed price minus only Stripe processing fees.
+Every purchase includes a buyer protection fee, shown transparently at checkout.
 
-| Plan of *seller* | Buyer protection fee | Notes |
-|------|-------|-------|
-| Free | **[DECISION NEEDED]** (suggestion: 3% flat) | Standard rate for all buyers purchasing from free sellers |
-| Pro | **[DECISION NEEDED]** (suggestion: 2.5-3% flat) | Could match free or be slightly lower |
-| Business | **[DECISION NEEDED]** (suggestion: 2.5% flat) | Lowest — incentivizes upgrading |
+**Formula:**
+```
+buyer_fee = min(item_price × rate% + fixed_fee, cap)
+```
 
-**How it works (buyer-side fee model):**
-- Seller lists item at €X
-- Buyer sees: item price €X + buyer protection fee (e.g., 3% = €X × 0.03) + shipping
-- Stripe processes total payment
-- Treido takes buyer protection fee as revenue via Stripe Connect `application_fee_amount`
-- Seller receives: item price − Stripe processing fee (~1.5% + €0.25 EU)
-- **Key advantage:** Sellers see their full price — no "hidden" platform deductions
+**Fee table (plan-driven):**
 
-**Comparison to Vinted:** Vinted charges 5% + €0.70 fixed. Treido at 3% flat is significantly cheaper, especially on items under €50.
+| Account | Plan | Seller Fee | Buyer Protection |
+|--------:|------|-----------|------------------|
+| Personal | Free | 0% | 4% + €0.50 (cap €15) |
+| Personal | Plus | 0% | 3.5% + €0.40 (cap €14) |
+| Personal | Pro | 0% | 3% + €0.30 (cap €12) |
+| Business | Free | 1.5% | 3% + €0.35 (cap €12) |
+| Business | Pro | 1% | 2.5% + €0.25 (cap €10) |
+| Business | Enterprise | 0.5% | 2% + €0.20 (cap €8) |
 
-**Payout model:** **[DECISION NEEDED]**
-- Option A: Direct payout after delivery confirmation (current leaning)
-- Option B: Escrow — hold funds until buyer confirms receipt (safer, more complex)
-- Option C: Hybrid — escrow for new sellers, direct for trusted sellers
+Fees are **DB-configured** (`subscription_plans` table). Runtime: `getFeesForSeller()` + `calculateTransactionFees()` in `lib/stripe-connect.ts`. Never hardcode fees.
 
 ### 2. Subscriptions (Secondary)
 
-Monthly recurring revenue from Pro and Business tiers.
+Monthly recurring revenue from paid plan tiers.
 
-- See [plans-pricing.md](plans-pricing.md) for tier details and pricing
-- Revenue = (Pro subscribers × Pro price) + (Business subscribers × Business price)
-- Expected: small at launch, grows as seller base matures
+- Personal: Plus, Pro (prices TBD — est. €2.99–9.99/mo)
+- Business: Pro, Enterprise (prices TBD — est. €9.99–29.99/mo)
+- Free tiers for both account types (no subscription cost)
+- See [plans-pricing.md](plans-pricing.md) for full tier details
 
 ### 3. Boosts (Tertiary)
 
-One-time purchases for listing visibility upgrades.
+One-time purchases for listing visibility.
 
-| Boost Type | Duration | Price |
-|------------|----------|-------|
-| Standard | **[DECISION NEEDED]** (e.g., 7 days) | **[DECISION NEEDED]** (e.g., €1.99) |
-| Premium | **[DECISION NEEDED]** (e.g., 30 days) | **[DECISION NEEDED]** (e.g., €4.99) |
+| SKU | Duration | Price |
+|-----|----------|-------|
+| `boost_24h` | 24 hours | €0.99 |
+| `boost_7d` | 7 days | €4.99 |
+| `boost_30d` | 30 days | €14.99 |
 
-**How boosts work:**
-- Boosted listings appear higher in search/browse
-- Visual badge indicates boost to buyers (trust signal)
-- Plan tiers include free monthly boosts; extras purchasable
+- Boosted listings appear before non-boosted in feeds/search
+- Must be labeled ("Boosted" / "Ad")
+- Plans include free monthly boost credits (24h boosts only)
+- One active boost per listing maximum
 - Purchased via Stripe Checkout (one-time payment)
+
+---
+
+## Payout Model: Escrow
+
+**Separate Charges and Transfers** (Stripe pattern):
+
+1. Buyer pays platform Stripe account (item price + buyer protection fee)
+2. Funds held in escrow
+3. Seller ships with tracking
+4. Delivery confirmed → 72h auto-confirm window → funds released to seller
+5. If buyer disputes within 72h → funds held until resolution
+
+**Key windows:**
+
+| Window | Duration |
+|--------|----------|
+| Ship-by deadline | 7 days (or buyer can cancel + refund) |
+| Auto-confirm after delivery | 72 hours |
+| Dispute window after delivery | 72 hours |
+| Seller response SLA | 48 hours with evidence |
+
+**Refund includes buyer protection fee** when refund is due to seller fault.
 
 ---
 
 ## Unit Economics
 
-### Per-Transaction Economics (Example)
+### Example: Personal Free, €50 item
 
-Assuming a €25 product sale, 3% buyer protection fee:
-
-| Line item | Amount |
+| Line Item | Amount |
 |-----------|--------|
-| Item price | €25.00 |
-| Buyer protection fee (3%) | +€0.75 |
-| **Buyer pays total** | **€25.75** |
-| Stripe fee on €25.75 (1.5% + €0.25) | −€0.64 |
-| **Seller receives** | **€24.36** (item price − Stripe fee) |
-| **Treido revenue** | **€0.75** |
+| Item price | €50.00 |
+| Buyer protection (4% + €0.50) | +€2.50 |
+| **Buyer pays** | **€52.50** |
+| Stripe processing (~1.5% + €0.25) | −€1.04 |
+| **Treido net revenue** | **€1.46** |
+| **Seller receives** | **€50.00** |
 
-Vinted comparison on same €25 item: buyer pays €25 + 5% + €0.70 = **€26.95** (Treido saves buyer €1.20)
+### Example: Business Pro, €100 item
 
-### Revenue Projections
+| Line Item | Amount |
+|-----------|--------|
+| Item price | €100.00 |
+| Buyer protection (2.5% + €0.25) | +€2.75 |
+| **Buyer pays** | **€102.75** |
+| Business seller fee (1%) | −€1.00 |
+| Stripe processing (~1.5% + €0.25) | −€1.79 |
+| **Treido net revenue** | **€1.96** |
+| **Seller receives** | **€99.00** |
 
-**[DECISION NEEDED]** — Fill in when pricing is decided:
+### Contribution Margin (per transaction)
 
-| Metric | Month 1 | Month 6 | Month 12 |
-|--------|---------|---------|----------|
-| Monthly active sellers | ? | ? | ? |
-| Monthly transactions | ? | ? | ? |
-| Avg transaction value (€) | ? | ? | ? |
-| Transaction fee revenue | ? | ? | ? |
-| Subscription revenue | ? | ? | ? |
-| Boost revenue | ? | ? | ? |
-| **Total MRR** | ? | ? | ? |
+```
+contribution = buyer_fee + seller_fee − stripe_cost − refunds_loss − support_allocation
+```
 
----
+### Cost Structure
 
-## Cost Structure
+| Category | Amount | Type |
+|----------|--------|------|
+| Stripe processing | ~1.5% + €0.25/tx (EU cards) | Variable |
+| Vercel hosting | ~$20/month | Fixed |
+| Supabase | ~$25/month | Fixed |
+| Domain (treido.eu) | ~€10/year | Fixed |
+| **Total fixed monthly** | **~€50–100** | Fixed |
 
-| Cost Category | Details |
-|---------------|---------|
-| **Stripe fees** | ~1.5% + €0.25 per transaction (EU cards), higher for non-EU |
-| **Vercel hosting** | Pro plan ~$20/month, scales with traffic |
-| **Supabase** | Pro plan ~$25/month, scales with DB/storage |
-| **Domain** | treido.eu — ~€10/year |
-| **AI costs** | OpenAI/Anthropic API for autofill (V2) |
-| **Support** | Manual initially, then automated |
+### Break-Even
 
-### Break-Even Analysis
-
-**[DECISION NEEDED]** — Calculate when monthly revenue covers monthly costs.
-
-Fixed monthly costs (estimated): ~€50-100/month at launch
-Variable: Stripe fees scale with volume
+At ~€50 fixed monthly costs and ~€1.50 net per transaction:
+- **~34 transactions/month** to cover infrastructure
+- Subscription revenue reduces this further
 
 ---
 
-## Future Revenue Opportunities (V2+)
+## Future Revenue (V2+)
 
-- **Promoted search results** — sellers pay for top placement in search
-- **Affiliate/referral program** — users earn credit for bringing new sellers
-- **API access** — businesses integrate Treido listings into their own sites
-- **International expansion fees** — multi-currency, multi-country
-- **AI premium features** — advanced listing optimization, pricing suggestions
+- Promoted search results (paid top placement)
+- Referral program (credit for bringing sellers)
+- API access (businesses embed Treido listings)
+- AI premium features (listing optimization, pricing suggestions)
+- International expansion (multi-currency, multi-country)
+
+---
+
+## Open Questions
+
+| ID | Question | Status |
+|----|----------|--------|
+| MON-001 | Subscription prices per tier | Undecided — needs market testing |
+| MON-002 | Currency display: EUR only or EUR + BGN? | Undecided |
+| MON-003 | Annual billing discount? | Undecided — suggest 20% |
 
 ---
 
 *Last updated: 2026-02-23*
-*Status: Skeleton — awaiting pricing/fee decisions*
+*Status: Core model decided. Subscription prices pending.*

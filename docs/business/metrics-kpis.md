@@ -1,7 +1,6 @@
 # Metrics & KPIs — Treido
 
 > How we measure success. What numbers matter, what targets to hit.
-> Updated as we move through launch phases.
 
 ---
 
@@ -9,103 +8,94 @@
 
 **Completed transactions per month.**
 
-This is the single number that proves Treido works. It means:
-- Sellers are listing (supply)
-- Buyers are finding and buying (demand)
-- Payments work (infrastructure)
-- Both sides come back (retention)
+This proves supply (sellers listing), demand (buyers buying), infrastructure (payments working), and retention (both sides returning).
 
 ---
 
-## Primary Metrics
+## Buyer Funnel KPIs
 
-### Supply Metrics (Sellers)
+| Stage | Metric | Definition | Beta Target | Launch Target |
+|------:|--------|-----------|-------------|---------------|
+| Awareness | Sessions | Unique visits | Track | Track |
+| Intent | Search rate | % sessions that search | Track | Track |
+| Consideration | PDP views | Product detail page views | Track | Track |
+| Conversion | Checkout start rate | Checkout starts / PDP views | 1–3% | 2–5% |
+| Payment | Paid conversion | Paid orders / checkout starts | Track | Track |
+| Fulfillment | Delivered rate | Delivered / paid | >90% | >95% |
+| Success | Completion rate | Completed / paid | >85% | >90% |
 
-| Metric | Definition | Target (Beta) | Target (Launch) |
-|--------|-----------|---------------|----------------|
-| Active listings | Total live listings on platform | **[TBD]** 100+ | **[TBD]** 1000+ |
-| New listings/week | Listings created per week | **[TBD]** 20+ | **[TBD]** 100+ |
-| Seller activation rate | % of signups who list ≥1 item | **[TBD]** 30%+ | **[TBD]** 20%+ |
-| Listing completion rate | % of started listings that get published | **[TBD]** 60%+ | **[TBD]** 70%+ |
-| Seller retention (30d) | % of sellers who list again within 30 days | **[TBD]** | **[TBD]** |
+## Seller Supply KPIs
 
-### Demand Metrics (Buyers)
+| Metric | Definition | Beta Target | Launch Target |
+|--------|-----------|-------------|---------------|
+| Active listings | Live listings on platform | 100+ | 1,000+ |
+| New listings/week | Created per week | 20+ | 100+ |
+| Seller activation | % signups who list ≥1 item | 30%+ | 20%+ |
+| Listing completion | % started → published | 60%+ | 70%+ |
+| Seller retention (30d) | % who list again in 30 days | Track | Track |
+| Time-to-first-sale | Days from first listing to first sale | Track | Track |
+| Sell-through rate | Orders / active listings | Track | Track |
 
-| Metric | Definition | Target (Beta) | Target (Launch) |
-|--------|-----------|---------------|----------------|
-| Monthly active buyers | Unique users who purchase | **[TBD]** 20+ | **[TBD]** 200+ |
-| Conversion rate | % of product views → purchase | **[TBD]** 1-3% | **[TBD]** 2-5% |
-| Cart abandonment rate | % of cart additions without checkout | Track | Reduce over time |
-| Average order value (AOV) | Mean transaction amount (€) | Track | Track |
-| Buyer retention (30d) | % of buyers who buy again within 30 days | **[TBD]** | **[TBD]** |
+## Transaction KPIs
 
-### Transaction Metrics
-
-| Metric | Definition | Target (Beta) | Target (Launch) |
-|--------|-----------|---------------|----------------|
-| Completed transactions/month | Orders that reach delivered/completed | **[TBD]** 10+ | **[TBD]** 100+ |
+| Metric | Definition | Beta Target | Launch Target |
+|--------|-----------|-------------|---------------|
+| Completed transactions/month | Orders reaching `completed` | 10+ | 100+ |
 | GMV (Gross Merchandise Value) | Total value of goods sold (€) | Track | Track |
-| Take rate | Treido revenue / GMV | Track | Depends on pricing |
-| Dispute rate | % of transactions with disputes | < 2% | < 1% |
+| Average order value (AOV) | Mean transaction amount | Track (~€15–30) | Track |
+| Take rate | Treido revenue / GMV | Track | Track |
 
-### Revenue Metrics
+## Trust KPIs (Non-Negotiable)
 
 | Metric | Definition | Target |
 |--------|-----------|--------|
-| MRR (Monthly Recurring Revenue) | Subscription revenue | Track from day 1 |
-| Transaction revenue | Platform fees earned | Track from day 1 |
+| Dispute rate | Disputed / paid orders | < 2% (beta), < 1% (launch) |
+| Refund rate | Refunded / paid orders | Track |
+| Chargeback rate | Chargebacks / paid orders | < 0.5% |
+| Time-to-resolution | Avg days to resolve dispute | < 3 days |
+| Fraud incidents | Confirmed fraud cases | 0 |
+
+## Revenue KPIs
+
+| Metric | Definition | Target |
+|--------|-----------|--------|
+| MRR | Monthly recurring (subscriptions) | Track from day 1 |
+| Transaction revenue | Buyer protection fees earned | Track from day 1 |
 | Boost revenue | Boost purchases | Track from day 1 |
-| Total revenue | All streams combined | **[TBD]** |
-| CAC (Customer Acquisition Cost) | Cost to acquire one active user | Track when running ads |
-| LTV (Lifetime Value) | Revenue per user over lifetime | Calculate at 6 months |
-| LTV/CAC ratio | Should be > 3 for healthy business | Target: > 3 |
+| Total revenue | All streams | Track |
+| CAC | Cost to acquire active user | Track when running ads |
+| LTV | Revenue per user over lifetime | Calculate at 6 months |
+| LTV/CAC | Ratio (healthy > 3) | Target > 3 |
 
 ---
 
-## Secondary Metrics
+## Operational Cadence
 
-### Platform Health
+| Frequency | What |
+|-----------|------|
+| Daily | Webhook lag, payment failures, dispute queue |
+| Weekly | North star + funnel + supply + trust review |
+| Monthly | Unit economics, revenue mix, risk review |
 
-| Metric | Definition | Why It Matters |
-|--------|-----------|---------------|
-| DAU/MAU ratio | Daily active / Monthly active users | Engagement indicator |
-| Session duration | Time spent per visit | Content quality |
-| Pages per session | How much they browse | Discovery quality |
-| Search success rate | % of searches leading to click | Search quality |
-| Support tickets/week | Volume of issues reported | Platform stability |
+## Stop-the-Line Triggers
 
-### Trust & Safety
-
-| Metric | Definition | Target |
-|--------|-----------|--------|
-| Review submission rate | % of completed orders with reviews | > 30% |
-| Average seller rating | Mean star rating | > 4.0 |
-| Report rate | % of listings reported | < 1% |
-| Fraud incidents | Confirmed fraud cases | 0 |
-| Chargeback rate | % of payments charged back | < 0.5% |
+- Payout release bug (any) → SEV-0
+- Webhook lag above threshold → investigate immediately
+- Chargeback rate spike → freeze new payouts, investigate
+- Fraud pattern detected → restrict affected accounts
 
 ---
 
 ## Measurement Tools
 
-| Tool | What It Tracks |
-|------|---------------|
+| Tool | Tracks |
+|------|--------|
 | Supabase | Transactions, users, listings, orders (DB queries) |
 | Vercel Analytics | Page views, web vitals, traffic sources |
 | Stripe Dashboard | Revenue, payouts, disputes, chargebacks |
-| **[DECISION NEEDED]** | Product analytics (Mixpanel? PostHog? Plausible?) |
-
----
-
-## Reporting Cadence
-
-| Frequency | What |
-|-----------|------|
-| Daily | Transactions, new listings, new users (automated dashboard TBD) |
-| Weekly | Revenue summary, key metrics review |
-| Monthly | Full metrics review, trend analysis, strategic decisions |
+| **TBD** | Product analytics (PostHog or Plausible — decision needed) |
 
 ---
 
 *Last updated: 2026-02-23*
-*Status: Skeleton — targets need to be set after pricing decisions*
+*Status: Metrics defined. Targets set for beta and launch phases.*

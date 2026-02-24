@@ -155,10 +155,11 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
               <div className="flex items-center justify-center">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
                       disabled={isSigningOut}
-                      className="flex min-h-(--control-primary) flex-1 items-center justify-center gap-2 text-sm text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover hover:text-destructive active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                      className="h-auto min-h-(--control-primary) w-full flex-1 items-center justify-center gap-2 rounded-none text-sm text-muted-foreground tap-transparent hover:bg-hover hover:text-destructive"
                     >
                       {isSigningOut ? (
                         <SpinnerGap size={18} className="animate-spin" />
@@ -166,7 +167,7 @@ export function SidebarMenu({ user, triggerClassName, userStats }: SidebarMenuPr
                         <SignOut size={18} />
                       )}
                       <span>{tNavUser("logOut")}</span>
-                    </button>
+                    </Button>
                   </AlertDialogTrigger>
 
                   <AlertDialogContent className="max-w-sm rounded-lg border-border">

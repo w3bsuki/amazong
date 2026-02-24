@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useTransition } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 import { CircleCheck as CheckCircle, CloudUpload as CloudArrowUp, Eye, House, Zap as Lightning, Plus, Share, LoaderCircle as SpinnerGap } from "lucide-react";
 
@@ -129,6 +130,7 @@ function SellFormContent({
   // Handle form submission - check payout status first
   const handleSubmit = useCallback(async (data: SellFormDataV4) => {
     setSubmitError(null);
+    form.clearErrors();
     
     // Gate at publish: check payout status before submitting
     if (!isPayoutReady(payoutStatus)) {
@@ -150,22 +152,40 @@ function SellFormContent({
         const result: CreateListingResult = await createListingAction({ sellerId, data });
 
         if (!result.success) {
+          const translateMessage = (raw: string | undefined): string | null => {
+            if (!raw) return null
+            try {
+              return tSell(raw as never)
+            } catch {
+              return raw
+            }
+          }
+
+          if (Array.isArray(result.issues)) {
+            for (const issue of result.issues) {
+              const field = issue.path[0]
+              if (!field) continue
+              form.setError(field as keyof SellFormDataV4, {
+                type: "server",
+                message: issue.message,
+              })
+            }
+          }
+
           const issueMessages = result.issues
-            ?.map((i) => {
-              const key = i.message
-              if (!key) return null
-              try {
-                return tSell(key as never)
-              } catch {
-                return key
-              }
-            })
-            .filter(Boolean)
+            ?.map((issue) => translateMessage(issue.message))
+            .filter((message): message is string => Boolean(message))
             .join(", ")
             .trim()
 
-          const baseError = result.message || result.error || tSell("errors.createFailed");
-          throw new Error(baseError + (issueMessages ? ` (${issueMessages})` : ""));
+          const baseError =
+            translateMessage(result.message) ||
+            translateMessage(result.error) ||
+            tSell("errors.createFailed")
+          const fullError = issueMessages ? `${baseError} (${issueMessages})` : baseError
+          setSubmitError(fullError)
+          toast.error(fullError)
+          return
         }
 
         // Clear draft after successful submission
@@ -186,7 +206,6 @@ function SellFormContent({
           setShowSuccess(true);
           window.scrollTo({ top: 0, behavior: "instant" });
       } catch (error) {
-        console.error("Submit error:", error);
        const errorMessage = error instanceof Error 
          ? error.message 
           : tSell("errors.publishFailed");
@@ -194,7 +213,7 @@ function SellFormContent({
         toast.error(errorMessage);
       }
     });
-  }, [sellerId, clearDraft, payoutStatus, createListingAction, tSell]);
+  }, [sellerId, clearDraft, payoutStatus, createListingAction, form, tSell]);
 
   // Handle reset for new listing
   const handleNewListing = useCallback(() => {
@@ -282,12 +301,15 @@ function SellFormContent({
 
             {/* Product preview card - cleaner */}
             {firstImageUrl && (
-              <div className="bg-surface-subtle rounded-xl border border-border-subtle p-4">
+                  <div className="bg-surface-subtle rounded-xl border border-border-subtle p-4">
                 <div className="flex items-center gap-4">
-                  <img 
-                    src={firstImageUrl} 
+                  <Image
+                    src={firstImageUrl}
                     alt={productTitle}
-                    className="w-20 h-20 rounded-xl object-cover"
+                    width={80}
+                    height={80}
+                    sizes="80px"
+                    className="size-20 rounded-xl object-cover"
                   />
                   <div className="flex-1 text-left min-w-0">
                     <p className="font-bold text-base truncate">{productTitle}</p>

@@ -51,7 +51,7 @@ describe("ProductGrid presets", () => {
     expect(screen.queryByTestId("mobile-p1")).toBeNull()
 
     const root = document.getElementById("product-grid")
-    expect(root).toBeTruthy()
+    expect(root).not.toBeNull()
     expect(root).toHaveAttribute("data-slot", "product-grid")
     expect(screen.getByTestId("desktop-p1")).toHaveAttribute("data-slot", "product-card-link")
   })

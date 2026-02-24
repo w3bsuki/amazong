@@ -46,6 +46,19 @@ function sanitizeAuthError(error: Error | { message: string }): string {
   return "error"
 }
 
+function toAuthError(error: unknown): Error | { message: string } {
+  if (error instanceof Error) return error
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as { message?: unknown }).message === "string"
+  ) {
+    return { message: (error as { message: string }).message }
+  }
+  return { message: "Unexpected auth error" }
+}
+
 async function getSiteUrlFromHeaders(): Promise<string | null> {
   const hdrs = await headers()
   const forwardedHost = hdrs.get("x-forwarded-host")
@@ -136,7 +149,7 @@ async function signInWithPassword(formData: FormData, prevState: AuthActionState
   try {
     supabase = await createClient()
   } catch (error) {
-    return { ...prevState, error: sanitizeAuthError(error as Error), success: false }
+    return { ...prevState, error: sanitizeAuthError(toAuthError(error)), success: false }
   }
 
   try {
@@ -149,7 +162,7 @@ async function signInWithPassword(formData: FormData, prevState: AuthActionState
       return { ...prevState, error: sanitizeAuthError(error), success: false }
     }
   } catch (error) {
-    return { ...prevState, error: sanitizeAuthError(error as Error), success: false }
+    return { ...prevState, error: sanitizeAuthError(toAuthError(error)), success: false }
   }
 
   return { success: true }
@@ -182,27 +195,35 @@ async function signUpWithEmail(
   try {
     supabase = await createClient()
   } catch (error) {
-    return { ...prevState, error: sanitizeAuthError(error as Error), success: false }
+    return { ...prevState, error: sanitizeAuthError(toAuthError(error)), success: false }
   }
 
   const siteUrl = await getSiteUrl()
   const safeLocale = toSafeLocale(locale)
-  const { error, data: authData } = await supabase.auth.signUp({
-    email: parsed.data.email,
-    password: parsed.data.password,
-    options: {
-      // Include locale/next as query params so the non-locale /auth/confirm route
-      // can redirect users back into the correct locale after verification.
-      // After signup, redirect to onboarding flow to select account type
-      emailRedirectTo: `${siteUrl}/auth/confirm?locale=${encodeURIComponent(safeLocale)}&next=${encodeURIComponent("/onboarding")}`,
-      data: {
-        full_name: parsed.data.name,
-        username: usernameLower,
-        // Account type is now selected during onboarding, defaulting to personal
-        account_type_intent: "personal",
+  let error: { message: string } | null = null
+  let authData: unknown = null
+  try {
+    const signUpResult = await supabase.auth.signUp({
+      email: parsed.data.email,
+      password: parsed.data.password,
+      options: {
+        // Include locale/next as query params so the non-locale /auth/confirm route
+        // can redirect users back into the correct locale after verification.
+        // After signup, redirect to onboarding flow to select account type
+        emailRedirectTo: `${siteUrl}/auth/confirm?locale=${encodeURIComponent(safeLocale)}&next=${encodeURIComponent("/onboarding")}`,
+        data: {
+          full_name: parsed.data.name,
+          username: usernameLower,
+          // Account type is now selected during onboarding, defaulting to personal
+          account_type_intent: "personal",
+        },
       },
-    },
-  })
+    })
+    error = signUpResult.error
+    authData = signUpResult.data
+  } catch (caughtError) {
+    return { ...prevState, error: sanitizeAuthError(toAuthError(caughtError)), success: false }
+  }
 
   if (error) {
     return { ...prevState, error: sanitizeAuthError(error), success: false }
@@ -224,16 +245,27 @@ export async function checkUsernameAvailability(username: string): Promise<{ ava
 
   const cleaned = username.trim().toLowerCase()
   if (!cleaned || cleaned.length < 3) return { available: false }
+  if (!/^[a-z0-9_]+$/.test(cleaned)) return { available: false }
 
-  const supabase = createStaticClient()
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id")
-    .ilike("username", cleaned)
-    .maybeSingle()
+  let supabase
+  try {
+    supabase = createStaticClient()
+  } catch {
+    return { available: false }
+  }
 
-  if (error) return { available: false }
-  return { available: !data }
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id")
+      .ilike("username", cleaned)
+      .maybeSingle()
+
+    if (error) return { available: false }
+    return { available: !data }
+  } catch {
+    return { available: false }
+  }
 }
 
 /**
@@ -313,15 +345,29 @@ export async function requestPasswordReset(
     }
   }
 
-  const supabase = await createClient()
-  const siteUrl = await getSiteUrl()
+  let supabase
+  try {
+    supabase = await createClient()
+  } catch (error) {
+    return { ...prevState, error: sanitizeAuthError(toAuthError(error)), success: false }
+  }
+  let siteUrl: string
+  try {
+    siteUrl = await getSiteUrl()
+  } catch (error) {
+    return { ...prevState, error: sanitizeAuthError(toAuthError(error)), success: false }
+  }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${siteUrl}/${toSafeLocale(locale)}/auth/reset-password`,
-  })
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+      redirectTo: `${siteUrl}/${toSafeLocale(locale)}/auth/reset-password`,
+    })
 
-  if (error) {
-    return { ...prevState, error: sanitizeAuthError(error), success: false }
+    if (error) {
+      return { ...prevState, error: sanitizeAuthError(error), success: false }
+    }
+  } catch (error) {
+    return { ...prevState, error: sanitizeAuthError(toAuthError(error)), success: false }
   }
 
   return { success: true }

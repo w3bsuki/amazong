@@ -1,11 +1,10 @@
-import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { getPublicProfileData, getProfileMetadata } from "@/lib/data/profile-page"
 import { safeAvatarSrc } from "@/lib/utils"
 import { PublicProfileClient } from "./profile-client"
-import { routing } from "@/i18n/routing"
+import { notFound, routing } from "@/i18n/routing"
 import { followSeller, unfollowSeller } from "../../actions/seller-follows"
 
 // =============================================================================

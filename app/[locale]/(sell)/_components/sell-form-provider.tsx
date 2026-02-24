@@ -98,7 +98,11 @@ interface SellFormProviderProps {
   totalSteps?: number;
 }
 
-const DRAFT_STORAGE_KEY = "sell-form-draft-v4";
+const LEGACY_DRAFT_STORAGE_KEY = "sell-form-draft-v4";
+
+function getDraftStorageKey(sellerId: string): string {
+  return `sell-form-draft-v4:${sellerId}`;
+}
 
 export function SellFormProvider({
   children,
@@ -110,8 +114,12 @@ export function SellFormProvider({
   existingProduct,
   totalSteps = 5,
 }: SellFormProviderProps) {
+  const draftStorageKey = getDraftStorageKey(sellerId);
+
   // Form setup with react-hook-form
   const methods = useForm<SellFormDataV4>({
+    // zodResolver infers schema input/output separately; useForm tracks a single value shape.
+    // This cast keeps the form model aligned with SellFormDataV4 while preserving runtime validation.
     resolver: zodResolver(sellFormSchemaV4) as unknown as Resolver<SellFormDataV4>,
     defaultValues: existingProduct || { ...defaultSellFormValuesV4, ...defaultValues },
     mode: "onChange", // Validate on change for real-time feedback
@@ -126,7 +134,7 @@ export function SellFormProvider({
   
   // Track changes for auto-save
   const lastSavedRef = useRef<string>("");
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const draftRestoredRef = useRef(false);
 
   // Calculate progress from form values
@@ -152,25 +160,27 @@ export function SellFormProvider({
     setIsSaving(true);
     
     try {
-      localStorage.setItem(DRAFT_STORAGE_KEY, serialized);
+      localStorage.setItem(draftStorageKey, serialized);
       lastSavedRef.current = serialized;
       setAutoSaved(true);
       setHasUnsavedChanges(false);
       
       // Reset autoSaved indicator after 3 seconds
       setTimeout(() => setAutoSaved(false), 3000);
-    } catch (error) {
-      console.error("Failed to save draft:", error);
+    } catch {
+      // Non-blocking: draft persistence should never crash the form.
     } finally {
       setIsSaving(false);
     }
-  }, [methods]);
+  }, [draftStorageKey, methods]);
 
   const loadDraft = useCallback(async () => {
     if (typeof window === "undefined" || existingProduct || draftRestoredRef.current) return;
     
     try {
-      const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
+      const savedDraft =
+        localStorage.getItem(draftStorageKey) ??
+        localStorage.getItem(LEGACY_DRAFT_STORAGE_KEY);
       if (savedDraft) {
         const parsed = JSON.parse(savedDraft) as Partial<SellFormDataV4>;
         // Only restore if there's actual content
@@ -178,23 +188,30 @@ export function SellFormProvider({
           methods.reset({ ...defaultSellFormValuesV4, ...parsed });
           lastSavedRef.current = savedDraft;
         }
+
+        // Migrate legacy drafts to seller-scoped storage.
+        if (!localStorage.getItem(draftStorageKey)) {
+          localStorage.setItem(draftStorageKey, savedDraft);
+        }
+        localStorage.removeItem(LEGACY_DRAFT_STORAGE_KEY);
       }
-    } catch (error) {
-      console.error("Failed to load draft:", error);
+    } catch {
+      // Ignore malformed drafts.
     } finally {
       draftRestoredRef.current = true;
     }
-  }, [methods, existingProduct]);
+  }, [draftStorageKey, methods, existingProduct]);
 
   const clearDraft = useCallback(() => {
     if (typeof window === "undefined") return;
     try {
-      localStorage.removeItem(DRAFT_STORAGE_KEY);
+      localStorage.removeItem(draftStorageKey);
+      localStorage.removeItem(LEGACY_DRAFT_STORAGE_KEY);
       lastSavedRef.current = "";
-    } catch (error) {
-      console.error("Failed to clear draft:", error);
+    } catch {
+      // Best-effort cleanup only.
     }
-  }, []);
+  }, [draftStorageKey]);
 
   // Auto-save on form changes (debounced)
   useEffect(() => {

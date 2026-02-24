@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound } from "@/i18n/routing"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 

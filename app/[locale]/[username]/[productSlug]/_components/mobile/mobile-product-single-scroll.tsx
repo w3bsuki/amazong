@@ -12,6 +12,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { formatDistanceToNow } from "date-fns";
 import { bg, enUS } from "date-fns/locale";
 import { Clock, MapPin } from "lucide-react";
+import { useRouter } from "@/i18n/routing";
 
 // Mobile-specific components
 import { MobileGallery } from "./mobile-gallery";
@@ -84,6 +85,7 @@ interface MobileProductSingleScrollProps {
 export function MobileProductSingleScroll(props: MobileProductSingleScrollProps) {
   const t = useTranslations("Product");
   const currentLocale = useLocale();
+  const router = useRouter();
   const {
     locale,
     username,
@@ -183,14 +185,16 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
     storeSlug: p.storeSlug ?? null,
   }));
 
-  // Handle report (placeholder)
-  const handleReport = () => {
-    // NOTE (BACKLOG-008): Implement report modal/flow.
-  };
-
   const pickupOnly = product.pickup_only ?? false;
   const freeShipping = product.free_shipping === true;
   const isNegotiable = Boolean(product.is_negotiable);
+
+  const handleMobileSellerChat = () => {
+    if (!seller?.id) return;
+    const params = new URLSearchParams({ seller: seller.id });
+    if (product.id) params.set("product", String(product.id));
+    router.push(`/chat?${params.toString()}`);
+  };
 
   return (
     <PageShell variant="muted" className="pb-20 md:pb-28 lg:hidden">
@@ -238,7 +242,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
               condition={product.condition}
               freeShipping={freeShipping}
               price={displayPrice}
-              currency="EUR"
+              currency="BGN"
               isNegotiable={isNegotiable}
               locale={currentLocale}
             />
@@ -319,7 +323,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
 
         <div className="space-y-4 px-inset pt-4">
           <MobileSafetyTips />
-          <MobileReportButton onReport={handleReport} />
+          <MobileReportButton />
         </div>
 
         {/* Similar items rail */}
@@ -334,7 +338,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
           title: cartProduct.title,
           price: displayPrice,
           originalPrice: displayRegularPrice,
-          currency: "EUR",
+          currency: "BGN",
           image: cartProduct.image,
           slug: cartProduct.slug,
           username: cartProduct.username,
@@ -351,6 +355,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
         onOpenChange={setSellerDrawerOpen}
         seller={sellerPreview}
         products={sellerProducts}
+        onChat={handleMobileSellerChat}
       />
     </PageShell>
   );

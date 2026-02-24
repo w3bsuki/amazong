@@ -1,7 +1,7 @@
 "use client"
 
+import { Clock } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { Clock } from "lucide-react";
 
 import { cn } from "@/lib/utils"
 

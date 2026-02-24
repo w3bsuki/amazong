@@ -48,7 +48,7 @@ export function SearchPagination({
       ? (pathname.slice(localePrefix.length) || "/")
       : pathname
 
-    return `${basePath}${queryString ? `?${queryString}` : ""}`
+    return queryString ? `${basePath}?${queryString}` : basePath
   }
   
   // Generate page numbers to show

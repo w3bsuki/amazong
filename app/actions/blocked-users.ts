@@ -3,6 +3,7 @@
 import { z } from "zod"
 import { revalidateTag } from "next/cache"
 import { requireAuth } from "@/lib/auth/require-auth"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 
 export interface BlockedUser {
   blocked_id: string
@@ -13,23 +14,46 @@ export interface BlockedUser {
 }
 
 const UserIdSchema = z.string().uuid()
+const BlockedUserSchema = z.object({
+  blocked_id: z.string().uuid(),
+  blocked_at: z.string(),
+  reason: z.string().nullable(),
+  full_name: z.string().nullable(),
+  avatar_url: z.string().nullable(),
+})
+const BlockedUsersSchema = z.array(BlockedUserSchema)
+
+type BlockUserResult = Envelope<
+  { error: null },
+  { error: string }
+>
+
+type BlockedUsersResult = Envelope<
+  { data: BlockedUser[]; error: null },
+  { data: null; error: string }
+>
+
+type IsUserBlockedResult = Envelope<
+  { blocked: boolean; error: null },
+  { blocked: boolean; error: string }
+>
 
 /**
  * Block a user
  * Prevents them from messaging you
  */
-export async function blockUser(userId: string, reason?: string) {
+export async function blockUser(userId: string, reason?: string): Promise<BlockUserResult> {
   const parsedUserId = UserIdSchema.safeParse(userId)
-  if (!parsedUserId.success) return { success: false, error: "Invalid userId" }
+  if (!parsedUserId.success) return errorEnvelope({ error: "Invalid userId" })
 
   const auth = await requireAuth()
-  if (!auth) return { success: false, error: "Not authenticated" }
+  if (!auth) return errorEnvelope({ error: "Not authenticated" })
 
   const { supabase, user } = auth
 
   // Can't block yourself
   if (user.id === parsedUserId.data) {
-    return { success: false, error: "Cannot block yourself" }
+    return errorEnvelope({ error: "Cannot block yourself" })
   }
 
   const { data, error } = await supabase.rpc("block_user", {
@@ -39,25 +63,29 @@ export async function blockUser(userId: string, reason?: string) {
 
   if (error) {
     console.error("Error blocking user:", error)
-    return { success: false, error: error.message }
+    return errorEnvelope({ error: error.message })
+  }
+
+  if (data !== true) {
+    return errorEnvelope({ error: "Failed to block user" })
   }
 
   // Revalidate relevant caches
   revalidateTag("blocked-users", "max")
   revalidateTag("conversations", "max")
 
-  return { success: data === true, error: null }
+  return successEnvelope({ error: null })
 }
 
 /**
  * Unblock a user
  */
-export async function unblockUser(userId: string) {
+export async function unblockUser(userId: string): Promise<BlockUserResult> {
   const parsedUserId = UserIdSchema.safeParse(userId)
-  if (!parsedUserId.success) return { success: false, error: "Invalid userId" }
+  if (!parsedUserId.success) return errorEnvelope({ error: "Invalid userId" })
 
   const auth = await requireAuth()
-  if (!auth) return { success: false, error: "Not authenticated" }
+  if (!auth) return errorEnvelope({ error: "Not authenticated" })
 
   const { supabase } = auth
 
@@ -67,22 +95,26 @@ export async function unblockUser(userId: string) {
 
   if (error) {
     console.error("Error unblocking user:", error)
-    return { success: false, error: error.message }
+    return errorEnvelope({ error: error.message })
+  }
+
+  if (data !== true) {
+    return errorEnvelope({ error: "Failed to unblock user" })
   }
 
   // Revalidate relevant caches
   revalidateTag("blocked-users", "max")
   revalidateTag("conversations", "max")
 
-  return { success: data === true, error: null }
+  return successEnvelope({ error: null })
 }
 
 /**
  * Get list of blocked users
  */
-export async function getBlockedUsers(): Promise<{ data: BlockedUser[] | null; error: string | null }> {
+export async function getBlockedUsers(): Promise<BlockedUsersResult> {
   const auth = await requireAuth()
-  if (!auth) return { data: null, error: "Not authenticated" }
+  if (!auth) return errorEnvelope({ data: null, error: "Not authenticated" })
 
   const { supabase } = auth
 
@@ -90,21 +122,27 @@ export async function getBlockedUsers(): Promise<{ data: BlockedUser[] | null; e
 
   if (error) {
     console.error("Error getting blocked users:", error)
-    return { data: null, error: error.message }
+    return errorEnvelope({ data: null, error: error.message })
   }
 
-  return { data: data as BlockedUser[], error: null }
+  const parsedBlockedUsers = BlockedUsersSchema.safeParse(data ?? [])
+  if (!parsedBlockedUsers.success) {
+    console.error("Invalid blocked users payload:", parsedBlockedUsers.error)
+    return errorEnvelope({ data: null, error: "Invalid blocked users response" })
+  }
+
+  return successEnvelope({ data: parsedBlockedUsers.data, error: null })
 }
 
 /**
  * Check if a user is blocked
  */
-export async function isUserBlocked(userId: string): Promise<boolean> {
+export async function isUserBlocked(userId: string): Promise<IsUserBlockedResult> {
   const parsedUserId = UserIdSchema.safeParse(userId)
-  if (!parsedUserId.success) return false
+  if (!parsedUserId.success) return errorEnvelope({ blocked: false, error: "Invalid userId" })
 
   const auth = await requireAuth()
-  if (!auth) return false
+  if (!auth) return errorEnvelope({ blocked: false, error: "Not authenticated" })
 
   const { supabase, user } = auth
 
@@ -115,8 +153,8 @@ export async function isUserBlocked(userId: string): Promise<boolean> {
 
   if (error) {
     console.error("Error checking block status:", error)
-    return false
+    return errorEnvelope({ blocked: false, error: "Failed to check block status" })
   }
 
-  return data === true
+  return successEnvelope({ blocked: data === true, error: null })
 }

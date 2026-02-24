@@ -15,7 +15,7 @@ describe("ProductCardPrice presentation", () => {
     )
 
     const strip = container.querySelector("div.rounded-lg.bg-muted")
-    expect(strip).toBeTruthy()
+    expect(strip).not.toBeNull()
   })
 
   test("does not render soft strip container by default", () => {
@@ -42,7 +42,7 @@ describe("ProductCardPrice presentation", () => {
     )
 
     const badge = container.querySelector('[data-slot="badge"]')
-    expect(badge).toBeTruthy()
-    expect(badge?.textContent).toContain("199")
+    expect(badge).not.toBeNull()
+    expect(badge).toHaveTextContent("199")
   })
 })

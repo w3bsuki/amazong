@@ -50,6 +50,30 @@ interface AccountRecentActivityProps {
   locale: string
 }
 
+function getRecentOrderStatusColor(status: string | null) {
+  switch (status) {
+    case "paid":
+      return "bg-success/10 text-success border-transparent"
+    case "pending":
+      return "bg-warning/10 text-warning border-transparent"
+    case "processing":
+      return "bg-selected text-primary border-transparent"
+    case "shipped":
+      return "bg-info/10 text-info border-transparent"
+    case "delivered":
+      return "bg-success/10 text-success border-transparent"
+    case "cancelled":
+      return "bg-destructive-subtle text-destructive border-transparent"
+    default:
+      return "bg-muted text-muted-foreground border-transparent"
+  }
+}
+
+function getRecentProductHref(product: RecentProduct) {
+  if (!product.username) return "#"
+  return `/${product.username}/${product.slug || product.id}`
+}
+
 export function AccountRecentActivity({ orders, products, sales, locale }: AccountRecentActivityProps) {
   const dateLocale = locale === 'bg' ? bg : enUS
   const [mounted, setMounted] = useState(false)
@@ -64,25 +88,6 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
   }
 
   const formatCurrency = (value: number) => formatPrice(value, { locale })
-
-  const getStatusColor = (status: string | null) => {
-    switch (status) {
-      case 'paid':
-        return 'bg-success/10 text-success border-transparent'
-      case 'pending':
-        return 'bg-warning/10 text-warning border-transparent'
-      case 'processing':
-        return 'bg-selected text-primary border-transparent'
-      case 'shipped':
-        return 'bg-info/10 text-info border-transparent'
-      case 'delivered':
-        return 'bg-success/10 text-success border-transparent'
-      case 'cancelled':
-        return 'bg-destructive-subtle text-destructive border-transparent'
-      default:
-        return 'bg-muted text-muted-foreground border-transparent'
-    }
-  }
 
   const getStatusText = (status: string | null) => {
     if (locale === 'bg') {
@@ -109,11 +114,6 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
     inStock: locale === 'bg' ? 'бр.' : 'in stock',
     viewAll: locale === 'bg' ? 'Виж всички' : 'See all',
     activity: locale === 'bg' ? 'Активност' : 'Activity',
-  }
-
-  const getProductHref = (product: RecentProduct) => {
-    if (!product.username) return "#"
-    return `/${product.username}/${product.slug || product.id}`
   }
 
   return (
@@ -178,7 +178,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                           {formatRelative(order.created_at, false)}
                         </p>
                       )}
-                      <Badge variant="outline" className={`text-2xs font-medium w-fit ${getStatusColor(order.status)}`}>
+                      <Badge variant="outline" className={`text-2xs font-medium w-fit ${getRecentOrderStatusColor(order.status)}`}>
                         {getStatusText(order.status)}
                       </Badge>
                     </Link>
@@ -237,7 +237,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                         </p>
                       )}
                     </div>
-                    <Badge variant="outline" className={`text-2xs font-medium shrink-0 ${getStatusColor(order.status)}`}>
+                    <Badge variant="outline" className={`text-2xs font-medium shrink-0 ${getRecentOrderStatusColor(order.status)}`}>
                       {getStatusText(order.status)}
                     </Badge>
                   </Link>
@@ -259,7 +259,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
               {products.slice(0, 5).map((product) => (
                 <Link
                   key={product.id}
-                  href={getProductHref(product)}
+                  href={getRecentProductHref(product)}
                   className="flex flex-col w-36 rounded-md bg-card border border-border p-3 transition-colors"
                 >
                   {/* Product Image */}
@@ -299,7 +299,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
             {products.slice(0, 3).map((product) => (
               <Link
                 key={product.id}
-                href={getProductHref(product)}
+                href={getRecentProductHref(product)}
                 className="flex items-center gap-3 p-4 hover:bg-hover active:bg-active transition-colors"
               >
                 <div className="relative size-11 rounded-md overflow-hidden bg-card border border-border shrink-0">

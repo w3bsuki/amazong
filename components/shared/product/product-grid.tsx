@@ -104,7 +104,6 @@ export function ProductGridItem({
         username={username}
         sellerId={product.sellerId ?? null}
         sellerName={product.sellerName ?? undefined}
-        sellerAvatarUrl={product.sellerAvatarUrl ?? null}
         sellerVerified={Boolean(product.sellerVerified)}
         location={product.location}
         condition={product.condition}

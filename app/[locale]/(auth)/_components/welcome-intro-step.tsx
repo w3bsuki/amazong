@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { CircleCheck as CheckCircle, PartyPopper as Confetti, Sparkles as Sparkle } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 export function WelcomeIntroStep({
   name,
@@ -15,6 +16,8 @@ export function WelcomeIntroStep({
   onStart: () => void
   onSkip: () => void
 }) {
+  const t = useTranslations("Onboarding")
+
   return (
     <motion.div
       key="welcome"
@@ -46,7 +49,7 @@ export function WelcomeIntroStep({
             transition={{ delay: 0.3 }}
             className="text-2xl font-bold mb-2"
           >
-            Welcome, {name}! 🎉
+            {t("accountType.title")} {name}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -54,21 +57,21 @@ export function WelcomeIntroStep({
             transition={{ delay: 0.4 }}
             className="text-foreground"
           >
-            Your email has been verified
+            {t("accountType.subtitle")}
           </motion.p>
         </div>
       </div>
 
       <div className="p-6">
-        <h2 className="text-lg font-semibold text-foreground mb-2 text-center">Let&apos;s set up your profile</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-2 text-center">{t("profile.title")}</h2>
         <p className="text-sm text-muted-foreground text-center mb-6">
-          This will only take a minute. Choose an avatar and tell us about yourself!
+          {t("profile.subtitle")}
         </p>
 
         <div className="space-y-3">
           <Button onClick={onStart} className="w-full h-12 bg-primary text-primary-foreground hover:bg-interactive-hover">
             <Sparkle className="size-5 mr-2" />
-            Get Started
+            {t("common.continue")}
           </Button>
           <button
             type="button"
@@ -76,11 +79,10 @@ export function WelcomeIntroStep({
             disabled={isPending}
             className="w-full text-sm text-muted-foreground hover:text-foreground py-2"
           >
-            {isPending ? "..." : "Skip for now"}
+            {isPending ? t("common.processing") : t("common.skipForNow")}
           </button>
         </div>
       </div>
     </motion.div>
   )
 }
-

@@ -1,4 +1,6 @@
 import { test, expect, assertNoErrorBoundary, assertVisible } from "./fixtures/base"
+import type { APIRequestContext, Page } from "@playwright/test"
+import { pickAnyProductFromNewestApi } from "./fixtures/products"
 
 function pickSearchTerm(title: string | null | undefined): string {
   if (!title) return "test"
@@ -11,20 +13,13 @@ function pickSearchTerm(title: string | null | undefined): string {
   return words[0] ?? "test"
 }
 
-async function pickAnyProductFromApi(request: import("@playwright/test").APIRequestContext) {
-  const response = await request.get("/api/products/newest")
-  expect(response.status()).toBe(200)
-
-  const data = await response.json()
-  const products: unknown[] = Array.isArray(data?.products) ? data.products : []
-
-  const first = products.find((p: any) => p?.storeSlug && (p?.slug || p?.id)) as any | undefined
+async function pickAnyProductFromApi(request: APIRequestContext) {
+  const first = await pickAnyProductFromNewestApi(request)
   test.skip(!first, "No products returned from /api/products/newest")
-
   return first
 }
 
-async function clickAnyProductCard(page: import("@playwright/test").Page) {
+async function clickAnyProductCard(page: Page) {
   const grid = page.locator("#product-grid:visible").first()
   await assertVisible(grid)
 

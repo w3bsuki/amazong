@@ -1,15 +1,18 @@
 import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { ArrowRight, LoaderCircle as CircleNotch, Send as PaperPlaneRight, Bot as Robot } from "lucide-react";
+import { ArrowRight, LoaderCircle as CircleNotch, Send as PaperPlaneRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
 import { ProductMiniCard } from "@/components/shared/product/card/mini"
+
+import { SearchAiAssistantAvatar, SearchAiUserAvatar } from "./search-ai-chat-avatars"
+import { SearchAiChatEmptyState } from "./search-ai-chat-empty-state"
+import { extractListings } from "./search-ai-chat-utils"
 
 interface SearchAiChatProps {
   className?: string
@@ -18,86 +21,22 @@ interface SearchAiChatProps {
   compact?: boolean
 }
 
-interface ListingCard {
-  id: string
-  title: string
-  price: number
-  currency?: string
-  image?: string
-  slug?: string
-  storeSlug?: string
-}
+function getClosestPreviousUserMessageText(messages: unknown[], startIndex: number): string | null {
+  for (let i = startIndex - 1; i >= 0; i--) {
+    const msg = messages[i] as { role?: unknown; parts?: unknown } | undefined
+    if (msg?.role !== "user") continue
 
-function isListingCard(value: unknown): value is ListingCard {
-  if (!value || typeof value !== "object") return false
-  const candidate = value as Record<string, unknown>
-  return (
-    typeof candidate.id === "string" &&
-    typeof candidate.title === "string" &&
-    typeof candidate.price === "number" &&
-    Number.isFinite(candidate.price)
-  )
-}
-
-function extractListings(parts: unknown): ListingCard[] {
-  const listings: ListingCard[] = []
-  if (!Array.isArray(parts)) return listings
-
-  for (const rawPart of parts) {
-    if (!rawPart || typeof rawPart !== "object") continue
-    const part = rawPart as { type?: string; output?: unknown; state?: string }
-
-    // AI SDK v6: tool parts are typed as `tool-{toolName}` with state
-    if (
-      part.type === "tool-searchListings" &&
-      part.state === "output-available" &&
-      Array.isArray(part.output)
-    ) {
-      for (const rawListing of part.output) {
-        if (isListingCard(rawListing)) {
-          listings.push(rawListing)
-        }
+    const parts = Array.isArray(msg.parts) ? msg.parts : []
+    for (const part of parts) {
+      const text = (part as { type?: unknown; text?: unknown } | undefined)?.text
+      const type = (part as { type?: unknown } | undefined)?.type
+      if (type === "text" && typeof text === "string" && text.trim()) {
+        return text.trim()
       }
     }
   }
 
-  return listings
-}
-
-/** Assistant Avatar - consistent across the app */
-function AssistantAvatar({ size = "sm" }: { size?: "sm" | "md" }) {
-  const sizeClasses = {
-    sm: "size-7",
-    md: "size-8",
-  }
-  return (
-    <Avatar className={cn(sizeClasses[size], "shrink-0")}>
-      <AvatarFallback className="bg-primary text-primary-foreground">
-        <Robot size={size === "md" ? 16 : 14} />
-      </AvatarFallback>
-    </Avatar>
-  )
-}
-
-/** User Avatar for chat */
-function UserChatAvatar({
-  label,
-  size = "sm",
-}: {
-  label: string
-  size?: "sm" | "md"
-}) {
-  const sizeClasses = {
-    sm: "size-7",
-    md: "size-8",
-  }
-  return (
-    <Avatar className={cn(sizeClasses[size], "shrink-0")}>
-      <AvatarFallback className="bg-foreground text-background text-2xs font-semibold">
-        {label}
-      </AvatarFallback>
-    </Avatar>
-  )
+  return null
 }
 
 /**
@@ -143,52 +82,32 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
   return (
     <div className={cn("flex flex-col h-full", className)}>
       {/* Chat Messages */}
-      <div className={cn(
-        "flex-1 overflow-y-auto overscroll-contain",
-        compact ? "max-h-80" : "min-h-0"
-      )}>
+      <div
+        className={cn("flex-1 overflow-y-auto overscroll-contain", compact ? "max-h-80" : "min-h-0")}
+        aria-busy={isLoading}
+      >
         {messages.length === 0 ? (
-          <div className={cn(
-            "flex flex-col items-center justify-center text-center",
-            compact ? "py-8 px-4" : "py-12 px-6"
-          )}>
-            <Avatar className="size-12 mb-4">
-              <AvatarFallback className="bg-selected text-primary">
-                <Robot size={24} />
-              </AvatarFallback>
-            </Avatar>
-            <h3 className="mb-1 text-base font-semibold tracking-tight text-foreground">
-              {t("aiWelcome")}
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              {t("aiDescription")}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2 justify-center">
-              {[t("aiSuggestionOne"), t("aiSuggestionTwo"), t("aiSuggestionThree")].map((suggestion) => (
-                <button
-                  key={suggestion}
-                  type="button"
-                  onClick={() => {
-                    clearError?.()
-                    setInput(suggestion)
-                    inputRef.current?.focus()
-                  }}
-                  className="rounded-full bg-surface-subtle px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-          </div>
+          <SearchAiChatEmptyState
+            compact={compact}
+            title={t("aiWelcome")}
+            description={t("aiDescription")}
+            suggestions={[t("aiSuggestionOne"), t("aiSuggestionTwo"), t("aiSuggestionThree")]}
+            onSuggestionSelect={(suggestion) => {
+              clearError?.()
+              setInput(suggestion)
+              inputRef.current?.focus()
+            }}
+          />
         ) : (
-          <div className="p-4 space-y-4">
-            {messages.map((message) => {
+          <div className="p-4 space-y-4" role="log" aria-live="polite" aria-relevant="additions text">
+            {messages.map((message, messageIndex) => {
               const isUser = message.role === "user"
               const listings = extractListings(message.parts)
+              const searchQuery = !isUser ? getClosestPreviousUserMessageText(messages, messageIndex) : null
               
               return (
                 <div key={message.id} className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}>
-                  {!isUser && <AssistantAvatar size="sm" />}
+                  {!isUser && <SearchAiAssistantAvatar size="sm" />}
                   
                   <div className={cn(
                     "flex flex-col gap-2 max-w-sm sm:max-w-md",
@@ -238,7 +157,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                         })}
                         {listings.length > 4 && (
                           <Link
-                            href={`/search?q=${encodeURIComponent(input)}`}
+                            href={searchQuery ? `/search?q=${encodeURIComponent(searchQuery)}` : "/search"}
                             onClick={() => onClose?.()}
                             className="shrink-0 w-28 h-28 rounded-lg bg-surface-subtle flex flex-col items-center justify-center text-foreground transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                           >
@@ -250,18 +169,18 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
                     )}
                   </div>
 
-                  {isUser && <UserChatAvatar size="sm" label={t("aiUserLabel")} />}
+                  {isUser && <SearchAiUserAvatar size="sm" label={t("aiUserLabel")} />}
                 </div>
               )
             })}
 
             {/* Loading indicator */}
             {isLoading && (
-              <div className="flex gap-3">
-                <AssistantAvatar size="sm" />
+              <div className="flex gap-3" role="status" aria-live="polite">
+                <SearchAiAssistantAvatar size="sm" />
                 <div className="px-3 py-2 rounded-2xl rounded-bl-md bg-muted">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CircleNotch size={14} className="animate-spin" />
+                    <CircleNotch size={14} className="animate-spin" aria-hidden="true" />
                     {t("aiThinking")}
                   </div>
                 </div>
@@ -270,7 +189,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
 
             {/* Error state */}
             {error && (
-              <div className="rounded-lg border border-border bg-card p-3">
+              <div className="rounded-lg border border-border bg-card p-3" role="alert">
                 <p className="text-sm font-medium text-foreground">{t("aiErrorTitle")}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{t("aiErrorDescription")}</p>
                 <div className="mt-3 flex items-center justify-end gap-2">
@@ -303,6 +222,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t("aiPlaceholder")}
+            aria-label={t("aiPlaceholder")}
             className="flex-1 h-10 rounded-full"
             disabled={isLoading}
           />
@@ -314,7 +234,7 @@ export function SearchAiChat({ className, onClose, compact = false }: SearchAiCh
             aria-label={t("sendMessage")}
           >
             {isLoading ? (
-              <CircleNotch size={18} className="animate-spin" />
+              <CircleNotch size={18} className="animate-spin" aria-hidden="true" />
             ) : (
               <PaperPlaneRight size={18} />
             )}

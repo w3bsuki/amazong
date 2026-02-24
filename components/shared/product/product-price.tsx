@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { formatPrice, formatPriceParts } from '@/lib/price'
+import { formatCurrencyAmount } from '@/lib/price'
 
 interface ProductPriceProps {
   price: number
@@ -9,6 +9,14 @@ interface ProductPriceProps {
   className?: string
   showAccessibleLabel?: boolean
   showVat?: boolean
+}
+
+interface CurrencyPriceParts {
+  symbol: string
+  wholePart: string
+  decimalPart: string
+  decimalSeparator: string
+  symbolPosition: 'before' | 'after'
 }
 
 const sizeClasses = {
@@ -32,6 +40,34 @@ const sizeClasses = {
   }
 }
 
+function getBgnPriceParts(value: number, locale: string): CurrencyPriceParts {
+  const formatter = new Intl.NumberFormat(locale.startsWith('bg') ? 'bg-BG' : 'en-BG', {
+    style: 'currency',
+    currency: 'BGN',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+  const parts = formatter.formatToParts(value)
+  const symbol = parts.find((part) => part.type === 'currency')?.value ?? 'лв.'
+  const wholePart =
+    parts
+      .filter((part) => part.type === 'integer' || part.type === 'group')
+      .map((part) => part.value)
+      .join('') || '0'
+  const decimalPart = parts.find((part) => part.type === 'fraction')?.value ?? '00'
+  const decimalSeparator = parts.find((part) => part.type === 'decimal')?.value ?? ','
+  const currencyIndex = parts.findIndex((part) => part.type === 'currency')
+  const integerIndex = parts.findIndex((part) => part.type === 'integer')
+
+  return {
+    symbol,
+    wholePart,
+    decimalPart,
+    decimalSeparator,
+    symbolPosition: currencyIndex !== -1 && integerIndex !== -1 && currencyIndex < integerIndex ? 'before' : 'after',
+  }
+}
+
 export function ProductPrice({
   price,
   originalPrice,
@@ -42,18 +78,35 @@ export function ProductPrice({
   showVat = true
 }: ProductPriceProps) {
   const hasDiscount = typeof originalPrice === "number" && originalPrice > price
-  const priceParts = formatPriceParts(price, locale)
+  const priceParts = getBgnPriceParts(price, locale)
   const classes = sizeClasses[size]
   
   // Accessible label for screen readers
-  const accessiblePrice = formatPrice(price, { locale })
-  const accessibleOriginal = originalPrice ? formatPrice(originalPrice, { locale }) : null
-  const discountLabel = hasDiscount && accessibleOriginal ? `, was ${accessibleOriginal}` : ""
+  const accessiblePrice = formatCurrencyAmount(price, locale, "BGN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+  const accessibleOriginal =
+    typeof originalPrice === "number"
+      ? formatCurrencyAmount(originalPrice, locale, "BGN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : null
+  const isBgLocale = locale.toLowerCase().startsWith("bg")
+  const pricePrefix = isBgLocale ? "Цена" : "Price"
+  const listPricePrefix = isBgLocale ? "Листова цена" : "was"
+  const discountLabel =
+    hasDiscount && accessibleOriginal
+      ? isBgLocale
+        ? `, ${listPricePrefix}: ${accessibleOriginal}`
+        : `, ${listPricePrefix} ${accessibleOriginal}`
+      : ""
   const accessibleLabel = showAccessibleLabel
-    ? `Price: ${accessiblePrice}${discountLabel}`
+    ? `${pricePrefix}: ${accessiblePrice}${discountLabel}`
     : undefined
   
-  const vatLabel = locale === 'bg' ? 'с ДДС' : 'incl. VAT'
+  const vatLabel = isBgLocale ? 'с ДДС' : 'incl. VAT'
   
   return (
     <div 
@@ -82,7 +135,7 @@ export function ProductPrice({
           className={cn(classes.decimal, "align-top font-semibold relative top-1")}
           aria-hidden="true"
         >
-          {locale === 'bg' ? ',' : '.'}{priceParts.decimalPart}
+          {priceParts.decimalSeparator}{priceParts.decimalPart}
         </span>
         {priceParts.symbolPosition === 'after' && (
           <span 
@@ -104,7 +157,10 @@ export function ProductPrice({
           className={cn("text-price-original line-through tabular-nums", classes.original)}
           aria-hidden="true"
         >
-          {formatPrice(originalPrice, { locale })}
+          {formatCurrencyAmount(originalPrice, locale, "BGN", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </span>
       )}
     </div>

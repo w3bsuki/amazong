@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react"
 
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 
 import { SubmitButton } from "@/components/auth/submit-button"
 import { GoogleOAuthButton } from "@/components/auth/google-oauth-button"
@@ -51,6 +51,7 @@ export function SignUpFormBody({
   className,
 }: SignUpFormBodyProps) {
   const t = useTranslations("Auth")
+  const locale = useLocale()
   const handledSuccess = useRef(false)
   const invalidInputClass = "border-destructive"
 
@@ -168,6 +169,7 @@ export function SignUpFormBody({
         onSubmit={() => {
           try {
             sessionStorage.setItem("lastSignupEmail", email.trim().toLowerCase())
+            sessionStorage.setItem("lastSignupLocale", locale)
           } catch {
             // Ignore storage access errors
           }

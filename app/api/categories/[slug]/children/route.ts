@@ -1,5 +1,7 @@
 import { createStaticClient } from "@/lib/supabase/server"
-import { NextResponse, type NextRequest } from "next/server"
+import type { NextRequest } from "next/server"
+import { z } from "zod"
+import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
 import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
 import { cacheLife, cacheTag } from "next/cache"
 
@@ -12,8 +14,11 @@ import { cacheLife, cacheTag } from "next/cache"
 // Response is cached at CDN + Next.js cache for optimal performance.
 // =============================================================================
 
-const CACHE_TTL_SECONDS = 3600  // 1 hour
-const CACHE_STALE_WHILE_REVALIDATE = 300  // 5 min
+const CategoryChildrenParamsSchema = z
+  .object({
+    slug: z.string().uuid(),
+  })
+  .strict()
 
 interface CategoryChild {
   id: string
@@ -27,22 +32,38 @@ interface CategoryChild {
   children?: CategoryChild[]
 }
 
+function isMissingBrowseableColumnError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false
+
+  const record = error as Record<string, unknown>
+  const code = typeof record.code === "string" ? record.code : ""
+  const message = typeof record.message === "string" ? record.message : ""
+  return code === "42703" && message.includes("is_browseable")
+}
+
 async function getChildrenCached(parentId: string): Promise<CategoryChild[]> {
   'use cache'
   cacheTag('categories:tree')
   cacheTag(`category-children:${parentId}`)
+  cacheTag(`category:${parentId}`)
   cacheLife('categories')
 
   const supabase = createStaticClient()
   if (!supabase) return []
 
-  const { data, error } = await supabase
-    .from("categories")
-    .select("id, name, name_bg, slug, icon, image_url, display_order")
-    .eq("parent_id", parentId)
-    .lt("display_order", 9000)
-    .order("display_order", { ascending: true })
-    .order("name", { ascending: true })
+  const buildChildrenQuery = () =>
+    supabase
+      .from("categories")
+      .select("id, name, name_bg, slug, icon, image_url, display_order")
+      .eq("parent_id", parentId)
+      .lt("display_order", 9000)
+      .order("display_order", { ascending: true })
+      .order("name", { ascending: true })
+
+  let { data, error } = await buildChildrenQuery().eq("is_browseable", true)
+  if (error && isMissingBrowseableColumnError(error)) {
+    ;({ data, error } = await buildChildrenQuery())
+  }
 
   if (error) {
     console.error("getChildrenCached error:", error)
@@ -53,11 +74,21 @@ async function getChildrenCached(parentId: string): Promise<CategoryChild[]> {
   
   // Check which children have their own children
   const childIds = data.map(c => c.id)
-  const { data: grandchildren } = await supabase
-    .from("categories")
-    .select("parent_id")
-    .in("parent_id", childIds)
-    .lt("display_order", 9000)
+  const buildGrandchildrenQuery = () =>
+    supabase
+      .from("categories")
+      .select("parent_id")
+      .in("parent_id", childIds)
+      .lt("display_order", 9000)
+
+  let { data: grandchildren, error: grandchildrenError } = await buildGrandchildrenQuery().eq("is_browseable", true)
+  if (grandchildrenError && isMissingBrowseableColumnError(grandchildrenError)) {
+    ;({ data: grandchildren, error: grandchildrenError } = await buildGrandchildrenQuery())
+  }
+
+  if (grandchildrenError) {
+    console.error("getChildrenCached grandchildren query error:", grandchildrenError)
+  }
   
   const hasChildrenSet = new Set((grandchildren || []).map(g => g.parent_id))
 
@@ -74,33 +105,18 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   // slug param contains the parent category ID
-  const { slug: parentId } = await params
-
-  if (!parentId || parentId.length < 10) {
-    return NextResponse.json(
-      { error: "Invalid parent ID" },
-      { status: 400 }
-    )
+  const parsedParams = CategoryChildrenParamsSchema.safeParse(await params)
+  if (!parsedParams.success) {
+    return noStoreJson({ error: "Invalid parent ID" }, { status: 400 })
   }
+  const { slug: parentId } = parsedParams.data
 
   try {
     const children = await getChildrenCached(parentId)
     
-    return NextResponse.json(
-      { children },
-      {
-        headers: {
-          'Cache-Control': `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`,
-          'CDN-Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
-          'Vercel-CDN-Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
-        }
-      }
-    )
+    return cachedJsonResponse({ children }, "categories")
   } catch (error) {
     console.error("Children API Error:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch children" },
-      { status: 500 }
-    )
+    return noStoreJson({ error: "Failed to fetch children" }, { status: 500 })
   }
 }

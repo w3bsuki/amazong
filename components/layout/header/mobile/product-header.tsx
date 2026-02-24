@@ -1,3 +1,5 @@
+"use client"
+
 import { IconButton } from "@/components/ui/icon-button"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { ArrowLeft, Share as Export, Heart } from "lucide-react";

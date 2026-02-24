@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, Key, Mail as Envelope } from "lucide-react"
 
@@ -9,13 +10,14 @@ interface ProfileSecurityCardProps {
 }
 
 export function ProfileSecurityCard({ locale, email, onOpenEmail, onOpenPassword }: ProfileSecurityCardProps) {
+  const t = useTranslations("Account.profileEditor")
+  void locale
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">{locale === "bg" ? "Сигурност" : "Security"}</CardTitle>
-        <CardDescription>
-          {locale === "bg" ? "Управлявайте имейла и паролата на акаунта" : "Manage your account email and password"}
-        </CardDescription>
+        <CardTitle className="text-lg">{t("security.title")}</CardTitle>
+        <CardDescription>{t("security.description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <button
@@ -27,12 +29,12 @@ export function ProfileSecurityCard({ locale, email, onOpenEmail, onOpenPassword
             <Envelope className="size-5 text-muted-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium">{locale === "bg" ? "Имейл" : "Email"}</p>
+            <p className="text-sm font-medium">{t("security.emailLabel")}</p>
             <p className="text-xs text-muted-foreground truncate">{email}</p>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-success">
             <CheckCircle className="size-3.5" />
-            <span className="hidden sm:inline">{locale === "bg" ? "Потвърден" : "Verified"}</span>
+            <span className="hidden sm:inline">{t("security.verified")}</span>
           </div>
         </button>
 
@@ -45,10 +47,10 @@ export function ProfileSecurityCard({ locale, email, onOpenEmail, onOpenPassword
             <Key className="size-5 text-muted-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium">{locale === "bg" ? "Парола" : "Password"}</p>
+            <p className="text-sm font-medium">{t("security.passwordLabel")}</p>
             <p className="text-xs text-muted-foreground">••••••••</p>
           </div>
-          <span className="text-xs text-muted-foreground">{locale === "bg" ? "Промени" : "Change"}</span>
+          <span className="text-xs text-muted-foreground">{t("actions.change")}</span>
         </button>
       </CardContent>
     </Card>

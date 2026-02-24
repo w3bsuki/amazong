@@ -3,7 +3,16 @@ import { renderHook, act } from '@testing-library/react'
 
 // We need to mock next-intl before importing the hook
 vi.mock('next-intl', () => ({
-  useLocale: vi.fn(() => 'en')
+  useLocale: vi.fn(() => 'en'),
+  useTranslations: vi.fn(() => {
+    const messages: Record<string, string> = {
+      aiSuggestionOne: 'Black Friday deals',
+      aiSuggestionTwo: 'iPhone 15 Pro',
+      aiSuggestionThree: 'Christmas gifts',
+    }
+
+    return (key: string) => messages[key] ?? key
+  }),
 }))
 
 // Import after mocking

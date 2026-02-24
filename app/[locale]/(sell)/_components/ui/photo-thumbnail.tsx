@@ -1,9 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import { Search as MagnifyingGlassPlus, Star, Trash } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import type { ProductImage } from "@/lib/sell/schema";
+import { useTranslations } from "next-intl";
 
 interface PhotoThumbnailProps {
   image: ProductImage;
@@ -39,6 +42,9 @@ export function PhotoThumbnail({
   onDragOver,
   onDragEnd,
 }: PhotoThumbnailProps) {
+  const tSell = useTranslations("Sell");
+  const tCommon = useTranslations("Common");
+
   return (
     <div
       draggable
@@ -55,7 +61,7 @@ export function PhotoThumbnail({
     >
       <Image
         src={image.thumbnailUrl || image.url}
-        alt={`Product image ${index + 1}`}
+        alt={tSell("photos.photoAlt", { index: index + 1 })}
         fill
         className="object-cover"
         sizes="(max-width: 640px) 25vw, 150px"
@@ -66,7 +72,7 @@ export function PhotoThumbnail({
         <div className="absolute top-1.5 left-1.5 z-10">
           <Badge variant="secondary" className="px-1.5 py-0 gap-1 font-bold text-2xs uppercase tracking-wider bg-background text-primary border-none shadow-sm h-5">
             <Star className="size-2" />
-            Cover
+            {tSell("photos.cover")}
           </Badge>
         </div>
       )}
@@ -76,8 +82,8 @@ export function PhotoThumbnail({
         type="button"
         onClick={(e) => { e.stopPropagation(); onRemove(); }}
         className="absolute top-1.5 right-1.5 z-10 p-1 rounded-full bg-background text-destructive shadow-sm hover:bg-destructive hover:text-destructive-foreground transition-colors"
-        aria-label="Remove photo"
-        title="Remove"
+        aria-label={tCommon("delete")}
+        title={tCommon("delete")}
       >
         <Trash className="size-3" />
       </button>
@@ -94,8 +100,8 @@ export function PhotoThumbnail({
             type="button"
             onClick={(e) => { e.stopPropagation(); onPreview(); }}
             className="p-2 rounded-full bg-background text-foreground shadow-sm"
-            aria-label="Preview photo"
-            title="Preview photo"
+            aria-label={tCommon("viewAll")}
+            title={tCommon("viewAll")}
           >
             <MagnifyingGlassPlus className="size-4" />
           </button>
@@ -108,8 +114,8 @@ export function PhotoThumbnail({
           type="button"
           onClick={(e) => { e.stopPropagation(); onSetCover(); }}
           className="absolute bottom-1.5 right-1.5 z-10 p-1 rounded-full bg-background text-primary shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors sm:opacity-0 sm:group-hover:opacity-100"
-          aria-label="Set as cover"
-          title="Set as cover"
+          aria-label={tSell("photos.cover")}
+          title={tSell("photos.cover")}
         >
           <Star className="size-3" />
         </button>

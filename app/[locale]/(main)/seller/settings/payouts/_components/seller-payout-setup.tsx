@@ -19,6 +19,12 @@ type Props = {
   variant?: "full" | "compact"
 }
 
+function isConnectUrlResponse(value: unknown): value is { url: string } {
+  if (!value || typeof value !== "object") return false
+  const candidate = value as { url?: unknown }
+  return typeof candidate.url === "string" && candidate.url.length > 0
+}
+
 export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
   const t = useTranslations("seller.payouts")
   const locale = useLocale()
@@ -59,8 +65,8 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
         return
       }
 
-      const data = await response.json()
-      if (!data?.url) {
+      const data: unknown = await response.json()
+      if (!isConnectUrlResponse(data)) {
         setError(t("errors.generic"))
         setLoading(false)
         return
@@ -91,8 +97,8 @@ export function SellerPayoutSetup({ payoutStatus, variant = "full" }: Props) {
         return
       }
 
-      const data = await response.json()
-      if (!data?.url) {
+      const data: unknown = await response.json()
+      if (!isConnectUrlResponse(data)) {
         setError(t("errors.generic"))
         setLoading(false)
         return

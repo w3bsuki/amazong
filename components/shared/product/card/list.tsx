@@ -1,20 +1,21 @@
-import { Link } from "@/i18n/routing"
+import Image from "next/image"
+import { MapPin, ShieldCheck, Truck } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
-import { Card } from "@/components/ui/card"
+
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { getConditionBadgeVariant, getConditionKey } from "@/components/shared/product/condition"
+import { Card } from "@/components/ui/card"
+import { Link } from "@/i18n/routing"
+import { cn } from "@/lib/utils"
 import { computeBadgeSpecsClient, shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 import { getCategoryName } from "@/lib/data/categories/display"
-import { ProductCardActions } from "./actions"
-import { ProductCardPrice } from "./price"
+import { normalizeImageUrl } from "@/lib/normalize-image-url"
+import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
+
 import { FreshnessIndicator } from "../freshness-indicator"
 import { VerifiedSellerBadge } from "../verified-seller-badge"
-import { MapPin, ShieldCheck, Truck } from "lucide-react"
-
-import Image from "next/image"
-import { normalizeImageUrl } from "@/lib/normalize-image-url"
-import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
-import { getListingOverlayBadgeVariants } from "@/lib/ui/badge-intent"
+import { ProductCardActions } from "./actions"
+import { ProductCardPrice } from "./price"
 
 type CategoryPathItem = {
   slug: string
@@ -37,13 +38,10 @@ interface ProductCardListProps {
 
   // Pricing
   originalPrice?: number | null
-  isOnSale?: boolean
-  salePercent?: number
 
   // Seller
   sellerId?: string | null
   sellerName?: string | undefined
-  sellerAvatarUrl?: string | null
   sellerVerified?: boolean
 
   // Shipping
@@ -205,30 +203,34 @@ export function ProductCardList({
       </Link>
 
       {/* Image - Left side */}
-      <div className="relative shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-xl overflow-hidden bg-surface-subtle">
+      <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-xl bg-surface-subtle sm:h-40 sm:w-40">
         <Image
           src={normalizeImageUrl(image)}
           alt={title}
           fill
           sizes="(max-width: 640px) 128px, 160px"
-          className="object-cover pointer-events-none"
+          className="pointer-events-none object-cover"
         />
 
         {/* Status badges (Promo / Discount) */}
         {overlayBadgeVariants.length > 0 && (
           <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
-            {overlayBadgeVariants.map((variant) => (
+            {overlayBadgeVariants.map((variant) =>
               variant === "promoted" ? (
-                <MarketplaceBadge key="promoted" variant="promoted">{t("adBadge")}</MarketplaceBadge>
+                <MarketplaceBadge key={variant} variant="promoted">
+                  {t("adBadge")}
+                </MarketplaceBadge>
               ) : (
-                <MarketplaceBadge key="discount" variant="discount">-{discountPercent}%</MarketplaceBadge>
+                <MarketplaceBadge key={variant} variant="discount">
+                  -{discountPercent}%
+                </MarketplaceBadge>
               )
-            ))}
+            )}
           </div>
         )}
 
         {/* Wishlist button overlay */}
-        <div className="absolute top-1.5 right-1.5 z-20">
+        <div className="absolute right-1.5 top-1.5 z-20">
           <ProductCardActions
             id={id}
             title={title}
@@ -236,56 +238,60 @@ export function ProductCardList({
             image={image}
             slug={slug ?? null}
             username={username ?? null}
-                showQuickAdd={false}
-                showWishlist={showWishlist}
-                inStock={inStock}
-                isOwnProduct={isOwnProduct}
-                size="icon-compact"
-              />
-            </div>
+            showQuickAdd={false}
+            showWishlist={showWishlist}
+            inStock={inStock}
+            isOwnProduct={isOwnProduct}
+            size="icon-compact"
+          />
+        </div>
 
         {/* Out of stock overlay */}
         {!inStock && (
-          <div className="absolute inset-0 flex items-center justify-center bg-surface-overlay pointer-events-none">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface-overlay">
             <span className="text-xs font-medium text-muted-foreground">{t("outOfStock")}</span>
           </div>
         )}
       </div>
 
       {/* Content - Right side */}
-      <div className="relative z-1 flex-1 min-w-0 flex flex-col">
+      <div className="relative z-0 flex min-w-0 flex-1 flex-col">
         {/* Title */}
         <h3 className="mb-1 min-w-0 truncate text-sm sm:text-base font-semibold tracking-tight text-foreground">
           {title}
         </h3>
 
         {rootCategoryLabel && (
-          <span data-slot="category" className="mb-1 block min-w-0 truncate text-2xs font-medium text-muted-foreground">
+          <span
+            data-slot="category"
+            className="mb-1 block min-w-0 truncate text-2xs font-medium text-muted-foreground"
+          >
             {rootCategoryLabel}
           </span>
         )}
 
         {/* Description (if available) */}
         {description && (
-          <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-            {description}
-          </p>
+          <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">{description}</p>
         )}
 
         {/* Meta row: smart badges, location, freshness */}
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground mb-2">
+        <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
           {/* Category-aware smart badges (mileage for cars, condition for clothing, etc.) */}
-          {smartBadges.map((badge) => (
-                <MarketplaceBadge 
-                  key={badge.key} 
-                  size="compact"
-                  variant={badge.key === "condition" ? getConditionBadgeVariant(badge.value) : "condition"}
-                  className="text-2xs"
-                  title={`${getBadgeLabel(badge.key)}: ${formatBadgeValue(badge)}`}
-            >
-              {formatBadgeValue(badge)}
-            </MarketplaceBadge>
-          ))}
+          {smartBadges.map((badge) => {
+            const value = formatBadgeValue(badge)
+            return (
+              <MarketplaceBadge
+                key={badge.key}
+                size="compact"
+                variant={badge.key === "condition" ? getConditionBadgeVariant(badge.value) : "condition"}
+                className="text-2xs"
+                title={`${getBadgeLabel(badge.key)}: ${value}`}
+              >
+                {value}
+              </MarketplaceBadge>
+            )
+          })}
           {/* Fallback condition badge if no smart badges and condition applies */}
           {smartBadges.length === 0 && conditionLabel && (
             <MarketplaceBadge size="compact" variant={getConditionBadgeVariant(condition)} className="text-2xs">

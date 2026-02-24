@@ -42,6 +42,7 @@ export function NavMain({
               size="icon"
               className="size-8 group-data-[collapsible=icon]:opacity-0"
               variant="outline"
+              aria-label={inboxLabel}
             >
               <IconMail />
               <span className="sr-only">{inboxLabel}</span>

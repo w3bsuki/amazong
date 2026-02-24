@@ -64,8 +64,7 @@ export function parseSessionItemsJson(itemsJson: string | undefined): SessionIte
     const price = typeof record.price === "number" ? record.price : Number.NaN
 
     const variantIdRaw = record.variantId
-    const variantId =
-      typeof variantIdRaw === "string" ? variantIdRaw : variantIdRaw === null ? null : null
+    const variantId = typeof variantIdRaw === "string" ? variantIdRaw : null
 
     if (!id) return null
     if (!isValidQuantity(qty)) return null

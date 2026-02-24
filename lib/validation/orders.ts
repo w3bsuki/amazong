@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { SHIPPING_CARRIER_VALUES, type ShippingCarrier } from "@/lib/order-status"
 
-const shippingCarrierValues = SHIPPING_CARRIER_VALUES as unknown as [ShippingCarrier, ...ShippingCarrier[]]
+const shippingCarrierValues = [...SHIPPING_CARRIER_VALUES] as [ShippingCarrier, ...ShippingCarrier[]]
 
 export const orderItemIdParamSchema = z
   .object({

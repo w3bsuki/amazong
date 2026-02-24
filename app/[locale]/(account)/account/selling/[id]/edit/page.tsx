@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { locales } from "@/i18n/routing"
 import { EditProductClient } from "../../edit/edit-product-client"
 
@@ -7,9 +7,19 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale, id: "__placeholder__" }))
 }
 
-export const metadata = {
-  title: "Edit Listing | Treido",
-  description: "Edit your listing details on Treido.",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; locale: string }>
+}) {
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "SellerManagement" })
+
+  return {
+    title: `${t("selling.edit.header.title")} | Treido`,
+    description: t("selling.edit.header.description"),
+  }
 }
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string; locale: string }> }) {

@@ -57,6 +57,7 @@ export function DesktopShell({
       data-slot="desktop-shell"
       data-variant={variant}
       data-sidebar={hasSidebar ? "visible" : "hidden"}
+      data-sidebar-collapsible={sidebarCollapsible ? "true" : "false"}
       data-sidebar-collapsed={sidebarCollapsed}
       className={cn("min-h-dvh", variantStyles[variant], className)}
       style={

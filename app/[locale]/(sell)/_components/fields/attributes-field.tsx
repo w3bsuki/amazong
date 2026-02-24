@@ -75,8 +75,8 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
         })) as CategoryAttribute[];
 
         setDbAttributes(normalized);
-      } catch (error) {
-        console.error("Failed to fetch category attributes:", error);
+      } catch {
+        // Non-blocking: leave specifics empty when the category attributes API fails.
       } finally {
         setIsLoading(false);
       }

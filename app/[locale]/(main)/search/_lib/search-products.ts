@@ -2,6 +2,7 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { ITEMS_PER_PAGE, type Product, type SearchProductFilters } from "./types"
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
 import { applySharedProductFilters, applySharedProductSort } from "@/lib/data/search-products"
+import { buildTokenizedIlikeOrFilter } from "@/lib/filters/search-query"
 
 type SearchQueryResult = {
   data?: unknown[] | null
@@ -85,9 +86,8 @@ export async function searchProducts(
     // Verified sellers (business verification)
     if (filters.verified === "true") next = next.eq("profiles.is_verified_business", true)
 
-    if (normalizedQuery) {
-      next = next.or(`title.ilike.%${normalizedQuery}%,description.ilike.%${normalizedQuery}%`)
-    }
+    const searchFilter = buildTokenizedIlikeOrFilter(normalizedQuery, ["title", "description"])
+    if (searchFilter) next = next.or(searchFilter)
 
     return next
   }

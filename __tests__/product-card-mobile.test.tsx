@@ -4,10 +4,43 @@ import { describe, expect, test, vi } from "vitest"
 
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
 
+type MockNextImageProps = React.ImgHTMLAttributes<HTMLImageElement> & {
+  alt: string
+  src: string
+  fill?: boolean
+  priority?: boolean
+  blurDataURL?: string
+  placeholder?: "blur" | "empty"
+}
+
+type MockNextImageRestProps = Omit<MockNextImageProps, "alt" | "src">
+
+function sanitizeNextImageProps(props: MockNextImageRestProps): React.ImgHTMLAttributes<HTMLImageElement> {
+  const imgProps: MockNextImageRestProps = { ...props }
+  for (const key of ["fill", "priority", "blurDataURL", "placeholder"] as const) {
+    delete imgProps[key]
+  }
+  return imgProps
+}
+
+type MockLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+  href: string
+  children: React.ReactNode
+  prefetch?: boolean
+}
+
+type MockLinkRestProps = Omit<MockLinkProps, "href" | "children">
+
+function sanitizeLinkProps(props: MockLinkRestProps): React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  const linkProps: MockLinkRestProps = { ...props }
+  delete linkProps.prefetch
+  return linkProps
+}
+
 vi.mock("next/image", () => ({
-  default: ({ alt, src, ...props }: { alt: string; src: string }) => (
+  default: ({ alt, src, ...props }: MockNextImageProps) => (
     // eslint-disable-next-line @next/next/no-img-element -- next/image is mocked with <img> in unit tests
-    <img alt={alt} src={src} {...props} />
+    <img alt={alt} src={src} {...sanitizeNextImageProps(props)} />
   ),
 }))
 
@@ -23,8 +56,8 @@ vi.mock("next-intl", () => ({
 }))
 
 vi.mock("@/i18n/routing", () => ({
-  Link: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => (
-    <a href={href} {...props}>
+  Link: ({ href, children, ...props }: MockLinkProps) => (
+    <a href={href} {...sanitizeLinkProps(props)}>
       {children}
     </a>
   ),
@@ -78,7 +111,7 @@ describe("MobileProductCard", () => {
     expect(priceRow).toHaveTextContent("justNow")
     const rowChildren = priceRow.querySelectorAll(":scope > *")
     expect(rowChildren.item(0)?.querySelector('[data-slot="badge"]')).not.toBeNull()
-    expect(rowChildren.item(0)).toHaveTextContent("€67")
+    expect(rowChildren.item(0)).toHaveTextContent(/67/)
     expect(rowChildren.item(rowChildren.length - 1)).toHaveTextContent("justNow")
 
     expect(screen.getByTestId("product-card-actions")).toBeInTheDocument()

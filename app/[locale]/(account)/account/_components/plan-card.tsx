@@ -42,6 +42,53 @@ interface PlanCardProps {
   variant?: "compact" | "full"
 }
 
+function formatPlanPrice(price: number, locale: string, freeLabel: string) {
+  if (price === 0) return freeLabel
+  // Bulgaria joins Eurozone Jan 2026
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price)
+}
+
+function getPlanCardWidthClass(variant: "compact" | "full") {
+  return variant === "compact"
+    ? "min-w-(--container-2xs) max-w-(--container-xs) w-full shrink-0 snap-center md:w-auto md:min-w-0 md:max-w-none md:shrink md:snap-none"
+    : "min-w-(--container-dropdown) max-w-(--container-modal-sm) w-full shrink-0 snap-center md:w-auto md:min-w-0 md:max-w-none md:shrink md:snap-none"
+}
+
+function getPlanIconToneClass(isPopular: boolean, isBest: boolean) {
+  if (isPopular) return "bg-primary text-primary-foreground"
+  if (isBest) return "bg-rating text-primary-foreground"
+  return "bg-muted text-muted-foreground"
+}
+
+function getPlanFeatureCheckColorClass(isPopular: boolean, isBest: boolean) {
+  if (isPopular) return "text-primary"
+  if (isBest) return "text-rating"
+  return "text-muted-foreground"
+}
+
+function getPlanCtaLabel({
+  isCurrentPlan,
+  price,
+  currentPlanLabel,
+  getStartedLabel,
+  upgradeLabel,
+}: {
+  isCurrentPlan: boolean
+  price: number
+  currentPlanLabel: string
+  getStartedLabel: string
+  upgradeLabel: string
+}) {
+  if (isCurrentPlan) return currentPlanLabel
+  if (price === 0) return getStartedLabel
+  return upgradeLabel
+}
+
 // =============================================================================
 // Utility Functions
 // =============================================================================
@@ -84,17 +131,17 @@ export function PlanCard({
   const isPopular = isPremiumPlan(plan) && !isBestValuePlan(plan)
   const isBest = isBestValuePlan(plan)
   const price = billingPeriod === "monthly" ? plan.price_monthly : plan.price_yearly
-
-  const formatPrice = (price: number) => {
-    if (price === 0) return t("free")
-    // Bulgaria joins Eurozone Jan 2026
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: "EUR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price)
-  }
+  const widthClass = getPlanCardWidthClass(variant)
+  const paddingClass = variant === "compact" ? "p-3" : "p-3 md:p-4"
+  const iconToneClass = getPlanIconToneClass(isPopular, isBest)
+  const checkIconColorClass = getPlanFeatureCheckColorClass(isPopular, isBest)
+  const ctaLabel = getPlanCtaLabel({
+    isCurrentPlan,
+    price,
+    currentPlanLabel: t("currentPlan"),
+    getStartedLabel: t("getStarted"),
+    upgradeLabel: t("upgrade"),
+  })
 
   const maxFeatures = variant === "compact" ? 3 : 6
   const visibleFeatures = plan.features.slice(0, maxFeatures)
@@ -107,15 +154,13 @@ export function PlanCard({
         // Mobile: large cards for horizontal scroll (shows ~10-15% peek of next card)
         // Using calc to account for container padding (1rem each side) and gap (1rem)
         // Compact: smaller cards for modals, Full: larger cards for pages
-        variant === "compact" 
-          ? "min-w-(--container-2xs) max-w-(--container-xs) w-full shrink-0 snap-center md:w-auto md:min-w-0 md:max-w-none md:shrink md:snap-none"
-          : "min-w-(--container-dropdown) max-w-(--container-modal-sm) w-full shrink-0 snap-center md:w-auto md:min-w-0 md:max-w-none md:shrink md:snap-none",
+        widthClass,
         // Styling based on plan type
         isPopular && "border-primary ring-1 ring-primary shadow-md",
         isBest && "border-rating ring-1 ring-rating shadow-md",
         isCurrentPlan && "bg-selected",
         // Padding
-        variant === "compact" ? "p-3" : "p-3 md:p-4"
+        paddingClass
       )}
     >
       {/* Badge */}
@@ -136,11 +181,7 @@ export function PlanCard({
         <div
           className={cn(
             "size-10 rounded-lg flex items-center justify-center shrink-0",
-            isPopular
-              ? "bg-primary text-primary-foreground"
-              : isBest
-                ? "bg-rating text-primary-foreground"
-                : "bg-muted text-muted-foreground"
+            iconToneClass
           )}
         >
           {getPlanIcon(plan.tier)}
@@ -158,7 +199,7 @@ export function PlanCard({
       {/* Price */}
       <div className="mb-3">
         <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{formatPrice(price)}</span>
+          <span className="text-2xl font-bold">{formatPlanPrice(price, locale, t("free"))}</span>
           {price > 0 && (
             <span className="text-muted-foreground text-sm">
               {billingPeriod === "monthly" ? t("perMonth") : t("perYear")}
@@ -217,7 +258,7 @@ export function PlanCard({
               <Check
                 className={cn(
                   "size-3.5 shrink-0 mt-0.5",
-                  isPopular ? "text-primary" : isBest ? "text-rating" : "text-muted-foreground"
+                  checkIconColorClass
                 )}
               />
               <span className="line-clamp-1">{feature}</span>
@@ -246,12 +287,8 @@ export function PlanCard({
       >
         {isLoading ? (
           <SpinnerGap className="size-4 animate-spin" />
-        ) : isCurrentPlan ? (
-          t("currentPlan")
-        ) : price === 0 ? (
-          t("getStarted")
         ) : (
-          t("upgrade")
+          ctaLabel
         )}
       </Button>
     </div>

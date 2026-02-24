@@ -23,9 +23,13 @@ export interface NewAddressForm {
 
 export const SHIPPING_COSTS = {
   standard: 0,
-  express: 9.99,
-  overnight: 19.99,
+  express: 0,
+  overnight: 0,
 } as const;
 
 export type ShippingMethod = keyof typeof SHIPPING_COSTS;
+
+export function isShippingMethod(value: string): value is ShippingMethod {
+  return value === "standard" || value === "express" || value === "overnight"
+}
 

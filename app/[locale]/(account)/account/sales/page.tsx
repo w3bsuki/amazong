@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
 import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { PageShell } from "../../../_components/page-shell"
 import { SalesChartLazy } from "./_components/sales-chart-lazy"
@@ -26,9 +27,16 @@ interface SalesPageProps {
   }>
 }
 
-export const metadata = {
-  title: "Sales | Treido",
-  description: "View and manage your sales activity.",
+export async function generateMetadata({
+  params,
+}: Pick<SalesPageProps, "params">): Promise<Metadata> {
+  const { locale } = await params
+
+  return {
+    title: locale === "bg" ? "Продажби | Treido" : "Sales | Treido",
+    description:
+      locale === "bg" ? "Преглед и управление на продажбите." : "View and manage your sales activity.",
+  }
 }
 
 export default async function SalesPage({ params, searchParams }: SalesPageProps) {
@@ -179,7 +187,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
         quantity: item.quantity,
         price_at_purchase: item.price_at_purchase,
         created_at: order?.created_at || '',
-        status: typeof order?.status === 'string' ? order.status : 'pending',
+        status: typeof item.status === "string" ? item.status : "pending",
         product: product ? {
           id: product.id,
           title: product.title,

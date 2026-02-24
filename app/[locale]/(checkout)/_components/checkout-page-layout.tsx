@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
 import {
   ArrowLeft,
   ArrowRight,
@@ -326,8 +325,6 @@ function CheckoutSummaryRows({
   t,
   formatPrice,
   subtotal,
-  shippingCost,
-  tax,
   buyerProtectionFee,
 }: CheckoutLayoutBaseProps & { variant: CheckoutLayoutVariant }) {
   const rowClassName =
@@ -341,27 +338,10 @@ function CheckoutSummaryRows({
         <span className={valueClassName}>{formatPrice(subtotal)}</span>
       </div>
       <div className={rowClassName}>
-        <span className="text-muted-foreground">{t("shipping")}</span>
-        <span
-          className={
-            variant === "desktop"
-              ? cn("font-medium", shippingCost === 0 && "text-success")
-              : shippingCost === 0
-                ? "font-medium text-success"
-                : ""
-          }
-        >
-          {shippingCost === 0 ? t("free") : formatPrice(shippingCost)}
-        </span>
-      </div>
-      <div className={rowClassName}>
-        <span className="text-muted-foreground">{t("tax", { percent: 10 })}</span>
-        <span className={valueClassName}>{formatPrice(tax)}</span>
-      </div>
-      <div className={rowClassName}>
         <span className="text-muted-foreground">{t("buyerProtection")}</span>
         <span className={valueClassName}>{formatPrice(buyerProtectionFee)}</span>
       </div>
+      <p className="text-xs text-muted-foreground">{t("totalFormula")}</p>
     </>
   )
 }
@@ -481,7 +461,7 @@ function MobileCheckoutStepFooter(props: CheckoutLayoutBaseProps) {
             size="lg"
             className="w-full font-semibold"
             disabled={currentStep === 1 && !canCheckout}
-            onClick={() => setCurrentStep((currentStep + 1) as 1 | 2 | 3)}
+            onClick={() => setCurrentStep(currentStep === 1 ? 2 : 3)}
           >
             {buttonLabel} · {formatPrice(total)}
             <ArrowRight className="ml-2 size-4" />

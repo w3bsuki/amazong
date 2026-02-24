@@ -1,11 +1,13 @@
+import type { Metadata } from "next"
 import { createClient } from "@/lib/supabase/server"
-import { redirect } from "@/i18n/routing"
+import { Link, redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { getOrderConversation } from "../../../../actions/orders-reads"
 import { canBuyerRateSeller } from "../../../../actions/orders-rating"
 import { requestOrderCancellation, reportOrderIssue } from "../../../../actions/orders-support"
 import { buyerConfirmDelivery } from "../../../../actions/orders-status"
 import { submitSellerFeedback } from "../../../../actions/seller-feedback"
+import { Button } from "@/components/ui/button"
 import { AccountOrdersToolbar } from "./_components/account-orders-toolbar"
 import { AccountOrdersStats } from "./_components/account-orders-stats"
 import { AccountOrdersGrid } from "./_components/account-orders-grid"
@@ -48,7 +50,7 @@ type OrderRow = {
 
 interface OrdersPageProps {
   params: Promise<{ locale: string }>
-  searchParams?: Promise<{ q?: string; status?: string }>
+  searchParams?: Promise<{ q?: string; status?: string; page?: string }>
 }
 
 const normalizeValue = (value: string) => value.toLowerCase()
@@ -100,18 +102,36 @@ const matchesStatus = (order: OrderRow, statusFilter: StatusFilterKey) => {
   }
 }
 
-export const metadata = {
-  title: "Orders | Treido",
-  description: "View and track your Treido orders.",
+const ORDERS_PAGE_SIZE = 10
+
+function parsePageParam(value?: string): number {
+  if (!value) return 1
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
+}
+
+export async function generateMetadata({
+  params,
+}: Pick<OrdersPageProps, "params">): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  const t = await getTranslations({ locale, namespace: "Account" })
+
+  return {
+    title: `${t("orders.title")} | Treido`,
+    description: t("orders.desc"),
+  }
 }
 
 export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"
   const t = await getTranslations({ locale, namespace: "Account" })
+  const tCommon = await getTranslations({ locale, namespace: "Common" })
   const sp = (await searchParams) || {}
   const query = (sp.q || "").trim()
   const statusFilter = normalizeStatusFilter((sp.status || "all").trim())
+  const requestedPage = parsePageParam(sp.page)
   const supabase = await createClient()
 
   if (!supabase) {
@@ -188,6 +208,20 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
   }))
 
   const filteredOrders = allOrders.filter((o) => matchesStatus(o, statusFilter) && matchesQuery(o, query))
+  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PAGE_SIZE))
+  const currentPage = Math.min(requestedPage, totalPages)
+  const pageStart = (currentPage - 1) * ORDERS_PAGE_SIZE
+  const paginatedOrders = filteredOrders.slice(pageStart, pageStart + ORDERS_PAGE_SIZE)
+
+  const buildPageHref = (page: number) => {
+    const next = new URLSearchParams()
+    if (query) next.set("q", query)
+    if (statusFilter !== "all") next.set("status", statusFilter)
+    if (page > 1) next.set("page", String(page))
+
+    const qs = next.toString()
+    return qs ? `/account/orders?${qs}` : "/account/orders"
+  }
 
   // Calculate stats
   const stats = {
@@ -222,7 +256,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
       />
 
       <AccountOrdersGrid
-        orders={filteredOrders}
+        orders={paginatedOrders}
         locale={locale}
         actions={{
           getOrderConversation,
@@ -233,6 +267,38 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
           submitSellerFeedback,
         }}
       />
+
+      {filteredOrders.length > 0 ? (
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            {locale === "bg"
+              ? `Страница ${currentPage} от ${totalPages}`
+              : `Page ${currentPage} of ${totalPages}`}
+          </p>
+
+          <nav className="flex items-center gap-2" aria-label={tCommon("pagination")}>
+            {currentPage > 1 ? (
+              <Button variant="outline" size="sm" asChild>
+                <Link href={buildPageHref(currentPage - 1)}>{tCommon("previous")}</Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>
+                {tCommon("previous")}
+              </Button>
+            )}
+
+            {currentPage < totalPages ? (
+              <Button variant="outline" size="sm" asChild>
+                <Link href={buildPageHref(currentPage + 1)}>{tCommon("next")}</Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>
+                {tCommon("next")}
+              </Button>
+            )}
+          </nav>
+        </div>
+      ) : null}
     </div>
   )
 }

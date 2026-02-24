@@ -38,7 +38,7 @@ export async function getFeesForSeller(sellerId: string): Promise<TransactionFee
     .from("profiles")
     .select("tier, account_type")
     .eq("id", sellerId)
-    .single()
+    .maybeSingle()
   
   const accountType = seller?.account_type === "business" ? "business" : "personal"
   const tier = seller?.tier || "free"
@@ -52,7 +52,7 @@ export async function getFeesForSeller(sellerId: string): Promise<TransactionFee
       .eq("tier", params.tier)
       .eq("account_type", params.accountType)
       .eq("is_active", true)
-      .single()
+      .maybeSingle()
 
     if (!plan) return null
 
@@ -96,18 +96,24 @@ export function calculateTransactionFees(
   buyerPays: number
   platformRevenue: number
 } {
+  const normalizedPrice = Number.isFinite(itemPriceEur) && itemPriceEur > 0 ? itemPriceEur : 0
+
   // Calculate seller fee (0% for personal, small % for business)
-  const sellerFee = itemPriceEur * (fees.sellerFeePercent / 100)
+  const sellerFee = normalizedPrice * (fees.sellerFeePercent / 100)
   
   // Calculate buyer protection (percentage + fixed, capped)
-  const buyerProtectionRaw = (itemPriceEur * (fees.buyerProtectionPercent / 100)) + fees.buyerProtectionFixed
-  const buyerProtectionFee = Math.min(buyerProtectionRaw, fees.buyerProtectionCap)
+  const buyerProtectionRaw =
+    normalizedPrice * (fees.buyerProtectionPercent / 100) + fees.buyerProtectionFixed
+  const buyerProtectionFee =
+    fees.buyerProtectionCap > 0
+      ? Math.min(Math.max(0, buyerProtectionRaw), fees.buyerProtectionCap)
+      : Math.max(0, buyerProtectionRaw)
   
   return {
     sellerFee: Math.round(sellerFee * 100) / 100,
     buyerProtectionFee: Math.round(buyerProtectionFee * 100) / 100,
-    sellerReceives: Math.round((itemPriceEur - sellerFee) * 100) / 100,
-    buyerPays: Math.round((itemPriceEur + buyerProtectionFee) * 100) / 100,
+    sellerReceives: Math.round((normalizedPrice - sellerFee) * 100) / 100,
+    buyerPays: Math.round((normalizedPrice + buyerProtectionFee) * 100) / 100,
     platformRevenue: Math.round((sellerFee + buyerProtectionFee) * 100) / 100,
   }
 }

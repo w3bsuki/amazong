@@ -10,8 +10,8 @@
         "-NoProfile",
         "-ExecutionPolicy",
         "Bypass",
-        "-File",
-        "scripts/mcp/supabase-mcp.ps1"
+        "-Command",
+        "$token = $env:SUPABASE_ACCESS_TOKEN; if ([string]::IsNullOrWhiteSpace($token)) { throw 'SUPABASE_ACCESS_TOKEN is not set in your shell environment.' }; npx -y @supabase/mcp-server-supabase@latest --project-ref=dhtzybnkvpimmomzwrce --access-token=$token"
       ]
     },
     "codex": {

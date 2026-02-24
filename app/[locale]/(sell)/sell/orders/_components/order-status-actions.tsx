@@ -62,8 +62,8 @@ export function OrderStatusActions({
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [showShippingDialog, setShowShippingDialog] = useState(false)
-  const [trackingNumber, setTrackingNumber] = useState('')
-  const [shippingCarrier, setShippingCarrier] = useState<ShippingCarrier | ''>()
+  const [trackingNumber, setTrackingNumber] = useState("")
+  const [shippingCarrier, setShippingCarrier] = useState<ShippingCarrier | "">("")
 
   const config = ORDER_STATUS_CONFIG[currentStatus]
   const canUpdate = isSeller && canSellerUpdateStatus(currentStatus)
@@ -84,7 +84,7 @@ export function OrderStatusActions({
           toast.success(tOrders("toasts.orderMarkedAs", { status: statusLabel }))
           router.refresh()
         } else {
-          toast.error(result.error || tOrders("errors.failedToUpdateStatus"))
+          toast.error(tOrders("errors.failedToUpdateStatus"))
         }
       } catch {
         toast.error(tOrders("errors.unexpectedError"))
@@ -97,16 +97,16 @@ export function OrderStatusActions({
       try {
         const result = await actions.updateOrderItemStatus(
           orderItemId, 
-          'shipped',
+          "shipped",
           trackingNumber || undefined,
-          shippingCarrier as ShippingCarrier || undefined
+          shippingCarrier || undefined
         )
         if (result.success) {
           toast.success(tOrders("toasts.orderMarkedAsShipped"))
           setShowShippingDialog(false)
           router.refresh()
         } else {
-          toast.error(result.error || tOrders("errors.failedToUpdateStatus"))
+          toast.error(tOrders("errors.failedToUpdateStatus"))
         }
       } catch {
         toast.error(tOrders("errors.unexpectedError"))

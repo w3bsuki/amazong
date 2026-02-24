@@ -66,6 +66,26 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
+function isDateValue(value: unknown): value is string | number | Date {
+  return typeof value === "string" || typeof value === "number" || value instanceof Date
+}
+
+function formatChartDate(value: unknown, locale: string) {
+  if (!isDateValue(value)) {
+    return ""
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return ""
+  }
+
+  return date.toLocaleDateString(locale === "bg" ? "bg-BG" : "en-US", {
+    month: "short",
+    day: "numeric",
+  })
+}
+
 export function AccountChart({ locale }: AccountChartProps) {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
@@ -184,25 +204,14 @@ export function AccountChart({ locale }: AccountChartProps) {
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value)
-                return date.toLocaleDateString(locale === 'bg' ? 'bg-BG' : 'en-US', {
-                  month: "short",
-                  day: "numeric",
-                })
-              }}
+              tickFormatter={(value) => formatChartDate(value, locale)}
             />
             <ChartTooltip
               cursor={false}
               defaultIndex={isMobile ? -1 : 10}
               content={
                 <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString(locale === 'bg' ? 'bg-BG' : 'en-US', {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  }}
+                  labelFormatter={(value) => formatChartDate(value, locale)}
                   indicator="dot"
                 />
               }

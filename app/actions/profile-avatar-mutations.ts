@@ -2,11 +2,24 @@
 
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
+import { logger } from "@/lib/logger"
 import {
   avatarUrlSchema,
   buildGeneratedAvatar,
   isGeneratedAvatar,
 } from "./profile-reads"
+
+export type ProfileAvatarMutationErrorCode =
+  | "NOT_AUTHENTICATED"
+  | "NO_FILE"
+  | "FILE_TOO_LARGE"
+  | "INVALID_FILE_TYPE"
+  | "INVALID_INPUT"
+  | "AVATAR_UPLOAD_FAILED"
+  | "AVATAR_PROFILE_UPDATE_FAILED"
+  | "AVATAR_UPDATE_FAILED"
+  | "AVATAR_RESET_FAILED"
+  | "UNKNOWN_ERROR"
 
 // =====================================================
 // UPLOAD AVATAR
@@ -14,30 +27,30 @@ import {
 export async function uploadAvatar(formData: FormData): Promise<{
   success: boolean
   avatarUrl?: string
-  error?: string
+  errorCode?: ProfileAvatarMutationErrorCode
 }> {
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
 
     const { user, supabase } = auth
 
     const file = formData.get("avatar") as File | null
     if (!file || file.size === 0) {
-      return { success: false, error: "No file provided" }
+      return { success: false, errorCode: "NO_FILE" }
     }
 
     // Validate file
     const maxSize = 5 * 1024 * 1024 // 5MB
     if (file.size > maxSize) {
-      return { success: false, error: "File too large. Maximum size is 5MB" }
+      return { success: false, errorCode: "FILE_TOO_LARGE" }
     }
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"]
     if (!allowedTypes.includes(file.type)) {
-      return { success: false, error: "Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed" }
+      return { success: false, errorCode: "INVALID_FILE_TYPE" }
     }
 
     // Get file extension from MIME type
@@ -59,8 +72,8 @@ export async function uploadAvatar(formData: FormData): Promise<{
       })
 
     if (uploadError) {
-      console.error("uploadAvatar storage error:", uploadError)
-      return { success: false, error: "Failed to upload avatar" }
+      logger.error("[profile-avatar] upload_avatar_storage_failed", uploadError, { userId: user.id })
+      return { success: false, errorCode: "AVATAR_UPLOAD_FAILED" }
     }
 
     // Get public URL
@@ -78,15 +91,15 @@ export async function uploadAvatar(formData: FormData): Promise<{
       .eq("id", user.id)
 
     if (updateError) {
-      console.error("uploadAvatar profile update error:", updateError)
-      return { success: false, error: "Failed to update profile with new avatar" }
+      logger.error("[profile-avatar] upload_avatar_profile_update_failed", updateError, { userId: user.id })
+      return { success: false, errorCode: "AVATAR_PROFILE_UPDATE_FAILED" }
     }
 
     await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     return { success: true, avatarUrl: publicUrl }
   } catch (error) {
-    console.error("uploadAvatar error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[profile-avatar] upload_avatar_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
 
@@ -96,12 +109,12 @@ export async function uploadAvatar(formData: FormData): Promise<{
 export async function setAvatarUrl(formData: FormData): Promise<{
   success: boolean
   avatarUrl?: string
-  error?: string
+  errorCode?: ProfileAvatarMutationErrorCode
 }> {
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
 
     const { user, supabase } = auth
@@ -112,10 +125,7 @@ export async function setAvatarUrl(formData: FormData): Promise<{
 
     const validationResult = avatarUrlSchema.safeParse(rawData)
     if (!validationResult.success) {
-      return {
-        success: false,
-        error: validationResult.error.issues[0]?.message || "Invalid input",
-      }
+      return { success: false, errorCode: "INVALID_INPUT" }
     }
 
     const avatarUrl = validationResult.data.avatar_url
@@ -129,15 +139,15 @@ export async function setAvatarUrl(formData: FormData): Promise<{
       .eq("id", user.id)
 
     if (updateError) {
-      console.error("setAvatarUrl error:", updateError)
-      return { success: false, error: "Failed to update avatar" }
+      logger.error("[profile-avatar] set_avatar_url_update_failed", updateError, { userId: user.id })
+      return { success: false, errorCode: "AVATAR_UPDATE_FAILED" }
     }
 
     await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     return { success: true, avatarUrl }
   } catch (error) {
-    console.error("setAvatarUrl error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[profile-avatar] set_avatar_url_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
 
@@ -147,12 +157,12 @@ export async function setAvatarUrl(formData: FormData): Promise<{
 export async function deleteAvatar(): Promise<{
   success: boolean
   avatarUrl?: string
-  error?: string
+  errorCode?: ProfileAvatarMutationErrorCode
 }> {
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return { success: false, errorCode: "NOT_AUTHENTICATED" }
     }
 
     const { user, supabase } = auth
@@ -194,14 +204,13 @@ export async function deleteAvatar(): Promise<{
       .eq("id", user.id)
 
     if (updateError) {
-      return { success: false, error: "Failed to update profile" }
+      return { success: false, errorCode: "AVATAR_RESET_FAILED" }
     }
 
     await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
     return { success: true, avatarUrl: generatedAvatar }
   } catch (error) {
-    console.error("deleteAvatar error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    logger.error("[profile-avatar] delete_avatar_unexpected", error)
+    return { success: false, errorCode: "UNKNOWN_ERROR" }
   }
 }
-

@@ -1,3 +1,5 @@
+"use client"
+
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import { ArrowRight, Clock, Eye, Package, TrendingUp as TrendUp } from "lucide-react"

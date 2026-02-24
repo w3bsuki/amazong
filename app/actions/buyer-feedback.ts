@@ -3,6 +3,8 @@
 import { z } from "zod"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidateTag } from "next/cache"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
+import type { Database } from "@/lib/supabase/database.types"
 
 // =====================================================
 // BUYER FEEDBACK SERVER ACTIONS
@@ -41,25 +43,62 @@ export interface BuyerFeedback {
   } | null
 }
 
+type BuyerFeedbackRow = Database["public"]["Tables"]["buyer_feedback"]["Row"]
+
+type OrderItemForBuyerFeedback = {
+  id: string
+  order_id: string
+  seller_id: string
+  status: string | null
+  order: {
+    id: string
+    user_id: string
+    status: string | null
+  }
+}
+
 const BuyerFeedbackInputSchema = z.object({
-  buyer_id: z.string().min(1),
-  order_id: z.string().min(1),
-  rating: z.coerce.number(),
+  buyer_id: z.string().uuid(),
+  order_id: z.string().uuid(),
+  rating: z.coerce.number().int().min(1).max(5),
   comment: z.string().optional(),
   payment_promptness: z.boolean().optional(),
   communication: z.boolean().optional(),
   reasonable_expectations: z.boolean().optional(),
 })
 
+type SubmitBuyerFeedbackResult = Envelope<
+  { data: BuyerFeedback },
+  { error: string }
+>
+
+function mapBuyerFeedbackRow(row: BuyerFeedbackRow): BuyerFeedback {
+  return {
+    id: row.id,
+    seller_id: row.seller_id,
+    buyer_id: row.buyer_id,
+    order_id: row.order_id,
+    rating: row.rating,
+    comment: row.comment,
+    payment_promptness: row.payment_promptness,
+    communication: row.communication,
+    reasonable_expectations: row.reasonable_expectations,
+    seller_response: row.seller_response,
+    seller_response_at: row.seller_response_at,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  }
+}
+
 // =====================================================
 // SUBMIT BUYER FEEDBACK (Seller rates Buyer)
 // =====================================================
 export async function submitBuyerFeedback(
   input: BuyerFeedbackInput
-): Promise<{ success: boolean; error?: string; data?: BuyerFeedback }> {
+): Promise<SubmitBuyerFeedbackResult> {
   const parsedInput = BuyerFeedbackInputSchema.safeParse(input)
   if (!parsedInput.success) {
-    return { success: false, error: "Invalid input" }
+    return errorEnvelope({ error: "Invalid input" })
   }
 
   const safeInput = parsedInput.data
@@ -67,7 +106,7 @@ export async function submitBuyerFeedback(
   try {
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "Not authenticated" }
+      return errorEnvelope({ error: "Not authenticated" })
     }
     const { user, supabase } = auth
 
@@ -79,11 +118,11 @@ export async function submitBuyerFeedback(
       .single()
 
     if (profileError || !profile) {
-      return { success: false, error: "Profile not found" }
+      return errorEnvelope({ error: "Profile not found" })
     }
 
     if (!profile.is_seller) {
-      return { success: false, error: "Only sellers can rate buyers" }
+      return errorEnvelope({ error: "Only sellers can rate buyers" })
     }
 
     // Verify the order exists and belongs to this seller
@@ -102,21 +141,20 @@ export async function submitBuyerFeedback(
       `)
       .eq("order_id", safeInput.order_id)
       .eq("seller_id", user.id)
-      .single()
+      .single<OrderItemForBuyerFeedback>()
 
     if (orderError || !orderItem) {
-      return { success: false, error: "Order not found or you are not the seller" }
+      return errorEnvelope({ error: "Order not found or you are not the seller" })
     }
 
     // Verify order is in a rateable state (delivered or completed)
     if (!["delivered", "completed", "shipped"].includes(orderItem.status || "")) {
-      return { success: false, error: "Can only rate buyers for delivered or completed orders" }
+      return errorEnvelope({ error: "Can only rate buyers for delivered or completed orders" })
     }
 
     // Verify buyer_id matches order user_id
-    const order = orderItem.order as unknown as { id: string; user_id: string; status: string }
-    if (order.user_id !== safeInput.buyer_id) {
-      return { success: false, error: "Buyer ID does not match order" }
+    if (orderItem.order.user_id !== safeInput.buyer_id) {
+      return errorEnvelope({ error: "Buyer ID does not match order" })
     }
 
     // Check if feedback already exists
@@ -128,12 +166,7 @@ export async function submitBuyerFeedback(
       .maybeSingle()
 
     if (existing) {
-      return { success: false, error: "You have already rated this buyer for this order" }
-    }
-
-    // Validate rating
-    if (safeInput.rating < 1 || safeInput.rating > 5) {
-      return { success: false, error: "Rating must be between 1 and 5" }
+      return errorEnvelope({ error: "You have already rated this buyer for this order" })
     }
 
     // Insert feedback
@@ -150,19 +183,19 @@ export async function submitBuyerFeedback(
         reasonable_expectations: safeInput.reasonable_expectations ?? true,
       })
       .select("id, seller_id, buyer_id, order_id, rating, comment, payment_promptness, communication, reasonable_expectations, seller_response, seller_response_at, created_at, updated_at")
-      .single()
+      .single<BuyerFeedbackRow>()
 
     if (error) {
       console.error("Error submitting buyer feedback:", error)
-      return { success: false, error: "Failed to submit feedback" }
+      return errorEnvelope({ error: "Failed to submit feedback" })
     }
 
     revalidateTag("buyer-stats", "max")
     revalidateTag("orders", "max")
 
-    return { success: true, data: data as unknown as BuyerFeedback }
+    return successEnvelope({ data: mapBuyerFeedbackRow(data) })
   } catch (error) {
     console.error("submitBuyerFeedback error:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return errorEnvelope({ error: "An unexpected error occurred" })
   }
 }

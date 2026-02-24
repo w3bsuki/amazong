@@ -27,6 +27,26 @@ interface SellingProductsDesktopListProps {
   deletingId: string | null
 }
 
+type ListingStatus = "active" | "draft" | "sold"
+
+function getListingStatus(product: SellingProduct): ListingStatus {
+  if (product.status === "draft" || product.status === "archived") return "draft"
+  if (product.status === "out_of_stock" || product.stock === 0) return "sold"
+  return "active"
+}
+
+function getStatusBadgeProps(status: ListingStatus, t: TranslateFn) {
+  switch (status) {
+    case "sold":
+      return { variant: "warning-subtle" as const, label: t("status.sold") }
+    case "draft":
+      return { variant: "neutral-subtle" as const, label: t("status.draft") }
+    case "active":
+    default:
+      return { variant: "success-subtle" as const, label: t("status.active") }
+  }
+}
+
 export function SellingProductsDesktopList({
   products,
   sellerUsername,
@@ -54,6 +74,8 @@ export function SellingProductsDesktopList({
         const timeLeft = getBoostTimeLeft(product)
         const saleActive = isSaleActive(product)
         const salePercent = getSalePercentForDisplay(product)
+        const status = getListingStatus(product)
+        const statusBadge = getStatusBadgeProps(status, t)
 
         return (
           <div
@@ -91,6 +113,9 @@ export function SellingProductsDesktopList({
                 >
                   {product.title}
                 </Link>
+                <Badge variant={statusBadge.variant} size="compact" className="shrink-0">
+                  {statusBadge.label}
+                </Badge>
                 {saleActive && salePercent > 0 && (
                   <Badge variant="secondary" className="bg-destructive-subtle text-deal border-0 text-xs shrink-0">
                     <Tag className="size-3 mr-0.5" />
@@ -174,6 +199,7 @@ export function SellingProductsDesktopList({
                 size="icon-sm"
                 onClick={() => openDiscountDialog(product)}
                 title={t("discountTooltip")}
+                aria-label={t("discountTooltip")}
               >
                 <Tag className="size-4" />
               </Button>
@@ -184,6 +210,7 @@ export function SellingProductsDesktopList({
                 onClick={() => onToggleStatus(product.id, product.status)}
                 disabled={togglingId === product.id}
                 title={product.status === "draft" ? t("activateTooltip") : t("pauseTooltip")}
+                aria-label={product.status === "draft" ? t("activateTooltip") : t("pauseTooltip")}
               >
                 {product.status === "draft" ? (
                   <Play className="size-4 text-success" />

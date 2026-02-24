@@ -82,22 +82,24 @@ export function SidebarMenuHeader({
 
         <div className="flex items-center">
           {isLoggedIn && (
-            <Link
-              href="/account/settings"
-              onClick={onCloseMenu}
-              className="flex size-touch items-center justify-center rounded-full text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            <IconButton
+              asChild
               aria-label={tAccountDrawer("settings")}
+              variant="ghost"
+              className="rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
             >
-              <Gear size={22} />
-            </Link>
+              <Link href="/account/settings" onClick={onCloseMenu}>
+                <Gear size={22} />
+              </Link>
+            </IconButton>
           )}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className="flex size-touch items-center justify-center rounded-full text-muted-foreground tap-transparent motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              <IconButton
                 aria-label={tLocaleSwitcher("label")}
+                variant="ghost"
+                className="rounded-full text-muted-foreground hover:bg-hover hover:text-foreground"
               >
                 <Image
                   src={locale === "bg" ? "https://flagcdn.com/w40/bg.png" : "https://flagcdn.com/w40/gb.png"}
@@ -106,7 +108,7 @@ export function SidebarMenuHeader({
                   height={16}
                   className="w-6 h-4 rounded-sm object-cover"
                 />
-              </button>
+              </IconButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-36 rounded-2xl p-1">
               <DropdownMenuItem asChild>

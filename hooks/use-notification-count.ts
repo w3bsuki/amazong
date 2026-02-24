@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useSupabasePostgresChanges } from "@/hooks/use-supabase-postgres-changes"
-import { User } from "@supabase/supabase-js"
+import type { User } from "@supabase/supabase-js"
 
 /**
  * Hook to fetch and subscribe to unread notification count.
@@ -12,6 +12,14 @@ import { User } from "@supabase/supabase-js"
 export function useNotificationCount(user: User | null) {
   const [count, setCount] = useState(0)
   const userId = user?.id ?? null
+  const requestIdRef = useRef(0)
+  const mountedRef = useRef(true)
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   const realtimeSpecs = useMemo(() => {
     if (!userId) return []
@@ -28,27 +36,38 @@ export function useNotificationCount(user: User | null) {
   }, [userId])
 
   const fetchCount = useCallback(async () => {
+    requestIdRef.current += 1
+    const requestId = requestIdRef.current
+
     if (!userId) {
-      setCount(0)
+      if (mountedRef.current && requestId === requestIdRef.current) {
+        setCount(0)
+      }
       return
     }
 
-    const supabase = createClient()
-    const { count: unreadCount, error } = await supabase
-      .from("notifications")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userId)
-      .eq("is_read", false)
-      .neq("type", "message") // Messages handled separately
+    try {
+      const supabase = createClient()
+      const { count: unreadCount, error } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("is_read", false)
+        .neq("type", "message") // Messages handled separately
 
-    if (!error && unreadCount !== null) {
-      setCount(unreadCount)
+      if (!mountedRef.current || requestId !== requestIdRef.current) return
+
+      if (!error && unreadCount !== null) {
+        setCount(unreadCount)
+      }
+    } catch {
+      // Keep resilient
     }
   }, [userId])
 
   // Initial fetch
   useEffect(() => {
-    fetchCount()
+    void fetchCount()
   }, [fetchCount])
 
   useSupabasePostgresChanges({

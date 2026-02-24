@@ -58,6 +58,7 @@ export const sellFormSchemaV4 = z.object({
 	// ========== BASIC INFO ==========
 	title: z
 		.string()
+		.trim()
 		.min(5, "validation.titleMin")
 		.max(80, "validation.titleMax")
 		.refine((val) => !/[<>{}[\]\\]/.test(val), "validation.titleInvalidCharacters"),
@@ -91,6 +92,7 @@ export const sellFormSchemaV4 = z.object({
 
 	// ========== DESCRIPTION ==========
 	description: z.string()
+		.trim()
 		.min(1, "validation.descriptionRequired")
 		.max(4000, "validation.descriptionMax")
 		.refine((val) => val.trim().length >= 50, {
@@ -129,7 +131,7 @@ export const sellFormSchemaV4 = z.object({
 
 	// ========== SHIPPING ==========
 	// Seller city - where the item ships from (required for Bulgaria shipping or local pickup)
-	sellerCity: z.string().optional(),
+	sellerCity: z.string().trim().optional(),
 
 	shipsToBulgaria: z.boolean().default(true),
 	shipsToUK: z.boolean().default(false),
@@ -153,18 +155,42 @@ export const sellFormSchemaV4 = z.object({
 	tags: z.array(z.string()).max(10, "validation.tagsMax").default([]),
 }).superRefine((data, ctx) => {
 	// Discount sanity: compare-at price must be higher than the active price.
-	if (!data.compareAtPrice) return;
+	if (data.compareAtPrice) {
+		const price = Number.parseFloat(data.price);
+		const compareAt = Number.parseFloat(data.compareAtPrice);
 
-	const price = Number.parseFloat(data.price);
-	const compareAt = Number.parseFloat(data.compareAtPrice);
+		if (Number.isFinite(price) && Number.isFinite(compareAt) && compareAt <= price) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["compareAtPrice"],
+				message: "validation.compareAtMustBeHigher",
+			});
+		}
+	}
 
-	if (!Number.isFinite(price) || !Number.isFinite(compareAt)) return;
+	const hasShippingRegion = Boolean(
+		data.shipsToBulgaria ||
+		data.shipsToUK ||
+		data.shipsToEurope ||
+		data.shipsToUSA ||
+		data.shipsToWorldwide ||
+		data.pickupOnly
+	);
 
-	if (compareAt <= price) {
+	if (!hasShippingRegion) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
-			path: ["compareAtPrice"],
-			message: "validation.compareAtMustBeHigher",
+			path: ["shipsToBulgaria"],
+			message: "validation.shippingRegionRequired",
+		});
+	}
+
+	const requiresSellerCity = data.shipsToBulgaria || data.pickupOnly;
+	if (requiresSellerCity && !data.sellerCity?.trim()) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			path: ["sellerCity"],
+			message: "shipping.selectCityPlaceholder",
 		});
 	}
 });

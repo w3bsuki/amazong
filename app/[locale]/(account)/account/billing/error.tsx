@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { logger } from "@/lib/logger"
 import { RefreshCw as ArrowClockwise, CircleAlert as WarningCircle } from "lucide-react";
 
 
@@ -17,7 +18,7 @@ export default function BillingError({
   const t = useTranslations("Account.billingError")
 
   useEffect(() => {
-    console.error('Billing page error:', error)
+    logger.error("[account-billing] route_error_boundary", error)
   }, [error])
 
   return (
