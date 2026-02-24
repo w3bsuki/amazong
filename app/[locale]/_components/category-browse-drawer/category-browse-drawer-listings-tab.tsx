@@ -19,7 +19,8 @@ export function CategoryBrowseDrawerListingsTab({
   seeAllCategoryLabel,
   onNavigateToSearch,
   onNavigateToCategories,
-  onNavigateToCategory,
+  onNavigateToRootCategory,
+  onNavigateToLeafCategory,
   onOpenScopedCategory,
   allListingsLabel,
   categoriesLabel,
@@ -37,7 +38,8 @@ export function CategoryBrowseDrawerListingsTab({
   seeAllCategoryLabel: string
   onNavigateToSearch: () => void
   onNavigateToCategories: () => void
-  onNavigateToCategory: (slug: string) => void
+  onNavigateToRootCategory: (rootSlug: string) => void
+  onNavigateToLeafCategory: (rootSlug: string, leafSlug: string) => void
   onOpenScopedCategory: (category: CategoryTreeNode) => void
   allListingsLabel: string
   categoriesLabel: string
@@ -95,7 +97,7 @@ export function CategoryBrowseDrawerListingsTab({
           {rootCategory && (
             <button
               type="button"
-              onClick={() => onNavigateToCategory(rootCategory.slug)}
+              onClick={() => onNavigateToRootCategory(rootCategory.slug)}
               className={`${SUBCATEGORY_ROW} border-foreground bg-foreground text-background`}
             >
               <span className="min-w-0 flex-1 truncate">{seeAllCategoryLabel}</span>
@@ -106,7 +108,10 @@ export function CategoryBrowseDrawerListingsTab({
             <button
               key={cat.id}
               type="button"
-              onClick={() => onNavigateToCategory(cat.slug)}
+              onClick={() => {
+                if (!rootCategory) return
+                onNavigateToLeafCategory(rootCategory.slug, cat.slug)
+              }}
               className={`${SUBCATEGORY_ROW} ${SUBCATEGORY_ROW_DEFAULT}`}
             >
               <span className="min-w-0 flex-1 truncate">{getCategoryName(cat, locale)}</span>

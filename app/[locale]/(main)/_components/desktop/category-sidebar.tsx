@@ -1,18 +1,17 @@
 "use client"
 
-import * as React from "react"
-import { useState, useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { cn } from "@/lib/utils"
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import { getCategoryName } from "@/lib/data/categories/display"
 import { getCategoryIcon } from "../category/category-icons"
-import { ArrowLeft, ChevronDown as CaretDown, ChevronRight as CaretRight, ChevronUp as CaretUp, LayoutGrid as SquaresFour, X } from "lucide-react";
-
+import {
+  ChevronDown as CaretDown,
+  ChevronRight as CaretRight,
+  ChevronUp as CaretUp,
+  LayoutGrid as SquaresFour,
+} from "lucide-react"
 import { useTranslations } from "next-intl"
-
-// =============================================================================
-// TYPES
-// =============================================================================
 
 export interface CategoryPath {
   slug: string
@@ -27,9 +26,16 @@ export interface CompactCategorySidebarProps {
   categoryCounts: Record<string, number>
 }
 
-// =============================================================================
-// COMPACT CATEGORY SIDEBAR - Replaces full-height drill-down
-// =============================================================================
+const INITIAL_VISIBLE_ROOT_COUNT = 15
+
+function sortByDisplayOrder(nodes: CategoryTreeNode[]) {
+  return [...nodes].sort((a, b) => {
+    const orderA = a.display_order ?? 999
+    const orderB = b.display_order ?? 999
+    if (orderA !== orderB) return orderA - orderB
+    return a.name.localeCompare(b.name)
+  })
+}
 
 export function CompactCategorySidebar({
   categories,
@@ -41,204 +47,138 @@ export function CompactCategorySidebar({
   const tCommon = useTranslations("Common")
   const tCategories = useTranslations("Categories")
 
-  const [viewLevel, setViewLevel] = useState(0)
-  const [currentL0, setCurrentL0] = useState<CategoryTreeNode | null>(null)
-  const [currentL1, setCurrentL1] = useState<CategoryTreeNode | null>(null)
-  const [isExpanded, setIsExpanded] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
-  // Show more categories on desktop - better use of vertical space
-  const initialVisibleCount = 15
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [expandedRootSlug, setExpandedRootSlug] = useState<string | null>(
+    selectedPath[0]?.slug ?? null
+  )
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // Sync with selected path
   useEffect(() => {
-    if (selectedPath.length === 0) {
-      setViewLevel(0)
-      setCurrentL0(null)
-      setCurrentL1(null)
-    } else if (selectedPath.length >= 1) {
-      const l0 = categories.find((c) => c.slug === selectedPath[0]?.slug)
-      if (l0) {
-        setCurrentL0(l0)
-        setViewLevel(1)
-        if (selectedPath.length >= 2) {
-          const l1 = l0.children?.find((c) => c.slug === selectedPath[1]?.slug)
-          if (l1) {
-            setCurrentL1(l1)
-            setViewLevel(2)
-          }
-        }
-      }
+    const selectedRoot = selectedPath[0]?.slug ?? null
+    setExpandedRootSlug(selectedRoot)
+  }, [selectedPath])
+
+  const sortedRootCategories = useMemo(() => sortByDisplayOrder(categories), [categories])
+  const totalCount = useMemo(
+    () => Object.values(categoryCounts).reduce((sum, count) => sum + count, 0),
+    [categoryCounts]
+  )
+
+  const selectedRootSlug = selectedPath[0]?.slug ?? null
+  const selectedLeafSlug = selectedPath[1]?.slug ?? null
+
+  const visibleRootCategories = useMemo(() => {
+    if (isExpanded || sortedRootCategories.length <= INITIAL_VISIBLE_ROOT_COUNT) {
+      return sortedRootCategories
     }
-  }, [selectedPath, categories])
+    return sortedRootCategories.slice(0, INITIAL_VISIBLE_ROOT_COUNT)
+  }, [isExpanded, sortedRootCategories])
 
-  const totalCount = Object.values(categoryCounts).reduce((a, b) => a + b, 0)
+  const hiddenRootCount = sortedRootCategories.length - visibleRootCategories.length
 
-  const currentItems = useMemo(() => {
-    if (viewLevel === 0) return categories.sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999))
-    if (viewLevel === 1 && currentL0?.children) return currentL0.children.sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999))
-    if (viewLevel === 2 && currentL1?.children) return currentL1.children.sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999))
-    return []
-  }, [viewLevel, currentL0, currentL1, categories])
-
-  const visibleItems = useMemo(() => {
-    if (isExpanded || currentItems.length <= initialVisibleCount) return currentItems
-    return currentItems.slice(0, initialVisibleCount)
-  }, [currentItems, isExpanded, initialVisibleCount])
-
-  const hiddenCount = currentItems.length - visibleItems.length
-
-  const headerCategory = viewLevel === 2 ? currentL1 : viewLevel === 1 ? currentL0 : null
-
-  const handleBack = () => {
-    if (viewLevel === 2) {
-      setViewLevel(1)
-      setCurrentL1(null)
-      if (currentL0) {
-        onCategorySelect([{ slug: currentL0.slug, name: getCategoryName(currentL0, locale) }], currentL0)
-      }
-    } else if (viewLevel === 1) {
-      setViewLevel(0)
-      setCurrentL0(null)
-      onCategorySelect([], null)
-    }
-  }
-
-  const handleItemClick = (item: CategoryTreeNode) => {
-    const hasChildren = item.children && item.children.length > 0
-    
-    if (viewLevel === 0) {
-      setCurrentL0(item)
-      const path = [{ slug: item.slug, name: getCategoryName(item, locale) }]
-      if (hasChildren) setViewLevel(1)
-      onCategorySelect(path, item)
-    } else if (viewLevel === 1 && currentL0) {
-      setCurrentL1(item)
-      const path = [
-        { slug: currentL0.slug, name: getCategoryName(currentL0, locale) },
-        { slug: item.slug, name: getCategoryName(item, locale) },
-      ]
-      if (hasChildren) setViewLevel(2)
-      onCategorySelect(path, item)
-    } else if (viewLevel === 2 && currentL0 && currentL1) {
-      const path = [
-        { slug: currentL0.slug, name: getCategoryName(currentL0, locale) },
-        { slug: currentL1.slug, name: getCategoryName(currentL1, locale) },
-        { slug: item.slug, name: getCategoryName(item, locale) },
-      ]
-      onCategorySelect(path, item)
-    }
-  }
-
-  const isSelected = (slug: string) => {
-    if (selectedPath.length === 0) return false
-    return selectedPath[selectedPath.length - 1]?.slug === slug
-  }
-
-  // Item height from CSS var for consistency with layout tokens
-  const itemBase = "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors text-left min-h-(--sidebar-item-h) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+  const itemBase =
+    "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors text-left min-h-(--sidebar-item-h) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
   const itemActive = cn(itemBase, "bg-foreground text-background font-medium")
   const itemInactive = cn(itemBase, "text-muted-foreground hover:bg-muted hover:text-foreground")
+
+  const handleSelectAll = () => {
+    setExpandedRootSlug(null)
+    onCategorySelect([], null)
+  }
+
+  const handleRootToggle = (root: CategoryTreeNode) => {
+    const rootPath: CategoryPath[] = [{ slug: root.slug, name: getCategoryName(root, locale) }]
+    setExpandedRootSlug((previous) => (previous === root.slug ? null : root.slug))
+    onCategorySelect(rootPath, root)
+  }
+
+  const handleLeafSelect = (root: CategoryTreeNode, leaf: CategoryTreeNode) => {
+    const nextPath: CategoryPath[] = [
+      { slug: root.slug, name: getCategoryName(root, locale) },
+      { slug: leaf.slug, name: getCategoryName(leaf, locale) },
+    ]
+    onCategorySelect(nextPath, leaf)
+  }
 
   return (
     <div className="rounded-lg border border-border bg-card">
       <nav className="p-1.5 space-y-0.5">
-        {/* Back button */}
-        {viewLevel > 0 && (
-          <button type="button" onClick={handleBack} className={itemInactive}>
-            <ArrowLeft size={18} className="shrink-0" />
-            <span className="flex-1 truncate">
-              {viewLevel === 1
-                ? tCommon("allCategories")
-                : currentL0 ? getCategoryName(currentL0, locale) : ""}
-            </span>
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={handleSelectAll}
+          className={selectedPath.length === 0 ? itemActive : itemInactive}
+        >
+          <SquaresFour size={20} className="shrink-0" />
+          <span className="flex-1 font-medium">{tCommon("allCategories")}</span>
+          <span className="text-xs tabular-nums opacity-70">
+            {isMounted && totalCount > 0 ? totalCount : "—"}
+          </span>
+        </button>
 
-        {/* "All Categories" at L0 - prominent first option */}
-        {viewLevel === 0 && (
-          <button
-            type="button"
-            onClick={() => onCategorySelect([], null)}
-            className={selectedPath.length === 0 ? itemActive : itemInactive}
-          >
-            <SquaresFour size={20} className="shrink-0" />
-            <span className="flex-1 font-medium">{tCommon("allCategories")}</span>
-            <span className="text-xs tabular-nums opacity-70">
-              {isMounted && totalCount > 0 ? totalCount : "—"}
-            </span>
-          </button>
-        )}
-
-        {/* Header category when drilled */}
-        {viewLevel > 0 && headerCategory && (
-          <div className="flex items-center gap-1">
-            <div className={cn(itemActive, "flex-1 pr-1.5")} role="presentation">
-              <SquaresFour size={18} className="shrink-0" />
-              <span className="flex-1 truncate">
-                {tCategories("allIn", { category: getCategoryName(headerCategory, locale) })}
-              </span>
-              {isMounted && categoryCounts[headerCategory.slug] !== undefined && (
-                <span className="text-xs tabular-nums opacity-70">{categoryCounts[headerCategory.slug]}</span>
-              )}
-              {/* Reset to All Categories button - inside the black button */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setViewLevel(0)
-                  setCurrentL0(null)
-                  setCurrentL1(null)
-                  onCategorySelect([], null)
-                }}
-                className="size-6 flex items-center justify-center rounded bg-surface-subtle hover:bg-hover transition-colors shrink-0 ml-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                aria-label={tCategories("backToAllCategories")}
-                title={tCategories("backToAllCategories")}
-              >
-                <X size={12} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Items */}
-        {visibleItems.map((item) => {
-          const name = getCategoryName(item, locale)
-          const count = categoryCounts[item.slug]
-          const hasChildren = item.children && item.children.length > 0
-          const selected = isSelected(item.slug)
+        {visibleRootCategories.map((root) => {
+          const rootName = getCategoryName(root, locale)
+          const rootCount = categoryCounts[root.slug]
+          const leaves = sortByDisplayOrder(root.children ?? [])
+          const hasLeaves = leaves.length > 0
+          const isExpandedRoot = expandedRootSlug === root.slug
+          const isRootSelected = selectedRootSlug === root.slug && selectedPath.length <= 1
 
           return (
-            <button
-              key={item.slug}
-              type="button"
-              onClick={() => handleItemClick(item)}
-              className={selected ? itemActive : itemInactive}
-            >
-              {viewLevel === 0 && (
-                <span className={selected ? "text-background" : "text-muted-foreground"}>
-                  {getCategoryIcon(item.slug, { size: 20, weight: selected ? "fill" : "regular" })}
+            <div key={root.slug}>
+              <button
+                type="button"
+                onClick={() => handleRootToggle(root)}
+                className={isRootSelected ? itemActive : itemInactive}
+                aria-expanded={hasLeaves ? isExpandedRoot : undefined}
+              >
+                <span className={isRootSelected ? "text-background" : "text-muted-foreground"}>
+                  {getCategoryIcon(root.slug, { size: 20, weight: isRootSelected ? "fill" : "regular" })}
                 </span>
+                <span className="flex-1 truncate">{rootName}</span>
+                {isMounted && typeof rootCount === "number" && (
+                  <span className="text-xs tabular-nums opacity-70">{rootCount}</span>
+                )}
+                {hasLeaves && (
+                  <span className={cn("shrink-0", isRootSelected ? "text-background/70" : "text-muted-foreground")}>
+                    {isExpandedRoot ? <CaretDown size={14} /> : <CaretRight size={14} />}
+                  </span>
+                )}
+              </button>
+
+              {isExpandedRoot && hasLeaves && (
+                <div className="ml-4 mt-1 space-y-0.5 border-l border-border-subtle pl-2">
+                  {leaves.map((leaf) => {
+                    const isLeafSelected = selectedLeafSlug === leaf.slug
+                    const leafCount = categoryCounts[leaf.slug]
+
+                    return (
+                      <button
+                        key={leaf.slug}
+                        type="button"
+                        onClick={() => handleLeafSelect(root, leaf)}
+                        className={isLeafSelected ? itemActive : itemInactive}
+                      >
+                        <span className="flex-1 truncate">{getCategoryName(leaf, locale)}</span>
+                        {isMounted && typeof leafCount === "number" && (
+                          <span className="text-xs tabular-nums opacity-70">{leafCount}</span>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
               )}
-              <span className="flex-1 truncate">{name}</span>
-              {isMounted && typeof count === "number" && (
-                <span className="text-xs tabular-nums opacity-70">{count}</span>
-              )}
-              {hasChildren && (
-                <CaretRight size={14} className={cn("shrink-0", selected ? "text-background/70" : "text-muted-foreground")} />
-              )}
-            </button>
+            </div>
           )
         })}
 
-        {/* Show more */}
-        {hiddenCount > 0 && (
+        {hiddenRootCount > 0 && (
           <button
             type="button"
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => setIsExpanded((previous) => !previous)}
             className="w-full flex items-center justify-center gap-1.5 py-2 mt-1 text-xs font-medium rounded-md bg-foreground text-background hover:bg-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {isExpanded ? (
@@ -249,38 +189,8 @@ export function CompactCategorySidebar({
             ) : (
               <>
                 <CaretDown size={14} />
-                {tCategories("moreCount", { count: hiddenCount })}
+                {tCategories("moreCount", { count: hiddenRootCount })}
               </>
-            )}
-          </button>
-        )}
-
-        {/* View All button - shown when drilled into a category with subcategories */}
-        {viewLevel > 0 && headerCategory && visibleItems.length > 0 && (
-          <button
-            type="button"
-            onClick={() => {
-              // Select the current header category to view all products in it
-              if (viewLevel === 1 && currentL0) {
-                onCategorySelect(
-                  [{ slug: currentL0.slug, name: getCategoryName(currentL0, locale) }],
-                  currentL0
-                )
-              } else if (viewLevel === 2 && currentL0 && currentL1) {
-                onCategorySelect(
-                  [
-                    { slug: currentL0.slug, name: getCategoryName(currentL0, locale) },
-                    { slug: currentL1.slug, name: getCategoryName(currentL1, locale) },
-                  ],
-                  currentL1
-                )
-              }
-            }}
-            className="w-full flex items-center justify-center gap-2 py-2.5 mt-2 text-sm font-medium rounded-md bg-foreground text-background hover:bg-foreground/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            {tCommon("viewAll")}
-            {isMounted && headerCategory && categoryCounts[headerCategory.slug] !== undefined && (
-              <span className="text-xs opacity-70">({categoryCounts[headerCategory.slug]})</span>
             )}
           </button>
         )}

@@ -67,6 +67,7 @@ function resolveCategoryContextData(
   if (!categoryContext) {
     return {
       currentCategory: null as Category | null,
+      parentCategory: null as Category | null,
       subcategories: [] as Category[],
       filterableAttributes: [] as CategoryAttribute[],
       categoryIdForFilters: undefined as string | undefined,
@@ -75,6 +76,7 @@ function resolveCategoryContextData(
 
   return {
     currentCategory: toCategory(categoryContext.current),
+    parentCategory: categoryContext.parent ? toCategory(categoryContext.parent) : null,
     subcategories: categoryContext.children.map((category) => toCategory(category)),
     filterableAttributes: browseMode === "listings" ? categoryContext.attributes : [],
     categoryIdForFilters: browseMode === "listings" ? categoryContext.current.id : undefined,
@@ -258,6 +260,7 @@ export default async function SearchPage({
 
   const {
     currentCategory,
+    parentCategory,
     subcategories,
     filterableAttributes,
     categoryIdForFilters,
@@ -307,6 +310,7 @@ export default async function SearchPage({
       categorySlug={categorySlug ?? null}
       currentPage={currentPage}
       currentCategory={currentCategory}
+      parentCategory={parentCategory}
       subcategories={subcategories}
       allCategories={allCategories}
       allCategoriesWithSubs={allCategoriesWithSubs}

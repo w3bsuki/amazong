@@ -7,6 +7,18 @@ import { OrderItemsSection, OrderItemsSectionDesktop } from "./order-items-secti
 import { ShippingMethodSection } from "./shipping-method-section"
 import type { CheckoutLayoutBaseProps, CheckoutLayoutVariant } from "./checkout-layout-types"
 
+function getCardLayoutClasses(variant: CheckoutLayoutVariant) {
+  return {
+    headerClassName: variant === "desktop" ? "border-b px-5" : "border-b",
+    titleClassName:
+      variant === "desktop"
+        ? "flex items-center gap-2.5 text-base"
+        : "flex items-center gap-2 text-sm",
+    iconClassName: variant === "desktop" ? "size-5 text-primary" : "size-4 text-primary",
+    contentClassName: variant === "desktop" ? "p-5 pt-4" : undefined,
+  }
+}
+
 export function CheckoutAddressCard({
   variant,
   t,
@@ -26,13 +38,7 @@ export function CheckoutAddressCard({
 }: CheckoutLayoutBaseProps & { variant: CheckoutLayoutVariant }) {
   if (isAuthGateActive) return null
 
-  const headerClassName = variant === "desktop" ? "border-b px-5" : "border-b"
-  const titleClassName =
-    variant === "desktop"
-      ? "flex items-center gap-2.5 text-base"
-      : "flex items-center gap-2 text-sm"
-  const iconClassName = variant === "desktop" ? "size-5 text-primary" : "size-4 text-primary"
-  const contentClassName = variant === "desktop" ? "p-5 pt-4" : undefined
+  const { headerClassName, titleClassName, iconClassName, contentClassName } = getCardLayoutClasses(variant)
 
   return (
     <Card>
@@ -78,13 +84,7 @@ export function CheckoutShippingMethodCard({
 }: CheckoutLayoutBaseProps & { variant: CheckoutLayoutVariant }) {
   if (isAuthGateActive) return null
 
-  const headerClassName = variant === "desktop" ? "border-b px-5" : "border-b"
-  const titleClassName =
-    variant === "desktop"
-      ? "flex items-center gap-2.5 text-base"
-      : "flex items-center gap-2 text-sm"
-  const iconClassName = variant === "desktop" ? "size-5 text-primary" : "size-4 text-primary"
-  const contentClassName = variant === "desktop" ? "p-5 pt-4" : undefined
+  const { headerClassName, titleClassName, iconClassName, contentClassName } = getCardLayoutClasses(variant)
 
   return (
     <Card>
@@ -113,13 +113,7 @@ export function CheckoutOrderItemsCard({
   totalItems,
   formatPrice,
 }: CheckoutLayoutBaseProps & { variant: CheckoutLayoutVariant }) {
-  const headerClassName = variant === "desktop" ? "border-b px-5" : "border-b"
-  const titleClassName =
-    variant === "desktop"
-      ? "flex items-center gap-2.5 text-base"
-      : "flex items-center gap-2 text-sm"
-  const iconClassName = variant === "desktop" ? "size-5 text-primary" : "size-4 text-primary"
-  const contentClassName = variant === "desktop" ? "p-5 pt-4" : undefined
+  const { headerClassName, titleClassName, iconClassName, contentClassName } = getCardLayoutClasses(variant)
 
   return (
     <Card>

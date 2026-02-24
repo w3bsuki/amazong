@@ -27,6 +27,7 @@ interface SearchPageLayoutProps {
   categorySlug: string | null
   currentPage: number
   currentCategory: Category | null
+  parentCategory?: Category | null
   subcategories: Category[]
   allCategories: Category[]
   allCategoriesWithSubs: { category: Category; subs: Category[] }[]
@@ -52,6 +53,7 @@ export function SearchPageLayout({
   categorySlug,
   currentPage,
   currentCategory,
+  parentCategory,
   subcategories,
   allCategories,
   allCategoriesWithSubs,
@@ -78,6 +80,7 @@ export function SearchPageLayout({
         categories={allCategories}
         subcategories={subcategories}
         currentCategory={currentCategory}
+        parentCategory={parentCategory ?? null}
         allCategoriesWithSubs={allCategoriesWithSubs}
         brands={[]}
       />

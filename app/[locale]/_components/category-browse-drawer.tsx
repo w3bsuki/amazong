@@ -36,7 +36,7 @@ export type { CategoryBrowseDrawerProps } from "./category-browse-drawer/categor
 /**
  * Category browse drawer — opened from the bottom nav "Обяви" tab.
  *
- * Listings tab: segmented toggle, quick links, 2-col icon grid, drill-down.
+ * Listings tab: segmented toggle, quick links, root grid + leaf list.
  * Sellers tab: top sellers list with avatars, search, "view all" link.
  * Uses DrawerShell for consistent header/close pattern.
  */
@@ -151,10 +151,16 @@ export function CategoryBrowseDrawer({
     )
   }, [sellers, locale, normalizedQuery])
 
-  const handleNavigateToCategory = useCallback((slug: string) => {
+  const handleNavigateToRootCategory = useCallback((rootSlug: string) => {
     setQuery("")
     close()
-    router.push(`/categories/${slug}`)
+    router.push(`/categories/${rootSlug}`)
+  }, [close, router])
+
+  const handleNavigateToLeafCategory = useCallback((rootSlug: string, leafSlug: string) => {
+    setQuery("")
+    close()
+    router.push(`/categories/${rootSlug}/${leafSlug}`)
   }, [close, router])
 
   const handleOpenScopedCategory = useCallback((category: CategoryTreeNode) => {
@@ -349,7 +355,8 @@ export function CategoryBrowseDrawer({
             seeAllCategoryLabel={seeAllCategoryLabel}
             onNavigateToSearch={handleNavigateToSearch}
             onNavigateToCategories={handleNavigateToCategories}
-            onNavigateToCategory={handleNavigateToCategory}
+            onNavigateToRootCategory={handleNavigateToRootCategory}
+            onNavigateToLeafCategory={handleNavigateToLeafCategory}
             onOpenScopedCategory={handleOpenScopedCategory}
             allListingsLabel={t("allListings")}
             categoriesLabel={t("categories")}

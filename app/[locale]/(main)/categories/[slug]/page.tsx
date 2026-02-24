@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 
-import { notFound, routing, validateLocale } from "@/i18n/routing"
+import { notFound, redirect, routing, validateLocale } from "@/i18n/routing"
 import {
   getCategoryBySlug,
   getCategoryContext,
@@ -123,6 +123,17 @@ function CategoryPageContent({
     parent: parentCategory,
     siblings: siblingCategories,
   } = categoryContext
+
+  if (currentCategory.parent_id) {
+    // Canonical leaf route is /categories/[root]/[leaf] in the strict 2-level tree.
+    if (parentCategory && !parentCategory.parent_id) {
+      redirect({
+        href: `/categories/${parentCategory.slug}/${currentCategory.slug}`,
+        locale,
+      })
+    }
+    notFound()
+  }
 
   const subcategoriesWithCounts = use(getSubcategoriesForBrowse(currentCategory.id, false))
 

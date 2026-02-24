@@ -55,6 +55,19 @@ function updateUrl(nextPath: string, createHistoryEntry: boolean) {
   }
 }
 
+function buildCategoryPathname(options: {
+  locale: string
+  slug: string
+  parentSlug?: string | null
+}) {
+  const { locale, slug, parentSlug } = options
+  const encodedSlug = encodeURIComponent(slug)
+  if (parentSlug) {
+    return `/${locale}/categories/${encodeURIComponent(parentSlug)}/${encodedSlug}`
+  }
+  return `/${locale}/categories/${encodedSlug}`
+}
+
 async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T> {
   const res = await fetch(url, { method: "GET", credentials: "same-origin", signal: signal ?? null })
   if (!res.ok) {
@@ -133,10 +146,15 @@ export function useInstantCategoryBrowse(options: {
    * Sync URL with current category state.
    * @param createHistoryEntry - true for category changes (back button works), false for filter changes
    */
-  const syncUrl = useCallback((slug: string, params: URLSearchParams, createHistoryEntry: boolean = false) => {
+  const syncUrl = useCallback((
+    slug: string,
+    params: URLSearchParams,
+    parentSlug: string | null,
+    createHistoryEntry: boolean = false
+  ) => {
     const qs = params.toString()
     const qsSuffix = qs ? `?${qs}` : ""
-    const nextPath = `/${locale}/categories/${encodeURIComponent(slug)}${qsSuffix}`
+    const nextPath = `${buildCategoryPathname({ locale, slug, parentSlug })}${qsSuffix}`
     updateUrl(nextPath, createHistoryEntry)
   }, [locale])
 
@@ -189,10 +207,10 @@ export function useInstantCategoryBrowse(options: {
     // New filters apply instantly to current category.
     // Use replaceState (no history entry) - filters shouldn't pollute back button
     setAppliedParams(nextParams)
-    syncUrl(categorySlug, nextParams, false)
+    syncUrl(categorySlug, nextParams, parent?.slug ?? null, false)
 
     await loadPage({ slug: categorySlug, params: nextParams, page: 1, append: false })
-  }, [enabled, categorySlug, loadPage, syncUrl])
+  }, [enabled, categorySlug, loadPage, parent?.slug, syncUrl])
 
   /**
    * Internal navigation - fetches context + products for a category.
@@ -207,11 +225,8 @@ export function useInstantCategoryBrowse(options: {
     setCategorySlugState(nextSlug)
     setAppliedParams(nextParams)
 
-    if (updateHistory) {
-      syncUrl(nextSlug, nextParams, true)
-    }
-
     // Context (cached) + products
+    let resolvedParentSlug: string | null = parent?.slug ?? null
     try {
       const cached = contextCacheRef.current.get(nextSlug)
       const context =
@@ -225,13 +240,18 @@ export function useInstantCategoryBrowse(options: {
       setChildren(context.children)
       setSiblings(context.siblings)
       setAttributes(context.attributes)
+      resolvedParentSlug = context.parent?.slug ?? null
     } catch {
       // If context fails, products still load (best-effort).
     }
 
+    if (updateHistory) {
+      syncUrl(nextSlug, nextParams, resolvedParentSlug, true)
+    }
+
     await loadPage({ slug: nextSlug, params: nextParams, page: 1, append: false })
     setLoadingSlug(null)
-  }, [loadPage, locale, syncUrl])
+  }, [loadPage, locale, parent?.slug, syncUrl])
 
   const setCategorySlug = useCallback(async (nextSlug: string, opts?: { clearAttrFilters?: boolean }) => {
     if (!enabled) return
@@ -286,9 +306,11 @@ export function useInstantCategoryBrowse(options: {
     if (!enabled) return
 
     const handlePopState = () => {
-      const path = window.location.pathname
-      const match = path.match(/\/categories\/([^/?]+)/)
-      const urlSlug = match?.[1] ? decodeURIComponent(match[1]) : null
+      const pathWithoutLocale = window.location.pathname.replace(/^\/(en|bg)(?=\/|$)/, "")
+      const match = pathWithoutLocale.match(/^\/categories\/([^/?]+)(?:\/([^/?]+))?/)
+      const rootSlug = match?.[1] ? decodeURIComponent(match[1]) : null
+      const leafSlug = match?.[2] ? decodeURIComponent(match[2]) : null
+      const urlSlug = leafSlug ?? rootSlug
 
       if (urlSlug && urlSlug !== categorySlug) {
         const params = new URLSearchParams(window.location.search)
@@ -322,4 +344,3 @@ export function useInstantCategoryBrowse(options: {
     prefetchCategory,
   }
 }
-

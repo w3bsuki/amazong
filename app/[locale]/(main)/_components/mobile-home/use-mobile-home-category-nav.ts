@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
 
-const MAX_VISIBLE_CATEGORY_TABS = 5
+const MAX_ROOT_CHIPS = 8
+const MAX_POPULAR_LEAF_CHIPS = 8
 
 interface CategoryChildrenResponse {
   children?: CategoryTreeNode[]
@@ -12,12 +13,37 @@ interface UseMobileHomeCategoryNavParams {
   categories: CategoryTreeNode[]
   activeCategorySlug: string | null
   activeSubcategorySlug: string | null
+  categoryCounts: Record<string, number>
+}
+
+function sortByDisplayOrder(nodes: CategoryTreeNode[]) {
+  return [...nodes].sort((a, b) => {
+    const orderA = a.display_order ?? 999
+    const orderB = b.display_order ?? 999
+    if (orderA !== orderB) return orderA - orderB
+    return a.name.localeCompare(b.name)
+  })
+}
+
+function sortLeavesByPopularity(nodes: CategoryTreeNode[], categoryCounts: Record<string, number>) {
+  return [...nodes].sort((a, b) => {
+    const countA = categoryCounts[a.slug] ?? 0
+    const countB = categoryCounts[b.slug] ?? 0
+    if (countA !== countB) return countB - countA
+
+    const orderA = a.display_order ?? 999
+    const orderB = b.display_order ?? 999
+    if (orderA !== orderB) return orderA - orderB
+
+    return a.name.localeCompare(b.name)
+  })
 }
 
 export function useMobileHomeCategoryNav({
   categories,
   activeCategorySlug,
   activeSubcategorySlug,
+  categoryCounts,
 }: UseMobileHomeCategoryNavParams) {
   const [childrenByParentId, setChildrenByParentId] = useState<Record<string, CategoryTreeNode[]>>({})
   const loadingParentIdsRef = useRef<Set<string>>(new Set())
@@ -64,14 +90,11 @@ export function useMobileHomeCategoryNav({
     }
   }, [])
 
-  const visibleCategoryTabs = useMemo(
-    () => categories.slice(0, MAX_VISIBLE_CATEGORY_TABS),
-    [categories]
-  )
+  const rootCategories = useMemo(() => sortByDisplayOrder(categories), [categories])
 
-  const overflowCategories = useMemo(
-    () => categories.slice(MAX_VISIBLE_CATEGORY_TABS),
-    [categories]
+  const rootCategoryChips = useMemo(
+    () => rootCategories.slice(0, MAX_ROOT_CHIPS),
+    [rootCategories]
   )
 
   const activeCategory = useMemo(
@@ -81,21 +104,23 @@ export function useMobileHomeCategoryNav({
 
   const activeSubcategories = useMemo(() => {
     if (!activeCategory) return []
-    if (Object.prototype.hasOwnProperty.call(childrenByParentId, activeCategory.id)) {
-      return childrenByParentId[activeCategory.id] ?? []
-    }
-    return activeCategory.children ?? []
-  }, [activeCategory, childrenByParentId])
 
-  const activeSubcategory = activeSubcategories.find((sub) => sub.slug === activeSubcategorySlug) ?? null
+    const children = Object.prototype.hasOwnProperty.call(childrenByParentId, activeCategory.id)
+      ? childrenByParentId[activeCategory.id] ?? []
+      : activeCategory.children ?? []
 
-  const activeL2Categories = useMemo(() => {
-    if (!activeSubcategory) return []
-    if (Object.prototype.hasOwnProperty.call(childrenByParentId, activeSubcategory.id)) {
-      return childrenByParentId[activeSubcategory.id] ?? []
-    }
-    return activeSubcategory.children ?? []
-  }, [activeSubcategory, childrenByParentId])
+    return sortLeavesByPopularity(children, categoryCounts)
+  }, [activeCategory, categoryCounts, childrenByParentId])
+
+  const popularLeafChips = useMemo(
+    () => activeSubcategories.slice(0, MAX_POPULAR_LEAF_CHIPS),
+    [activeSubcategories]
+  )
+
+  const activeSubcategory = useMemo(
+    () => activeSubcategories.find((sub) => sub.slug === activeSubcategorySlug) ?? null,
+    [activeSubcategories, activeSubcategorySlug]
+  )
 
   useEffect(() => {
     if (!activeCategory) return
@@ -114,29 +139,11 @@ export function useMobileHomeCategoryNav({
     void fetchChildrenByParentId(activeCategory.id)
   }, [activeCategory, fetchChildrenByParentId])
 
-  useEffect(() => {
-    if (!activeSubcategory) return
-    if (Object.prototype.hasOwnProperty.call(childrenByParentIdRef.current, activeSubcategory.id)) return
-
-    const seededChildren = activeSubcategory.children ?? []
-    if (seededChildren.length > 0) {
-      setChildrenByParentId((previous) =>
-        Object.prototype.hasOwnProperty.call(previous, activeSubcategory.id)
-          ? previous
-          : { ...previous, [activeSubcategory.id]: seededChildren }
-      )
-      return
-    }
-
-    void fetchChildrenByParentId(activeSubcategory.id)
-  }, [activeSubcategory, fetchChildrenByParentId])
-
   return {
-    visibleCategoryTabs,
-    overflowCategories,
+    rootCategoryChips,
     activeCategory,
     activeSubcategories,
+    popularLeafChips,
     activeSubcategory,
-    activeL2Categories,
   }
 }

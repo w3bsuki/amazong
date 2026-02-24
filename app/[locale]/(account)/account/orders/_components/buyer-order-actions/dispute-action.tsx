@@ -1,4 +1,3 @@
-"use client"
 
 import { useState, type TransitionStartFunction } from "react"
 import { toast } from "sonner"

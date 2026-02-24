@@ -113,6 +113,12 @@ export function CategoryPageDynamicContent({
   const products = result.products
   const totalProducts = result.total
   const desktopGridBatchKey = products.map((product) => product.id).join("|") || `${slug}-${currentPage}`
+  const categoryNavigationBasePath = parentCategory
+    ? `/categories/${parentCategory.slug}`
+    : `/categories/${currentCategory.slug}`
+  const currentCategoryHref = parentCategory
+    ? `/categories/${parentCategory.slug}/${currentCategory.slug}`
+    : `/categories/${currentCategory.slug}`
 
   const mobileInitialProducts: UIProduct[] = products.map((product): UIProduct => ({
     id: product.id,
@@ -173,7 +179,8 @@ export function CategoryPageDynamicContent({
           currentCategory={currentCategory}
           subcategories={subcategoriesWithCounts}
           parentCategory={parentCategory}
-          basePath="/categories"
+          basePath={categoryNavigationBasePath}
+          allHref={currentCategoryHref}
           variant="desktop"
           showCounts={true}
         />

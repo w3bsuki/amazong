@@ -1,47 +1,14 @@
 import type { OrderItemStatus } from "@/lib/order-status"
+import type { OrderItem } from "@/lib/types/order-item"
 import type { OrderStatusActionsServerActions } from "./order-status-actions"
 import type { SellerRateBuyerActionsServerActions } from "./seller-rate-buyer-actions"
 
-export type SellerOrderItem = {
-  id: string
-  order_id: string
-  seller_id: string
-  quantity: number
-  price_at_purchase: number
-  status: OrderItemStatus
-  tracking_number: string | null
-  shipping_carrier: string | null
-  created_at: string
+export type SellerOrderItem = Omit<OrderItem, "product"> & {
   product?: {
     id: string
     title: string
     images: string[]
     slug?: string | null
-  }
-  order?: {
-    id: string
-    user_id: string
-    total_amount: number
-    status: string
-    shipping_address: {
-      name?: string
-      email?: string
-      address?: {
-        line1?: string
-        line2?: string
-        city?: string
-        state?: string
-        postal_code?: string
-        country?: string
-      }
-    } | null
-    created_at: string
-  }
-  buyer?: {
-    id: string
-    full_name: string | null
-    email: string | null
-    avatar_url: string | null
   }
 }
 

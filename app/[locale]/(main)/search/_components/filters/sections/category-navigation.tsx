@@ -1,8 +1,7 @@
-import { ChevronDown as CaretDown, ChevronRight as CaretRight } from "lucide-react";
+import { ChevronDown as CaretDown, ChevronRight as CaretRight } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
-import { CategoryBreadcrumbTrail } from "./category-breadcrumb-trail"
 
 export interface Category {
   id: string
@@ -37,6 +36,28 @@ function getCategoryName(category: Category, locale: string): string {
   return category.name
 }
 
+function getLeafCategoriesForRoot(
+  allCategoriesWithSubs: CategoryWithSubcategories[],
+  rootId: string
+): Category[] {
+  const found = allCategoriesWithSubs.find((value) => value.category.id === rootId)
+  return (found?.subs ?? []).filter(isValidCategory)
+}
+
+function resolveParentCategory(options: {
+  currentCategory: Category
+  parentCategory?: Category | null | undefined
+  allCategoriesWithSubs: CategoryWithSubcategories[]
+}): Category | null {
+  const { currentCategory, parentCategory, allCategoriesWithSubs } = options
+  if (parentCategory) return parentCategory
+
+  const inferred = allCategoriesWithSubs.find((entry) =>
+    entry.subs.some((subcategory) => subcategory.id === currentCategory.id)
+  )
+  return inferred?.category ?? null
+}
+
 interface CategoryNavigationProps {
   categories: Category[]
   subcategories: Category[]
@@ -58,7 +79,6 @@ export function CategoryNavigation({
   currentCategory,
   parentCategory,
   allCategoriesWithSubs,
-  ancestry,
   locale,
   expandedCategories,
   showAllCategories,
@@ -72,24 +92,31 @@ export function CategoryNavigation({
   const validCategories = categories.filter(isValidCategory)
   const validSubcategories = subcategories.filter(isValidCategory)
 
-  const getSubcategoriesFor = (categoryId: string) => {
-    const found = allCategoriesWithSubs.find((value) => value.category.id === categoryId)
-    return (found?.subs ?? []).filter(isValidCategory)
-  }
+  const resolvedParentCategory = currentCategory
+    ? resolveParentCategory({
+        currentCategory,
+        parentCategory,
+        allCategoriesWithSubs,
+      })
+    : null
+
+  const leafCategories = currentCategory
+    ? resolvedParentCategory
+      ? getLeafCategoriesForRoot(allCategoriesWithSubs, resolvedParentCategory.id)
+      : validSubcategories
+    : []
 
   return (
     <div className="pb-4">
       {currentCategory ? (
         <>
-          {ancestry.length > 1 ? (
-            <CategoryBreadcrumbTrail ancestry={ancestry} className="mb-4" />
-          ) : parentCategory ? (
+          {resolvedParentCategory ? (
             <Link
-              href={getCategoryHref(parentCategory.slug)}
+              href={getCategoryHref(resolvedParentCategory.slug)}
               className="text-sm text-muted-foreground hover:text-primary hover:underline min-h-11 flex items-center gap-1 mb-2"
             >
               <CaretRight size={14} className="rotate-180" />
-              {getCategoryName(parentCategory, locale)}
+              {getCategoryName(resolvedParentCategory, locale)}
             </Link>
           ) : (
             <button
@@ -102,7 +129,7 @@ export function CategoryNavigation({
             </button>
           )}
 
-          {showAllCategories && !parentCategory && ancestry.length <= 1 && (
+          {showAllCategories && !resolvedParentCategory && (
             <div className="ml-2 mb-3 space-y-0.5 pl-3 py-1">
               {validCategories.map((category) => (
                 <Link
@@ -120,21 +147,28 @@ export function CategoryNavigation({
             </div>
           )}
 
-          {validSubcategories.length > 0 && (
+          {leafCategories.length > 0 && (
             <>
               <h3 className="text-xs font-semibold tracking-tight text-sidebar-muted-foreground uppercase mb-2 mt-4">
                 {t("subcategories")}
               </h3>
               <nav className="space-y-0.5">
-                {validSubcategories.map((subcategory) => (
-                  <Link
-                    key={subcategory.id}
-                    href={getCategoryHref(subcategory.slug)}
-                    className="text-sm cursor-pointer text-sidebar-muted-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent min-h-11 flex items-center px-2 -mx-2 rounded-md transition-colors"
-                  >
-                    {getCategoryName(subcategory, locale)}
-                  </Link>
-                ))}
+                {leafCategories.map((subcategory) => {
+                  const isActive = subcategory.id === currentCategory.id
+                  return (
+                    <Link
+                      key={subcategory.id}
+                      href={getCategoryHref(subcategory.slug)}
+                      className={`text-sm cursor-pointer min-h-11 flex items-center px-2 -mx-2 rounded-md transition-colors ${
+                        isActive
+                          ? "font-semibold text-sidebar-foreground bg-sidebar-accent"
+                          : "text-sidebar-muted-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
+                      }`}
+                    >
+                      {getCategoryName(subcategory, locale)}
+                    </Link>
+                  )
+                })}
               </nav>
             </>
           )}
@@ -145,7 +179,7 @@ export function CategoryNavigation({
           <nav className="space-y-0.5">
             {validCategories.map((category) => {
               const isExpanded = expandedCategories.includes(category.slug)
-              const categorySubcategories = getSubcategoriesFor(category.id)
+              const categorySubcategories = getLeafCategoriesForRoot(allCategoriesWithSubs, category.id)
               const hasSubcategories = categorySubcategories.length > 0
 
               return (
@@ -203,4 +237,3 @@ export function CategoryNavigation({
     </div>
   )
 }
-

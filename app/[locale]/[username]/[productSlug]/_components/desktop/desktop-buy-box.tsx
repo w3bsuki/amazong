@@ -19,30 +19,24 @@ import { Link } from "@/i18n/routing"
 import {
   Heart,
   MessageCircle,
-  Minus,
-  Plus,
   Share2,
-  ShieldCheck,
   Package,
-  Truck,
   Clock,
   MapPin,
-  ShoppingCart,
-  Zap,
   BadgeCheck,
-  RotateCcw,
   Store,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
-import { Badge } from "@/components/ui/badge"
-import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
 import { useCart } from "@/components/providers/cart-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useToast } from "@/hooks/use-toast"
 import type { CategoryType } from "@/lib/utils/category-type"
+import { DesktopBuyBoxCtaSection } from "./desktop-buy-box-cta-section"
+import { DesktopBuyBoxPriceSection } from "./desktop-buy-box-price-section"
+import { DesktopBuyBoxShippingInfo } from "./desktop-buy-box-shipping-info"
 
 interface SellerInfo {
   id: string
@@ -108,21 +102,6 @@ export function DesktopBuyBox({
   const isOutOfStock = stock === 0
   const isLowStock = stock != null && stock > 0 && stock <= 5
   const productInWishlist = isInWishlist(productId)
-
-  // Calculate discount percentage
-  const discount =
-    originalPrice && originalPrice > price
-      ? Math.round(((originalPrice - price) / originalPrice) * 100)
-      : 0
-
-  // Format price
-  const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 2,
-    }).format(amount)
-  }
 
   // Cart product info
   const cartProduct = {
@@ -198,21 +177,6 @@ export function DesktopBuyBox({
     }
   }
 
-  // Category-adaptive CTA labels
-  const getPrimaryCTA = () => {
-    if (isRealEstate) return { label: t("contactAgent"), icon: MessageCircle }
-    if (isAutomotive) return { label: t("contactSeller"), icon: MessageCircle }
-    return { label: t("addToCart"), icon: ShoppingCart }
-  }
-
-  const getSecondaryCTA = () => {
-    if (isRealEstate) return t("scheduleVisit")
-    if (isAutomotive) return t("testDrive")
-    return t("buyNow")
-  }
-
-  const primaryCTA = getPrimaryCTA()
-
   return (
     <div
       className={cn(
@@ -281,170 +245,36 @@ export function DesktopBuyBox({
         </div>
       </div>
 
-      {/* Price Block */}
-      <div className="space-y-1">
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="text-2xl font-bold text-foreground">
-            {formatPrice(price)}
-          </span>
-          {originalPrice && originalPrice > price && (
-            <>
-              <span className="text-base text-muted-foreground line-through">
-                {formatPrice(originalPrice)}
-              </span>
-              <Badge
-                variant="destructive"
-                className="text-xs px-1.5 py-0 h-5"
-              >
-                -{discount}%
-              </Badge>
-            </>
-          )}
-        </div>
-        {condition && (
-          <MarketplaceBadge variant="condition">{condition}</MarketplaceBadge>
-        )}
-      </div>
+      <DesktopBuyBoxPriceSection
+        locale={locale}
+        currency={currency}
+        price={price}
+        originalPrice={originalPrice}
+        condition={condition}
+      />
 
-      {/* Shipping/Location Info */}
-      <div className="rounded-xl border border-border bg-surface-subtle p-2.5 space-y-1.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm">
-            {isRealEstate ? (
-              <>
-                <MapPin className="size-4 text-foreground" />
-                <span className="font-medium text-foreground">
-                  {location || t("locationTBA")}
-                </span>
-              </>
-            ) : (
-              <>
-                <Truck
-                  className="size-4 text-muted-foreground"
-                />
-                <span
-                  className="font-medium text-foreground"
-                >
-                  {freeShipping ? t("freeShipping") : t("shippingAvailable")}
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-        {!isRealEstate && (
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Clock className="size-3" />
-              {isAutomotive ? t("pickupAvailable") : t("delivery2to3Days")}
-            </span>
-            {location && (
-              <span className="flex items-center gap-1">
-                <MapPin className="size-3" />
-                {location}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+      <DesktopBuyBoxShippingInfo
+        isRealEstate={isRealEstate}
+        isAutomotive={isAutomotive}
+        freeShipping={freeShipping}
+        location={location}
+        t={t}
+      />
 
-      {/* Quantity Selector (for applicable categories) */}
-      {showQuantity && !isOutOfStock && (
-        <div className="flex items-center justify-between gap-3 py-2 border-y border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">{t("qty")}</span>
-            <div className="flex items-center border border-border rounded-xl">
-              <IconButton
-                type="button"
-                size="icon-lg"
-                variant="ghost"
-                className="hover:bg-muted"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={quantity <= 1}
-                aria-label={t("decreaseQuantity")}
-              >
-                <Minus
-                  className={cn(
-                    quantity <= 1 ? "text-muted-foreground opacity-40" : "text-foreground"
-                  )}
-                />
-              </IconButton>
-              <span className="px-3 py-1 text-sm font-medium min-w-touch text-center">
-                {quantity}
-              </span>
-              <IconButton
-                type="button"
-                size="icon-lg"
-                variant="ghost"
-                className="hover:bg-muted"
-                onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                aria-label={t("increaseQuantity")}
-              >
-                <Plus className="text-foreground" />
-              </IconButton>
-            </div>
-          </div>
-          <div className="text-right">
-            <span className="text-xs text-muted-foreground">{t("total")}</span>
-            <div className="text-lg font-bold text-foreground">
-              {formatPrice(price * quantity)}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CTA Buttons - Category Adaptive */}
-      <div className="flex gap-2">
-        {isRealEstate || isAutomotive ? (
-          <>
-            <Button
-              size="lg"
-              className="flex-1 font-semibold"
-              disabled={isOutOfStock}
-            >
-              <primaryCTA.icon className="size-4" />
-              {primaryCTA.label}
-            </Button>
-            <Button variant="outline" size="lg" className="px-4">
-              {getSecondaryCTA()}
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              size="lg"
-              className="flex-1 font-semibold"
-              onClick={handleAddToCart}
-              disabled={isOutOfStock}
-            >
-              <ShoppingCart className="size-4" />
-              {t("addToCart")}
-            </Button>
-            <Button
-              variant="outline"
-              size="icon-lg"
-              onClick={handleBuyNow}
-              disabled={isOutOfStock}
-              title={t("buyNow")}
-              aria-label={t("buyNow")}
-            >
-              <Zap />
-            </Button>
-          </>
-        )}
-      </div>
-
-      {/* Protection Badges */}
-      <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <ShieldCheck className="size-3 text-muted-foreground" />
-          {t("buyerProtection")}
-        </span>
-        <span className="text-muted-foreground">|</span>
-        <span className="flex items-center gap-1">
-          <RotateCcw className="size-3" />
-          {isRealEstate ? t("verifiedListing") : t("easyReturns")}
-        </span>
-      </div>
+      <DesktopBuyBoxCtaSection
+        locale={locale}
+        currency={currency}
+        price={price}
+        quantity={quantity}
+        setQuantity={setQuantity}
+        isRealEstate={isRealEstate}
+        isAutomotive={isAutomotive}
+        isOutOfStock={isOutOfStock}
+        showQuantity={showQuantity}
+        onAddToCart={handleAddToCart}
+        onBuyNow={handleBuyNow}
+        t={t}
+      />
 
       {/* Embedded Seller Card */}
       <div className="rounded-xl border border-border bg-surface-subtle p-3">

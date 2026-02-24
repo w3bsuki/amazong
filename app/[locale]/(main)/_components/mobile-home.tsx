@@ -8,6 +8,7 @@ import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import type { UIProduct } from "@/lib/types/products"
 import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 import { getCategoryName, getCategorySlugKey } from "@/lib/data/categories/display"
+import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useHeader } from "@/components/providers/header-context"
 import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
 import {
@@ -20,7 +21,6 @@ import { HomeCityPickerSheet } from "./mobile/home-city-picker-sheet"
 import { PageShell } from "../../_components/page-shell"
 import { FilterHub } from "./filters/filter-hub"
 import { useHomeDiscoveryFeed } from "./mobile-home/use-home-discovery-feed"
-import type { HomeDiscoveryScope } from "./mobile-home/use-home-discovery-feed"
 import { MobileHomeFeed } from "./mobile-home/mobile-home-feed"
 import { useMobileHomeCategoryNav } from "./mobile-home/use-mobile-home-category-nav"
 import { useHomeCityStorage } from "./mobile-home/use-home-city-storage"
@@ -45,7 +45,6 @@ export function MobileHome({
   const [searchOpen, setSearchOpen] = useState(false)
   const [filterOpen, setFilterOpen] = useState(false)
   const [cityPickerOpen, setCityPickerOpen] = useState(false)
-  const [pendingNearbyScope, setPendingNearbyScope] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
   const initialPools = useMemo(() => ({ forYou: forYouProducts }), [forYouProducts])
 
@@ -56,8 +55,6 @@ export function MobileHome({
     setActiveCategorySlug,
     activeSubcategorySlug,
     setActiveSubcategorySlug,
-    activeL2Slug,
-    setActiveL2Slug,
     filters,
     filtersKey,
     setFilters,
@@ -75,15 +72,19 @@ export function MobileHome({
     initialScope: "forYou",
     limit: 24,
   })
+  const { counts: categoryCounts } = useCategoryCounts({ enabled: true })
 
   const {
+    rootCategoryChips,
     activeCategory,
     activeSubcategories,
+    popularLeafChips,
     activeSubcategory,
   } = useMobileHomeCategoryNav({
     categories,
     activeCategorySlug,
     activeSubcategorySlug,
+    categoryCounts,
   })
   useHomeCityStorage(city, setCity)
 
@@ -124,8 +125,7 @@ export function MobileHome({
   const handlePrimaryTab = useCallback((slug: string | null) => {
     setActiveCategorySlug(slug)
     setActiveSubcategorySlug(null)
-    setActiveL2Slug(null)
-  }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug])
+  }, [setActiveCategorySlug, setActiveSubcategorySlug])
 
   const handleHeaderCategorySelect = useCallback((slug: string) => {
     handlePrimaryTab(slug === "all" ? null : slug)
@@ -143,20 +143,9 @@ export function MobileHome({
     })
   }, [activeCategorySlug, categories, handleHeaderCategorySelect, setHeaderState])
 
-  const handleScopeSelect = useCallback((nextScope: HomeDiscoveryScope) => {
-    if (nextScope === "nearby" && !city) {
-      setPendingNearbyScope(true)
-      setCityPickerOpen(true)
-      return
-    }
-    setScope(nextScope)
-    setNearby(nextScope === "nearby")
-  }, [city, setNearby, setScope])
-
   const handleSubcategoryPill = useCallback((slug: string | null) => {
     setActiveSubcategorySlug((previous) => (previous === slug ? null : slug))
-    setActiveL2Slug(null)
-  }, [setActiveSubcategorySlug, setActiveL2Slug])
+  }, [setActiveSubcategorySlug])
 
   const handleApplyFilters = useCallback((next: { queryString: string }) => {
     const params = new URLSearchParams(next.queryString)
@@ -166,21 +155,17 @@ export function MobileHome({
   const handleCitySelect = useCallback((nextCity: string) => {
     setCity(nextCity)
     setFilters(new URLSearchParams([["city", nextCity], ["nearby", "true"]]))
-    if (pendingNearbyScope) {
-      setScope("nearby")
-      setNearby(true)
-      setPendingNearbyScope(false)
-    }
-  }, [pendingNearbyScope, setCity, setFilters, setNearby, setScope])
+    setScope("nearby")
+    setNearby(true)
+  }, [setCity, setFilters, setNearby, setScope])
 
   const handleResetAll = useCallback(() => {
     setActiveCategorySlug(null)
     setActiveSubcategorySlug(null)
-    setActiveL2Slug(null)
     setScope("forYou")
     setNearby(false)
     setFilters(new URLSearchParams())
-  }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug, setScope, setNearby, setFilters])
+  }, [setActiveCategorySlug, setActiveSubcategorySlug, setScope, setNearby, setFilters])
 
   const railAriaLabel = tV4("quickJump.label")
   const feedTransitionState = isLoading && products.length === 0 ? "loading" : products.length === 0 ? "empty" : "results"
@@ -188,7 +173,6 @@ export function MobileHome({
     scope,
     activeCategorySlug ?? "all",
     activeSubcategorySlug ?? "all",
-    activeL2Slug ?? "all",
     filtersKey,
     feedTransitionState,
   ].join("|")
@@ -221,22 +205,16 @@ export function MobileHome({
 
   const railPills: SmartRailPill[] = useMemo(() => {
     if (!activeCategorySlug) {
-      const scopes: Array<{ id: HomeDiscoveryScope; testId: string }> = [
-        { id: "forYou", testId: "home-v4-scope-forYou" },
-        { id: "newest", testId: "home-v4-scope-newest" },
-        { id: "promoted", testId: "home-v4-scope-promoted" },
-        { id: "nearby", testId: "home-v4-scope-nearby" },
-        { id: "deals", testId: "home-v4-scope-deals" },
-      ]
-
-      return scopes.map(({ id, testId }) => ({
-        id,
-        label: tV4(`scopes.${id}`),
-        active: scope === id,
-        onSelect: () => handleScopeSelect(id),
-        testId,
+      return rootCategoryChips.map((category) => ({
+        id: category.slug,
+        label: getCategoryLabel(category),
+        active: false,
+        onSelect: () => handlePrimaryTab(category.slug),
+        testId: `home-v4-root-${category.slug}`,
       }))
     }
+
+    const leafPills = popularLeafChips.length > 0 ? popularLeafChips : activeSubcategories
 
     return [
       {
@@ -246,7 +224,7 @@ export function MobileHome({
         onSelect: () => handleSubcategoryPill(null),
         testId: "home-v4-subcategory-all",
       },
-      ...activeSubcategories.map((subcategory) => ({
+      ...leafPills.map((subcategory) => ({
         id: subcategory.slug,
         label: getCategoryLabel(subcategory),
         active: activeSubcategorySlug === subcategory.slug,
@@ -259,9 +237,10 @@ export function MobileHome({
     activeSubcategories,
     activeSubcategorySlug,
     getCategoryLabel,
-    handleScopeSelect,
+    handlePrimaryTab,
     handleSubcategoryPill,
-    scope,
+    popularLeafChips,
+    rootCategoryChips,
     tV4,
   ])
 
@@ -291,7 +270,9 @@ export function MobileHome({
               {getCategoryLabel(activeSubcategory ?? activeCategory)}
             </h2>
             <Link
-              href={`/categories/${(activeSubcategory ?? activeCategory).slug}`}
+              href={activeSubcategory
+                ? `/categories/${activeCategory.slug}/${activeSubcategory.slug}`
+                : `/categories/${activeCategory.slug}`}
               className="inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-muted-foreground tap-transparent transition-colors duration-fast ease-smooth hover:text-foreground active:text-foreground"
             >
               {tV4("actions.seeAll")}

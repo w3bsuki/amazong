@@ -4,6 +4,7 @@ import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useCategoryAttributes } from "./use-category-attributes"
 import { useIsMobile } from "@/hooks/use-is-mobile"
 import { useViewMode } from "./use-view-mode"
+import { useRouter } from "@/i18n/routing"
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import { getCategoryName, type CategoryDisplay } from "@/lib/data/categories/display"
 import { type FeedTab, type FilterState } from "@/components/desktop/feed-toolbar"
@@ -147,6 +148,7 @@ export function useDesktopHomeController({
   initialProducts,
   promotedProducts,
 }: UseDesktopHomeControllerParams) {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<FeedTab>("newest")
   const [categoryPath, setCategoryPath] = useState<CategoryPath[]>([])
   const [products, setProducts] = useState<DesktopHomeProduct[]>(initialProducts)
@@ -183,49 +185,26 @@ export function useDesktopHomeController({
   const { counts: categoryCounts } = useCategoryCounts({ enabled: !isMobileViewport })
   const pageSize = 24
 
+  const activeRootSlug = categoryPath[0]?.slug ?? null
+  const activeLeafSlug = categoryPath[1]?.slug ?? null
+
   const activeCategorySlug = useMemo(() => {
-    if (categoryPath.length > 0) return categoryPath[categoryPath.length - 1]?.slug ?? null
-    return null
-  }, [categoryPath])
+    return activeLeafSlug ?? activeRootSlug
+  }, [activeLeafSlug, activeRootSlug])
 
   const activeCategoryNode = useMemo(() => {
-    if (categoryPath.length === 0) return null
-
-    let nodes = categories
-    let current: CategoryTreeNode | undefined
-
-    for (const step of categoryPath) {
-      current = nodes.find((c) => c.slug === step.slug)
-      if (!current) return null
-      nodes = current.children ?? []
-    }
-
-    return current ?? null
-  }, [categories, categoryPath])
+    if (!activeRootSlug) return null
+    const rootCategory = categories.find((category) => category.slug === activeRootSlug)
+    if (!rootCategory) return null
+    if (!activeLeafSlug) return rootCategory
+    return rootCategory.children?.find((category) => category.slug === activeLeafSlug) ?? null
+  }, [activeLeafSlug, activeRootSlug, categories])
 
   const siblingCategories = useMemo(() => {
-    if (categoryPath.length === 0) return []
-    if (!activeCategoryNode) return []
-    if (activeCategoryNode.children && activeCategoryNode.children.length > 0) return []
-
-    if (categoryPath.length === 1) {
-      return categories
-    }
-
-    let nodes = categories
-    let parentNode: CategoryTreeNode | undefined
-
-    for (let index = 0; index < categoryPath.length - 1; index++) {
-      const step = categoryPath[index]
-      if (!step) continue
-      const found = nodes.find((c) => c.slug === step.slug)
-      if (!found) return []
-      parentNode = found
-      nodes = found.children ?? []
-    }
-
-    return parentNode?.children ?? []
-  }, [categories, categoryPath, activeCategoryNode])
+    if (!activeRootSlug || !activeLeafSlug) return []
+    const rootCategory = categories.find((category) => category.slug === activeRootSlug)
+    return rootCategory?.children ?? []
+  }, [activeLeafSlug, activeRootSlug, categories])
 
   const { attributes: categoryAttributes, isLoading: isLoadingAttributes } = useCategoryAttributes(activeCategorySlug)
 
@@ -235,28 +214,36 @@ export function useDesktopHomeController({
 
   const handleSubcategorySelect = useCallback(
     (category: CategoryDisplay) => {
-      setCategoryPath((previous) => {
-        const lastSlug = previous[previous.length - 1]?.slug
-        if (lastSlug === category.slug) return previous
-        return [...previous, { slug: category.slug, name: getCategoryName(category, locale) }]
-      })
+      if (!activeRootSlug) return
+
+      const rootCategory = categories.find((entry) => entry.slug === activeRootSlug)
+      if (!rootCategory) return
+
+      setCategoryPath([
+        { slug: rootCategory.slug, name: getCategoryName(rootCategory, locale) },
+        { slug: category.slug, name: getCategoryName(category, locale) },
+      ])
       setPage(1)
+      router.push(`/categories/${rootCategory.slug}/${category.slug}`)
     },
-    [locale]
+    [activeRootSlug, categories, locale, router]
   )
 
   const handleSiblingSelect = useCallback(
     (category: CategoryDisplay) => {
-      setCategoryPath((previous) => {
-        if (previous.length === 0) return previous
-        const lastSlug = previous[previous.length - 1]?.slug
-        if (lastSlug === category.slug) return previous
-        const nextPath = previous.slice(0, -1)
-        return [...nextPath, { slug: category.slug, name: getCategoryName(category, locale) }]
-      })
+      if (!activeRootSlug) return
+
+      const rootCategory = categories.find((entry) => entry.slug === activeRootSlug)
+      if (!rootCategory) return
+
+      setCategoryPath([
+        { slug: rootCategory.slug, name: getCategoryName(rootCategory, locale) },
+        { slug: category.slug, name: getCategoryName(category, locale) },
+      ])
       setPage(1)
+      router.push(`/categories/${rootCategory.slug}/${category.slug}`)
     },
-    [locale]
+    [activeRootSlug, categories, locale, router]
   )
 
   const fetchProducts = useCallback(
@@ -332,8 +319,17 @@ export function useDesktopHomeController({
   }, [activeTab, activeCategorySlug, userCity, filters.quickFilters, fetchProducts])
 
   const handleCategorySelect = useCallback((path: CategoryPath[]) => {
-    setCategoryPath(path)
-  }, [])
+    const normalizedPath = path.slice(0, 2)
+    setCategoryPath(normalizedPath)
+    setPage(1)
+
+    if (normalizedPath.length === 2) {
+      const [root, leaf] = normalizedPath
+      if (root && leaf) {
+        router.push(`/categories/${root.slug}/${leaf.slug}`)
+      }
+    }
+  }, [router])
 
   const loadMore = useCallback(() => {
     if (!isLoading && hasMore) {

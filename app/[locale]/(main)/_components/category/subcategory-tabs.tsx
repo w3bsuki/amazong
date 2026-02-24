@@ -24,6 +24,7 @@ interface SubcategoryTabsProps {
   siblingCategories?: Category[]
   parentCategory?: Category | null // Kept for backward compatibility (not used here, breadcrumb is separate)
   basePath?: string // "/categories" or undefined for "/search?category="
+  allHref?: string
   variant?: "default" | "desktop" // desktop = larger circles
   /** Slug of the currently active subcategory for desktop highlighting */
   activeSubcategorySlug?: string | null | undefined
@@ -41,7 +42,8 @@ export function SubcategoryTabs({
   currentCategory, 
   subcategories, 
   siblingCategories = [],
-  basePath, 
+  basePath,
+  allHref,
   variant = "default", 
   activeSubcategorySlug, 
   showCounts = false,
@@ -69,6 +71,7 @@ export function SubcategoryTabs({
             activeSubcategorySlug={currentCategory.slug}
             showCounts={showCounts}
             {...(basePath ? { basePath } : {})}
+            {...(allHref ? { allHref } : {})}
             {...(onSelectCategory ? { onSelectCategory } : {})}
           />
         </div>
@@ -90,6 +93,7 @@ export function SubcategoryTabs({
         activeSubcategorySlug={activeSubcategorySlug}
         showCounts={showCounts}
         {...(basePath ? { basePath } : {})}
+        {...(allHref ? { allHref } : {})}
         {...(onSelectCategory ? { onSelectCategory } : {})}
       />
     </div>

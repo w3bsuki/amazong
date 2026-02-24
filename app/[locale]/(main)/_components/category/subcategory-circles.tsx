@@ -21,6 +21,8 @@ interface SubcategoryCirclesProps {
   title?: string
   className?: string
   basePath?: string // "/categories" or undefined for "/search?category="
+  /** Optional override for the "All" circle destination. */
+  allHref?: string
   /** Pre-serialized search params string (without leading '?') to preserve during navigation */
   searchParamsString?: string
   /** Variant: desktop = larger circles for desktop layout */
@@ -265,6 +267,7 @@ export function SubcategoryCircles({
   currentCategory,
   className,
   basePath,
+  allHref,
   searchParamsString = "",
   variant = "default",
   activeSubcategorySlug = null,
@@ -311,7 +314,7 @@ export function SubcategoryCircles({
               activeSubcategorySlug={activeSubcategorySlug}
               onSelectCategory={onSelectCategory}
               onSelectAll={onSelectAll}
-              href={buildUrl(currentCategory.slug)}
+              href={allHref ?? buildUrl(currentCategory.slug)}
               allLabel={tCommon("all")}
               allProductsLabel={tSearch("allProducts")}
             />

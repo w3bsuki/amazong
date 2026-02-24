@@ -9,7 +9,8 @@ import { clampModesToPolicy, toCategoryPolicy } from "@/lib/sell/category-policy
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { CategorySelector } from "../ui/category-selector";
-import type { Category, CategoryPathItem } from "../../_lib/types";
+import type { CategoryPathItem } from "../../_lib/types";
+import { findCategoryById } from "./category-helpers";
 
 // ============================================================================
 // CATEGORY FIELD - Category picker using context pattern
@@ -36,19 +37,6 @@ async function prefetchCategoryAttributes(categoryId: string) {
   } catch {
     // Non-blocking: it's only a prefetch.
   }
-}
-
-function findCategoryById(categories: Category[], categoryId: string): Category | null {
-  const stack = [...categories]
-  while (stack.length > 0) {
-    const current = stack.pop()
-    if (!current) continue
-    if (current.id === categoryId) return current
-    if (current.children?.length) {
-      for (const child of current.children) stack.push(child)
-    }
-  }
-  return null
 }
 
 export function CategoryField({ onCategoryChange, className, compact = false }: CategoryFieldProps) {

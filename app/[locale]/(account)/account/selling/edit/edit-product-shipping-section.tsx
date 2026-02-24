@@ -1,4 +1,3 @@
-"use client"
 
 import { useTranslations } from "next-intl"
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
