@@ -23,6 +23,7 @@
 | 2026-02-24 | Plan creation | 23 files, 37 tasks defined | N/A (no code changes) |
 | 2026-02-25 | Audit + corrections | context7 docs verified, 8 corrections applied | N/A (docs only) |
 | 2026-02-25 | REF-CLEANUP-001 | Baseline captured: unsafe casts=46 (32 files), console lines=111; knip: 5 unused files + 1 export (saved to `refactor/production-push/baseline-knip-2026-02-25.txt`); architecture: client=269/1151, over300=66, over500=3, duplicates clones=53 lines=628 | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate) |
+| 2026-02-25 | REF-CLEANUP-002 | Repo hygiene: gitignore root artifacts (`.codex_*.txt`, eslint logs); moved Python scripts to `scripts/`; archived legacy `.pen` snapshots into `designs/archive/legacy-pen-files-2026-02-24.zip` | GREEN (typecheck, lint, styles:gate, test:unit) |
 
 ---
 
@@ -65,7 +66,7 @@
 | ID | Task | Scope | Depends | Status |
 |----|------|-------|---------|--------|
 | REF-CLEANUP-001 | Baseline snapshot + guardrail metrics | small | — | ✅ |
-| REF-CLEANUP-002 | Repo hygiene: artifacts + root clutter | medium | — | ⬜ |
+| REF-CLEANUP-002 | Repo hygiene: artifacts + root clutter | medium | — | ✅ |
 | REF-CLEANUP-003 | Docs link drift repair | medium | — | ⬜ |
 | REF-CLEANUP-004 | Refactor-program doc consistency | small | 003 | ⬜ |
 | REF-CLEANUP-005 | Dead code: unused files/exports via Knip | medium | 001 | ⬜ |

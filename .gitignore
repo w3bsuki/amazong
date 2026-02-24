@@ -63,6 +63,8 @@ blob-report/
 e2e-output*.txt
 e2e-smoke-output*.txt
 lint-output.txt
+eslint-summary.txt
+eslint.log
 typecheck-output.txt
 unit-test-output.txt
 devserver-crash.txt
@@ -77,6 +79,7 @@ knip-report.txt
 tsc-report.txt
 
 # Agent temp files (should not be committed)
+.codex_*.txt
 .codex/_write_test.txt
 .codex/dupes/
 .codex/locks/

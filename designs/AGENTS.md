@@ -9,7 +9,7 @@ Scope: this guide applies to everything under `designs/`.
 ## What lives here
 
 - `designs/treido.pen` — **the** canonical Treido Pencil file (components, templates, screens, explorations).
-- `designs/archive/*.pen` — legacy snapshots kept for reference only (do not edit).
+- `designs/archive/legacy-pen-files-*.zip` — legacy snapshots kept for reference only (do not edit).
 - `designs/route-inventory.json` — route inventory generated from `app/[locale]`.
 - `designs/PENCIL-GUIDE.md` — repo-specific Pencil workflow + conventions.
 - `designs/UI-UX-MODEL.md` — Treido navigation + IA model.

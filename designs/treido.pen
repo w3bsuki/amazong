@@ -29231,6 +29231,137 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "LP2400",
+      "x": 1440,
+      "y": 0,
+      "name": "Exploration / Landing Page (Web)",
+      "width": 1600,
+      "layout": "vertical",
+      "gap": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "LP2401",
+          "name": "title",
+          "fill": "$--foreground",
+          "content": "Landing Page (Web) — IA + UI v1",
+          "fontFamily": "Inter",
+          "fontSize": 22,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LP2402",
+          "name": "subtitle",
+          "fill": "$--muted-foreground",
+          "content": "Exploration: positioning + section structure (mobile-first, then desktop).",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal",
+          "width": "fill_container",
+          "textGrowth": "fixed-width"
+        },
+        {
+          "type": "frame",
+          "id": "LP2410",
+          "name": "IA / Sections",
+          "width": 520,
+          "fill": "$--surface-subtle",
+          "cornerRadius": "$--radius-xl",
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "LP2411",
+              "name": "iaTitle",
+              "fill": "$--foreground",
+              "content": "Information Architecture (v1)",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "LP2412",
+              "name": "iaBody",
+              "fill": "$--muted-foreground",
+              "content": "Header (logo, language, sign in, sell)\\nHero (value prop, secure payments, CTA)\\nTrust kernel (buyer protection, escrow, disputes/refunds)\\nHow it works (3 steps)\\nFor business (Shopify-like backend)\\nAI-first (photo → listing draft; coming soon)\\nFeatured categories + discovery\\nTestimonials / proof\\nFAQ\\nFooter (legal, help, socials)",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal",
+              "width": "fill_container",
+              "textGrowth": "fixed-width"
+            },
+            {
+              "type": "text",
+              "id": "LP2413",
+              "name": "iaCTA",
+              "fill": "$--muted-foreground",
+              "content": "Primary CTA: Start selling • Secondary: Browse deals",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal",
+              "width": "fill_container",
+              "textGrowth": "fixed-width"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "LP2500",
+          "name": "M375 / marketing / Landing (Web)",
+          "clip": true,
+          "width": 375,
+          "height": 812,
+          "fill": "$--surface-page",
+          "cornerRadius": 24,
+          "layout": "vertical",
+          "gap": 16,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "LP2501",
+              "name": "todo",
+              "fill": "$--muted-foreground",
+              "content": "TODO: Mobile landing design",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "LP2600",
+          "name": "W1440 / marketing / Landing (Web)",
+          "clip": true,
+          "width": 1440,
+          "height": 900,
+          "fill": "$--surface-page",
+          "cornerRadius": 24,
+          "layout": "vertical",
+          "gap": 16,
+          "padding": 32,
+          "children": [
+            {
+              "type": "text",
+              "id": "LP2601",
+              "name": "todo",
+              "fill": "$--muted-foreground",
+              "content": "TODO: Desktop landing design",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

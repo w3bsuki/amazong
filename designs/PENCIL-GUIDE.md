@@ -5,7 +5,7 @@ This folder is the source of truth for Treido’s **mobile-first screen designs*
 ## Files
 
 - `designs/treido.pen` — **the** canonical Treido Pencil file (components, templates, screens, explorations).
-- `designs/archive/*.pen` — legacy snapshots kept for reference only (do not edit).
+- `designs/archive/legacy-pen-files-*.zip` — legacy snapshots kept for reference only (do not edit).
 
 Task lists:
 - `designs/pencil-tasks-1.md` — commerce screens (execute top→bottom).
