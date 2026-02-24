@@ -1,22 +1,18 @@
 import { WelcomeClient } from "../../_components/welcome-client"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
+import { buildRouteMetadata, resolveRouteLocale } from "../_lib/route-locale-metadata"
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "Onboarding" })
-
-  return {
-    title: t("accountType.title"),
-    description: t("accountType.subtitle"),
-  }
+  return buildRouteMetadata({
+    params,
+    namespace: "Onboarding",
+    titleKey: "accountType.title",
+    descriptionKey: "accountType.subtitle",
+  })
 }
 
 export default async function WelcomePage({
@@ -24,6 +20,6 @@ export default async function WelcomePage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
+  const locale = await resolveRouteLocale(params)
   return <WelcomeClient locale={locale} />
 }

@@ -65,6 +65,11 @@ export const sellFormSchemaV4 = z.object({
 
 	categoryId: z.string().min(1, "validation.categoryRequired"),
 
+	listingKind: z.enum(["item", "service", "classified"]).default("item"),
+	transactionMode: z.enum(["checkout", "contact"]).default("checkout"),
+	fulfillmentMode: z.enum(["shipping", "pickup", "digital", "onsite"]).default("shipping"),
+	pricingMode: z.enum(["fixed", "auction", "tiered"]).default("fixed"),
+
 	categoryPath: z
 		.array(
 			z.object({
@@ -193,6 +198,7 @@ export const sellFormSchemaV4 = z.object({
 			message: "shipping.selectCityPlaceholder",
 		});
 	}
+
 });
 
 export type SellFormDataV4 = z.infer<typeof sellFormSchemaV4>;
@@ -202,6 +208,10 @@ export const defaultSellFormValuesV4: SellFormDataV4 = {
 	images: [],
 	title: "",
 	categoryId: "",
+	listingKind: "item",
+	transactionMode: "checkout",
+	fulfillmentMode: "shipping",
+	pricingMode: "fixed",
 	categoryPath: [],
 	brandId: null,
 	brandName: "",

@@ -2,90 +2,28 @@
 
 import { useState, useEffect, useCallback } from "react"
 import * as nextIntl from "next-intl"
-import { safeJsonParse } from "@/lib/safe-json"
-import { z } from "zod"
 import { normalizeSearchQuery } from "@/lib/filters/search-query"
+import { fetchSearchProducts } from "./use-product-search.api"
+import {
+  clearRecentProductsStorage,
+  clearRecentSearchesStorage,
+  loadRecentProducts,
+  loadRecentSearches,
+  persistRecentProducts,
+  persistRecentSearches,
+} from "./use-product-search.storage"
+import {
+  MAX_RECENT_PRODUCTS,
+  MAX_RECENT_SEARCHES,
+  MIN_SEARCH_LENGTH,
+  SEARCH_DEBOUNCE_MS,
+  isAbortError,
+  type RecentSearchedProduct,
+  type SaveSearchProductInput,
+  type SearchProduct,
+} from "./use-product-search.shared"
 
-/* =============================================================================
-   TYPES & INTERFACES
-============================================================================= */
-
-export interface SearchProduct {
-  id: string
-  title: string
-  price: number
-  images: string[]
-  slug: string
-  storeSlug: string | null
-}
-
-/* =============================================================================
-   CONSTANTS
-============================================================================= */
-
-/** Debounce delay in milliseconds for search input */
-const SEARCH_DEBOUNCE_MS = 300
-
-/** Minimum characters before triggering search */
-const MIN_SEARCH_LENGTH = 2
-
-/** Maximum number of recent searches to store */
-const MAX_RECENT_SEARCHES = 5
-
-/** Maximum number of recent searched products to store */
-const MAX_RECENT_PRODUCTS = 6
-
-/** LocalStorage key for recent searches */
-const RECENT_SEARCHES_KEY = "recentSearches"
-
-/** LocalStorage key for recent searched products */
-const RECENT_PRODUCTS_KEY = "recentSearchedProducts"
-
-/** Recent searched product type */
-interface RecentSearchedProduct {
-  id: string
-  title: string
-  price: number
-  image: string | null
-  slug: string
-  storeSlug: string | null
-  searchedAt: number
-}
-
-type SaveSearchProductInput = Omit<SearchProduct, "storeSlug"> & {
-  storeSlug?: string | null
-}
-
-const SearchProductSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  price: z.number(),
-  images: z.array(z.string()),
-  slug: z.string(),
-  storeSlug: z.string().nullable().optional().default(null),
-})
-
-const ProductSearchResponseSchema = z.object({
-  products: z.array(SearchProductSchema).default([]),
-})
-
-const RecentSearchesSchema = z.array(z.string())
-
-const RecentSearchedProductSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  price: z.number(),
-  image: z.string().nullable(),
-  slug: z.string(),
-  storeSlug: z.string().nullable().optional().default(null),
-  searchedAt: z.number(),
-})
-
-const RecentProductsSchema = z.array(RecentSearchedProductSchema)
-
-function isAbortError(error: unknown): boolean {
-  return error instanceof Error && error.name === "AbortError"
-}
+export type { SearchProduct } from "./use-product-search.shared"
 
 /* =============================================================================
    HOOKS
@@ -151,38 +89,8 @@ export function useProductSearch(maxResults: number = 8) {
 
   // Load recent searches from localStorage on mount
   useEffect(() => {
-    if (typeof window === "undefined") return
-
-    try {
-      const saved = localStorage.getItem(RECENT_SEARCHES_KEY)
-      if (saved) {
-        const parsed = safeJsonParse<unknown>(saved)
-        const validated = RecentSearchesSchema.safeParse(parsed)
-        if (validated.success) {
-          setRecentSearches(validated.data.slice(0, MAX_RECENT_SEARCHES))
-        } else {
-          localStorage.removeItem(RECENT_SEARCHES_KEY)
-        }
-      }
-    } catch {
-      // Ignore storage access issues
-    }
-
-    // Load recent products
-    try {
-      const savedProducts = localStorage.getItem(RECENT_PRODUCTS_KEY)
-      if (savedProducts) {
-        const parsed = safeJsonParse<unknown>(savedProducts)
-        const validated = RecentProductsSchema.safeParse(parsed)
-        if (validated.success) {
-          setRecentProducts(validated.data.slice(0, MAX_RECENT_PRODUCTS))
-        } else {
-          localStorage.removeItem(RECENT_PRODUCTS_KEY)
-        }
-      }
-    } catch {
-      // Ignore storage access issues
-    }
+    setRecentSearches(loadRecentSearches())
+    setRecentProducts(loadRecentProducts())
   }, [])
 
   // Fetch products when debounced query changes
@@ -202,29 +110,9 @@ export function useProductSearch(maxResults: number = 8) {
       setIsSearching(true)
 
       try {
-        const res = await fetch(
-          `/api/products/search?q=${encodeURIComponent(normalizedQuery)}&limit=${maxResults}`,
-          { signal: controller.signal }
-        )
-
-        if (!res.ok) {
-          if (isActive && !controller.signal.aborted) {
-            setProducts([])
-          }
-          return
-        }
-
-        let data: unknown = null
-        try {
-          data = await res.json()
-        } catch {
-          data = null
-        }
-
+        const results = await fetchSearchProducts(normalizedQuery, maxResults, controller.signal)
         if (!isActive || controller.signal.aborted) return
-
-        const validated = ProductSearchResponseSchema.safeParse(data)
-        setProducts(validated.success ? validated.data.products : [])
+        setProducts(results)
       } catch (error: unknown) {
         if (!isActive || controller.signal.aborted || isAbortError(error)) return
 
@@ -258,14 +146,7 @@ export function useProductSearch(maxResults: number = 8) {
       ].slice(0, MAX_RECENT_SEARCHES)
 
       setRecentSearches(updated)
-
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated))
-        } catch {
-          // Ignore storage errors
-        }
-      }
+      persistRecentSearches(updated)
     },
     [recentSearches]
   )
@@ -289,14 +170,7 @@ export function useProductSearch(maxResults: number = 8) {
       ].slice(0, MAX_RECENT_PRODUCTS)
 
       setRecentProducts(updated)
-
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem(RECENT_PRODUCTS_KEY, JSON.stringify(updated))
-        } catch {
-          // Ignore storage errors
-        }
-      }
+      persistRecentProducts(updated)
     },
     [recentProducts]
   )
@@ -304,25 +178,13 @@ export function useProductSearch(maxResults: number = 8) {
   // Clear all recent searches
   const clearRecentSearches = useCallback(() => {
     setRecentSearches([])
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.removeItem(RECENT_SEARCHES_KEY)
-      } catch {
-        // Ignore storage errors
-      }
-    }
+    clearRecentSearchesStorage()
   }, [])
 
   // Clear all recent products
   const clearRecentProducts = useCallback(() => {
     setRecentProducts([])
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.removeItem(RECENT_PRODUCTS_KEY)
-      } catch {
-        // Ignore storage errors
-      }
-    }
+    clearRecentProductsStorage()
   }, [])
 
   // Clear query and products

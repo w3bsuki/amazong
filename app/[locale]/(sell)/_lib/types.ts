@@ -4,7 +4,7 @@
 
 /**
  * Category type with recursive children support
- * Supports unlimited nesting levels for hierarchical categories
+ * Sell flow enforces a strict 2-level tree (root -> leaf).
  */
 export interface Category {
   id: string;
@@ -13,7 +13,12 @@ export interface Category {
   slug: string;
   parent_id: string | null;
   display_order?: number | null;
-  children?: Category[]; // Optional to support both flat and nested structures
+  children?: Category[];
+  allowed_listing_kinds?: string[] | null;
+  allowed_transaction_modes?: string[] | null;
+  allowed_fulfillment_modes?: string[] | null;
+  allowed_pricing_modes?: string[] | null;
+  default_fulfillment_mode?: string | null;
 }
 
 export type CategoryPathItem = Pick<Category, "id" | "name" | "name_bg" | "slug">;

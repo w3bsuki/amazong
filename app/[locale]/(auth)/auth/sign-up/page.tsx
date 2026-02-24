@@ -1,22 +1,18 @@
 import { SignUpForm } from "../../_components/sign-up-form"
 import { checkUsernameAvailability, signUp } from "../../_actions/auth"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
+import { buildRouteMetadata, resolveRouteLocale } from "../_lib/route-locale-metadata"
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "Auth" })
-
-  return {
-    title: t("createAccountTitle"),
-  }
+  return buildRouteMetadata({
+    params,
+    namespace: "Auth",
+    titleKey: "createAccountTitle",
+  })
 }
 
 export default async function SignUpPage({
@@ -24,7 +20,7 @@ export default async function SignUpPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
+  const locale = await resolveRouteLocale(params)
   return (
     <SignUpForm
       locale={locale}

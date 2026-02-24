@@ -33,27 +33,39 @@ export function CategorySelector({
   const flatCategories = useMemo(() => {
     const result: FlatCategory[] = [];
 
-    function flatten(cats: CategorySelectorProps["categories"], path: FlatCategory["path"] = []) {
-      for (const cat of cats) {
-        const currentPath = [...path, toPathItem(cat)];
-        const fullPath = currentPath
+    for (const root of categories) {
+      const rootPath = [toPathItem(root)];
+      const leafNodes = root.children ?? [];
+
+      if (leafNodes.length === 0) {
+        const fullPath = rootPath
           .map((item) => (locale === "bg" && item.name_bg ? item.name_bg : item.name))
           .join(" › ");
 
         result.push({
-          ...cat,
-          path: currentPath,
+          ...root,
+          path: rootPath,
           fullPath,
-          searchText: `${cat.name} ${cat.name_bg || ""} ${cat.slug}`.toLowerCase(),
+          searchText: `${root.name} ${root.name_bg || ""} ${root.slug}`.toLowerCase(),
         });
+        continue;
+      }
 
-        if (cat.children?.length) {
-          flatten(cat.children, currentPath);
-        }
+      for (const leaf of leafNodes) {
+        const path = [...rootPath, toPathItem(leaf)];
+        const fullPath = path
+          .map((item) => (locale === "bg" && item.name_bg ? item.name_bg : item.name))
+          .join(" › ");
+
+        result.push({
+          ...leaf,
+          path,
+          fullPath,
+          searchText: `${root.name} ${root.name_bg || ""} ${root.slug} ${leaf.name} ${leaf.name_bg || ""} ${leaf.slug}`.toLowerCase(),
+        });
       }
     }
 
-    flatten(categories);
     return result;
   }, [categories, locale]);
 
@@ -64,16 +76,17 @@ export function CategorySelector({
     if (found) return found;
 
     if (selectedPath && selectedPath.length > 0) {
-      const last = selectedPath.at(-1);
+      const normalizedPath = selectedPath.length > 2 ? selectedPath.slice(-2) : selectedPath;
+      const last = normalizedPath.at(-1);
       if (last && last.id === value) {
-        const fullPath = selectedPath
+        const fullPath = normalizedPath
           .map((item) => (locale === "bg" && item.name_bg ? item.name_bg : item.name))
           .join(" › ");
 
         return {
           ...last,
           parent_id: null,
-          path: selectedPath,
+          path: normalizedPath,
           fullPath,
           searchText: "",
         } as FlatCategory;
@@ -89,13 +102,8 @@ export function CategorySelector({
     const path = selectedCategory.path;
     if (!path || path.length === 0) return selectedCategory.name;
 
-    if (isMobile && path.length > 2) {
-      const lastTwo = path.slice(-2).map((item) => (locale === "bg" && item.name_bg ? item.name_bg : item.name));
-      return `... › ${lastTwo.join(" › ")}`;
-    }
-
     return selectedCategory.fullPath;
-  }, [selectedCategory, locale, isMobile, tSell]);
+  }, [selectedCategory, tSell]);
 
   const handleSelect = useCallback((cat: FlatCategory) => {
     onChange(cat.id, cat.path);

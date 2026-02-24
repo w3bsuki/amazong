@@ -104,7 +104,11 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     }),
   ])
 
-  const { attributes, ancestorIds } = attributesResult
+  const { attributes: rawAttributes, ancestorIds } = attributesResult
+  const isLeafCategory = childrenWithCounts.length === 0
+  const attributes = isLeafCategory
+    ? rawAttributes.filter((attribute) => attribute.category_id === current.id || attribute.category_id === null)
+    : []
 
   for (const id of ancestorIds) {
     cacheTag(`attrs:category:${id}`)
@@ -130,4 +134,3 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     attributes,
   }
 }
-

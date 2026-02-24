@@ -2,24 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import {
-  ChevronRight as CaretRight,
   Heart,
-  LogOut as LogOutIcon,
   MessageCircle as ChatCircle,
   Package,
   Plus,
   Settings as Gear,
-  ShieldCheck,
-  Star,
   Store as Storefront,
-  User,
 } from "lucide-react"
 
-import { DrawerBody } from "@/components/ui/drawer"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useAuth } from "@/components/providers/auth-state-manager"
 import { useMessages } from "@/components/providers/message-context"
@@ -28,12 +18,10 @@ import { useDrawer } from "@/components/providers/drawer-context"
 import { DrawerShell } from "@/components/shared/drawer-shell"
 import { createClient } from "@/lib/supabase/client"
 import { logger } from "@/lib/logger"
-import { UserAvatar } from "@/components/shared/user-avatar"
-import { cn } from "@/lib/utils"
 
+import { AccountDrawerAuthenticatedContent } from "./account-drawer/account-drawer-authenticated-content"
+import { AccountDrawerGuestContent } from "./account-drawer/account-drawer-guest-content"
 import { AccountDrawerSkeleton } from "./account-drawer/account-drawer-skeleton"
-import { MENU_GROUP_CLASS, MENU_ROW_CLASS } from "./account-drawer/account-drawer.styles"
-import { MenuSection } from "./account-drawer/account-drawer-menu-section"
 import type {
   AccountDrawerProps,
   AccountStats,
@@ -211,151 +199,48 @@ export function AccountDrawer({ open, onOpenChange }: AccountDrawerProps) {
       dataTestId="mobile-account-drawer"
     >
       {!user || authLoading ? (
-        /* ── Guest state ── */
-        <>
-          <DrawerBody className="px-inset py-4 pb-safe-max">
-            <div className={MENU_GROUP_CLASS}>
-              <div className="flex flex-col items-center px-5 py-6 text-center">
-                <div className="mb-3 inline-flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                  <User size={24} />
-                </div>
-                <p className="text-sm font-semibold text-foreground">{t("signInPrompt")}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{t("signInDescription")}</p>
-              </div>
-            </div>
-
-            {/* Auth actions — inline */}
-            <div className="mt-3 space-y-2">
-              <Button
-                size="lg"
-                className="w-full"
-                onClick={() => {
-                  handleClose()
-                  openDrawer("auth", { mode: "login", entrypoint: "account_drawer" })
-                }}
-              >
-                {t("signIn")}
-              </Button>
-              <Button
-                variant="outline"
-                size="default"
-                className="w-full"
-                onClick={() => {
-                  handleClose()
-                  openDrawer("auth", { mode: "signup", entrypoint: "account_drawer" })
-                }}
-              >
-                {tAuth("createAccount")}
-              </Button>
-            </div>
-          </DrawerBody>
-        </>
+        <AccountDrawerGuestContent
+          signInPrompt={t("signInPrompt")}
+          signInDescription={t("signInDescription")}
+          signInLabel={t("signIn")}
+          createAccountLabel={tAuth("createAccount")}
+          onSignIn={() => {
+            handleClose()
+            openDrawer("auth", { mode: "login", entrypoint: "account_drawer" })
+          }}
+          onSignUp={() => {
+            handleClose()
+            openDrawer("auth", { mode: "signup", entrypoint: "account_drawer" })
+          }}
+        />
       ) : isLoadingData ? (
-        /* ── Loading skeleton ── */
         <AccountDrawerSkeleton />
       ) : (
-        /* ── Authenticated state ── */
-        <>
-          <DrawerBody className="space-y-3 px-inset pt-4 pb-safe-max">
-            {/* ── Profile header (tap → profile page) ── */}
-            <div className={MENU_GROUP_CLASS}>
-              <Link
-                href="/account"
-                onClick={handleClose}
-                className={cn(MENU_ROW_CLASS, "gap-3.5 py-3.5")}
-              >
-                <UserAvatar
-                  name={displayName}
-                  avatarUrl={avatarUrl ?? null}
-                  size="xl"
-                  className="shrink-0 ring-2 ring-border-subtle"
-                  fallbackClassName="text-lg"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <p className="truncate text-base font-semibold text-foreground">{displayName}</p>
-                    {isEmailVerified && (
-                      <Badge variant="success-subtle" size="compact" className="shrink-0">
-                        <ShieldCheck size={10} />
-                        {t("verified")}
-                      </Badge>
-                    )}
-                  </div>
-                  {memberSinceLabel && (
-                    <p className="mt-0.5 text-2xs text-muted-foreground">{memberSinceLabel}</p>
-                  )}
-                  {user.email && (
-                    <p className="mt-0.5 truncate text-xs text-muted-foreground">{user.email}</p>
-                  )}
-                </div>
-                <CaretRight size={16} className="shrink-0 text-muted-foreground" aria-hidden="true" />
-              </Link>
-
-              {/* ── Seller stats — inline inside profile card ── */}
-              {isSeller && (
-                <>
-                  <Separator />
-                  <div className="grid grid-cols-3">
-                    <div className="flex flex-col items-center gap-0.5 py-2.5">
-                      <span className="text-sm font-semibold text-foreground">{stats.activeListings}</span>
-                      <span className="text-2xs text-muted-foreground">{t("statsListings")}</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5 border-x border-border-subtle py-2.5">
-                      <span className="inline-flex items-center gap-0.5 text-sm font-semibold text-foreground">
-                        {rating > 0 ? (
-                          <>
-                            <Star size={12} className="text-rating" />
-                            {rating.toFixed(1)}
-                          </>
-                        ) : (
-                          "—"
-                        )}
-                      </span>
-                      <span className="text-2xs text-muted-foreground">{t("statsRating")}</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5 py-2.5">
-                      <span className="text-sm font-semibold text-foreground">{totalSales}</span>
-                      <span className="text-2xs text-muted-foreground">{t("statsSales")}</span>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* ── Account section ── */}
-            <MenuSection label={t("sectionAccount")} items={accountItems} onItemClick={handleClose} />
-
-            {/* ── Selling section ── */}
-            <MenuSection label={t("sectionSelling")} items={sellingItems} onItemClick={handleClose} />
-
-            {/* ── Settings section ── */}
-            <MenuSection label={t("sectionSettings")} items={settingsItems} onItemClick={handleClose} />
-
-            {/* ── Sign out ── */}
-            <div className={MENU_GROUP_CLASS}>
-              <form
-                action="/api/auth/sign-out"
-                method="post"
-                onSubmit={() => setIsSigningOut(true)}
-              >
-                <button
-                  type="submit"
-                  disabled={isSigningOut}
-                  className={cn(
-                    MENU_ROW_CLASS,
-                    "text-destructive",
-                    isSigningOut && "pointer-events-none opacity-50",
-                  )}
-                >
-                  <LogOutIcon size={20} className="shrink-0" aria-hidden="true" />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                    {t("signOut")}
-                  </span>
-                </button>
-              </form>
-            </div>
-          </DrawerBody>
-        </>
+        <AccountDrawerAuthenticatedContent
+          onClose={handleClose}
+          displayName={displayName}
+          avatarUrl={avatarUrl}
+          isEmailVerified={isEmailVerified}
+          memberSinceLabel={memberSinceLabel}
+          email={user.email}
+          isSeller={isSeller}
+          activeListings={stats.activeListings}
+          rating={rating}
+          totalSales={totalSales}
+          verifiedLabel={t("verified")}
+          statsListingsLabel={t("statsListings")}
+          statsRatingLabel={t("statsRating")}
+          statsSalesLabel={t("statsSales")}
+          accountSectionLabel={t("sectionAccount")}
+          sellingSectionLabel={t("sectionSelling")}
+          settingsSectionLabel={t("sectionSettings")}
+          accountItems={accountItems}
+          sellingItems={sellingItems}
+          settingsItems={settingsItems}
+          signOutLabel={t("signOut")}
+          isSigningOut={isSigningOut}
+          onSignOutSubmit={() => setIsSigningOut(true)}
+        />
       )}
     </DrawerShell>
   )

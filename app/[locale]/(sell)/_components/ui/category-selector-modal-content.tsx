@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ChevronLeft as CaretLeft } from "lucide-react"
 
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -14,61 +14,54 @@ import {
 } from "./category-selector-shared"
 import type { CategoryModalContentProps, FlatCategory } from "./category-selector.types"
 
-function CategoryResultsSection({
-  searchQuery,
-  searchResults,
-  value,
-  onSelect,
-  locale,
-  compact,
-  currentCategories,
-  getHasChildren,
-  onNavigate,
-  gridClassName,
-}: {
-  searchQuery: string
-  searchResults: FlatCategory[]
-  value: string
-  onSelect: (cat: FlatCategory) => void
+type MobileStep = "root" | "leaf"
+
+function getLocalizedName(locale: string, category: { name: string; name_bg?: string | null }) {
+  return locale === "bg" && category.name_bg ? category.name_bg : category.name
+}
+
+function buildLeafFlatCategory(params: {
+  root: Category
+  leaf: Category
   locale: string
-  compact: boolean
-  currentCategories: Category[]
-  getHasChildren: (cat: Category) => boolean
-  onNavigate: (cat: Category) => Promise<void> | void
-  gridClassName: string
-}) {
-  const compactProps = compact ? { compact: true as const } : {}
+}): FlatCategory {
+  const { root, leaf, locale } = params
+  const path = [toPathItem(root), toPathItem(leaf)]
 
-  if (searchQuery.trim()) {
-    if (searchResults.length === 0) {
-      return <CategoryEmptyState {...compactProps} />
-    }
-
-    return (
-      <CategorySearchResults
-        results={searchResults}
-        selectedValue={value}
-        onSelect={onSelect}
-        locale={locale}
-        {...compactProps}
-      />
-    )
+  return {
+    ...leaf,
+    path,
+    fullPath: path.map((item) => getLocalizedName(locale, item)).join(" › "),
+    searchText: `${root.name} ${root.name_bg || ""} ${root.slug} ${leaf.name} ${leaf.name_bg || ""} ${leaf.slug}`.toLowerCase(),
   }
+}
 
-  return (
-    <div className={gridClassName}>
-      {currentCategories.map((cat) => (
-        <CategoryCard
-          key={cat.id}
-          category={cat}
-          isSelected={value === cat.id}
-          hasChildren={getHasChildren(cat)}
-          onClick={() => void onNavigate(cat)}
-          locale={locale}
-        />
-      ))}
-    </div>
-  )
+function buildRootFlatCategory(params: {
+  root: Category
+  locale: string
+}): FlatCategory {
+  const { root, locale } = params
+  const path = [toPathItem(root)]
+
+  return {
+    ...root,
+    path,
+    fullPath: getLocalizedName(locale, root),
+    searchText: `${root.name} ${root.name_bg || ""} ${root.slug}`.toLowerCase(),
+  }
+}
+
+function resolveInitialRootId(params: {
+  categories: Category[]
+  flatCategories: FlatCategory[]
+  value: string
+}): string | null {
+  const { categories, flatCategories, value } = params
+  const selectedFlat = flatCategories.find((entry) => entry.id === value)
+  if (selectedFlat?.path[0]?.id) {
+    return selectedFlat.path[0].id
+  }
+  return categories[0]?.id ?? null
 }
 
 export function CategoryModalContent({
@@ -80,56 +73,30 @@ export function CategoryModalContent({
   isMobile,
 }: CategoryModalContentProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [navigationPath, setNavigationPath] = useState<Category[]>([])
-  const [activeL1, setActiveL1] = useState<Category | null>(categories[0] || null)
-  const [childrenById, setChildrenById] = useState<Record<string, Category[]>>({})
-  const [loadingChildrenById, setLoadingChildrenById] = useState<Record<string, boolean>>({})
+  const [mobileStep, setMobileStep] = useState<MobileStep>("root")
+  const [activeRootId, setActiveRootId] = useState<string | null>(() =>
+    resolveInitialRootId({ categories, flatCategories, value })
+  )
+
   const tSell = useTranslations("Sell")
   const tCommon = useTranslations("Common")
 
-  const MAX_DEPTH = 4
-  const levelLabels = useMemo(
-    () => Array.from({ length: MAX_DEPTH + 1 }, (_, level) => tSell("categoryModal.levelLabel", { level })),
-    [tSell]
-  )
-  const lastNavigationItem = navigationPath.at(-1)
-
-  const getName = (cat: Category) =>
-    locale === "bg" && cat.name_bg ? cat.name_bg : cat.name
-
-  const getChildren = useCallback(
-    (cat: Category | null): Category[] => {
-      if (!cat) return []
-      return childrenById[cat.id] ?? cat.children ?? []
-    },
-    [childrenById]
+  const selectedFlat = useMemo(
+    () => flatCategories.find((entry) => entry.id === value) ?? null,
+    [flatCategories, value]
   )
 
-  const ensureChildrenLoaded = useCallback(
-    async (cat: Category): Promise<Category[]> => {
-      const existing = getChildren(cat)
-      if (existing.length > 0 || loadingChildrenById[cat.id]) return existing
-
-      setLoadingChildrenById((prev) => ({ ...prev, [cat.id]: true }))
-      try {
-        const res = await fetch(`/api/categories/${encodeURIComponent(cat.id)}/children`)
-        if (res.ok) {
-          const data = await res.json()
-          const children = (data.children || []) as Category[]
-          if (children.length > 0) {
-            setChildrenById((prev) => ({ ...prev, [cat.id]: children }))
-            return children
-          }
-        }
-      } catch {
-        // Non-blocking fallback for leaf categories.
-      } finally {
-        setLoadingChildrenById((prev) => ({ ...prev, [cat.id]: false }))
-      }
-      return []
-    },
-    [getChildren, loadingChildrenById]
-  )
+  useEffect(() => {
+    const nextRootId = resolveInitialRootId({ categories, flatCategories, value })
+    if (nextRootId && nextRootId !== activeRootId) {
+      setActiveRootId(nextRootId)
+    }
+    if (selectedFlat && selectedFlat.path.length >= 2) {
+      setMobileStep("leaf")
+    } else if (!selectedFlat) {
+      setMobileStep("root")
+    }
+  }, [categories, flatCategories, value, selectedFlat, activeRootId])
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return []
@@ -139,76 +106,72 @@ export function CategoryModalContent({
       .slice(0, 12)
   }, [flatCategories, searchQuery])
 
-  const currentCategories = useMemo(() => {
-    if (isMobile) {
-      if (navigationPath.length === 0) return categories
-      const lastInPath = navigationPath.at(-1)
-      if (!lastInPath) return categories
-      return getChildren(lastInPath)
-    }
-    return getChildren(activeL1)
-  }, [categories, navigationPath, activeL1, isMobile, getChildren])
+  const activeRoot = useMemo(() => {
+    if (categories.length === 0) return null
+    if (!activeRootId) return categories[0] ?? null
+    return categories.find((category) => category.id === activeRootId) ?? categories[0] ?? null
+  }, [categories, activeRootId])
 
-  const constructFlatCategory = useCallback(
-    (cat: Category, path: Category[]): FlatCategory => {
-      const pathItems = [...path, cat].map(toPathItem)
-      const fullPath = pathItems
-        .map((item) => (locale === "bg" && item.name_bg ? item.name_bg : item.name))
-        .join(" › ")
-      return {
-        ...cat,
-        path: pathItems,
-        fullPath,
-        searchText: `${cat.name} ${cat.name_bg || ""} ${cat.slug}`.toLowerCase(),
-      }
-    },
-    [locale]
+  const rootCategories = categories
+  const leafCategories = activeRoot?.children ?? []
+
+  const levelLabels = useMemo(
+    () => [
+      tSell("categoryModal.levelLabel", { level: 1 }),
+      tSell("categoryModal.levelLabel", { level: 2 }),
+    ],
+    [tSell]
   )
 
-  const handleNavigate = useCallback(async (cat: Category) => {
-    const depth = navigationPath.length
-    const knownChildren = getChildren(cat)
-    if (depth >= MAX_DEPTH) {
-      const flatCat = flatCategories.find((entry) => entry.id === cat.id) || constructFlatCategory(cat, navigationPath)
-      onSelect(flatCat)
-      return
-    }
+  const handleSearchSelect = useCallback(
+    (cat: FlatCategory) => {
+      onSelect(cat)
+    },
+    [onSelect]
+  )
 
-    if (knownChildren.length > 0) {
-      setNavigationPath((prev) => [...prev, cat])
-      return
-    }
+  const handleRootSelect = useCallback(
+    (root: Category) => {
+      setActiveRootId(root.id)
 
-    const loadedChildren = await ensureChildrenLoaded(cat)
-    if (loadedChildren.length > 0) {
-      setNavigationPath((prev) => [...prev, cat])
-      return
-    }
+      const hasLeaves = (root.children?.length ?? 0) > 0
+      if (hasLeaves) {
+        if (isMobile) {
+          setMobileStep("leaf")
+        }
+        return
+      }
 
-    const flatCat = flatCategories.find((entry) => entry.id === cat.id) || constructFlatCategory(cat, navigationPath)
-    onSelect(flatCat)
-  }, [MAX_DEPTH, constructFlatCategory, ensureChildrenLoaded, flatCategories, getChildren, navigationPath, onSelect])
+      const flatRoot =
+        flatCategories.find((entry) => entry.id === root.id) ??
+        buildRootFlatCategory({ root, locale })
 
-  const handleDesktopNavigate = useCallback(async (cat: Category) => {
-    const knownChildren = getChildren(cat)
-    if (knownChildren.length > 0) {
-      setActiveL1(cat)
-      return
-    }
+      onSelect(flatRoot)
+    },
+    [flatCategories, isMobile, locale, onSelect]
+  )
 
-    const loadedChildren = await ensureChildrenLoaded(cat)
-    if (loadedChildren.length > 0) {
-      setActiveL1(cat)
-      return
-    }
+  const handleLeafSelect = useCallback(
+    (leaf: Category) => {
+      if (!activeRoot) return
 
-    const path = activeL1 ? [activeL1] : []
-    const flatCat = flatCategories.find((entry) => entry.id === cat.id) || constructFlatCategory(cat, path)
-    onSelect(flatCat)
-  }, [activeL1, constructFlatCategory, ensureChildrenLoaded, flatCategories, getChildren, onSelect])
+      const flatLeaf =
+        flatCategories.find(
+          (entry) =>
+            entry.id === leaf.id &&
+            entry.path.length >= 2 &&
+            entry.path[0]?.id === activeRoot.id
+        ) ?? buildLeafFlatCategory({ root: activeRoot, leaf, locale })
+
+      onSelect(flatLeaf)
+    },
+    [activeRoot, flatCategories, locale, onSelect]
+  )
 
   if (isMobile) {
-    const currentStep = Math.min(navigationPath.length, MAX_DEPTH) + 1
+    const showingSearch = Boolean(searchQuery.trim())
+    const currentStep = mobileStep === "root" ? 1 : 2
+    const activeRootName = activeRoot ? getLocalizedName(locale, activeRoot) : levelLabels[0]
 
     return (
       <div className="flex flex-col min-h-0 flex-1 bg-background">
@@ -217,13 +180,13 @@ export function CategoryModalContent({
             <CategorySearchInput value={searchQuery} onChange={setSearchQuery} />
           </div>
 
-          {!searchQuery.trim() && (
+          {!showingSearch && (
             <div className="px-4 py-2.5 bg-surface-subtle flex items-center justify-between gap-4 border-t border-border-subtle">
               <div className="flex items-center gap-3 min-w-0">
-                {navigationPath.length > 0 ? (
+                {mobileStep === "leaf" ? (
                   <button
                     type="button"
-                    onClick={() => setNavigationPath((prev) => prev.slice(0, -1))}
+                    onClick={() => setMobileStep("root")}
                     className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 transition-colors hover:bg-hover active:bg-active"
                     aria-label={tCommon("back")}
                   >
@@ -237,19 +200,17 @@ export function CategoryModalContent({
 
                 <div className="flex flex-col min-w-0">
                   <span className="text-2xs font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">
-                    {tSell("categoryModal.stepProgress", { current: currentStep, total: MAX_DEPTH + 1 })}
+                    {tSell("categoryModal.stepProgress", { current: currentStep, total: 2 })}
                   </span>
                   <h3 className="text-xs font-bold text-foreground uppercase tracking-wider truncate">
-                    {navigationPath.length > 0
-                      ? (lastNavigationItem ? getName(lastNavigationItem) : levelLabels[0])
-                      : levelLabels[0]}
+                    {mobileStep === "leaf" ? activeRootName : levelLabels[0]}
                   </h3>
                 </div>
               </div>
 
               <div className="shrink-0 px-2 py-1 rounded-md bg-background border border-border shadow-xs">
                 <span className="text-2xs font-bold text-primary uppercase tracking-tighter">
-                  {levelLabels[Math.min(currentStep - 1, levelLabels.length - 1)]}
+                  {levelLabels[currentStep - 1]}
                 </span>
               </div>
             </div>
@@ -258,18 +219,46 @@ export function CategoryModalContent({
 
         <ScrollArea className="flex-1 min-h-0">
           <div className="p-4">
-            <CategoryResultsSection
-              searchQuery={searchQuery}
-              searchResults={searchResults}
-              value={value}
-              onSelect={onSelect}
-              locale={locale}
-              compact={false}
-              currentCategories={currentCategories}
-              getHasChildren={(cat) => getChildren(cat).length > 0}
-              onNavigate={handleNavigate}
-              gridClassName="grid grid-cols-2 gap-3"
-            />
+            {showingSearch ? (
+              searchResults.length === 0 ? (
+                <CategoryEmptyState />
+              ) : (
+                <CategorySearchResults
+                  results={searchResults}
+                  selectedValue={value}
+                  onSelect={handleSearchSelect}
+                  locale={locale}
+                />
+              )
+            ) : mobileStep === "root" ? (
+              <div className="grid grid-cols-2 gap-3">
+                {rootCategories.map((category) => (
+                  <CategoryCard
+                    key={category.id}
+                    category={category}
+                    isSelected={activeRoot?.id === category.id}
+                    hasChildren={(category.children?.length ?? 0) > 0}
+                    onClick={() => handleRootSelect(category)}
+                    locale={locale}
+                  />
+                ))}
+              </div>
+            ) : leafCategories.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {leafCategories.map((leaf) => (
+                  <CategoryCard
+                    key={leaf.id}
+                    category={leaf}
+                    isSelected={value === leaf.id}
+                    hasChildren={false}
+                    onClick={() => handleLeafSelect(leaf)}
+                    locale={locale}
+                  />
+                ))}
+              </div>
+            ) : (
+              <CategoryEmptyState />
+            )}
           </div>
         </ScrollArea>
       </div>
@@ -281,16 +270,16 @@ export function CategoryModalContent({
       <div className="w-48 border-r bg-surface-subtle">
         <ScrollArea className="h-full">
           <div className="p-1.5">
-            {categories.map((cat) => (
+            {rootCategories.map((category) => (
               <button
-                key={cat.id}
+                key={category.id}
                 type="button"
-                onClick={() => setActiveL1(cat)}
-                className={cat.id === activeL1?.id
+                onClick={() => setActiveRootId(category.id)}
+                className={category.id === activeRoot?.id
                   ? "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors bg-selected text-primary font-medium"
                   : "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors text-foreground hover:bg-hover"}
               >
-                <span className="truncate">{getName(cat)}</span>
+                <span className="truncate">{getLocalizedName(locale, category)}</span>
               </button>
             ))}
           </div>
@@ -304,18 +293,34 @@ export function CategoryModalContent({
 
         <ScrollArea className="flex-1">
           <div className="p-3">
-            <CategoryResultsSection
-              searchQuery={searchQuery}
-              searchResults={searchResults}
-              value={value}
-              onSelect={onSelect}
-              locale={locale}
-              compact
-              currentCategories={currentCategories}
-              getHasChildren={(cat) => getChildren(cat).length > 0}
-              onNavigate={handleDesktopNavigate}
-              gridClassName="grid grid-cols-3 gap-2"
-            />
+            {searchQuery.trim() ? (
+              searchResults.length === 0 ? (
+                <CategoryEmptyState compact />
+              ) : (
+                <CategorySearchResults
+                  results={searchResults}
+                  selectedValue={value}
+                  onSelect={handleSearchSelect}
+                  locale={locale}
+                  compact
+                />
+              )
+            ) : leafCategories.length > 0 ? (
+              <div className="grid grid-cols-3 gap-2">
+                {leafCategories.map((leaf) => (
+                  <CategoryCard
+                    key={leaf.id}
+                    category={leaf}
+                    isSelected={value === leaf.id}
+                    hasChildren={false}
+                    onClick={() => handleLeafSelect(leaf)}
+                    locale={locale}
+                  />
+                ))}
+              </div>
+            ) : (
+              <CategoryEmptyState compact />
+            )}
           </div>
         </ScrollArea>
       </div>

@@ -1,0 +1,137 @@
+app\actions\products-update.ts:25:  category_id: string | null
+app\actions\products-update.ts:79:  if (input.categoryId !== undefined) updateData.category_id = input.categoryId
+app\actions\products-update.ts:221:      .select("id, seller_id, category_id, title, status")
+app\actions\products-update.ts:295:    const categoryIdsToInvalidate: Array<string | null | undefined> = [existingProduct.category_id]
+app\actions\products-update.ts:328:      .select("id, seller_id, category_id")
+app\actions\products-update.ts:351:      categoryIds: [existingProduct.category_id],
+app\actions\products-discounts.ts:20:      product: { category_id: string | null; list_price: unknown; price: unknown }
+app\actions\products-discounts.ts:32:    .select("id, seller_id, price, list_price, category_id")
+app\actions\products-discounts.ts:98:      categoryIds: [product.category_id],
+app\actions\products-discounts.ts:152:      categoryIds: [product.category_id],
+app\actions\products-shared.ts:157:    .select("id, category_id")
+app\actions\products-shared.ts:161:    .map((product) => product?.category_id)
+app\actions\products-create.ts:102:        category_id: resolvedCategoryId,
+app\actions\products-create.ts:189:      "title,description,price,list_price,stock,track_inventory,category_id,weight,weight_unit,condition,images" as const
+app\actions\products-create.ts:225:        category_id: original.category_id,
+app\actions\products-create.ts:250:          category_id: null,
+app\actions\products-create.ts:288:      categoryIds: [original.category_id],
+lib\view-models\product-page.ts:243:      categorySlug: row.category_id == null ? "" : String(row.category_id),
+app\api\revalidate\route.ts:147:  const categoryId = asString(rec["category_id"])
+app\api\revalidate\route.ts:148:  const oldCategoryId = asString(old["category_id"])
+app\api\categories\[slug]\children\route.ts:41:  return code === "42703" && message.includes("is_browseable")
+app\api\categories\[slug]\children\route.ts:63:  let { data, error } = await buildChildrenQuery().eq("is_browseable", true)
+app\api\categories\[slug]\children\route.ts:84:  let { data: grandchildren, error: grandchildrenError } = await buildGrandchildrenQuery().eq("is_browseable", true)
+app\api\products\newest\route.ts:139:  category_ancestors: string[] | null
+app\api\products\newest\route.ts:166: * Uses the optimized `category_ancestors` GIN index for O(1) lookups.
+app\api\products\newest\route.ts:213:      category_ancestors, 
+app\api\products\newest\route.ts:229:        // This uses the GIN index on category_ancestors for efficient lookups
+app\api\products\newest\route.ts:230:        query = query.filter('category_ancestors', 'cs', `{${categoryId}}`)
+app\api\products\newest\route.ts:326:      // Uses category_ancestors array with GIN index for fast containment
+app\api\products\newest\route.ts:333:        .from('categories')
+app\api\categories\[slug]\attributes\route.ts:33:    category_id: result.categoryId,
+app\api\categories\[slug]\attributes\route.ts:61:        category_id: result.category_id,
+app\api\categories\counts\route.ts:49: * Reads category scope from canonical hierarchy (L0→L2) and merges stats by category_id.
+app\api\categories\counts\route.ts:73:      .select('category_id, subtree_product_count')
+app\api\categories\counts\route.ts:74:      .in('category_id', categoryIds)
+app\api\categories\counts\route.ts:83:      if (!row.category_id) continue
+app\api\categories\counts\route.ts:84:      countByCategoryId.set(row.category_id, row.subtree_product_count ?? 0)
+app\api\products\count\route.ts:122:  // Category filter via category_ancestors (GIN index)
+app\api\products\count\route.ts:124:    countQuery = countQuery.filter("category_ancestors", "cs", `{${categoryId}}`)
+lib\types\categories.ts:6:  category_id: string | null
+lib\auth\business.ts:552:      category_id
+lib\auth\business.ts:571:    query = query.eq('category_id', category)
+lib\auth\business.ts:608:  const categoryIds = (data || []).map(p => p.category_id).filter((id): id is string => id !== null)
+lib\auth\business.ts:611:    const { data: cats, error: categoriesError } = await supabase.from('categories').select('id, name, slug').in('id', categoryIds)
+lib\auth\business.ts:628:    category: p.category_id ? categoriesMap.get(p.category_id) ?? null : null,
+lib\supabase\selects\categories.ts:2:  "id,category_id,is_active,name,name_bg,attribute_type,is_required,is_filterable,options,options_bg,placeholder,placeholder_bg,validation_rules,sort_order,created_at,attribute_key,inherit_scope,is_hero_spec,hero_priority,is_badge_spec,badge_priority,unit_suffix" as const
+lib\data\category-attributes.ts:20:  | 'category_id'
+lib\data\category-attributes.ts:67:    category_id: row.category_id,
+lib\data\category-attributes.ts:72:    inherit_scope: normalizeInheritScope(row.inherit_scope as CategoryAttributeInheritScope | null, row.category_id),
+lib\data\category-attributes.ts:129:    .from('categories')
+lib\data\category-attributes.ts:148:      .from('categories')
+lib\data\category-attributes.ts:172:  const scope = normalizeInheritScope(attr.inherit_scope, attr.category_id)
+lib\data\category-attributes.ts:174:  if (attr.category_id === categoryId) return true
+lib\data\category-attributes.ts:176:  if (!includeParents && attr.category_id !== categoryId) return false
+lib\data\category-attributes.ts:178:  if (attr.category_id === null) {
+lib\data\category-attributes.ts:204:      .in('category_id', ancestorIds)
+lib\data\category-attributes.ts:208:    supabase.from('category_attributes').select(legacySelect).in('category_id', ancestorIds)
+lib\data\category-attributes.ts:241:        .is('category_id', null)
+lib\data\category-attributes.ts:245:      supabase.from('category_attributes').select(legacySelect).is('category_id', null)
+lib\data\category-attributes.ts:283:    .filter((attr) => attr.category_id !== categoryId)
+lib\data\category-attributes.ts:285:      const da = depthByCategoryId.get(a.category_id ?? '') ?? 9999
+lib\data\category-attributes.ts:286:      const db = depthByCategoryId.get(b.category_id ?? '') ?? 9999
+lib\data\category-attributes.ts:302:  for (const attr of filtered.filter((item) => item.category_id === categoryId)) {
+lib\supabase\database.types.ts:575:          is_browseable: boolean
+lib\supabase\database.types.ts:589:          is_browseable?: boolean
+lib\supabase\database.types.ts:603:          is_browseable?: boolean
+lib\supabase\database.types.ts:624:          category_id: string | null
+lib\supabase\database.types.ts:650:          category_id?: string | null
+lib\supabase\database.types.ts:676:          category_id?: string | null
+lib\supabase\database.types.ts:700:            foreignKeyName: "category_attributes_category_id_fkey"
+lib\supabase\database.types.ts:701:            columns: ["category_id"]
+lib\supabase\database.types.ts:1418:          category_ancestors: string[] | null
+lib\supabase\database.types.ts:1419:          category_id: string | null
+lib\supabase\database.types.ts:1467:          category_ancestors?: string[] | null
+lib\supabase\database.types.ts:1468:          category_id?: string | null
+lib\supabase\database.types.ts:1516:          category_ancestors?: string[] | null
+lib\supabase\database.types.ts:1517:          category_id?: string | null
+lib\supabase\database.types.ts:1570:            foreignKeyName: "products_category_id_fkey"
+lib\supabase\database.types.ts:1571:            columns: ["category_id"]
+lib\supabase\database.types.ts:2572:          category_id: string | null
+lib\supabase\database.types.ts:2581:          category_id: string | null
+lib\supabase\database.types.ts:2593:          category_ancestors: string[] | null
+lib\supabase\database.types.ts:2594:          category_id: string | null
+lib\supabase\database.types.ts:2641:          category_ancestors?: string[] | null
+lib\supabase\database.types.ts:2642:          category_id?: string | null
+lib\supabase\database.types.ts:2689:          category_ancestors?: string[] | null
+lib\supabase\database.types.ts:2690:          category_id?: string | null
+lib\supabase\database.types.ts:2742:            foreignKeyName: "products_category_id_fkey"
+lib\supabase\database.types.ts:2743:            columns: ["category_id"]
+lib\supabase\database.types.ts:2852:        Args: { p_category_id: string }
+lib\supabase\database.types.ts:2855:      get_category_path: {
+lib\supabase\database.types.ts:2856:        Args: { p_category_id: string }
+lib\supabase\database.types.ts:2866:      get_category_stats: {
+lib\supabase\database.types.ts:2869:          category_id: string
+lib\data\products\queries.ts:26:  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+lib\data\products\queries.ts:31:  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+lib\data\categories\subcategories.ts:58:    .select("category_id, subtree_product_count")
+lib\data\categories\subcategories.ts:59:    .in("category_id", categoryIds)
+lib\data\categories\subcategories.ts:71:    if (!stat.category_id) continue
+lib\data\categories\subcategories.ts:72:    countMap.set(stat.category_id, stat.subtree_product_count ?? 0)
+lib\data\product-page.ts:51:  'id,title,slug,price,list_price,description,condition,images,attributes,meta_description,rating,review_count,stock,pickup_only,seller_city,seller_id,category_id,view_count,created_at' as const
+lib\data\product-page.ts:179:    if (fallbackProduct.category_id) {
+lib\data\product-page.ts:183:        .eq("id", fallbackProduct.category_id)
+lib\data\categories\hierarchy.ts:26:  return code === "42703" && message.includes("is_browseable")
+lib\data\categories\hierarchy.ts:63:    let { data: rootCats, error: rootError } = await buildRootQuery().eq("is_browseable", true)
+lib\data\categories\hierarchy.ts:93:    let { data: l1Cats, error: l1Error } = await buildL1Query().eq("is_browseable", true)
+lib\data\categories\hierarchy.ts:124:          let result = await buildL2Query().eq("is_browseable", true)
+app\sitemap.ts:118:    .from('categories')
+app\[locale]\(business)\_components\products-table.types.ts:58:  category_id?: string | null
+app\[locale]\(business)\_components\products-table-mappers.ts:20:    category_id: data.categoryId || null,
+app\[locale]\(business)\_components\products-table-mappers.ts:45:    category_id: data.categoryId || null,
+app\[locale]\(business)\_components\product-form-modal.types.ts:23:  category_id?: string | null
+app\[locale]\(business)\_components\product-form-modal.tsx:81:        categoryId: product?.category_id || "",
+supabase\functions\ai-shopping-assistant\index.ts:480:  if (categoryId) q = q.eq("category_id", categoryId);
+app\[locale]\(business)\dashboard\products\[productId]\edit\_components\product-edit-client.tsx:29:  category_id?: string | null
+app\[locale]\(account)\account\wishlist\_components\account-wishlist.types.ts:9:  category_id?: string | null
+app\[locale]\(business)\dashboard\products\[productId]\edit\page.tsx:37:        "id, title, description, price, list_price, stock, track_inventory, category_id, status, weight, weight_unit, condition, images"
+app\[locale]\(account)\account\wishlist\page.tsx:75:        .select("id, title, price, images, stock, category_id")
+app\[locale]\(account)\account\wishlist\page.tsx:80:  const categoryIds = (productsData || []).map((p) => p.category_id).filter(Boolean) as string[]
+app\[locale]\(account)\account\wishlist\page.tsx:101:    category_id: string | null
+app\[locale]\(account)\account\wishlist\page.tsx:108:    const category = product?.category_id ? categoriesLookup.get(product.category_id) : null
+app\[locale]\(account)\account\wishlist\page.tsx:117:      category_id: product?.category_id || null,
+app\[locale]\(account)\account\wishlist\page.tsx:132:          id: item.category_id || '',
+app\[locale]\(account)\account\wishlist\wishlist-content.tsx:57:            id: item.category_id || '',
+app\[locale]\(sell)\_actions\sell.ts:350:    category_id: categoryResolution.categoryId,
+app\[locale]\(main)\categories\[slug]\_lib\search-products.ts:14:  category_id: string | null
+app\[locale]\(main)\categories\[slug]\_lib\search-products.ts:62:    "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,attributes,created_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
+app\[locale]\(main)\categories\[slug]\_lib\search-products.ts:66:    countQuery = countQuery.filter("category_ancestors", "cs", `{${categoryId}}`)
+app\[locale]\(main)\categories\[slug]\_lib\search-products.ts:67:    dbQuery = dbQuery.filter("category_ancestors", "cs", `{${categoryId}}`)
+app\[locale]\(main)\categories\[slug]\_lib\search-products.ts:112:    category_id: string | null
+app\[locale]\(main)\categories\[slug]\_lib\search-products.ts:131:      category_id: p.category_id,
+app\[locale]\(main)\search\_lib\search-products.ts:54:      "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,is_boosted,boost_expires_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
+app\[locale]\(main)\search\_lib\search-products.ts:67:    if (categoryId) next = next.contains("category_ancestors", [categoryId])
+app\[locale]\(main)\search\_lib\search-products.ts:138:        const category_id = typeof p.category_id === "string" ? p.category_id : null
+app\[locale]\(main)\search\_lib\search-products.ts:181:          category_id,
+app\[locale]\(main)\search\_lib\search-sellers.ts:133:    productsQuery = productsQuery.filter("category_ancestors", "cs", `{${categoryId}}`)
+app\[locale]\(main)\search\_lib\types.ts:24:  category_id: string | null

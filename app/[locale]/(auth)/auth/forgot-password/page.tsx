@@ -1,23 +1,19 @@
 import { ForgotPasswordForm } from "../../_components/forgot-password-form"
 import { requestPasswordReset } from "../../_actions/auth"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
+import { buildRouteMetadata, resolveRouteLocale } from "../_lib/route-locale-metadata"
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "Auth" })
-
-  return {
-    title: t("forgotPasswordTitle"),
-    description: t("forgotPasswordDescription"),
-  }
+  return buildRouteMetadata({
+    params,
+    namespace: "Auth",
+    titleKey: "forgotPasswordTitle",
+    descriptionKey: "forgotPasswordDescription",
+  })
 }
 
 export default async function ForgotPasswordPage({
@@ -25,6 +21,6 @@ export default async function ForgotPasswordPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
+  const locale = await resolveRouteLocale(params)
   return <ForgotPasswordForm locale={locale} requestPasswordResetAction={requestPasswordReset} />
 }

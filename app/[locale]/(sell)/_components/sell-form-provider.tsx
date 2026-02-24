@@ -121,7 +121,9 @@ export function SellFormProvider({
     // zodResolver infers schema input/output separately; useForm tracks a single value shape.
     // This cast keeps the form model aligned with SellFormDataV4 while preserving runtime validation.
     resolver: zodResolver(sellFormSchemaV4) as unknown as Resolver<SellFormDataV4>,
-    defaultValues: existingProduct || { ...defaultSellFormValuesV4, ...defaultValues },
+    defaultValues: existingProduct
+      ? { ...defaultSellFormValuesV4, ...existingProduct }
+      : { ...defaultSellFormValuesV4, ...defaultValues },
     mode: "onChange", // Validate on change for real-time feedback
   });
 

@@ -9,15 +9,16 @@ capability_map_doc: "docs/strategy/CAPABILITY-MAP.md"
 launch_status: "11/15 checklist sections audited and pass"
 p0_p1_status: "11/11 sections audited and pass after iteration"
 p2_status: "Not started (Sections 12-15)"
-gates_status: "Green (typecheck, lint, styles:gate, test:unit); 394/394 unit tests passing"
+gates_status: "Green (typecheck, lint, styles:gate, test:unit, architecture:gate); 455/455 unit tests passing"
 top_blockers:
   - "LAUNCH-001: Verify Stripe webhook idempotency (replay no-op guarantee)"
   - "LAUNCH-002: Test refund/dispute flow end-to-end"
   - "LAUNCH-003: Verify Stripe prod/dev environment separation (keys + webhook secrets)"
   - "LAUNCH-004: Enable leaked password protection + rerun advisor (currently blocked by Supabase plan requirement)"
-current_focus: "Close launch blockers and decide sequencing for P2 audits (Business Dashboard, Plans, Chat, Support)"
+current_focus: "Close launch blockers while continuing architecture hardening (duplicate reduction and oversized-file splits)"
 active_workstreams:
   - "Launch blocker closure with human approval for sensitive ops"
+  - "Production-readiness refactor batches (file splits, route completeness, duplicate reduction)"
   - "Sell flow UX redesign (FIX-002)"
   - "Account settings mobile/desktop hardening (FIX-003)"
 next_session_boot:
@@ -41,9 +42,9 @@ Remaining launch risk is concentrated in four sensitive blockers (payments/compl
 
 ## Recent Changes (Last 3)
 
-- 2026-02-24: Sections 1-11 audited; post-fix verification raised final quality to average ~8.7/10.
-- 2026-02-24: Follow-up fixes landed for auth guards, i18n metadata/body content, and orders pagination issues.
-- 2026-02-23: Business knowledge base finalized and unified business skill established.
+- 2026-02-24: Refactor batches 1-4 executed: action auth migration validated, large provider/hook/action modules split, and import surfaces normalized.
+- 2026-02-24: Route completeness hardening completed: added 31 missing `loading.tsx`, patched dynamic `not-found.tsx` gaps, and added `(admin)` group `error.tsx`; architecture `missingLoading=0`.
+- 2026-02-24: Duplicate/test hardening pass: duplicated lines reduced from 1951 to 1505 and unit suite expanded from 394 to 455 passing tests.
 
 ## Open Decisions (Max 3)
 

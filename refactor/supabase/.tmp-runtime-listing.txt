@@ -1,0 +1,135 @@
+app\api\boost\checkout\route.ts:104:      .select('id, title, seller_id, is_boosted, boost_expires_at')
+app\api\boost\checkout\route.ts:114:    if (isBoostActiveNow({ is_boosted: product.is_boosted, boost_expires_at: product.boost_expires_at })) {
+app\api\payments\webhook\route.ts:122:  // Update product: set is_boosted=true and boost_expires_at
+app\api\payments\webhook\route.ts:126:      is_boosted: true,
+app\api\payments\webhook\route.ts:127:      boost_expires_at: expiresAtIso,
+app\api\payments\webhook\route.ts:128:      listing_type: "boosted",
+app\[locale]\_components\seller\boost-dialog.tsx:33:  is_boosted?: boolean
+app\[locale]\_components\seller\boost-dialog.tsx:34:  boost_expires_at?: string | null
+app\[locale]\_components\seller\boost-dialog.tsx:148:  const isCurrentlyBoosted = product.is_boosted && product.boost_expires_at 
+app\[locale]\_components\seller\boost-dialog.tsx:149:    ? new Date(product.boost_expires_at) > new Date() 
+app\[locale]\_components\seller\boost-dialog.tsx:154:    if (!product.boost_expires_at) return null
+app\[locale]\_components\seller\boost-dialog.tsx:155:    const expiresAt = new Date(product.boost_expires_at)
+app\[locale]\_components\seller\boost-dialog.tsx:172:  if (isCurrentlyBoosted && product.boost_expires_at) {
+app\[locale]\_components\seller\boost-dialog.tsx:184:          {t('boostActiveUntil', { date: formatDate(product.boost_expires_at) })}
+app\[locale]\_components\seller\boost-dialog.tsx:191:  const wasBoostExpired = product.is_boosted && product.boost_expires_at 
+app\[locale]\_components\seller\boost-dialog.tsx:192:    ? new Date(product.boost_expires_at) <= new Date() 
+app\api\products\newest\route.ts:134:  is_boosted: boolean | null
+app\api\products\newest\route.ts:135:  boost_expires_at: string | null
+app\api\products\newest\route.ts:214:      is_boosted,
+app\api\products\newest\route.ts:215:      boost_expires_at,
+app\api\products\newest\route.ts:243:      // Feed type filters: promoted = active boosts only (is_boosted=true AND boost_expires_at > now)
+app\api\products\newest\route.ts:245:        query = query.eq('is_boosted', true)
+app\api\products\newest\route.ts:246:        query = query.gt('boost_expires_at', new Date().toISOString())
+app\api\products\feed\route.ts:77:        .eq("is_boosted", true)
+app\api\products\feed\route.ts:78:        .gt("boost_expires_at", nowIso)
+app\api\products\feed\route.ts:79:        .order("boost_expires_at", { ascending: true }) // Fair rotation: soonest-expiring first
+app\api\products\feed\route.ts:179:        is_boosted,
+app\api\products\feed\route.ts:180:        boost_expires_at,
+app\api\products\feed\route.ts:207:        is_boosted,
+app\api\products\feed\route.ts:208:        boost_expires_at,
+app\api\admin\docs\seed\templates.ts:318:  1) later \`boost_expires_at\` first
+app\api\admin\docs\seed\templates.ts:1279:  1) по-късен \`boost_expires_at\` първи
+app\[locale]\[username]\[productSlug]\page.tsx:43:  // Important: Only prioritize ACTIVE boosts (boost_expires_at > now).
+app\[locale]\[username]\[productSlug]\page.tsx:49:    .eq("is_boosted", true)
+app\[locale]\[username]\[productSlug]\page.tsx:50:    .gt("boost_expires_at", nowIso)
+app\[locale]\[username]\[productSlug]\page.tsx:51:    .order("boost_expires_at", { ascending: false, nullsFirst: false })
+app\[locale]\[username]\[productSlug]\page.tsx:65:        .or(`boost_expires_at.is.null,boost_expires_at.lte.${nowIso}`)
+app\[locale]\(admin)\admin\products\page.tsx:21:  is_boosted: boolean | null
+app\[locale]\(admin)\admin\products\page.tsx:38:      is_boosted,
+app\[locale]\(admin)\admin\products\page.tsx:127:                      {product.is_boosted && (
+app\[locale]\(sell)\_components\sell-form-unified.tsx:337:                    product={{ id: productId, title: productTitle, is_boosted: false, boost_expires_at: null }}
+app\[locale]\(sell)\_actions\sell.ts:355:    listing_type: "normal",
+app\[locale]\(sell)\_actions\sell.ts:357:    is_boosted: false,
+app\[locale]\(sell)\_actions\sell.ts:358:    boost_expires_at: null,
+app\actions\boosts.ts:196:    .select("id, seller_id, is_boosted")
+app\actions\boosts.ts:208:  if (product.is_boosted) {
+app\actions\boosts.ts:249:      is_boosted: true,
+app\actions\boosts.ts:250:      boost_expires_at: expiresAt.toISOString(),
+app\actions\boosts.ts:251:      listing_type: "boosted",
+app\actions\boosts.ts:328:    .select("id, seller_id, title, is_boosted")
+app\actions\boosts.ts:340:  if (product.is_boosted) {
+app\actions\boosts.ts:449:    .select("is_boosted, boost_expires_at, seller_id")
+app\actions\boosts.ts:466:    isBoosted: product.is_boosted ?? false,
+app\actions\boosts.ts:467:    boostExpiresAt: product.boost_expires_at,
+lib\boost\boost-status.ts:2:  is_boosted?: boolean | null
+lib\boost\boost-status.ts:3:  boost_expires_at?: string | null
+lib\boost\boost-status.ts:7:  if (boost.is_boosted !== true) return false
+lib\boost\boost-status.ts:8:  if (!boost.boost_expires_at) return false
+lib\boost\boost-status.ts:10:  const expiresAt = new Date(boost.boost_expires_at)
+lib\data\profile-page.ts:109:            is_boosted,
+lib\data\profile-page.ts:110:            boost_expires_at,
+lib\types\profile-page.ts:11:  is_boosted: boolean | null
+lib\data\products\normalize.ts:44:  const rawProduct = row as { is_boosted?: boolean | null }
+lib\data\products\normalize.ts:49:    is_boosted: rawProduct.is_boosted ?? null,
+lib\data\products\normalize.ts:167:  is_boosted?: boolean | null
+lib\data\products\normalize.ts:168:  boost_expires_at?: string | null
+lib\data\products\normalize.ts:207:    // NOTE: This is a raw flag. Active boost status depends on `boost_expires_at` vs "now",
+lib\data\products\normalize.ts:209:    is_boosted: p.is_boosted ?? null,
+lib\data\products\normalize.ts:210:    boost_expires_at: p.boost_expires_at ?? null,
+lib\data\products\normalize.ts:257:    isBoosted: Boolean(p.is_boosted),
+lib\data\products\normalize.ts:258:    boostExpiresAt: p.boost_expires_at ?? null,
+lib\data\products\types.ts:27:  /** True if product has a boost flag; check `boost_expires_at` for active boost status. */
+lib\data\products\types.ts:28:  is_boosted?: boolean | null
+lib\data\products\types.ts:29:  /** Boost expiration timestamp - used with is_boosted to determine active boost status */
+lib\data\products\types.ts:30:  boost_expires_at?: string | null
+lib\data\products\types.ts:31:  /** @deprecated Legacy field - not used. For promoted listings, use is_boosted + boost_expires_at */
+lib\supabase\database.types.ts:1416:          boost_expires_at: string | null
+lib\supabase\database.types.ts:1427:          is_boosted: boolean | null
+lib\supabase\database.types.ts:1433:          listing_type: string | null
+lib\supabase\database.types.ts:1465:          boost_expires_at?: string | null
+lib\supabase\database.types.ts:1476:          is_boosted?: boolean | null
+lib\supabase\database.types.ts:1482:          listing_type?: string | null
+lib\supabase\database.types.ts:1514:          boost_expires_at?: string | null
+lib\supabase\database.types.ts:1525:          is_boosted?: boolean | null
+lib\supabase\database.types.ts:1531:          listing_type?: string | null
+lib\supabase\database.types.ts:2591:          boost_expires_at: string | null
+lib\supabase\database.types.ts:2603:          is_boosted: boolean | null
+lib\supabase\database.types.ts:2609:          listing_type: string | null
+lib\supabase\database.types.ts:2639:          boost_expires_at?: string | null
+lib\supabase\database.types.ts:2651:          is_boosted?: boolean | null
+lib\supabase\database.types.ts:2657:          listing_type?: string | null
+lib\supabase\database.types.ts:2687:          boost_expires_at?: string | null
+lib\supabase\database.types.ts:2699:          is_boosted?: boolean | null
+lib\supabase\database.types.ts:2705:          listing_type?: string | null
+components\shared\product\card\metadata.ts:58:      ? isBoostActiveNow({ is_boosted: true, boost_expires_at: boostExpiresAt })
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:14:  is_boosted: boolean | null
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:15:  boost_expires_at: string | null
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:94:          "id,title,slug,description,price,list_price,is_on_sale,sale_percent,sale_end_date,seller_city,stock,images,is_boosted,boost_expires_at,is_featured,ships_to_bulgaria,ships_to_europe,ships_to_usa,ships_to_worldwide"
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:575:                    ...(product.is_boosted != null ? { is_boosted: product.is_boosted } : {}),
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:576:                    boost_expires_at: product.boost_expires_at,
+app\[locale]\(account)\account\selling\selling-products-desktop-list.tsx:130:                      product.boost_expires_at
+app\[locale]\(account)\account\selling\selling-products-desktop-list.tsx:131:                        ? tBoost("boostActiveUntil", { date: formatBoostExpiry(product.boost_expires_at) })
+app\[locale]\(account)\account\selling\selling-products-list.tsx:132:      Boolean(target?.is_boosted) &&
+app\[locale]\(account)\account\selling\selling-products-list.tsx:133:      !!target?.boost_expires_at &&
+app\[locale]\(account)\account\selling\selling-products-list.tsx:134:      new Date(target.boost_expires_at).getTime() > Date.now()
+app\[locale]\(account)\account\selling\selling-products-list.tsx:261:    if (!product.is_boosted || !product.boost_expires_at) return false
+app\[locale]\(account)\account\selling\selling-products-list.tsx:262:    return new Date(product.boost_expires_at) > new Date()
+app\[locale]\(account)\account\selling\selling-products-list.tsx:266:    if (!product.is_boosted || !product.boost_expires_at) return false
+app\[locale]\(account)\account\selling\selling-products-list.tsx:267:    return new Date(product.boost_expires_at) <= new Date()
+app\[locale]\(account)\account\selling\selling-products-list.tsx:271:    if (!product.boost_expires_at) return null
+app\[locale]\(account)\account\selling\selling-products-list.tsx:272:    const expiresAt = new Date(product.boost_expires_at)
+app\[locale]\(account)\account\selling\selling-products-list.types.ts:29:  is_boosted: boolean
+app\[locale]\(account)\account\selling\selling-products-list.types.ts:30:  boost_expires_at: string | null
+lib\data\products\queries.ts:26:  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+lib\data\products\queries.ts:31:  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+lib\data\products\queries.ts:172:          q = q.eq("is_boosted", true).not("boost_expires_at", "is", null)
+lib\data\products\queries.ts:194:          return q.order("boost_expires_at", { ascending: true })
+lib\data\products\queries.ts:216:    // NOTE: For 'featured' type, caller must filter expired boosts post-cache (boost_expires_at > now).
+lib\data\products\queries.ts:265:  return products.filter((p) => Boolean(p.is_boosted) && Boolean(p.boost_expires_at)).slice(0, limit)
+app\[locale]\(main)\_components\desktop\use-desktop-home-controller.ts:132:    isBoosted: Boolean(product.isBoosted || product.is_boosted),
+app\[locale]\(main)\search\_lib\types.ts:29:  is_boosted?: boolean
+app\[locale]\(main)\search\_lib\search-products.ts:54:      "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,is_boosted,boost_expires_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
+app\[locale]\(main)\search\_lib\search-products.ts:100:    .eq("is_boosted", true)
+app\[locale]\(main)\search\_lib\search-products.ts:101:    .gt("boost_expires_at", nowIso)
+app\[locale]\(main)\search\_lib\search-products.ts:108:        .eq("is_boosted", true)
+app\[locale]\(main)\search\_lib\search-products.ts:109:        .gt("boost_expires_at", nowIso)
+app\[locale]\(main)\search\_lib\search-products.ts:110:        .order("boost_expires_at", { ascending: false, nullsFirst: false })
+app\[locale]\(main)\search\_lib\search-products.ts:115:      applyFilters(buildDbBase()).or(`boost_expires_at.is.null,boost_expires_at.lte.${nowIso}`)
+app\[locale]\(main)\search\_lib\search-products.ts:141:        const boostExpiresAt = typeof p.boost_expires_at === "string" ? p.boost_expires_at : null
+app\[locale]\(main)\search\_lib\search-products.ts:142:        const isBoostedFlag = typeof p.is_boosted === "boolean" ? p.is_boosted : false
+app\[locale]\(main)\search\_lib\search-products.ts:185:          is_boosted: isBoostActiveNow({ is_boosted: isBoostedFlag, boost_expires_at: boostExpiresAt }),
+app\[locale]\(account)\account\selling\page.tsx:35:  is_boosted: boolean
+app\[locale]\(account)\account\selling\page.tsx:36:  boost_expires_at: string | null
+app\[locale]\(account)\account\selling\page.tsx:108:      is_boosted,
+app\[locale]\(account)\account\selling\page.tsx:109:      boost_expires_at,

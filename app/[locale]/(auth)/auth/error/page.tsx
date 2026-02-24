@@ -1,25 +1,23 @@
-import { Link, validateLocale } from "@/i18n/routing"
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { Link } from "@/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { ArrowLeft, CircleAlert as WarningCircle } from "lucide-react";
 import type { Metadata } from "next"
 
 import { Button } from "@/components/ui/button"
 import { AuthCard } from "../../_components/auth-card"
+import { buildRouteMetadata, resolveRouteLocale } from "../_lib/route-locale-metadata"
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "Auth" })
-
-  return {
-    title: t("errorTitle"),
-    description: t("errorSubtitle"),
-  }
+  return buildRouteMetadata({
+    params,
+    namespace: "Auth",
+    titleKey: "errorTitle",
+    descriptionKey: "errorSubtitle",
+  })
 }
 
 export default async function AuthErrorPage({
@@ -29,9 +27,7 @@ export default async function AuthErrorPage({
   params: Promise<{ locale: string }>
   searchParams: Promise<{ error?: string; error_description?: string }>
 }) {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
+  const locale = await resolveRouteLocale(params)
 
   const query = await searchParams
   const t = await getTranslations({ locale, namespace: "Auth" })

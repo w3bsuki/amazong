@@ -1,21 +1,17 @@
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
+import { buildRouteMetadata } from "../_lib/route-locale-metadata"
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "Auth" })
-
-  return {
-    title: t("signUpSuccessTitle"),
-    description: t("signUpSuccessDescription"),
-  }
+  return buildRouteMetadata({
+    params,
+    namespace: "Auth",
+    titleKey: "signUpSuccessTitle",
+    descriptionKey: "signUpSuccessDescription",
+  })
 }
 
 export { default } from "./sign-up-success-client"

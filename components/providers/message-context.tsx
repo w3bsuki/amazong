@@ -5,14 +5,10 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
-  type Dispatch,
-  type SetStateAction,
 } from "react"
 import { useRouter } from "@/i18n/routing"
-import { useSupabasePostgresChanges } from "@/hooks/use-supabase-postgres-changes"
 
 import { createClient } from "@/lib/supabase/client"
 import {
@@ -26,6 +22,20 @@ import {
   markConversationRead,
   sendMessageToConversation,
 } from "@/lib/supabase/messages"
+import {
+  addMessageOptimistic,
+  markMessagesAsReadInState,
+  resetUnreadCount,
+  updateConversationLastMessage,
+} from "./message-context-list"
+import { useMessagesRealtime, useTypingIndicator } from "./message-context-realtime"
+import type {
+  MessageAutoStartConversationProps,
+  MessageProviderProps,
+  SupabaseBrowserClient,
+  UseMessagesActionsParams,
+  UseMessagesStateReturn,
+} from "./message-context.types"
 
 // =============================================================================
 // TYPES - Re-exported from lib/types/messages.ts
@@ -43,7 +53,7 @@ export type {
   MessageType,
 } from "@/lib/types/messages"
 
-import type { Conversation, Message, MessageContextValue, MessageType } from "@/lib/types/messages"
+import type { Conversation, Message, MessageContextValue } from "@/lib/types/messages"
 
 const MessageContext = createContext<MessageContextValue | undefined>(undefined)
 
@@ -67,31 +77,11 @@ const DEFAULT_MESSAGE_CONTEXT: MessageContextValue = {
   sendTypingIndicator: () => {},
 }
 
-interface UseMessagesStateReturn {
-  currentUserId: string | null
-  conversations: Conversation[]
-  currentConversation: Conversation | null
-  messages: Message[]
-  totalUnreadCount: number
-  isLoading: boolean
-  isLoadingMessages: boolean
-  error: string | null
-  isOtherUserTyping: boolean
-  setConversations: Dispatch<SetStateAction<Conversation[]>>
-  setCurrentConversation: Dispatch<SetStateAction<Conversation | null>>
-  setMessages: Dispatch<SetStateAction<Message[]>>
-  setTotalUnreadCount: Dispatch<SetStateAction<number>>
-  setError: (error: string | null) => void
-  loadConversations: () => Promise<void>
-  selectConversation: (conversationId: string) => Promise<void>
-  refreshUnreadCount: () => Promise<void>
-}
-
 function useMessagesState({
   supabase,
   enabled = true,
 }: {
-  supabase: ReturnType<typeof createClient>
+  supabase: SupabaseBrowserClient
   enabled?: boolean
 }): UseMessagesStateReturn {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
@@ -222,88 +212,6 @@ function useMessagesState({
   }
 }
 
-function addMessageOptimistic(prev: Message[], newMsg: Message): Message[] {
-  if (prev.some((m) => m.id === newMsg.id)) return prev
-  return [...prev, newMsg]
-}
-
-function markMessagesAsReadInState(prev: Message[], conversationId: string): Message[] {
-  return prev.map((msg) =>
-    msg.conversation_id === conversationId && !msg.is_read
-      ? { ...msg, is_read: true, read_at: new Date().toISOString() }
-      : msg
-  )
-}
-
-function resetUnreadCount(prev: Conversation[], conversationId: string, currentUserId: string): Conversation[] {
-  return prev.map((conv) => {
-    if (conv.id !== conversationId) return conv
-    if (conv.buyer_id === currentUserId) {
-      return { ...conv, buyer_unread_count: 0 }
-    }
-    return { ...conv, seller_unread_count: 0 }
-  })
-}
-
-function updateConversationLastMessage(
-  prev: Conversation[],
-  conversationId: string,
-  content: string,
-  senderId: string
-): Conversation[] {
-  return prev
-    .map((conv) =>
-      conv.id === conversationId
-        ? {
-            ...conv,
-            last_message_at: new Date().toISOString(),
-            last_message: {
-              content,
-              sender_id: senderId,
-              message_type: "text",
-              created_at: new Date().toISOString(),
-            },
-          }
-        : conv
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.last_message_at || b.created_at).getTime() -
-        new Date(a.last_message_at || a.created_at).getTime()
-    )
-}
-
-function incrementUnreadCount(
-  prev: Conversation[],
-  conversationId: string,
-  currentUserId: string,
-  newMessage: {
-    content: string
-    sender_id: string
-    message_type: string
-    created_at: string
-  }
-): Conversation[] {
-  return prev
-    .map((conv) => {
-      if (conv.id !== conversationId) return conv
-      const isBuyer = conv.buyer_id === currentUserId
-      return {
-        ...conv,
-        last_message_at: newMessage.created_at,
-        last_message: newMessage,
-        ...(isBuyer
-          ? { buyer_unread_count: (conv.buyer_unread_count || 0) + 1 }
-          : { seller_unread_count: (conv.seller_unread_count || 0) + 1 }),
-      }
-    })
-    .sort(
-      (a, b) =>
-        new Date(b.last_message_at || b.created_at).getTime() -
-        new Date(a.last_message_at || a.created_at).getTime()
-    )
-}
-
 function useMessagesActions({
   supabase,
   currentUserId,
@@ -314,17 +222,7 @@ function useMessagesActions({
   setError,
   refreshUnreadCount,
   loadConversations,
-}: {
-  supabase: ReturnType<typeof createClient>
-  currentUserId: string | null
-  currentConversation: Conversation | null
-  setMessages: Dispatch<SetStateAction<Message[]>>
-  setConversations: Dispatch<SetStateAction<Conversation[]>>
-  setCurrentConversation: Dispatch<SetStateAction<Conversation | null>>
-  setError: (error: string | null) => void
-  refreshUnreadCount: () => Promise<void>
-  loadConversations: () => Promise<void>
-}) {
+}: UseMessagesActionsParams) {
   const markAsRead = useCallback(
     async (conversationId: string) => {
       if (!currentUserId) return
@@ -439,138 +337,6 @@ function useMessagesActions({
   }
 }
 
-function useMessagesRealtime({
-  supabase,
-  currentUserId,
-  conversations,
-  currentConversationId,
-  setMessages,
-  setConversations,
-  setTotalUnreadCount,
-  loadConversations,
-  markAsRead,
-}: {
-  supabase: ReturnType<typeof createClient>
-  currentUserId: string | null
-  conversations: Conversation[]
-  currentConversationId: string | null
-  setMessages: Dispatch<SetStateAction<Message[]>>
-  setConversations: Dispatch<SetStateAction<Conversation[]>>
-  setTotalUnreadCount: Dispatch<SetStateAction<number>>
-  loadConversations: () => Promise<void>
-  markAsRead: (conversationId: string) => Promise<void>
-}) {
-  const currentConversationIdRef = useRef<string | null>(null)
-  const conversationIdsRef = useRef<string[]>([])
-
-  useEffect(() => {
-    currentConversationIdRef.current = currentConversationId
-  }, [currentConversationId])
-
-  useEffect(() => {
-    conversationIdsRef.current = conversations.map((c) => c.id)
-  }, [conversations])
-
-  const realtimeSpecs = useMemo(() => {
-    if (!currentUserId) return [] as const
-
-    return [
-      {
-        channel: `chat-${currentUserId}`,
-        event: "INSERT",
-        schema: "public",
-        table: "messages",
-      },
-    ] as const
-  }, [currentUserId])
-
-  const handleMessageInsert = useCallback(
-    async (payload: unknown) => {
-      if (!currentUserId) return
-
-      const newMessage = (payload as { new: {
-        id: string
-        conversation_id: string
-        sender_id: string
-        content: string
-        message_type: string
-        is_read: boolean
-        created_at: string
-      } }).new
-
-      if (newMessage.sender_id === currentUserId) return
-
-      const isOurConversation = conversationIdsRef.current.includes(newMessage.conversation_id)
-      if (!isOurConversation) {
-        await loadConversations()
-        return
-      }
-
-      if (currentConversationIdRef.current === newMessage.conversation_id) {
-        const senderProfile = await fetchSenderProfile(supabase, newMessage.sender_id)
-
-        const baseMsg = {
-          id: newMessage.id,
-          conversation_id: newMessage.conversation_id,
-          sender_id: newMessage.sender_id,
-          content: newMessage.content,
-          message_type: newMessage.message_type as MessageType,
-          is_read: newMessage.is_read,
-          read_at: null,
-          created_at: newMessage.created_at,
-        }
-
-        const fullMsg: Message = senderProfile
-          ? {
-              ...baseMsg,
-              sender: {
-                id: senderProfile.id,
-                full_name: senderProfile.full_name,
-                avatar_url: senderProfile.avatar_url,
-              },
-            }
-          : baseMsg
-
-        setMessages((prev) => addMessageOptimistic(prev, fullMsg))
-
-        await markAsRead(newMessage.conversation_id)
-        return
-      }
-
-      setConversations((prev) =>
-        incrementUnreadCount(prev, newMessage.conversation_id, currentUserId, {
-          content: newMessage.content,
-          sender_id: newMessage.sender_id,
-          message_type: newMessage.message_type,
-          created_at: newMessage.created_at,
-        })
-      )
-
-      setTotalUnreadCount((prev) => prev + 1)
-    },
-    [currentUserId, loadConversations, markAsRead, setMessages, setConversations, setTotalUnreadCount, supabase]
-  )
-
-  useSupabasePostgresChanges({
-    enabled: Boolean(currentUserId),
-    specs: realtimeSpecs,
-    onPayload: handleMessageInsert,
-    supabase,
-  })
-}
-
-function useTypingIndicator() {
-  const lastTypingSentRef = useRef<number>(0)
-
-  const sendTypingIndicator = useCallback(() => {
-    const now = Date.now()
-    if (now - lastTypingSentRef.current < 2000) return
-    lastTypingSentRef.current = now
-  }, [])
-
-  return { sendTypingIndicator }
-}
-
 // =============================================================================
 // HOOK - Safe to use anywhere (returns defaults if outside provider)
 // =============================================================================
@@ -590,13 +356,6 @@ export function useMessages(): MessageContextValue {
 // PROVIDER - Clean, thin wrapper using extracted hooks
 // =============================================================================
 
-interface MessageProviderProps {
-  children: React.ReactNode
-  initialSellerId?: string | undefined
-  initialProductId?: string | undefined
-  enabled?: boolean
-}
-
 function MessageAutoStartConversation({
   initialSellerId,
   initialProductId,
@@ -605,15 +364,7 @@ function MessageAutoStartConversation({
   conversations,
   selectConversation,
   startConversation,
-}: {
-  initialSellerId: string
-  initialProductId?: string | undefined
-  currentUserId: string | null
-  isLoading: boolean
-  conversations: Array<{ id: string; seller_id: string; buyer_id: string; product?: { id?: string | null } | null }>
-  selectConversation: (conversationId: string) => Promise<void>
-  startConversation: (sellerId: string, productId?: string | undefined) => Promise<string>
-}) {
+}: MessageAutoStartConversationProps) {
   const router = useRouter()
   const hasInitialized = useRef(false)
 

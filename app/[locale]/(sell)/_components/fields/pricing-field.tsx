@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { Controller } from "react-hook-form";
 import { ChevronRight as CaretRight, DollarSign as CurrencyDollar, Gavel, Handshake, Minus, Plus, Tag, TrendingDown as TrendDown, TrendingUp as TrendUp } from "lucide-react";
 
@@ -17,9 +17,11 @@ import {
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { formatOptions } from "@/lib/sell/schema";
+import { clampModesToPolicy, toCategoryPolicy } from "@/lib/sell/category-policy";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { SelectDrawer } from "../ui/select-drawer";
 import { useTranslations } from "next-intl";
+import type { Category } from "../../_lib/types";
 
 // ============================================================================
 // Constants
@@ -183,6 +185,19 @@ function QuantityStepper({
   );
 }
 
+function findCategoryById(categories: Category[], categoryId: string): Category | null {
+  const stack = [...categories]
+  while (stack.length > 0) {
+    const current = stack.pop()
+    if (!current) continue
+    if (current.id === categoryId) return current
+    if (current.children?.length) {
+      for (const child of current.children) stack.push(child)
+    }
+  }
+  return null
+}
+
 // ============================================================================
 // PRICING FIELD - Price, quantity, offers using context pattern
 // ============================================================================
@@ -200,12 +215,14 @@ interface PricingFieldProps {
 
 export function PricingField({ className, categoryId, idPrefix = "sell-form", compact = false }: PricingFieldProps) {
   const { control, setValue, watch, formState: { errors } } = useSellForm();
-  const { locale } = useSellFormContext();
+  const { locale, categories } = useSellFormContext();
   const tSell = useTranslations("Sell")
 
   const [isCurrencyDrawerOpen, setIsCurrencyDrawerOpen] = useState(false);
 
   // Watch form values
+  const selectedCategoryId = watch("categoryId");
+  const pricingMode = watch("pricingMode");
   const format = watch("format");
   const price = watch("price");
   const currency = watch("currency");
@@ -216,6 +233,43 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
   const [priceSuggestion] = useState<PriceSuggestion | null>(null);
   const priceInputId = `${idPrefix}-price`;
   const comparePriceInputId = `${idPrefix}-compare-price`;
+
+  const selectedCategory = useMemo(
+    () => (selectedCategoryId ? findCategoryById(categories, selectedCategoryId) : null),
+    [categories, selectedCategoryId]
+  )
+
+  const categoryPolicy = useMemo(
+    () =>
+      toCategoryPolicy(
+        selectedCategory
+          ? {
+              allowed_listing_kinds: selectedCategory.allowed_listing_kinds,
+              allowed_transaction_modes: selectedCategory.allowed_transaction_modes,
+              allowed_fulfillment_modes: selectedCategory.allowed_fulfillment_modes,
+              allowed_pricing_modes: selectedCategory.allowed_pricing_modes,
+              default_fulfillment_mode: selectedCategory.default_fulfillment_mode,
+            }
+          : null
+      ),
+    [selectedCategory]
+  )
+
+  const allowedPricingModes = categoryPolicy.allowedPricingModes
+
+  useEffect(() => {
+    if (!allowedPricingModes.includes(pricingMode)) {
+      const constrained = clampModesToPolicy({ pricingMode }, categoryPolicy)
+      setValue("pricingMode", constrained.pricingMode, { shouldValidate: true })
+      setValue("format", constrained.pricingMode === "auction" ? "auction" : "fixed", { shouldValidate: true })
+      return
+    }
+
+    const expectedFormat = pricingMode === "auction" ? "auction" : "fixed"
+    if (format !== expectedFormat) {
+      setValue("format", expectedFormat, { shouldValidate: true })
+    }
+  }, [allowedPricingModes, categoryPolicy, format, pricingMode, setValue])
 
   // Fetch price suggestions (stub - would connect to API)
   useEffect(() => {
@@ -235,6 +289,8 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
       <div className="grid grid-cols-2 gap-3">
         {formatOptions.map((option) => {
           const isSelected = format === option.value;
+          const optionPricingMode = option.value === "auction" ? "auction" : "fixed";
+          const isDisabled = !allowedPricingModes.includes(optionPricingMode);
           const Icon = option.value === "fixed" ? Tag : Gavel;
           const label = tSell(option.labelKey as never);
 
@@ -242,13 +298,19 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
             <button
               key={option.value}
               type="button"
-              onClick={() => setValue("format", option.value, { shouldValidate: true })}
+              onClick={() => {
+                if (isDisabled) return
+                setValue("format", option.value, { shouldValidate: true, shouldDirty: true })
+                setValue("pricingMode", optionPricingMode, { shouldValidate: true, shouldDirty: true })
+              }}
+              disabled={isDisabled}
               className={cn(
                 "flex items-center justify-center gap-2 h-12 rounded-md border transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
                 isSelected
                   ? "border-selected-border bg-selected text-primary font-bold shadow-xs"
-                  : "border-border bg-background hover:border-hover-border text-muted-foreground hover:text-foreground"
+                  : "border-border bg-background hover:border-hover-border text-muted-foreground hover:text-foreground",
+                isDisabled && "opacity-50 cursor-not-allowed hover:border-border hover:text-muted-foreground"
               )}
             >
               <Icon className="size-5" />

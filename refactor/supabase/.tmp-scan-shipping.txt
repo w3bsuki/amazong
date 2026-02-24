@@ -1,0 +1,244 @@
+messages\en.json:2971:            "free_shipping": "Free Shipping",
+messages\bg.json:2971:            "free_shipping": "Безплатна доставка",
+app\api\products\newest\route.ts:211:      free_shipping,
+app\api\products\feed\route.ts:22:  'free_shipping',
+app\api\products\feed\route.ts:60:  if (filterTypes.has("free_shipping")) resolvedType = "free_shipping"
+app\api\products\feed\route.ts:110:    case "free_shipping":
+app\api\products\feed\route.ts:112:        .eq("free_shipping", true)
+app\api\products\feed\route.ts:182:        free_shipping,
+app\api\products\feed\route.ts:210:        free_shipping,
+lib\data\products\types.ts:34:  ships_to_bulgaria?: boolean | null
+lib\data\products\types.ts:35:  ships_to_uk?: boolean | null
+lib\data\products\types.ts:36:  ships_to_europe?: boolean | null
+lib\data\products\types.ts:37:  ships_to_usa?: boolean | null
+lib\data\products\types.ts:38:  ships_to_worldwide?: boolean | null
+lib\data\products\types.ts:39:  pickup_only?: boolean | null
+lib\data\products\types.ts:40:  free_shipping?: boolean | null
+lib\data\products\queries.ts:26:  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+lib\data\products\queries.ts:31:  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+lib\data\products\normalize.ts:158:  free_shipping?: boolean | null
+lib\data\products\normalize.ts:203:    free_shipping: p.free_shipping ?? null,
+lib\data\products\normalize.ts:275:    freeShipping: p.free_shipping === true,
+lib\view-models\product-page.ts:83:  free_shipping?: unknown;
+lib\view-models\product-page.ts:242:      freeShipping: row.free_shipping === true,
+__tests__\shipping.test.ts:45:      expect(filter).toBe('ships_to_bulgaria.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true')
+__tests__\shipping.test.ts:50:      expect(filter).toBe('ships_to_uk.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true')
+__tests__\shipping.test.ts:55:      expect(filter).toBe('ships_to_europe.eq.true,ships_to_worldwide.eq.true')
+__tests__\shipping.test.ts:60:      expect(filter).toBe('ships_to_usa.eq.true,ships_to_worldwide.eq.true')
+__tests__\products-normalize.test.ts:5:  test("preserves free_shipping so UI mapping stays consistent", () => {
+__tests__\products-normalize.test.ts:10:      free_shipping: true,
+__tests__\products-normalize.test.ts:16:  test("defaults freeShipping to false when free_shipping is missing", () => {
+components\desktop\quick-filter-pills.tsx:19:  { id: "free_shipping", labelKey: "tabs.free_shipping", icon: Package },
+components\desktop\feed-toolbar.tsx:31:export type QuickFilter = "deals" | "nearby" | "top_rated" | "free_shipping"
+app\[locale]\[username]\[productSlug]\_components\product-page-layout.tsx:247:                  freeShipping={!product.pickup_only}
+lib\data\product-page.ts:51:  'id,title,slug,price,list_price,description,condition,images,attributes,meta_description,rating,review_count,stock,pickup_only,seller_city,seller_id,category_id,view_count,created_at' as const
+app\[locale]\[username]\[productSlug]\_components\mobile\mobile-product-single-scroll.tsx:189:  const pickupOnly = product.pickup_only ?? false;
+app\[locale]\[username]\[productSlug]\_components\mobile\mobile-product-single-scroll.tsx:190:  const freeShipping = product.free_shipping === true;
+app\[locale]\(main)\categories\[slug]\_components\desktop-filter-toolbar-filter-pills.tsx:27:type QuickFilterId = "deals" | "nearby" | "top_rated" | "free_shipping"
+app\[locale]\(main)\categories\[slug]\_components\desktop-filter-toolbar-filter-pills.tsx:38:  { id: "free_shipping", labelKey: "tabs.free_shipping", icon: Package, paramKey: "freeShipping", paramValue: "true" },
+app\[locale]\(sell)\_actions\sell.ts:360:    ships_to_bulgaria: form.shipsToBulgaria ?? true,
+app\[locale]\(sell)\_actions\sell.ts:361:    ships_to_uk: form.shipsToUK ?? false,
+app\[locale]\(sell)\_actions\sell.ts:362:    ships_to_europe: form.shipsToEurope ?? false,
+app\[locale]\(sell)\_actions\sell.ts:363:    ships_to_usa: form.shipsToUSA ?? false,
+app\[locale]\(sell)\_actions\sell.ts:364:    ships_to_worldwide: form.shipsToWorldwide ?? false,
+app\[locale]\(sell)\_actions\sell.ts:365:    pickup_only: form.pickupOnly ?? false,
+app\[locale]\(sell)\_actions\sell.ts:366:    free_shipping: form.freeShipping ?? false,
+lib\shipping.ts:51: * // Returns: "ships_to_bulgaria.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true"
+lib\shipping.ts:54: * // Returns: "ships_to_uk.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true"
+lib\shipping.ts:62:      return 'ships_to_bulgaria.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true';
+lib\shipping.ts:65:      return 'ships_to_uk.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true';
+lib\shipping.ts:68:      return 'ships_to_europe.eq.true,ships_to_worldwide.eq.true';
+lib\shipping.ts:71:      return 'ships_to_usa.eq.true,ships_to_worldwide.eq.true';
+lib\supabase\database.types.ts:1424:          free_shipping: boolean | null
+lib\supabase\database.types.ts:1436:          pickup_only: boolean | null
+lib\supabase\database.types.ts:1445:          shipping_days: number | null
+lib\supabase\database.types.ts:1446:          ships_to_bulgaria: boolean | null
+lib\supabase\database.types.ts:1447:          ships_to_europe: boolean | null
+lib\supabase\database.types.ts:1448:          ships_to_uk: boolean | null
+lib\supabase\database.types.ts:1449:          ships_to_usa: boolean | null
+lib\supabase\database.types.ts:1450:          ships_to_worldwide: boolean | null
+lib\supabase\database.types.ts:1473:          free_shipping?: boolean | null
+lib\supabase\database.types.ts:1485:          pickup_only?: boolean | null
+lib\supabase\database.types.ts:1494:          shipping_days?: number | null
+lib\supabase\database.types.ts:1495:          ships_to_bulgaria?: boolean | null
+lib\supabase\database.types.ts:1496:          ships_to_europe?: boolean | null
+lib\supabase\database.types.ts:1497:          ships_to_uk?: boolean | null
+lib\supabase\database.types.ts:1498:          ships_to_usa?: boolean | null
+lib\supabase\database.types.ts:1499:          ships_to_worldwide?: boolean | null
+lib\supabase\database.types.ts:1522:          free_shipping?: boolean | null
+lib\supabase\database.types.ts:1534:          pickup_only?: boolean | null
+lib\supabase\database.types.ts:1543:          shipping_days?: number | null
+lib\supabase\database.types.ts:1544:          ships_to_bulgaria?: boolean | null
+lib\supabase\database.types.ts:1545:          ships_to_europe?: boolean | null
+lib\supabase\database.types.ts:1546:          ships_to_uk?: boolean | null
+lib\supabase\database.types.ts:1547:          ships_to_usa?: boolean | null
+lib\supabase\database.types.ts:1548:          ships_to_worldwide?: boolean | null
+lib\supabase\database.types.ts:2600:          free_shipping: boolean | null
+lib\supabase\database.types.ts:2612:          pickup_only: boolean | null
+lib\supabase\database.types.ts:2620:          shipping_days: number | null
+lib\supabase\database.types.ts:2621:          ships_to_bulgaria: boolean | null
+lib\supabase\database.types.ts:2622:          ships_to_europe: boolean | null
+lib\supabase\database.types.ts:2623:          ships_to_uk: boolean | null
+lib\supabase\database.types.ts:2624:          ships_to_usa: boolean | null
+lib\supabase\database.types.ts:2625:          ships_to_worldwide: boolean | null
+lib\supabase\database.types.ts:2648:          free_shipping?: boolean | null
+lib\supabase\database.types.ts:2660:          pickup_only?: boolean | null
+lib\supabase\database.types.ts:2668:          shipping_days?: number | null
+lib\supabase\database.types.ts:2669:          ships_to_bulgaria?: boolean | null
+lib\supabase\database.types.ts:2670:          ships_to_europe?: boolean | null
+lib\supabase\database.types.ts:2671:          ships_to_uk?: boolean | null
+lib\supabase\database.types.ts:2672:          ships_to_usa?: boolean | null
+lib\supabase\database.types.ts:2673:          ships_to_worldwide?: boolean | null
+lib\supabase\database.types.ts:2696:          free_shipping?: boolean | null
+lib\supabase\database.types.ts:2708:          pickup_only?: boolean | null
+lib\supabase\database.types.ts:2716:          shipping_days?: number | null
+lib\supabase\database.types.ts:2717:          ships_to_bulgaria?: boolean | null
+lib\supabase\database.types.ts:2718:          ships_to_europe?: boolean | null
+lib\supabase\database.types.ts:2719:          ships_to_uk?: boolean | null
+lib\supabase\database.types.ts:2720:          ships_to_usa?: boolean | null
+lib\supabase\database.types.ts:2721:          ships_to_worldwide?: boolean | null
+supabase\migrations_legacy_sync_20260223193150\20251203000000_product_attributes_and_display_order.sql:11:-- PREREQUISITE: Shipping columns already exist (ships_to_bulgaria, etc.)
+supabase\migrations_legacy_sync_20260223193150\20251203000000_product_attributes_and_display_order.sql:82:--   AND (ships_to_europe = true OR ships_to_worldwide = true);
+refactor\supabase\CATEGORY-REDESIGN.md:330:  "pickup_only": false,
+refactor\supabase\CATEGORY-REDESIGN.md:331:  "free_shipping": true,
+refactor\supabase\CATEGORY-REDESIGN.md:332:  "shipping_days": 3,
+refactor\supabase\CATEGORY-REDESIGN.md:336:Replaces: `ships_to_bulgaria`, `ships_to_europe`, `ships_to_usa`, `ships_to_uk`, `ships_to_worldwide`, `pickup_only`, `free_shipping`, `shipping_days`, `weight`, `weight_unit`
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:16:ADD COLUMN IF NOT EXISTS ships_to_bulgaria BOOLEAN DEFAULT true,
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:17:ADD COLUMN IF NOT EXISTS ships_to_europe BOOLEAN DEFAULT false,
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:18:ADD COLUMN IF NOT EXISTS ships_to_usa BOOLEAN DEFAULT false,
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:19:ADD COLUMN IF NOT EXISTS ships_to_worldwide BOOLEAN DEFAULT false,
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:20:ADD COLUMN IF NOT EXISTS pickup_only BOOLEAN DEFAULT false;
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:22:COMMENT ON COLUMN public.products.ships_to_bulgaria IS 'Ships to Bulgaria';
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:23:COMMENT ON COLUMN public.products.ships_to_europe IS 'Ships to European countries';
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:24:COMMENT ON COLUMN public.products.ships_to_usa IS 'Ships to United States';
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:25:COMMENT ON COLUMN public.products.ships_to_worldwide IS 'Ships worldwide (all countries)';
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:26:COMMENT ON COLUMN public.products.pickup_only IS 'Pickup only, no shipping';
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:29:CREATE INDEX IF NOT EXISTS idx_products_ships_to_bulgaria ON public.products(ships_to_bulgaria) WHERE ships_to_bulgaria = true;
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:30:CREATE INDEX IF NOT EXISTS idx_products_ships_to_europe ON public.products(ships_to_europe) WHERE ships_to_europe = true;
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:31:CREATE INDEX IF NOT EXISTS idx_products_ships_to_usa ON public.products(ships_to_usa) WHERE ships_to_usa = true;
+supabase\migrations\20251201133706_add_seller_country_and_shipping_options.sql:32:CREATE INDEX IF NOT EXISTS idx_products_ships_to_worldwide ON public.products(ships_to_worldwide) WHERE ships_to_worldwide = true;;
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:16:ADD COLUMN IF NOT EXISTS ships_to_bulgaria BOOLEAN DEFAULT true,
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:17:ADD COLUMN IF NOT EXISTS ships_to_europe BOOLEAN DEFAULT false,
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:18:ADD COLUMN IF NOT EXISTS ships_to_usa BOOLEAN DEFAULT false,
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:19:ADD COLUMN IF NOT EXISTS ships_to_worldwide BOOLEAN DEFAULT false,
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:20:ADD COLUMN IF NOT EXISTS pickup_only BOOLEAN DEFAULT false;
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:22:COMMENT ON COLUMN public.products.ships_to_bulgaria IS 'Ships to Bulgaria';
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:23:COMMENT ON COLUMN public.products.ships_to_europe IS 'Ships to European countries';
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:24:COMMENT ON COLUMN public.products.ships_to_usa IS 'Ships to United States';
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:25:COMMENT ON COLUMN public.products.ships_to_worldwide IS 'Ships worldwide (all countries)';
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:26:COMMENT ON COLUMN public.products.pickup_only IS 'Pickup only, no shipping';
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:29:CREATE INDEX IF NOT EXISTS idx_products_ships_to_bulgaria ON public.products(ships_to_bulgaria) WHERE ships_to_bulgaria = true;
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:30:CREATE INDEX IF NOT EXISTS idx_products_ships_to_europe ON public.products(ships_to_europe) WHERE ships_to_europe = true;
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:31:CREATE INDEX IF NOT EXISTS idx_products_ships_to_usa ON public.products(ships_to_usa) WHERE ships_to_usa = true;
+supabase\migrations_legacy_sync_20260223193150\20251201133706_add_seller_country_and_shipping_options.sql:32:CREATE INDEX IF NOT EXISTS idx_products_ships_to_worldwide ON public.products(ships_to_worldwide) WHERE ships_to_worldwide = true;;
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:17:  ships_to_bulgaria: boolean | null
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:18:  ships_to_europe: boolean | null
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:19:  ships_to_usa: boolean | null
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:20:  ships_to_worldwide: boolean | null
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:94:          "id,title,slug,description,price,list_price,is_on_sale,sale_percent,sale_end_date,seller_city,stock,images,is_boosted,boost_expires_at,is_featured,ships_to_bulgaria,ships_to_europe,ships_to_usa,ships_to_worldwide"
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:115:      setShipsBulgaria(data.ships_to_bulgaria ?? true)
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:116:      setShipsEurope(data.ships_to_europe ?? false)
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:117:      setShipsUSA(data.ships_to_usa ?? false)
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:118:      setShipsWorldwide(data.ships_to_worldwide ?? false)
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:232:      ships_to_bulgaria: shipsBulgaria,
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:233:      ships_to_europe: shipsEurope,
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:234:      ships_to_usa: shipsUSA,
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:235:      ships_to_worldwide: shipsWorldwide,
+supabase\migrations_legacy_sync_20260223193150\20251210140102_add_uk_shipping_support.sql:7:-- 1. Add ships_to_uk column to products table
+supabase\migrations_legacy_sync_20260223193150\20251210140102_add_uk_shipping_support.sql:9:  ADD COLUMN IF NOT EXISTS ships_to_uk BOOLEAN DEFAULT false;
+supabase\migrations_legacy_sync_20260223193150\20251210140102_add_uk_shipping_support.sql:11:COMMENT ON COLUMN public.products.ships_to_uk IS 'Ships to United Kingdom (separate from EU post-Brexit)';
+supabase\migrations_legacy_sync_20260223193150\20251210140102_add_uk_shipping_support.sql:14:CREATE INDEX IF NOT EXISTS idx_products_ships_to_uk ON public.products(ships_to_uk) WHERE ships_to_uk = true;
+supabase\migrations_legacy_sync_20260223193150\20251210140102_add_uk_shipping_support.sql:41:SET ships_to_uk = true
+supabase\migrations_legacy_sync_20260223193150\20251210140102_add_uk_shipping_support.sql:42:WHERE ships_to_europe = true AND ships_to_uk = false;
+supabase\migrations_legacy_sync_20260223193150\20251210140102_add_uk_shipping_support.sql:44:-- 7. Also set ships_to_uk for worldwide products
+supabase\migrations_legacy_sync_20260223193150\20251210140102_add_uk_shipping_support.sql:46:SET ships_to_uk = true
+supabase\migrations_legacy_sync_20260223193150\20251210140102_add_uk_shipping_support.sql:47:WHERE ships_to_worldwide = true AND ships_to_uk = false;;
+supabase\migrations_legacy_sync_20260223193150\20251216174303_product_promotional_fields.sql:10:  ADD COLUMN IF NOT EXISTS free_shipping BOOLEAN DEFAULT false,
+supabase\migrations_legacy_sync_20260223193150\20251216174303_product_promotional_fields.sql:15:  ADD COLUMN IF NOT EXISTS shipping_days INTEGER DEFAULT NULL;
+supabase\migrations_legacy_sync_20260223193150\20251216174303_product_promotional_fields.sql:19:CREATE INDEX IF NOT EXISTS idx_products_free_shipping ON public.products(free_shipping) WHERE free_shipping = true;
+supabase\migrations_legacy_sync_20260223193150\20251216174303_product_promotional_fields.sql:27:COMMENT ON COLUMN public.products.free_shipping IS 'Whether seller offers free shipping';
+supabase\migrations_legacy_sync_20260223193150\20251216174303_product_promotional_fields.sql:32:COMMENT ON COLUMN public.products.shipping_days IS 'Estimated shipping time in days';
+supabase\migrations_legacy_sync_20260223193150\20251217000000_phase2_security_performance.sql:93:    ships_to_bulgaria,
+supabase\migrations_legacy_sync_20260223193150\20251217000000_phase2_security_performance.sql:94:    ships_to_europe,
+supabase\migrations_legacy_sync_20260223193150\20251217000000_phase2_security_performance.sql:95:    ships_to_usa,
+supabase\migrations_legacy_sync_20260223193150\20251217000000_phase2_security_performance.sql:96:    ships_to_worldwide,
+supabase\migrations_legacy_sync_20260223193150\20251217000000_phase2_security_performance.sql:97:    pickup_only,
+supabase\migrations_legacy_sync_20260223193150\20251217000000_phase2_security_performance.sql:99:    ships_to_uk,
+supabase\migrations_legacy_sync_20260223193150\20251217000000_phase2_security_performance.sql:111:    free_shipping,
+supabase\migrations_legacy_sync_20260223193150\20251217000000_phase2_security_performance.sql:115:    shipping_days,
+supabase\migrations_legacy_sync_20260223193150\20251217151203_phase2_security_performance.sql:94:    ships_to_bulgaria,
+supabase\migrations_legacy_sync_20260223193150\20251217151203_phase2_security_performance.sql:95:    ships_to_europe,
+supabase\migrations_legacy_sync_20260223193150\20251217151203_phase2_security_performance.sql:96:    ships_to_usa,
+supabase\migrations_legacy_sync_20260223193150\20251217151203_phase2_security_performance.sql:97:    ships_to_worldwide,
+supabase\migrations_legacy_sync_20260223193150\20251217151203_phase2_security_performance.sql:98:    pickup_only,
+supabase\migrations_legacy_sync_20260223193150\20251217151203_phase2_security_performance.sql:100:    ships_to_uk,
+supabase\migrations_legacy_sync_20260223193150\20251217151203_phase2_security_performance.sql:112:    free_shipping,
+supabase\migrations_legacy_sync_20260223193150\20251217151203_phase2_security_performance.sql:116:    shipping_days,
+supabase\migrations_legacy_sync_20260223193150\20260101143157_cleanup_over_engineered_rpcs.sql:90:DROP INDEX IF EXISTS idx_products_free_shipping;
+supabase\migrations_legacy_sync_20260223193150\20260101143157_cleanup_over_engineered_rpcs.sql:92:DROP INDEX IF EXISTS idx_products_ships_to_bulgaria;
+supabase\migrations_legacy_sync_20260223193150\20260101170000_cleanup_over_engineered_rpcs.sql:90:DROP INDEX IF EXISTS idx_products_free_shipping;
+supabase\migrations_legacy_sync_20260223193150\20260101170000_cleanup_over_engineered_rpcs.sql:92:DROP INDEX IF EXISTS idx_products_ships_to_bulgaria;
+supabase\migrations_legacy_sync_20260223193150\20260101205537_phase1_cleanup_over_engineered_rpcs_20260101.sql:90:DROP INDEX IF EXISTS idx_products_free_shipping;
+supabase\migrations_legacy_sync_20260223193150\20260101205537_phase1_cleanup_over_engineered_rpcs_20260101.sql:92:DROP INDEX IF EXISTS idx_products_ships_to_bulgaria;
+supabase\migrations_legacy_sync_20260223193150\20260124120000_phase_c_private_surfaces.sql:381:  ships_to_bulgaria,
+supabase\migrations_legacy_sync_20260223193150\20260124120000_phase_c_private_surfaces.sql:382:  ships_to_europe,
+supabase\migrations_legacy_sync_20260223193150\20260124120000_phase_c_private_surfaces.sql:383:  ships_to_usa,
+supabase\migrations_legacy_sync_20260223193150\20260124120000_phase_c_private_surfaces.sql:384:  ships_to_worldwide,
+supabase\migrations_legacy_sync_20260223193150\20260124120000_phase_c_private_surfaces.sql:385:  pickup_only,
+supabase\migrations_legacy_sync_20260223193150\20260124120000_phase_c_private_surfaces.sql:387:  ships_to_uk,
+supabase\migrations_legacy_sync_20260223193150\20260124120000_phase_c_private_surfaces.sql:396:  free_shipping,
+supabase\migrations_legacy_sync_20260223193150\20260124120000_phase_c_private_surfaces.sql:400:  shipping_days,
+supabase\migrations_legacy_sync_20260223193150\20260124161357_phase_c_private_surfaces.sql:381:  ships_to_bulgaria,
+supabase\migrations_legacy_sync_20260223193150\20260124161357_phase_c_private_surfaces.sql:382:  ships_to_europe,
+supabase\migrations_legacy_sync_20260223193150\20260124161357_phase_c_private_surfaces.sql:383:  ships_to_usa,
+supabase\migrations_legacy_sync_20260223193150\20260124161357_phase_c_private_surfaces.sql:384:  ships_to_worldwide,
+supabase\migrations_legacy_sync_20260223193150\20260124161357_phase_c_private_surfaces.sql:385:  pickup_only,
+supabase\migrations_legacy_sync_20260223193150\20260124161357_phase_c_private_surfaces.sql:387:  ships_to_uk,
+supabase\migrations_legacy_sync_20260223193150\20260124161357_phase_c_private_surfaces.sql:396:  free_shipping,
+supabase\migrations_legacy_sync_20260223193150\20260124161357_phase_c_private_surfaces.sql:400:  shipping_days,
+supabase\migrations_legacy_sync_20260223193150\20260124100000_update_deal_products_view.sql:37:    ships_to_bulgaria,
+supabase\migrations_legacy_sync_20260223193150\20260124100000_update_deal_products_view.sql:38:    ships_to_europe,
+supabase\migrations_legacy_sync_20260223193150\20260124100000_update_deal_products_view.sql:39:    ships_to_usa,
+supabase\migrations_legacy_sync_20260223193150\20260124100000_update_deal_products_view.sql:40:    ships_to_worldwide,
+supabase\migrations_legacy_sync_20260223193150\20260124100000_update_deal_products_view.sql:41:    pickup_only,
+supabase\migrations_legacy_sync_20260223193150\20260124100000_update_deal_products_view.sql:43:    ships_to_uk,
+supabase\migrations_legacy_sync_20260223193150\20260124100000_update_deal_products_view.sql:55:    free_shipping,
+supabase\migrations_legacy_sync_20260223193150\20260124100000_update_deal_products_view.sql:60:    shipping_days,
+supabase\migrations\20251210140102_add_uk_shipping_support.sql:7:-- 1. Add ships_to_uk column to products table
+supabase\migrations\20251210140102_add_uk_shipping_support.sql:9:  ADD COLUMN IF NOT EXISTS ships_to_uk BOOLEAN DEFAULT false;
+supabase\migrations\20251210140102_add_uk_shipping_support.sql:11:COMMENT ON COLUMN public.products.ships_to_uk IS 'Ships to United Kingdom (separate from EU post-Brexit)';
+supabase\migrations\20251210140102_add_uk_shipping_support.sql:14:CREATE INDEX IF NOT EXISTS idx_products_ships_to_uk ON public.products(ships_to_uk) WHERE ships_to_uk = true;
+supabase\migrations\20251210140102_add_uk_shipping_support.sql:41:SET ships_to_uk = true
+supabase\migrations\20251210140102_add_uk_shipping_support.sql:42:WHERE ships_to_europe = true AND ships_to_uk = false;
+supabase\migrations\20251210140102_add_uk_shipping_support.sql:44:-- 7. Also set ships_to_uk for worldwide products
+supabase\migrations\20251210140102_add_uk_shipping_support.sql:46:SET ships_to_uk = true
+supabase\migrations\20251210140102_add_uk_shipping_support.sql:47:WHERE ships_to_worldwide = true AND ships_to_uk = false;;
+supabase\migrations\20251217151203_phase2_security_performance.sql:94:    ships_to_bulgaria,
+supabase\migrations\20251217151203_phase2_security_performance.sql:95:    ships_to_europe,
+supabase\migrations\20251217151203_phase2_security_performance.sql:96:    ships_to_usa,
+supabase\migrations\20251217151203_phase2_security_performance.sql:97:    ships_to_worldwide,
+supabase\migrations\20251217151203_phase2_security_performance.sql:98:    pickup_only,
+supabase\migrations\20251217151203_phase2_security_performance.sql:100:    ships_to_uk,
+supabase\migrations\20251217151203_phase2_security_performance.sql:112:    free_shipping,
+supabase\migrations\20251217151203_phase2_security_performance.sql:116:    shipping_days,
+supabase\migrations\20260101143157_cleanup_over_engineered_rpcs.sql:90:DROP INDEX IF EXISTS idx_products_free_shipping;
+supabase\migrations\20260101143157_cleanup_over_engineered_rpcs.sql:92:DROP INDEX IF EXISTS idx_products_ships_to_bulgaria;
+supabase\migrations\20251216174303_product_promotional_fields.sql:10:  ADD COLUMN IF NOT EXISTS free_shipping BOOLEAN DEFAULT false,
+supabase\migrations\20251216174303_product_promotional_fields.sql:15:  ADD COLUMN IF NOT EXISTS shipping_days INTEGER DEFAULT NULL;
+supabase\migrations\20251216174303_product_promotional_fields.sql:19:CREATE INDEX IF NOT EXISTS idx_products_free_shipping ON public.products(free_shipping) WHERE free_shipping = true;
+supabase\migrations\20251216174303_product_promotional_fields.sql:27:COMMENT ON COLUMN public.products.free_shipping IS 'Whether seller offers free shipping';
+supabase\migrations\20251216174303_product_promotional_fields.sql:32:COMMENT ON COLUMN public.products.shipping_days IS 'Estimated shipping time in days';
+supabase\migrations\20260101205537_phase1_cleanup_over_engineered_rpcs_20260101.sql:90:DROP INDEX IF EXISTS idx_products_free_shipping;
+supabase\migrations\20260101205537_phase1_cleanup_over_engineered_rpcs_20260101.sql:92:DROP INDEX IF EXISTS idx_products_ships_to_bulgaria;
+supabase\migrations\20260124161357_phase_c_private_surfaces.sql:381:  ships_to_bulgaria,
+supabase\migrations\20260124161357_phase_c_private_surfaces.sql:382:  ships_to_europe,
+supabase\migrations\20260124161357_phase_c_private_surfaces.sql:383:  ships_to_usa,
+supabase\migrations\20260124161357_phase_c_private_surfaces.sql:384:  ships_to_worldwide,
+supabase\migrations\20260124161357_phase_c_private_surfaces.sql:385:  pickup_only,
+supabase\migrations\20260124161357_phase_c_private_surfaces.sql:387:  ships_to_uk,
+supabase\migrations\20260124161357_phase_c_private_surfaces.sql:396:  free_shipping,
+supabase\migrations\20260124161357_phase_c_private_surfaces.sql:400:  shipping_days,
+supabase\migrations\20260224020000_drop_unused_indexes.sql:33:DROP INDEX IF EXISTS public.idx_products_ships_to_europe;
+supabase\migrations\20260224020000_drop_unused_indexes.sql:34:DROP INDEX IF EXISTS public.idx_products_ships_to_uk;
+supabase\migrations\20260224020000_drop_unused_indexes.sql:35:DROP INDEX IF EXISTS public.idx_products_ships_to_usa;
+supabase\migrations\20260224020000_drop_unused_indexes.sql:36:DROP INDEX IF EXISTS public.idx_products_ships_to_worldwide;

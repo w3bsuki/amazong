@@ -5,171 +5,25 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useTranslations } from "next-intl"
 
 import { createClient } from "@/lib/supabase/client"
-import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
-import { safeJsonParseUnknown } from "@/lib/safe-json"
 
 import { useAuth } from "./auth-state-manager"
+import { calculateCartSubtotal, calculateCartTotalItems } from "./cart-calculations"
+import {
+  MAX_CART_QUANTITY,
+  asString,
+  asStringArray,
+  normalizeCartImageUrl,
+  normalizePrice,
+  normalizeQuantity,
+  normalizeSellerSlugs,
+  parseStoredCartItems,
+  readCartFromStorage,
+  sanitizeCartItems,
+  toRecord,
+} from "./cart-helpers"
+import type { CartItem } from "./cart-types"
 
-export interface CartItem {
-  id: string
-  /** Optional product variant id (for listings with variants). */
-  variantId?: string
-  /** Optional variant display name for UX (cart rendering). */
-  variantName?: string
-  title: string
-  price: number
-  image: string
-  quantity: number
-  slug?: string
-  /** Seller username for SEO-friendly URLs */
-  username?: string
-  /** @deprecated Use 'username' instead */
-  storeSlug?: string | null
-}
-
-const MAX_CART_QUANTITY = 99
-const CART_ALLOWED_REMOTE_IMAGE_HOSTS = new Set([
-  "images.unsplash.com",
-  "cdn.simpleicons.org",
-  "flagcdn.com",
-  "upload.wikimedia.org",
-  "placehold.co",
-  "api.dicebear.com",
-])
-const CART_ALLOWED_REMOTE_IMAGE_HOST_SUFFIXES = [".supabase.co"] as const
-
-function toRecord(value: unknown): Record<string, unknown> | null {
-  return value && typeof value === "object" ? (value as Record<string, unknown>) : null
-}
-
-function asString(value: unknown): string | null {
-  return typeof value === "string" ? value : null
-}
-
-function asNumber(value: unknown): number | null {
-  if (typeof value === "number") return Number.isFinite(value) ? value : null
-  if (typeof value === "string") {
-    const parsed = Number(value)
-    return Number.isFinite(parsed) ? parsed : null
-  }
-  return null
-}
-
-function asStringArray(value: unknown): string[] | null {
-  if (!Array.isArray(value)) return null
-  const out: string[] = []
-  for (const item of value) {
-    if (typeof item !== "string") return null
-    out.push(item)
-  }
-  return out
-}
-
-function normalizeQuantity(value: unknown): number | null {
-  const numeric = asNumber(value)
-  if (numeric === null) return null
-  const rounded = Math.floor(numeric)
-  if (!Number.isSafeInteger(rounded) || rounded <= 0) return null
-  return Math.min(rounded, MAX_CART_QUANTITY)
-}
-
-function normalizePrice(value: unknown): number | null {
-  const numeric = asNumber(value)
-  if (numeric === null || numeric < 0) return null
-  return numeric
-}
-
-function normalizeSellerSlugs(item: {
-  username?: string | undefined
-  storeSlug?: string | null | undefined
-}): Pick<CartItem, "username" | "storeSlug"> {
-  const username = item.username ?? (item.storeSlug || undefined)
-  const storeSlug = item.storeSlug || item.username || undefined
-
-  return {
-    ...(username ? { username } : {}),
-    ...(storeSlug ? { storeSlug } : {}),
-  }
-}
-
-function isAllowedCartRemoteImageHost(hostname: string): boolean {
-  const normalized = hostname.toLowerCase()
-  if (CART_ALLOWED_REMOTE_IMAGE_HOSTS.has(normalized)) return true
-  return CART_ALLOWED_REMOTE_IMAGE_HOST_SUFFIXES.some((suffix) => normalized.endsWith(suffix))
-}
-
-function normalizeCartImageUrl(image: unknown): string {
-  const normalized = normalizeImageUrl(asString(image))
-
-  if (!/^https?:\/\//i.test(normalized)) {
-    return normalized
-  }
-
-  try {
-    const parsed = new URL(normalized)
-    if (!isAllowedCartRemoteImageHost(parsed.hostname)) return PLACEHOLDER_IMAGE_PATH
-    return normalized
-  } catch {
-    return PLACEHOLDER_IMAGE_PATH
-  }
-}
-
-function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
-  const sanitized: CartItem[] = []
-  for (const item of rawItems) {
-    if (!item?.id) continue
-    const price = normalizePrice(item.price)
-    const quantity = normalizeQuantity(item.quantity)
-    if (price === null || quantity === null) continue
-    const sellerSlugs = normalizeSellerSlugs({
-      username: item.username,
-      storeSlug: item.storeSlug ?? null,
-    })
-    sanitized.push({
-      ...item,
-      ...sellerSlugs,
-      image: normalizeCartImageUrl(item.image),
-      price,
-      quantity,
-    })
-  }
-  return sanitized
-}
-
-function readCartFromStorage(): {
-  items: CartItem[]
-  hadRawValue: boolean
-  wasCorrupt: boolean
-  wasSanitized: boolean
-} {
-  const raw = localStorage.getItem("cart")
-  if (!raw) {
-    return {
-      items: [],
-      hadRawValue: false,
-      wasCorrupt: false,
-      wasSanitized: false,
-    }
-  }
-
-  const parsed = safeJsonParseUnknown(raw)
-  if (!Array.isArray(parsed)) {
-    return {
-      items: [],
-      hadRawValue: true,
-      wasCorrupt: true,
-      wasSanitized: false,
-    }
-  }
-
-  const sanitized = sanitizeCartItems(parsed as unknown as CartItem[])
-  return {
-    items: sanitized,
-    hadRawValue: true,
-    wasCorrupt: false,
-    wasSanitized: sanitized.length !== parsed.length,
-  }
-}
+export type { CartItem } from "./cart-types"
 
 async function fetchServerCart(activeUserId: string, unknownProductLabel: string): Promise<CartItem[]> {
   const supabase = createClient()
@@ -243,8 +97,7 @@ async function fetchServerCart(activeUserId: string, unknownProductLabel: string
 async function syncLocalCartToServerStorage(): Promise<boolean> {
   const savedCart = localStorage.getItem("cart")
 
-  const parsed = safeJsonParseUnknown(savedCart)
-  const localItems = sanitizeCartItems((Array.isArray(parsed) ? parsed : []) as unknown as CartItem[])
+  const localItems = parseStoredCartItems(savedCart)
 
   if (localItems.length === 0) {
     if (savedCart) localStorage.removeItem("cart")
@@ -535,24 +388,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const totalItems = useMemo(
-    () =>
-      items.reduce((total, item) => {
-        const quantity = normalizeQuantity(item.quantity) ?? 0
-        return total + quantity
-      }, 0),
-    [items]
-  )
-
-  const subtotal = useMemo(
-    () =>
-      items.reduce((total, item) => {
-        const price = normalizePrice(item.price) ?? 0
-        const quantity = normalizeQuantity(item.quantity) ?? 0
-        return total + price * quantity
-      }, 0),
-    [items]
-  )
+  const totalItems = useMemo(() => calculateCartTotalItems(items), [items])
+  const subtotal = useMemo(() => calculateCartSubtotal(items), [items])
 
   const isReady = storageLoaded && !authLoading && serverSyncDone
 

@@ -1,7 +1,7 @@
-import { getCategoryTreeDepth3, type CategoryTreeNodeLite } from "@/lib/data/categories"
+import { getCategoryHierarchy, type CategoryWithChildren } from "@/lib/data/categories"
 
-export type CategoryNode = CategoryTreeNodeLite
+export type CategoryNode = CategoryWithChildren
 
 export async function getBusinessDashboardCategories(): Promise<CategoryNode[]> {
-  return getCategoryTreeDepth3()
+  return getCategoryHierarchy(null, 1)
 }

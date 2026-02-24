@@ -5,10 +5,11 @@ import { Folder as FolderSimple } from "lucide-react";
 
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { useTranslations } from "next-intl";
+import { clampModesToPolicy, toCategoryPolicy } from "@/lib/sell/category-policy";
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { CategorySelector } from "../ui/category-selector";
-import type { CategoryPathItem } from "../../_lib/types";
+import type { Category, CategoryPathItem } from "../../_lib/types";
 
 // ============================================================================
 // CATEGORY FIELD - Category picker using context pattern
@@ -37,8 +38,21 @@ async function prefetchCategoryAttributes(categoryId: string) {
   }
 }
 
+function findCategoryById(categories: Category[], categoryId: string): Category | null {
+  const stack = [...categories]
+  while (stack.length > 0) {
+    const current = stack.pop()
+    if (!current) continue
+    if (current.id === categoryId) return current
+    if (current.children?.length) {
+      for (const child of current.children) stack.push(child)
+    }
+  }
+  return null
+}
+
 export function CategoryField({ onCategoryChange, className, compact = false }: CategoryFieldProps) {
-  const { control, setValue, watch } = useSellForm();
+  const { control, setValue, watch, getValues } = useSellForm();
   const { categories, locale } = useSellFormContext();
   const tSell = useTranslations("Sell")
 
@@ -67,6 +81,39 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
           setValue("attributes", [], { shouldValidate: true, shouldDirty: true })
           field.onChange(categoryId)
           setValue("categoryPath", normalizedPath, { shouldValidate: false, shouldDirty: true })
+
+          const selectedCategory = findCategoryById(categories, categoryId)
+          const categoryPolicy = toCategoryPolicy(
+            selectedCategory
+              ? {
+                  allowed_listing_kinds: selectedCategory.allowed_listing_kinds,
+                  allowed_transaction_modes: selectedCategory.allowed_transaction_modes,
+                  allowed_fulfillment_modes: selectedCategory.allowed_fulfillment_modes,
+                  allowed_pricing_modes: selectedCategory.allowed_pricing_modes,
+                  default_fulfillment_mode: selectedCategory.default_fulfillment_mode,
+                }
+              : null
+          )
+          const currentValues = getValues()
+          const constrainedModes = clampModesToPolicy(
+            {
+              listingKind: currentValues.listingKind,
+              transactionMode: currentValues.transactionMode,
+              fulfillmentMode: currentValues.fulfillmentMode,
+              pricingMode: currentValues.pricingMode,
+            },
+            categoryPolicy
+          )
+
+          setValue("listingKind", constrainedModes.listingKind, { shouldValidate: true, shouldDirty: true })
+          setValue("transactionMode", constrainedModes.transactionMode, { shouldValidate: true, shouldDirty: true })
+          setValue("fulfillmentMode", constrainedModes.fulfillmentMode, { shouldValidate: true, shouldDirty: true })
+          setValue("pricingMode", constrainedModes.pricingMode, { shouldValidate: true, shouldDirty: true })
+          setValue("format", constrainedModes.pricingMode === "auction" ? "auction" : "fixed", {
+            shouldValidate: true,
+            shouldDirty: true,
+          })
+
           onCategoryChange?.(categoryId, normalizedPath)
           void prefetchCategoryAttributes(categoryId)
         }

@@ -17,6 +17,20 @@
 
 ---
 
+### 2026-02-24 | REFACTOR-PROD-002 | Production-Readiness Refactor Batches 1-4 + Test Expansion
+- Decision/Outcome: Executed broad structural refactor pass: action/auth migration validation, large file decomposition (messages/cart/providers/hooks/UI), route completeness closure (`missingLoading=0`), and duplicate reduction from `1951` to `1505`.
+- Why: Raise maintainability and release safety while keeping all quality gates green.
+- Impact: Architecture gate remains green (`client-boundary=266`, `over300=90`, `over500=11`, `missingLoading=0`, `duplicates=1505`); unit test suite expanded from `394` to `455` passing tests.
+- Next Action: Continue duplicate-line reduction and oversized-file decomposition toward stricter end-state targets.
+- Links: `app/actions/*`, `components/providers/*`, `hooks/*`, `app/[locale]/**/loading.tsx`, `app/api/payments/_lib/payment-method-ownership.ts`
+
+### 2026-02-24 | REFACTOR-VERIFY-001 | Category Redesign v2 Full Verification + Draft SQL Pack
+- Decision/Outcome: Completed end-to-end verification of `CATEGORY-REDESIGN-v2.md` against live Supabase schema/functions/triggers and code dependencies; produced a 4-file draft migration SQL pack.
+- Why: Validate that v2 plan is executable before any high-risk DB/category remap changes.
+- Impact: Identified blocking contradictions (`is_prime` drop blocked by `deal_products`, invalid v2 trigger syntax, stale function names, slug collision risk) and produced corrected migration steps with rollback notes.
+- Next Action: Human decisions for deferred verticals/uncategorized products/Bulgarian Traditional handling, then staged approval for migration execution.
+- Links: `refactor/supabase/VERIFICATION-REPORT.md`, `refactor/supabase/sql/v2-redesign/`
+
 ### 2026-02-24 | PLAN-001 | Docs Restructure & AI Vision Planning
 - Decision/Outcome: Copilot + Codex iterated 4 rounds to design new docs architecture for AI-first commerce platform evolution.
 - Why: Current docs optimized for V1 launch; need long-term strategic continuity and AI capability planning.

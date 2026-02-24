@@ -1,0 +1,103 @@
+components\desktop\quick-filter-pills.tsx:19:  { id: "free_shipping", labelKey: "tabs.free_shipping", icon: Package },
+components\desktop\feed-toolbar.tsx:31:export type QuickFilter = "deals" | "nearby" | "top_rated" | "free_shipping"
+lib\view-models\product-page.ts:83:  free_shipping?: unknown;
+lib\view-models\product-page.ts:242:      freeShipping: row.free_shipping === true,
+lib\shipping.ts:51: * // Returns: "ships_to_bulgaria.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true"
+lib\shipping.ts:54: * // Returns: "ships_to_uk.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true"
+lib\shipping.ts:62:      return 'ships_to_bulgaria.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true';
+lib\shipping.ts:65:      return 'ships_to_uk.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true';
+lib\shipping.ts:68:      return 'ships_to_europe.eq.true,ships_to_worldwide.eq.true';
+lib\shipping.ts:71:      return 'ships_to_usa.eq.true,ships_to_worldwide.eq.true';
+lib\data\products\types.ts:34:  ships_to_bulgaria?: boolean | null
+lib\data\products\types.ts:35:  ships_to_uk?: boolean | null
+lib\data\products\types.ts:36:  ships_to_europe?: boolean | null
+lib\data\products\types.ts:37:  ships_to_usa?: boolean | null
+lib\data\products\types.ts:38:  ships_to_worldwide?: boolean | null
+lib\data\products\types.ts:39:  pickup_only?: boolean | null
+lib\data\products\types.ts:40:  free_shipping?: boolean | null
+lib\data\products\queries.ts:26:  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+lib\data\products\queries.ts:31:  `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
+lib\data\products\normalize.ts:158:  free_shipping?: boolean | null
+lib\data\products\normalize.ts:203:    free_shipping: p.free_shipping ?? null,
+lib\data\products\normalize.ts:275:    freeShipping: p.free_shipping === true,
+lib\data\product-page.ts:51:  'id,title,slug,price,list_price,description,condition,images,attributes,meta_description,rating,review_count,stock,pickup_only,seller_city,seller_id,category_id,view_count,created_at' as const
+lib\supabase\database.types.ts:1424:          free_shipping: boolean | null
+lib\supabase\database.types.ts:1436:          pickup_only: boolean | null
+lib\supabase\database.types.ts:1445:          shipping_days: number | null
+lib\supabase\database.types.ts:1446:          ships_to_bulgaria: boolean | null
+lib\supabase\database.types.ts:1447:          ships_to_europe: boolean | null
+lib\supabase\database.types.ts:1448:          ships_to_uk: boolean | null
+lib\supabase\database.types.ts:1449:          ships_to_usa: boolean | null
+lib\supabase\database.types.ts:1450:          ships_to_worldwide: boolean | null
+lib\supabase\database.types.ts:1473:          free_shipping?: boolean | null
+lib\supabase\database.types.ts:1485:          pickup_only?: boolean | null
+lib\supabase\database.types.ts:1494:          shipping_days?: number | null
+lib\supabase\database.types.ts:1495:          ships_to_bulgaria?: boolean | null
+lib\supabase\database.types.ts:1496:          ships_to_europe?: boolean | null
+lib\supabase\database.types.ts:1497:          ships_to_uk?: boolean | null
+lib\supabase\database.types.ts:1498:          ships_to_usa?: boolean | null
+lib\supabase\database.types.ts:1499:          ships_to_worldwide?: boolean | null
+lib\supabase\database.types.ts:1522:          free_shipping?: boolean | null
+lib\supabase\database.types.ts:1534:          pickup_only?: boolean | null
+lib\supabase\database.types.ts:1543:          shipping_days?: number | null
+lib\supabase\database.types.ts:1544:          ships_to_bulgaria?: boolean | null
+lib\supabase\database.types.ts:1545:          ships_to_europe?: boolean | null
+lib\supabase\database.types.ts:1546:          ships_to_uk?: boolean | null
+lib\supabase\database.types.ts:1547:          ships_to_usa?: boolean | null
+lib\supabase\database.types.ts:1548:          ships_to_worldwide?: boolean | null
+lib\supabase\database.types.ts:2600:          free_shipping: boolean | null
+lib\supabase\database.types.ts:2612:          pickup_only: boolean | null
+lib\supabase\database.types.ts:2620:          shipping_days: number | null
+lib\supabase\database.types.ts:2621:          ships_to_bulgaria: boolean | null
+lib\supabase\database.types.ts:2622:          ships_to_europe: boolean | null
+lib\supabase\database.types.ts:2623:          ships_to_uk: boolean | null
+lib\supabase\database.types.ts:2624:          ships_to_usa: boolean | null
+lib\supabase\database.types.ts:2625:          ships_to_worldwide: boolean | null
+lib\supabase\database.types.ts:2648:          free_shipping?: boolean | null
+lib\supabase\database.types.ts:2660:          pickup_only?: boolean | null
+lib\supabase\database.types.ts:2668:          shipping_days?: number | null
+lib\supabase\database.types.ts:2669:          ships_to_bulgaria?: boolean | null
+lib\supabase\database.types.ts:2670:          ships_to_europe?: boolean | null
+lib\supabase\database.types.ts:2671:          ships_to_uk?: boolean | null
+lib\supabase\database.types.ts:2672:          ships_to_usa?: boolean | null
+lib\supabase\database.types.ts:2673:          ships_to_worldwide?: boolean | null
+lib\supabase\database.types.ts:2696:          free_shipping?: boolean | null
+lib\supabase\database.types.ts:2708:          pickup_only?: boolean | null
+lib\supabase\database.types.ts:2716:          shipping_days?: number | null
+lib\supabase\database.types.ts:2717:          ships_to_bulgaria?: boolean | null
+lib\supabase\database.types.ts:2718:          ships_to_europe?: boolean | null
+lib\supabase\database.types.ts:2719:          ships_to_uk?: boolean | null
+lib\supabase\database.types.ts:2720:          ships_to_usa?: boolean | null
+lib\supabase\database.types.ts:2721:          ships_to_worldwide?: boolean | null
+app\[locale]\[username]\[productSlug]\_components\product-page-layout.tsx:247:                  freeShipping={!product.pickup_only}
+app\[locale]\[username]\[productSlug]\_components\mobile\mobile-product-single-scroll.tsx:189:  const pickupOnly = product.pickup_only ?? false;
+app\[locale]\[username]\[productSlug]\_components\mobile\mobile-product-single-scroll.tsx:190:  const freeShipping = product.free_shipping === true;
+app\[locale]\(sell)\_actions\sell.ts:360:    ships_to_bulgaria: form.shipsToBulgaria ?? true,
+app\[locale]\(sell)\_actions\sell.ts:361:    ships_to_uk: form.shipsToUK ?? false,
+app\[locale]\(sell)\_actions\sell.ts:362:    ships_to_europe: form.shipsToEurope ?? false,
+app\[locale]\(sell)\_actions\sell.ts:363:    ships_to_usa: form.shipsToUSA ?? false,
+app\[locale]\(sell)\_actions\sell.ts:364:    ships_to_worldwide: form.shipsToWorldwide ?? false,
+app\[locale]\(sell)\_actions\sell.ts:365:    pickup_only: form.pickupOnly ?? false,
+app\[locale]\(sell)\_actions\sell.ts:366:    free_shipping: form.freeShipping ?? false,
+app\[locale]\(main)\categories\[slug]\_components\desktop-filter-toolbar-filter-pills.tsx:27:type QuickFilterId = "deals" | "nearby" | "top_rated" | "free_shipping"
+app\[locale]\(main)\categories\[slug]\_components\desktop-filter-toolbar-filter-pills.tsx:38:  { id: "free_shipping", labelKey: "tabs.free_shipping", icon: Package, paramKey: "freeShipping", paramValue: "true" },
+app\api\products\feed\route.ts:22:  'free_shipping',
+app\api\products\feed\route.ts:60:  if (filterTypes.has("free_shipping")) resolvedType = "free_shipping"
+app\api\products\feed\route.ts:110:    case "free_shipping":
+app\api\products\feed\route.ts:112:        .eq("free_shipping", true)
+app\api\products\feed\route.ts:182:        free_shipping,
+app\api\products\feed\route.ts:210:        free_shipping,
+app\api\products\newest\route.ts:211:      free_shipping,
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:17:  ships_to_bulgaria: boolean | null
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:18:  ships_to_europe: boolean | null
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:19:  ships_to_usa: boolean | null
+app\[locale]\(account)\account\selling\edit\edit-product.types.ts:20:  ships_to_worldwide: boolean | null
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:94:          "id,title,slug,description,price,list_price,is_on_sale,sale_percent,sale_end_date,seller_city,stock,images,is_boosted,boost_expires_at,is_featured,ships_to_bulgaria,ships_to_europe,ships_to_usa,ships_to_worldwide"
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:115:      setShipsBulgaria(data.ships_to_bulgaria ?? true)
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:116:      setShipsEurope(data.ships_to_europe ?? false)
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:117:      setShipsUSA(data.ships_to_usa ?? false)
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:118:      setShipsWorldwide(data.ships_to_worldwide ?? false)
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:232:      ships_to_bulgaria: shipsBulgaria,
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:233:      ships_to_europe: shipsEurope,
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:234:      ships_to_usa: shipsUSA,
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:235:      ships_to_worldwide: shipsWorldwide,

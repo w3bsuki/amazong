@@ -1,0 +1,71 @@
+lib\view-models\product-page.ts:64:  /** Category-adaptive hero specs (up to 4 key attributes) */
+lib\view-models\product-page.ts:132:  const attrs = toRecord(attributes);
+lib\view-models\product-page.ts:208:    details: buildItemSpecificsDetails(product.attributes, product.condition),
+lib\view-models\product-page.ts:209:    attributes: toRecord(product.attributes),
+lib\view-models\product-page.ts:244:      attributes: toStringAttributes(row.attributes),
+lib\badges\category-badge-specs.ts:101:    return buildAutomotiveBadges(attributes)
+lib\badges\category-badge-specs.ts:104:    return buildEmobilityBadges(attributes, slug)
+lib\badges\category-badge-specs.ts:107:    return buildElectronicsBadges(attributes, condition)
+lib\badges\category-badge-specs.ts:110:    return buildGamingBadges(attributes, condition)
+lib\badges\category-badge-specs.ts:113:    return buildFashionBadges(attributes, condition)
+lib\attributes\normalize-attribute-key.ts:3: * - products.attributes JSONB keys
+lib\sell\resolve-leaf-category.ts:61:  if (Array.isArray(context.attributes) && context.attributes.length > 0) {
+lib\sell\resolve-leaf-category.ts:62:    for (const attr of context.attributes) {
+lib\data\category-attributes.ts:202:      .from('category_attributes')
+lib\data\category-attributes.ts:208:    supabase.from('category_attributes').select(legacySelect).in('category_id', ancestorIds)
+lib\data\category-attributes.ts:239:        .from('category_attributes')
+lib\data\category-attributes.ts:245:      supabase.from('category_attributes').select(legacySelect).is('category_id', null)
+lib\data\category-attributes.ts:322:  return { attributes, ancestorIds }
+lib\data\category-attributes.ts:351:  const { attributes, ancestorIds } = await resolveCategoryAttributesWithClient(supabase, categoryId, {
+lib\data\category-attributes.ts:364:  return { categoryId, attributes, ancestorIds }
+lib\data\products\normalize.ts:90:  // products.attributes jsonb (fast filtering source)
+lib\data\products\normalize.ts:92:    p.attributes && typeof p.attributes === "object" && !Array.isArray(p.attributes)
+lib\data\product-page.ts:51:  'id,title,slug,price,list_price,description,condition,images,attributes,meta_description,rating,review_count,stock,pickup_only,seller_city,seller_id,category_id,view_count,created_at' as const
+lib\data\categories\context.ts:107:  const { attributes, ancestorIds } = attributesResult
+lib\data\categories\context.ts:130:    attributes,
+lib\data\search-products.ts:37:  if (filters.attributes) {
+lib\data\search-products.ts:38:    for (const [rawAttrName, attrValue] of Object.entries(filters.attributes)) {
+app\[locale]\(sell)\_components\fields\review-field.tsx:95:    attributes,
+app\[locale]\(sell)\_components\fields\category-field.tsx:18:  /** Callback when category changes (for side effects like loading attributes) */
+app\[locale]\(sell)\_components\fields\attributes-field.tsx:99:      nextAttrs = [...attributes, {
+app\[locale]\(sell)\_components\fields\attributes-field.tsx:110:  }, [attributes, setValue]);
+app\[locale]\(sell)\_components\fields\attributes-field.tsx:122:    setValue("attributes", [...attributes, nextAttr], { shouldValidate: true });
+app\[locale]\(sell)\_components\fields\attributes-field.tsx:125:  }, [newAttrName, newAttrValue, attributes, setValue]);
+app\[locale]\(sell)\_components\fields\attributes-field.tsx:131:  }, [attributes, setValue]);
+app\[locale]\(sell)\_components\fields\attributes-field.tsx:155:  }, [attributes, dbRequiredSmart]);
+app\[locale]\(sell)\_components\fields\attributes-field-grid.tsx:17:  attributes,
+app\[locale]\(sell)\_components\ai\ai-listing-assistant.tsx:181:      if (Array.isArray(s.attributes) && s.attributes.length > 0) {
+app\actions\products-create.ts:34:    const attributes = normalizeProductAttributes(input.attributes)
+app\actions\products-update.ts:163:  const attributes = normalizeProductAttributes((input as ProductInput).attributes)
+app\actions\products-update.ts:241:          attributes: normalizeProductAttributes(input.attributes).map((attribute) => ({
+app\api\products\feed\route.ts:185:        attributes,
+app\api\products\feed\route.ts:213:        attributes,
+app\api\products\count\route.ts:201:  if (!filters?.attributes) return query
+app\api\products\count\route.ts:203:  for (const [rawAttrName, attrValue] of Object.entries(filters.attributes).slice(0, 25)) {
+app\api\categories\[slug]\attributes\route.ts:34:    attributes: result.attributes,
+app\api\categories\[slug]\attributes\route.ts:62:        attributes: result.attributes,
+components\shared\product\card\list.tsx:123:    attributes,
+app\[locale]\(main)\_components\desktop\use-desktop-home-controller.ts:47:    attributes: product.attributes,
+app\[locale]\(main)\_components\desktop\use-desktop-home-controller.ts:103:  const attributes = getAttributes(product.attributes)
+app\[locale]\(main)\_components\desktop\use-desktop-home-controller.ts:113:  if (attributes) transformed.attributes = attributes
+app\[locale]\(main)\_components\desktop\use-category-attributes.ts:29:  const [attributes, setAttributes] = useState<CategoryAttribute[]>([])
+app\[locale]\(main)\_components\desktop\use-category-attributes.ts:54:      const attributesFromApi = Array.isArray(data.attributes) ? data.attributes : []
+app\[locale]\(main)\_components\desktop\use-category-attributes.ts:93:  return { attributes, isLoading, error }
+app\[locale]\(main)\categories\[slug]\_lib\search-products.ts:62:    "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,attributes,created_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
+app\[locale]\(main)\categories\[slug]\_lib\filter-priority.ts:74:    const heroKeys = getHeroAttributeKeys(attributes)
+app\[locale]\(main)\categories\[slug]\_components\mobile\use-instant-category-browse.ts:101:  const [attributes, setAttributes] = useState<CategoryAttribute[]>(initialAttributes)
+app\[locale]\(main)\categories\[slug]\_components\mobile\use-instant-category-browse.ts:227:      setAttributes(context.attributes)
+app\[locale]\(main)\categories\[slug]\_components\mobile\use-instant-category-browse.ts:311:    attributes,
+app\[locale]\(main)\categories\[slug]\_components\mobile\mobile-category-browser-contextual-view.tsx:48:  attributes,
+app\[locale]\(main)\_components\filters\use-filter-count.ts:191:    attributes,
+app\[locale]\(main)\categories\[slug]\_components\desktop-filter-toolbar-filter-pills.tsx:71:  attributes,
+app\[locale]\(main)\categories\[slug]\_components\desktop-filter-toolbar-filter-pills.tsx:93:    () => getFilterPillsForCategory(categorySlug, attributes),
+app\[locale]\(main)\categories\[slug]\_components\desktop-filter-toolbar-filter-pills.tsx:139:    for (const attr of attributes) {
+app\[locale]\(main)\categories\[slug]\_components\desktop-filter-toolbar-filter-pills.tsx:146:  }, [attributes, priorityFilters, locale])
+app\[locale]\(main)\_components\filters\shared\state\use-pending-filters.ts:63:  for (const attr of attributes) {
+app\[locale]\(main)\_components\filters\shared\state\use-pending-filters.ts:91:        attributes,
+app\[locale]\(main)\_components\filters\shared\state\use-pending-filters.ts:95:  }, [searchParams, attributes, includeExtendedFields])
+app\[locale]\(main)\_components\filters\shared\state\use-pending-filters.ts:114:      attributes: setPendingAttributeValues(prev.attributes, attrName, values),
+app\[locale]\(main)\_components\filters\shared\state\use-pending-filters.ts:129:    return Object.keys(pending.attributes).length > 0
+app\[locale]\(main)\_components\filters\filter-hub.tsx:106:        attributes: pending.attributes,
+app\[locale]\(main)\_components\filters\filter-hub\filter-hub-utils.ts:215:  for (const [attrName, values] of Object.entries(pending.attributes)) {

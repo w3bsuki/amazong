@@ -1,0 +1,102 @@
+app\api\products\search\route.ts:59:      const normalizedImages = Array.isArray(p.images) ? p.images : []
+app\api\products\quick-view\route.ts:46:    const imagesFromArray = (product.images ?? []).filter(
+app\[locale]\(business)\_components\products-table-row.tsx:67:            {product.images?.[0] ? (
+app\[locale]\(business)\_components\products-table-row.tsx:69:                src={product.images[0]}
+app\[locale]\(business)\_components\products-table-mappers.ts:19:    images: data.images,
+app\[locale]\(business)\_components\products-table-mappers.ts:41:    images: data.images,
+app\[locale]\(business)\_components\product-form-modal.tsx:86:        images: product?.images || [],
+app\[locale]\(business)\_components\product-form-modal.tsx:121:    setValue("images", [...images, ...newImages], { shouldDirty: true })
+app\[locale]\(business)\_components\product-form-modal.tsx:126:    const newImages = [...images]
+app\[locale]\(business)\_components\orders-table-view.tsx:256:                const firstImage = product?.images?.[0]
+app\[locale]\(business)\_components\order-detail-view.tsx:268:                      imageSrc={product?.images?.[0]}
+app\[locale]\(business)\_components\business-recent-activity.tsx:76:                    src={product.images?.[0]}
+app\[locale]\(business)\_components\business-recent-activity.tsx:124:                      src={product?.images?.[0]}
+app\[locale]\(sell)\_components\sell-form-unified.tsx:269:    const firstImageObj = form.getValues().images?.[0];
+app\[locale]\(sell)\_components\sell-form-provider.tsx:187:        if (parsed.images?.length || parsed.title || parsed.categoryId) {
+app\[locale]\(sell)\_components\layouts\stepper-wrapper.tsx:138:      (values.images?.length ?? 0) > 0 ||
+app\[locale]\(sell)\_components\layouts\desktop-layout.tsx:118:                {(formValues.images?.length ?? 0) > 0 && (
+app\[locale]\(sell)\_components\fields\photos-field.tsx:211:    const newImages = [...images, ...successfulUploads];
+app\[locale]\(sell)\_components\fields\photos-field.tsx:268:      const newImages = [...images];
+app\[locale]\(sell)\_components\fields\photos-field.tsx:290:  const hasError = !!errors.images;
+app\[locale]\(sell)\_components\fields\photos-field.tsx:339:          {errors.images?.message ? tSell(errors.images.message as never) : null}
+app\[locale]\(sell)\_actions\sell.ts:236:  const imageRecords = (form.images || []).map((image, index) => ({
+app\[locale]\(sell)\_actions\sell.ts:339:  const imageUrls = (form.images || []).map((img) => img.url)
+lib\view-models\product-page.ts:174:  const raw = product.images;
+lib\view-models\product-page.ts:216:    const rowImages = row.images;
+app\[locale]\(sell)\sell\orders\seller-orders-client.tsx:404:                            {item.product?.images?.[0] ? (
+app\[locale]\(sell)\sell\orders\seller-orders-client.tsx:406:                                src={item.product.images[0]}
+app\actions\products-update.ts:84:  if (input.images !== undefined) updateData.images = input.images
+app\actions\products-create.ts:107:        images: data.images,
+app\actions\products-create.ts:230:        images: original.images,
+app\actions\products-create.ts:255:          images: original.images,
+app\[locale]\_components\search\mobile-search-overlay.tsx:330:                            {product.images?.[0] ? (
+app\[locale]\_components\search\mobile-search-overlay.tsx:332:                                src={product.images[0]}
+app\[locale]\(business)\dashboard\inventory\page.tsx:133:                        {product.images?.[0] ? (
+app\[locale]\(business)\dashboard\inventory\page.tsx:135:                            src={product.images[0]}
+components\shared\product\card\metadata.ts:104:  if (input.images) quickView.images = input.images
+lib\supabase\messages.ts:90:          images: productRow.images || [],
+lib\supabase\database.types.ts:1442:          search_vector: unknown
+lib\supabase\database.types.ts:1491:          search_vector?: unknown
+lib\supabase\database.types.ts:1540:          search_vector?: unknown
+lib\supabase\database.types.ts:2618:          search_vector: unknown
+lib\supabase\database.types.ts:2666:          search_vector?: unknown
+lib\supabase\database.types.ts:2714:          search_vector?: unknown
+lib\sell\schema.ts:256:			completed: (data.images?.length ?? 0) > 0,
+app\[locale]\[username]\[productSlug]\page.tsx:141:  const ogImage = Array.isArray(product.images) && product.images?.[0]
+app\[locale]\[username]\[productSlug]\page.tsx:142:    ? (product.images[0] as string)
+app\[locale]\[username]\[productSlug]\page.tsx:224:    image: (Array.isArray(productData.images) ? productData.images : []) || [],
+components\layout\header\desktop\desktop-search-popover-panel.tsx:183:                    {product.images?.[0] ? (
+components\layout\header\desktop\desktop-search-popover-panel.tsx:185:                        src={product.images[0]}
+app\[locale]\[username]\profile-client-tabs.tsx:133:                          image={product.images?.[0] || ""}
+app\[locale]\(main)\_components\desktop\use-desktop-home-controller.ts:63:  const images = Array.isArray(product.images) ? (product.images as string[]) : []
+components\providers\wishlist-context.tsx:136:            image: prod?.images?.[0] || "/placeholder.svg",
+components\providers\cart-context.tsx:215:      const images = asStringArray(products?.images)
+lib\auth\business.ts:1233:        ...(product?.images?.[0] ? { image: product.images[0] } : {}),
+lib\auth\business.ts:1249:        ...(product.images?.[0] ? { image: product.images[0] } : {}),
+hooks\use-quick-view-actions.ts:27:    const imgs = product.images?.length
+hooks\use-quick-view-actions.ts:28:      ? product.images
+hooks\use-product-search.ts:280:        image: product.images?.[0] || null,
+lib\ai\tools\search-listings.ts:38:    const normalizedImages = Array.isArray(p.images) ? p.images : []
+lib\ai\tools\get-listing.ts:39:  const normalizedImages = Array.isArray(product.images) ? product.images : []
+lib\data\products\normalize.ts:137:  return p.images?.[0] || "/placeholder.svg"
+lib\data\products\normalize.ts:202:    images: p.images ?? null,
+app\[locale]\(account)\account\billing\billing-history-tabs.tsx:239:                              {boost.products?.images?.[0] && (
+app\[locale]\(account)\account\billing\billing-history-tabs.tsx:241:                                  src={boost.products.images[0]}
+app\[locale]\(account)\account\billing\page.tsx:87:      products: product ? { id: product.id, title: product.title, images: product.images || [] } : undefined
+app\[locale]\(main)\search\_lib\search-products.ts:132:        const images = Array.isArray(p.images)
+app\[locale]\(main)\search\_lib\search-products.ts:133:          ? p.images.filter((img): img is string => typeof img === "string" && img.length > 0)
+app\[locale]\(account)\account\_components\account-recent-activity.tsx:136:                    if (Array.isArray(products)) return products[0]?.images?.[0]
+app\[locale]\(account)\account\_components\account-recent-activity.tsx:137:                    return products.images?.[0]
+app\[locale]\(account)\account\_components\account-recent-activity.tsx:195:                  if (Array.isArray(products)) return products[0]?.images?.[0]
+app\[locale]\(account)\account\_components\account-recent-activity.tsx:196:                  return products.images?.[0]
+app\[locale]\(account)\account\_components\account-recent-activity.tsx:267:                    {product.images?.[0] ? (
+app\[locale]\(account)\account\_components\account-recent-activity.tsx:269:                        src={product.images[0]}
+app\[locale]\(account)\account\_components\account-recent-activity.tsx:306:                  {product.images?.[0] ? (
+app\[locale]\(account)\account\_components\account-recent-activity.tsx:308:                      src={product.images[0]}
+app\[locale]\(main)\assistant\_components\assistant-playground.tsx:147:                            image={item.images?.[0] ?? null}
+app\[locale]\(account)\account\selling\selling-products-mobile-list.tsx:93:              {product.images?.[0] && product.images[0].startsWith("http") ? (
+app\[locale]\(account)\account\selling\selling-products-mobile-list.tsx:94:                <Image src={product.images[0]} alt={product.title} fill className="object-cover" sizes="80px" />
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:526:                {product?.images?.[0] ? (
+app\[locale]\(account)\account\selling\edit\edit-product-client.tsx:528:                    src={product.images[0]}
+app\[locale]\(account)\account\selling\selling-products-desktop-list.tsx:86:              {product.images?.[0] && product.images[0].startsWith("http") ? (
+app\[locale]\(account)\account\selling\selling-products-desktop-list.tsx:88:                  src={product.images[0]}
+app\[locale]\(account)\account\page.tsx:119:    ...(p.images ? { images: p.images } : {}),
+app\[locale]\(account)\account\page.tsx:132:      product_image: product?.images?.[0] ?? null,
+app\[locale]\(main)\search\page.tsx:187:    image: product.image_url || product.images?.[0] || "/placeholder.svg",
+app\[locale]\(account)\account\wishlist\page.tsx:114:      image: product?.images?.[0] || "/placeholder.svg",
+app\[locale]\(account)\account\sales\_components\sales-table.tsx:80:                    {sale.product?.images?.[0] && sale.product.images[0].startsWith("http") ? (
+app\[locale]\(account)\account\sales\_components\sales-table.tsx:82:                        src={sale.product.images[0]}
+app\[locale]\(account)\account\orders\_components\account-orders-grid-desktop.tsx:92:                        const image = item.product?.images?.[0] || "/placeholder.svg"
+app\[locale]\(account)\account\orders\_components\account-orders-grid-desktop.tsx:182:                          const image = product?.images?.[0] || "/placeholder.svg"
+app\[locale]\(main)\categories\[slug]\_components\category-page-dynamic-content.tsx:122:    image: product.image_url || product.images?.[0] || "/placeholder.svg",
+app\[locale]\(main)\categories\[slug]\_components\category-page-dynamic-content.tsx:201:                image: product.image_url || product.images?.[0] || "/placeholder.svg",
+app\[locale]\(account)\account\orders\_components\account-orders-grid-mobile.tsx:73:        const primaryImage = primaryProduct?.images?.[0] ?? null
+app\[locale]\(account)\account\orders\_components\account-orders-grid-mobile.tsx:181:                      const image = product?.images?.[0] || "/placeholder.svg"
+app\[locale]\(account)\account\sales\page.tsx:264:          images: product.images || [],
+app\[locale]\(account)\account\orders\[id]\_components\order-detail-content.tsx:409:                imageSrc={selectedItem.product?.images?.[0]}
+app\[locale]\(account)\account\orders\[id]\_components\order-detail-items-card.tsx:62:            const firstImage = item.product?.images?.[0]
+app\[locale]\(chat)\_components\chat-interface-messages.tsx:82:  const productImage = conversation.product?.images?.[0]
+app\[locale]\(main)\categories\[slug]\_lib\search-products.ts:128:      images: p.images || [],
+app\[locale]\(main)\categories\[slug]\_lib\search-products.ts:132:      image_url: p.images?.[0] || null,
+app\[locale]\(chat)\_components\conversation-list.tsx:260:        {conversation.product?.images?.[0] && (
+app\[locale]\(chat)\_components\conversation-list.tsx:263:              src={conversation.product.images[0]}
