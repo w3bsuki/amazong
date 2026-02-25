@@ -12,6 +12,7 @@ export async function generateMetadata({
     namespace: "Auth",
     titleKey: "setNewPassword",
     descriptionKey: "setNewPasswordDescription",
+    path: "/auth/reset-password",
   })
 }
 

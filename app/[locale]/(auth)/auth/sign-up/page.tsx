@@ -12,6 +12,7 @@ export async function generateMetadata({
     params,
     namespace: "Auth",
     titleKey: "createAccountTitle",
+    path: "/auth/sign-up",
   })
 }
 

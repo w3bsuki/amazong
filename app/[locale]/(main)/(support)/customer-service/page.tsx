@@ -8,6 +8,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import { CustomerServiceChat } from "./_components/customer-service-chat"
 import { PageShell } from "../../../_components/page-shell"
 import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
@@ -18,10 +19,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: "CustomerService" })
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/customer-service",
     title: t("metaTitle"),
     description: t("metaDescription"),
-  };
+  })
 }
 
 export default async function CustomerServicePage({ params }: { params: Promise<{ locale: string }> }) {

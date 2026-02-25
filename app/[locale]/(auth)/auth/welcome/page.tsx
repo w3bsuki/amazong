@@ -12,6 +12,7 @@ export async function generateMetadata({
     namespace: "Onboarding",
     titleKey: "accountType.title",
     descriptionKey: "accountType.subtitle",
+    path: "/auth/welcome",
   })
 }
 

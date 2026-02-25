@@ -10,6 +10,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return buildLegalRouteMetadata({
     params,
     namespace: "Cookies",
+    path: "/cookies",
     titleKey: "pageTitle",
     descriptionKey: "descriptionShort",
   })

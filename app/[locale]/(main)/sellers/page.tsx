@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server"
 import { setRequestLocale } from "next-intl/server"
 import { getTranslations } from "next-intl/server"
 import { Button } from "@/components/ui/button"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 import { getTopSellers } from "./_lib/get-top-sellers"
 import SellersDirectoryClient from "./_components/sellers-directory-client"
@@ -86,10 +87,12 @@ export async function generateMetadata({
   const locale = validateLocale(localeParam)
   const t = await getTranslations({ locale, namespace: "SellersDirectory" })
 
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/sellers",
     title: t("title"),
     description: t("description"),
-  }
+  })
 }
 
 export default async function SellersPage({
@@ -107,7 +110,7 @@ export default async function SellersPage({
   const sellersWithStats = await getTopSellers(supabase)
 
   return (
-    <PageShell variant="muted" className="pb-20 sm:pb-12">
+    <PageShell variant="muted">
       {/* Hero Banner */}
       <TopSellersHero
         breadcrumbItems={[{ label: t("breadcrumbLabel") }]}

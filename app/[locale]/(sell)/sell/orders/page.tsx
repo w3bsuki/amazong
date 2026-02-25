@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { setRequestLocale } from "next-intl/server"
 import { redirect, validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import { getOrderConversation, getSellerOrders, getSellerOrderStats } from "../../../../actions/orders-reads"
 import { canSellerRateBuyer } from "../../../../actions/orders-rating"
 import { updateOrderItemStatus } from "../../../../actions/orders-status"
@@ -16,13 +17,22 @@ export async function generateMetadata({
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
 
-  return {
-    title: locale === "bg" ? "Поръчки от купувачи | Treido" : "Seller Orders | Treido",
-    description:
-      locale === "bg"
-        ? "Управлявайте входящи поръчки, доставки и комуникация с купувачи."
-        : "Manage incoming orders, track shipments, and communicate with buyers.",
-  }
+  const title = locale === "bg" ? "Поръчки от купувачи" : "Seller Orders"
+  const description =
+    locale === "bg"
+      ? "Управлявайте входящи поръчки, доставки и комуникация с купувачи."
+      : "Manage incoming orders, track shipments, and communicate with buyers."
+
+  return createPageMetadata({
+    locale,
+    path: "/sell/orders",
+    title,
+    description,
+    robots: {
+      index: false,
+      follow: true,
+    },
+  })
 }
 
 export default async function SellerOrdersPage({

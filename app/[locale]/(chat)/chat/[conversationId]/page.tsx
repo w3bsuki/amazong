@@ -5,12 +5,12 @@ import { ConversationPageClient } from "../../_components/conversation-page-clie
 import { blockUser } from "../../../../actions/blocked-users"
 import { reportConversation } from "../../_actions/report-conversation"
 import { AuthGateCard } from "../../../_components/auth/auth-gate-card"
-import { emptyStaticParams } from "@/lib/next/static-params"
+import { BUILD_VALIDATION_UUID, localeStaticParamsWith } from "@/lib/next/static-params"
 
 // Generate static params for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated users
 export function generateStaticParams() {
-  return emptyStaticParams()
+  return localeStaticParamsWith({ conversationId: BUILD_VALIDATION_UUID })
 }
 
 /**

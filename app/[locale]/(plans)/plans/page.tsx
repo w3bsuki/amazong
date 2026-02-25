@@ -6,6 +6,7 @@ import PlansPageClient from "../_components/plans-page-client"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 // =============================================================================
 // Types
@@ -26,10 +27,12 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: "Plans.page" })
 
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/plans",
     title: t("title"),
     description: t("subtitle"),
-  }
+  })
 }
 
 export default async function PlansPage({ params }: PlansPageProps) {

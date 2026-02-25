@@ -5,6 +5,7 @@ import { CategoryIconGrid } from "@/components/mobile/category-nav/category-icon
 import { PageShell } from "../../_components/page-shell"
 import { CategoriesHeaderSync } from "./_components/categories-header-sync"
 import type { Metadata } from "next"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 export async function generateMetadata({
   params,
@@ -16,10 +17,12 @@ export async function generateMetadata({
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: "Categories" })
 
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/categories",
     title: t("title"),
     description: t("metaDescription"),
-  }
+  })
 }
 
 export default async function CategoriesPage({

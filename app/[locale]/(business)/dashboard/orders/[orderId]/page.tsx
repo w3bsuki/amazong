@@ -3,12 +3,12 @@ import { createClient } from "@/lib/supabase/server"
 import { notFound } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 import { OrderDetailView } from "../../../_components/order-detail-view"
-import { emptyStaticParams } from "@/lib/next/static-params"
+import { BUILD_VALIDATION_UUID, localeStaticParamsWith } from "@/lib/next/static-params"
 
 // Return placeholder param for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated sellers
 export function generateStaticParams() {
-  return emptyStaticParams()
+  return localeStaticParamsWith({ orderId: BUILD_VALIDATION_UUID })
 }
 
 interface OrderDetailPageProps {

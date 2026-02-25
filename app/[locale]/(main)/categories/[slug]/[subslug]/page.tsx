@@ -5,6 +5,7 @@ import { cacheLife, cacheTag } from "next/cache"
 
 import { validateLocale } from "@/i18n/routing"
 import { getCategoryBySlug } from "@/lib/data/categories"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import {
   CategoryNestedPageContent,
   type CategoryPageSearchParams,
@@ -49,23 +50,26 @@ export async function generateMetadata({
     leafCategory.parent.parent_id !== null
   ) {
     const tNotFound = await getTranslations({ locale, namespace: "CategoryNotFound" })
-    return {
-      title: tNotFound("title"),
-    }
+    const title = tNotFound("title")
+    return createPageMetadata({
+      locale,
+      path: "/categories",
+      title,
+      description: title,
+    })
   }
 
   const categoryName = locale === "bg" && leafCategory.name_bg
     ? leafCategory.name_bg
     : leafCategory.name
 
-  return {
+  const description = t("metaDescription", { categoryName })
+  return createPageMetadata({
+    locale,
+    path: `/categories/${slug}/${subslug}`,
     title: categoryName,
-    description: t("metaDescription", { categoryName }),
-    openGraph: {
-      title: categoryName,
-      description: t("metaDescription", { categoryName }),
-    },
-  }
+    description,
+  })
 }
 
 export default function CategoryNestedPage({

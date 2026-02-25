@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { StaticHeroPageShell } from "../../_components/static-hero-page-shell"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: localeParam } = await params
@@ -14,10 +15,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale)
   const t = await getTranslations('Security')
   
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/security",
     title: t('metaTitle'),
     description: t('metaDescription'),
-  }
+  })
 }
 
 export default async function SecurityPage({

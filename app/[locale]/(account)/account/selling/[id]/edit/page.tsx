@@ -1,10 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { EditProductClient } from "../../edit/edit-product-client"
-import { emptyStaticParams } from "@/lib/next/static-params"
+import { BUILD_VALIDATION_UUID, localeStaticParamsWith } from "@/lib/next/static-params"
 
 // Generate static params for build validation (required by cacheComponents)
 export function generateStaticParams() {
-  return emptyStaticParams()
+  return localeStaticParamsWith({ id: BUILD_VALIDATION_UUID })
 }
 
 export async function generateMetadata({

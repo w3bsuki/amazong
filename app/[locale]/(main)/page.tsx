@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { MobileHome } from "./_components/mobile-home"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import { 
   getNewestProducts, 
   getBoostedProducts, 
@@ -24,10 +25,12 @@ function toUiRows(rows: Awaited<ReturnType<typeof getNewestProducts>>): UIProduc
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Home" })
-  return {
+  return createPageMetadata({
+    locale,
+    path: "",
     title: t("metaTitle"),
     description: t("metaDescription"),
-  };
+  })
 }
 
 // =============================================================================

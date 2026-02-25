@@ -3,6 +3,7 @@ import { Zap } from "lucide-react";
 
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import { AppBreadcrumb, breadcrumbPresets } from "../../_components/navigation/app-breadcrumb"
 import { getProducts, toUI } from "@/lib/data/products"
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
@@ -16,10 +17,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale)
   const t = await getTranslations('TodaysDeals')
   
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/todays-deals",
     title: t('title'),
     description: t('metaDescription'),
-  }
+  })
 }
 
 export default async function TodaysDealsPage({
@@ -43,7 +46,7 @@ export default async function TodaysDealsPage({
     .filter((p) => typeof p.storeSlug === "string" && p.storeSlug.length > 0)
   
   return (
-    <PageShell variant="muted" className="pb-20 sm:pb-12">
+    <PageShell variant="muted">
       <div className="container pt-6">
         <AppBreadcrumb
           items={breadcrumbPresets(tBreadcrumbs).todaysDeals}

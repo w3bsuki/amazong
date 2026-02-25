@@ -17,6 +17,7 @@ export async function generateMetadata({
     namespace: "Auth",
     titleKey: "errorTitle",
     descriptionKey: "errorSubtitle",
+    path: "/auth/error",
   })
 }
 

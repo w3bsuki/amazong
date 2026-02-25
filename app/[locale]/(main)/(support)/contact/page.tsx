@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { validateLocale } from "@/i18n/routing"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { StaticHeroPageShell } from "../../_components/static-hero-page-shell"
 import { CreditCard, Package, CircleHelp as Question } from "lucide-react";
@@ -17,10 +18,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: "Contact" })
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/contact",
     title: t("title"),
     description: t("metaDescription"),
-  }
+  })
 }
 
 export default async function ContactPage({

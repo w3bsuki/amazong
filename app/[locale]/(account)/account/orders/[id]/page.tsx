@@ -8,12 +8,12 @@ import { OrderDetailContent } from "./_components/order-detail-content"
 import type { OrderItemStatus } from "@/lib/order-status"
 import type { OrderDetailItem, OrderDetailOrder } from "./_components/order-detail-types"
 import { withAccountPageShell } from "../../_lib/account-page-shell"
-import { emptyStaticParams } from "@/lib/next/static-params"
+import { BUILD_VALIDATION_UUID, localeStaticParamsWith } from "@/lib/next/static-params"
 
 // Return placeholder param for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated users
 export function generateStaticParams() {
-  return emptyStaticParams()
+  return localeStaticParamsWith({ id: BUILD_VALIDATION_UUID })
 }
 
 interface OrderDetailPageProps {

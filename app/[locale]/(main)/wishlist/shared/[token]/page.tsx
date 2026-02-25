@@ -5,6 +5,7 @@ import type { Metadata } from "next"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Gift, ShoppingCart } from "lucide-react";
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Database } from "@/lib/supabase/database.types"
@@ -21,12 +22,18 @@ interface SharedWishlistPageProps {
 }
 
 export async function generateMetadata({ params }: SharedWishlistPageProps): Promise<Metadata> {
-  const { locale } = await params
+  const { locale, token } = await params
   const t = await getTranslations({ locale, namespace: "SharedWishlist" })
-  return {
+  return createPageMetadata({
+    locale,
+    path: `/wishlist/shared/${token}`,
     title: t("metadataTitle"),
     description: t("metadataDescription"),
-  }
+    robots: {
+      index: false,
+      follow: true,
+    },
+  })
 }
 
 export default async function SharedWishlistPage({ params }: SharedWishlistPageProps) {

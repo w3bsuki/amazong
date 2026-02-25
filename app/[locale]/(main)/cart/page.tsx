@@ -2,6 +2,7 @@ import { validateLocale } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import CartPageClient from "./_components/cart-page-client"
 import type { Metadata } from "next"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 export async function generateMetadata({
   params,
@@ -12,10 +13,13 @@ export async function generateMetadata({
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: "Cart" })
-
-  return {
-    title: t("title"),
-  }
+  const title = t("title")
+  return createPageMetadata({
+    locale,
+    path: "/cart",
+    title,
+    description: title,
+  })
 }
 
 export default async function CartPage({ params }: { params: Promise<{ locale: string }> }) {

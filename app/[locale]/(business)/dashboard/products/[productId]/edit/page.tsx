@@ -4,12 +4,12 @@ import { notFound } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 import { ProductEditClient } from "./_components/product-edit-client"
 import { getBusinessDashboardCategories } from "../../../_lib/categories"
-import { emptyStaticParams } from "@/lib/next/static-params"
+import { BUILD_VALIDATION_UUID, localeStaticParamsWith } from "@/lib/next/static-params"
 
 // Return placeholder param for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated sellers
 export function generateStaticParams() {
-  return emptyStaticParams()
+  return localeStaticParamsWith({ productId: BUILD_VALIDATION_UUID })
 }
 
 export const metadata = {

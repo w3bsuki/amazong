@@ -7,7 +7,7 @@ import { buildLegalRouteMetadata, renderLegalDocPage, resolveLegalRouteLocale } 
 import type { LegalSection, RelatedLink } from "../_components/legal-page-layout"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  return buildLegalRouteMetadata({ params, namespace: "Terms" })
+  return buildLegalRouteMetadata({ params, namespace: "Terms", path: "/terms" })
 }
 
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {

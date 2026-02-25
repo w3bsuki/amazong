@@ -4,6 +4,7 @@ import { SellPageClient } from "./sell-page-client";
 import { getSellCategories } from "./_lib/categories";
 import { createListing } from "../_actions/sell";
 import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo/metadata";
 
 // Generate static params for all supported locales
 export async function generateMetadata({
@@ -15,9 +16,13 @@ export async function generateMetadata({
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "Sell" });
 
-  return {
-    title: t("metaTitle"),
-  };
+  const title = t("metaTitle")
+  return createPageMetadata({
+    locale,
+    path: "/sell",
+    title,
+    description: title,
+  })
 }
 
 // Check if user is a seller (has username and is_seller flag)

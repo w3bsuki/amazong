@@ -2,6 +2,7 @@ import { validateLocale } from "@/i18n/routing"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import WishlistPageClient from "./_components/wishlist-page-client"
 import type { Metadata } from "next"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 export async function generateMetadata({
   params,
@@ -13,10 +14,12 @@ export async function generateMetadata({
   setRequestLocale(locale)
   const t = await getTranslations("Wishlist")
 
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/wishlist",
     title: t("heading"),
     description: t("description"),
-  }
+  })
 }
 
 export default async function WishlistPage({

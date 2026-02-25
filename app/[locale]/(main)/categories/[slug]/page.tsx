@@ -5,6 +5,7 @@ import { cacheLife, cacheTag } from "next/cache"
 
 import { validateLocale } from "@/i18n/routing"
 import { getCategoryBySlug } from "@/lib/data/categories"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import {
   CategoryRootPageContent,
   type CategoryPageSearchParams,
@@ -44,23 +45,26 @@ export async function generateMetadata({
 
   if (!category) {
     const tNotFound = await getTranslations({ locale, namespace: "CategoryNotFound" })
-    return {
-      title: tNotFound("title"),
-    }
+    const title = tNotFound("title")
+    return createPageMetadata({
+      locale,
+      path: "/categories",
+      title,
+      description: title,
+    })
   }
 
   const categoryName = locale === "bg" && category.name_bg
     ? category.name_bg
     : category.name
 
-  return {
+  const description = t("metaDescription", { categoryName })
+  return createPageMetadata({
+    locale,
+    path: `/categories/${slug}`,
     title: categoryName,
-    description: t("metaDescription", { categoryName }),
-    openGraph: {
-      title: categoryName,
-      description: t("metaDescription", { categoryName }),
-    },
-  }
+    description,
+  })
 }
 
 export default function CategoryPage({

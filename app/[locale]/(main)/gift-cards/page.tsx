@@ -3,6 +3,7 @@ import { AppBreadcrumb, breadcrumbPresets } from "../../_components/navigation/a
 import { validateLocale } from "@/i18n/routing"
 import type { Metadata } from "next"
 import { CreditCard, Gift, Mail, Printer } from "lucide-react";
+import { createPageMetadata } from "@/lib/seo/metadata"
 import { PageShell } from "../../_components/page-shell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -18,10 +19,12 @@ export async function generateMetadata({
   setRequestLocale(locale)
   const t = await getTranslations("GiftCards")
 
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/gift-cards",
     title: t("title"),
     description: t("metaDescription"),
-  }
+  })
 }
 
 function GiftCardsHero({ t }: { t: (key: string) => string }) {

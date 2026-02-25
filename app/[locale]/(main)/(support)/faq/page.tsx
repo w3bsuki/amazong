@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import {
   Accordion,
   AccordionContent,
@@ -22,10 +23,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale)
 
   const t = await getTranslations({ locale, namespace: 'FAQPage' })
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/faq",
     title: t('metaTitle'),
     description: t('metaDescription'),
-  }
+  })
 }
 
 // FAQ data structure

@@ -1,6 +1,7 @@
 import { validateLocale } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import MembersPageClient from "./_components/members-page-client"
 import { getMembersPageData, type MembersSearchParams } from "./_lib/get-members-page-data"
 
@@ -10,10 +11,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale)
 
   const t = await getTranslations({ locale, namespace: 'MembersPage' })
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/members",
     title: t('metaTitle'),
     description: t('metaDescription'),
-  }
+  })
 }
 
 interface MembersPageProps {

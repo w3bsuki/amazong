@@ -14,6 +14,7 @@ import { Link } from "@/i18n/routing"
 import { StaticHeroPageShell } from "../../_components/static-hero-page-shell"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -21,10 +22,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: "Returns" })
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/returns",
     title: t("metaTitle"),
     description: t("metaDescription"),
-  };
+  })
 }
 
 export default async function ReturnsPage({ params }: { params: Promise<{ locale: string }> }) {

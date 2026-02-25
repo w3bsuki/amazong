@@ -11,6 +11,7 @@ export async function generateMetadata({
     namespace: "Auth",
     titleKey: "signUpSuccessTitle",
     descriptionKey: "signUpSuccessDescription",
+    path: "/auth/sign-up-success",
   })
 }
 

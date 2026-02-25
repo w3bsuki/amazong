@@ -3,6 +3,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { isAiAssistantEnabled } from "@/lib/ai/env"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import { AssistantPlayground } from "./_components/assistant-playground"
 
 export async function generateMetadata({
@@ -13,10 +14,12 @@ export async function generateMetadata({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "Assistant" })
 
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/assistant",
     title: t("title"),
     description: t("assistantIntro"),
-  }
+  })
 }
 
 export default async function AssistantPage({

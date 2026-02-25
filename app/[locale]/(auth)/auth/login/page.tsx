@@ -12,6 +12,7 @@ export async function generateMetadata({
     params,
     namespace: "Auth",
     titleKey: "signIn",
+    path: "/auth/login",
   })
 }
 

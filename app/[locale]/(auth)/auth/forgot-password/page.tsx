@@ -13,6 +13,7 @@ export async function generateMetadata({
     namespace: "Auth",
     titleKey: "forgotPasswordTitle",
     descriptionKey: "forgotPasswordDescription",
+    path: "/auth/forgot-password",
   })
 }
 
