@@ -146,3 +146,15 @@ refactor/*-audit-report.md
 refactor/*-audit-refactor.md
 refactor/final-sweep*.md
 refactor/intl-audit*.md
+
+# Keep legacy refactor pointers tracked (used by refactor-with-opus/* docs)
+!refactor/nextjs-audit-refactor.md
+!refactor/react-audit-refactor.md
+!refactor/typescript-audit-refactor.md
+!refactor/tailwind-audit-refactor.md
+!refactor/shadcn-audit-refactor.md
+!refactor/supabase-audit-refactor.md
+!refactor/intl-audit-refactor.md
+!refactor/testing-audit-refactor.md
+!refactor/dx-audit-refactor.md
+!refactor/final-sweep.md
