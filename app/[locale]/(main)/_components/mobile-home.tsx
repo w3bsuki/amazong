@@ -265,7 +265,7 @@ export function MobileHome({
                 aria-label={tCategories("title")}
                 data-testid="home-v4-category-drawer-btn"
               >
-                <LayoutGrid size={20} strokeWidth={1.5} aria-hidden="true" />
+                <LayoutGrid size={20} aria-hidden="true" />
               </button>
             )}
             {rootCategoryChips.slice(0, 8).map((category) => {
@@ -280,7 +280,7 @@ export function MobileHome({
                   title={label}
                   data-testid={`home-v4-category-icon-${category.slug}`}
                 >
-                  {getCategoryIcon(category.slug, { size: 20, strokeWidth: 1.5 })}
+                  {getCategoryIcon(category.slug, { size: 20 })}
                 </button>
               )
             })}
