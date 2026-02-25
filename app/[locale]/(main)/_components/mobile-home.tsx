@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { ArrowLeft, ChevronRight, SlidersHorizontal as FiltersIcon } from "lucide-react"
+import { ArrowLeft, ChevronRight, LayoutGrid, SlidersHorizontal as FiltersIcon } from "lucide-react"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
@@ -11,6 +11,7 @@ import { getCategoryName, getCategorySlugKey } from "@/lib/data/categories/displ
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useHeader } from "@/components/providers/header-context"
 import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
+import { getCategoryIcon } from "@/components/shared/category-icons"
 import {
   SmartRail,
   type SmartRailAction,
@@ -213,13 +214,7 @@ export function MobileHome({
 
   const railPills: SmartRailPill[] = useMemo(() => {
     if (!activeCategorySlug) {
-      return rootCategoryChips.map((category) => ({
-        id: category.slug,
-        label: getCategoryLabel(category),
-        active: false,
-        onSelect: () => handlePrimaryTab(category.slug),
-        testId: `home-v4-root-${category.slug}`,
-      }))
+      return []
     }
 
     const leafPills = popularLeafChips.length > 0 ? popularLeafChips : activeSubcategories
@@ -245,10 +240,8 @@ export function MobileHome({
     activeSubcategories,
     activeSubcategorySlug,
     getCategoryLabel,
-    handlePrimaryTab,
     handleSubcategoryPill,
     popularLeafChips,
-    rootCategoryChips,
     tV4,
   ])
 
@@ -261,16 +254,53 @@ export function MobileHome({
       />
 
       <div className="mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe">
-        <SmartRail
-          ariaLabel={railAriaLabel}
-          pills={railPills}
-          leadingAction={railLeadingAction}
-          trailingAction={railTrailingAction}
-          sticky={true}
-          stickyTop="var(--offset-mobile-primary-rail)"
-          testId="home-v4-smart-rail"
-        />
+        {/* Option B: Icon-only category circles (no text) + DiscoveryRail */}
+        {!activeCategorySlug && rootCategoryChips.length > 0 && (
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar border-b border-border-subtle px-4 py-2.5" data-testid="home-v4-categories-row">
+            {categoryDrawer && (
+              <button
+                type="button"
+                onClick={() => categoryDrawer.openRoot()}
+                className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground/80 tap-transparent transition-colors hover:bg-accent active:bg-active"
+                aria-label={tCategories("title")}
+                data-testid="home-v4-category-drawer-btn"
+              >
+                <LayoutGrid size={20} strokeWidth={1.5} aria-hidden="true" />
+              </button>
+            )}
+            {rootCategoryChips.slice(0, 8).map((category) => {
+              const label = getCategoryLabel(category)
+              return (
+                <button
+                  key={category.slug}
+                  type="button"
+                  onClick={() => handlePrimaryTab(category.slug)}
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground/70 tap-transparent transition-colors hover:bg-accent active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={label}
+                  title={label}
+                  data-testid={`home-v4-category-icon-${category.slug}`}
+                >
+                  {getCategoryIcon(category.slug, { size: 20, strokeWidth: 1.5 })}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
+        {/* SmartRail — visible when drilling into a category */}
+        {activeCategorySlug && (
+          <SmartRail
+            ariaLabel={railAriaLabel}
+            pills={railPills}
+            leadingAction={railLeadingAction}
+            trailingAction={railTrailingAction}
+            sticky={true}
+            stickyTop="var(--offset-mobile-primary-rail)"
+            testId="home-v4-smart-rail"
+          />
+        )}
+
+        {/* Discovery scope tabs */}
         <DiscoveryRail
           activeScope={scope}
           onScopeChange={handleScopeChange}

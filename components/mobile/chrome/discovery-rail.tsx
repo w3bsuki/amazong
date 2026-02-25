@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils"
-import { getMobileGhostPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 import type { HomeDiscoveryScope } from "@/lib/home-browse-href"
 
 const DISCOVERY_SCOPES: HomeDiscoveryScope[] = ["forYou", "newest", "promoted", "deals", "nearby"]
@@ -30,7 +29,7 @@ export function DiscoveryRail({
       )}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className="flex w-max min-w-full items-center gap-1.5 px-inset py-1.5">
+      <div className="flex w-max min-w-full items-center gap-1.5 px-4 py-2">
         {DISCOVERY_SCOPES.map((scope) => {
           const isActive = activeScope === scope
           return (
@@ -40,9 +39,11 @@ export function DiscoveryRail({
               role="tab"
               aria-selected={isActive}
               onClick={() => onScopeChange(scope)}
-              className={getMobileGhostPillClass(
-                isActive,
-                "min-h-(--control-default) px-3 text-compact"
+              className={cn(
+                "rounded-full px-4 py-1.5 text-body font-medium whitespace-nowrap transition-all",
+                isActive
+                  ? "bg-foreground text-background shadow-sm"
+                  : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-accent"
               )}
               data-testid={testId ? `${testId}-${scope}` : undefined}
             >
