@@ -12,12 +12,12 @@
   "exactOptionalPropertyTypes": true,
   "module": "esnext",
   "moduleResolution": "bundler",
-  "allowJs": true,  // ← should be false (no JS in source)
+  "allowJs": false,
   "paths": { "@/*": ["./*"] }
 }
 ```
 
-Strict mode is on — good. But `allowJs: true` is unnecessary for a TypeScript-first repo.
+Strict mode is on — good. `allowJs` is disabled (TypeScript-first repo).
 
 ---
 
@@ -85,7 +85,7 @@ Not all server actions validate inputs with Zod before processing. Some trust th
 
 ## Pain Points
 
-1. **`allowJs: true`** — unnecessary, should be `false`
+1. **`allowJs`** — ✅ disabled (`false`)
 2. **46 unsafe casts** — indicates typing gaps at query boundaries
 3. **Two return type systems** — Envelope (11) vs ad-hoc (29) creates inconsistency
 4. **Incomplete Zod validation** — not all action inputs validated at boundary

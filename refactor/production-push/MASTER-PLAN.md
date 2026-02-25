@@ -25,6 +25,7 @@
 | 2026-02-25 | REF-CLEANUP-001 | Baseline captured: unsafe casts=46 (32 files), console lines=111; knip: 5 unused files + 1 export (saved to `refactor/production-push/baseline-knip-2026-02-25.txt`); architecture: client=269/1151, over300=66, over500=3, duplicates clones=53 lines=628 | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate) |
 | 2026-02-25 | REF-CLEANUP-002 | Repo hygiene: gitignore root artifacts (`.codex_*.txt`, eslint logs); moved Python scripts to `scripts/`; archived legacy `.pen` snapshots into `designs/archive/legacy-pen-files-2026-02-24.zip` | GREEN (typecheck, lint, styles:gate, test:unit) |
 | 2026-02-25 | REF-CLEANUP-003 | Docs link drift repaired: added `ARCHITECTURE.md` + `docs/DOMAINS.md`; restored legacy `refactor-with-opus` task file links (10 pointer docs under `refactor/`) and `pnpm -s refactor:links:gate` passes | GREEN (typecheck, lint, styles:gate, test:unit) |
+| 2026-02-25 | REF-CLEANUP-004 | Refactor docs consistency: updated `current.md` snapshots (overview metrics, project structure root clutter notes, TypeScript allowJs status) to reflect REF-CLEANUP progress | GREEN (typecheck, lint, styles:gate, test:unit) |
 
 ---
 
@@ -69,7 +70,7 @@
 | REF-CLEANUP-001 | Baseline snapshot + guardrail metrics | small | — | ✅ |
 | REF-CLEANUP-002 | Repo hygiene: artifacts + root clutter | medium | — | ✅ |
 | REF-CLEANUP-003 | Docs link drift repair | medium | — | ✅ |
-| REF-CLEANUP-004 | Refactor-program doc consistency | small | 003 | ⬜ |
+| REF-CLEANUP-004 | Refactor-program doc consistency | small | 003 | ✅ |
 | REF-CLEANUP-005 | Dead code: unused files/exports via Knip | medium | 001 | ⬜ |
 | REF-CLEANUP-006 | Dead deps: remove unused dependencies | medium | 005 | ⬜ |
 | REF-CLEANUP-007 | Logging standardization (ALL files, including auth/payments) | large | — | ⬜ |

@@ -6,12 +6,9 @@
 
 ```
 j:\amazong\
-├── .codex_*.txt          ← audit artifacts (should be gitignored)
-├── eslint-summary.txt    ← stale output
-├── eslint.log            ← stale output
-├── route_inventory.py    ← Python script (should be in scripts/)
-├── supa.py               ← Python script (should be in scripts/)
-├── supabase_scan.py      ← Python script (should be in scripts/)
+├── .codex_*.txt          ← audit artifacts (gitignored; should not be committed)
+├── eslint-summary.txt    ← local output (gitignored; should not be committed)
+├── eslint.log            ← local output (gitignored; should not be committed)
 ├── proxy.ts              ← Next.js 16 middleware convention
 ├── tsconfig.tsbuildinfo  ← build artifact (should be gitignored)
 │
@@ -22,7 +19,7 @@ j:\amazong\
 ├── i18n/                 ← 2 files, routing + request config
 ├── messages/             ← 2 files, en.json + bg.json
 ├── public/               ← static assets
-├── scripts/              ← build/scan scripts
+├── scripts/              ← build/scan scripts + Python tooling
 ├── supabase/             ← migrations + types
 ├── __tests__/            ← unit tests
 ├── test/                 ← test utils/shims
@@ -106,9 +103,9 @@ admin, assistant, auth, badges, billing, boost, categories, checkout, connect, h
 
 ## Pain Points
 
-1. **Root clutter:** ~16 stale files (audit outputs, Python scripts, build artifacts) in project root
+1. **Root clutter:** mostly addressed — root artifacts are gitignored and Python tooling moved to `scripts/`
 2. **Blurry boundaries:** Cross-route UI lives in both `components/` AND `app/[locale]/_components/`
 3. **API naming inconsistency:** `app/api/categories/[slug]/children/route.ts` uses `[slug]` for UUID parent ID
 4. **generateStaticParams boilerplate:** 14 files, 6 return identical `routing.locales.map()`, 5 return `[]`
-5. **Missing docs:** References to `docs/DOMAINS.md` and `ARCHITECTURE.md` that don't exist
-6. **Legacy refactor artifacts:** `refactor-with-opus/` folder with potentially stale content
+5. **Missing docs:** fixed — `ARCHITECTURE.md` + `docs/DOMAINS.md` now exist
+6. **Legacy refactor artifacts:** `refactor-with-opus/` exists but is legacy; historical links are preserved via pointer docs in `refactor/*.md`

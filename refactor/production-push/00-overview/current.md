@@ -25,16 +25,16 @@
 
 | Metric | Value | Status |
 |--------|-------|--------|
-| Source files | 1,139 | — |
+| Source files | 1,151 | — |
 | Lines of code | ~120,788 | Large but manageable |
-| Client components | 241 (21.2%) | Good ratio |
+| Client components | 269 (23.37%) | Good ratio |
 | Server-only imports | 29 files | Correct boundary usage |
 | Unit tests | 455/455 passing | GREEN |
 | Typecheck | Clean | GREEN |
 | Lint | Clean | GREEN |
 | Styles gate | Clean | GREEN |
-| Architecture gate | GREEN (client=266, over300=69, over500=3) |
-| Duplicate clones | 89 clusters / 1,111 lines (0.7%) | Needs reduction |
+| Architecture gate | GREEN (client=269/1151, over300=66, over500=3, missingLoading=0, missingMetadata=0) |
+| Duplicate clones | 53 clones / 628 lines (0.4%) | Needs reduction |
 
 ---
 
@@ -46,7 +46,7 @@
 | `console.*` in production code | 111 occurrences | Noisy prod logs |
 | `pb-20` manual padding hacks | 14 in 13 files | Mobile spacing drift |
 | Non-Envelope server actions | 29/40 (73%) | Inconsistent API contracts |
-| Root clutter (audit artifacts) | ~16 files | Repo hygiene |
+| Root clutter (audit artifacts) | 0 tracked (gitignored) | Repo hygiene |
 | `generateStaticParams` duplicates | 14 files (11 identical) | DRY violation |
 | Migration fallback code | 8+ code paths | Technical debt |
 | Tailwind-colliding utilities | 6 in utilities.css | Confusing overrides |
