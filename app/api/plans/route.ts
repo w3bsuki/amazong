@@ -2,6 +2,7 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
 import { PLANS_SELECT_FULL } from "@/lib/data/plans"
 
+import { logger } from "@/lib/logger"
 export async function GET() {
   try {
     const supabase = createStaticClient()
@@ -23,7 +24,7 @@ export async function GET() {
         return cachedJsonResponse([], "catalog")
       }
 
-      console.error("Error fetching plans:", error)
+      logger.error("Error fetching plans:", error)
       return noStoreJson({ error: "Failed to fetch plans" }, { status: 500 })
     }
 
@@ -34,7 +35,7 @@ export async function GET() {
       return cachedJsonResponse([], "catalog")
     }
 
-    console.error("Plans API error:", error)
+    logger.error("Plans API error:", error)
     return noStoreJson({ error: "Internal server error" }, { status: 500 })
   }
 }

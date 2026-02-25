@@ -4,6 +4,7 @@ import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interru
 import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
 import { noStoreJson } from "@/lib/api/response-helpers"
 
+import { logger } from "@/lib/logger"
 /**
  * GET /api/seller/limits
  * Returns the current user's listing limits and subscription status
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
     if (isNextPrerenderInterrupted(error)) {
       return json({ skipped: true }, { status: 200 })
     }
-    console.error("Seller limits API error:", error)
+    logger.error("Seller limits API error:", error)
 
     return json(
       { error: error instanceof Error ? error.message : "Internal server error" },

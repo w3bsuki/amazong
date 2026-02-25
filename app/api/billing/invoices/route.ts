@@ -6,6 +6,7 @@ import { stripe } from '@/lib/stripe'
 import { isNextPrerenderInterrupted } from '@/lib/next/is-next-prerender-interrupted'
 import { noStoreJson } from "@/lib/api/response-helpers"
 
+import { logger } from "@/lib/logger"
 export async function GET(request: NextRequest) {
   if (process.env.NEXT_PHASE === 'phase-production-build') {
     return noStoreJson(successEnvelope({ skipped: true }), { status: 200 })
@@ -73,7 +74,9 @@ export async function GET(request: NextRequest) {
       })
 
       for (const invoice of invoices.data) {
-        const invoiceData = invoice as unknown as { subscription?: string | null }
+        const rawSubscription = (invoice as { subscription?: unknown }).subscription
+        const subscriptionId = typeof rawSubscription === "string" ? rawSubscription : null
+
         allInvoices.push({
           id: invoice.id,
           number: invoice.number,
@@ -85,7 +88,7 @@ export async function GET(request: NextRequest) {
           hosted_invoice_url: invoice.hosted_invoice_url ?? null,
           invoice_pdf: invoice.invoice_pdf ?? null,
           description: invoice.description,
-          subscription: typeof invoiceData.subscription === 'string' ? invoiceData.subscription : null,
+          subscription: subscriptionId,
           period_start: invoice.period_start,
           period_end: invoice.period_end,
         })
@@ -126,7 +129,7 @@ export async function GET(request: NextRequest) {
     if (isNextPrerenderInterrupted(error)) {
       return json(successEnvelope({ skipped: true }), { status: 200 })
     }
-    console.error('Error fetching billing data:', error)
+    logger.error('Error fetching billing data:', error)
 
     return json(
       errorEnvelope({ error: 'Failed to fetch billing data' }),

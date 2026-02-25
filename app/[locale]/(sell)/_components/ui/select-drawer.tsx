@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { useState, useEffect, useMemo } from "react";
 import { Check, Search as MagnifyingGlass, Plus } from "lucide-react";

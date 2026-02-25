@@ -4,10 +4,10 @@ import { useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { logger } from "@/lib/logger"
 import { RefreshCw as ArrowClockwise, CircleAlert as WarningCircle } from "lucide-react";
 
 
+import { logger } from "@/lib/logger"
 export default function BillingError({
   error,
   reset,

@@ -18,17 +18,24 @@ type RatingOrderItemRow = {
   order: { user_id: string }
 }
 
+async function getAuthedOrderRatingContext(orderItemId: string) {
+  const parsedOrderItemId = OrderActionItemIdSchema.safeParse(orderItemId)
+  if (!parsedOrderItemId.success) return null
+
+  const context = await getOrderActionContext(parsedOrderItemId.data)
+  if (!context.success) return null
+
+  return context
+}
+
 /**
  * Check if buyer can leave feedback for a seller after delivery
  */
 export async function canBuyerRateSeller(
   orderItemId: string
 ): Promise<{ canRate: boolean; hasRated: boolean; sellerId?: string }> {
-  const parsedOrderItemId = OrderActionItemIdSchema.safeParse(orderItemId)
-  if (!parsedOrderItemId.success) return { canRate: false, hasRated: false }
-
-  const context = await getOrderActionContext(parsedOrderItemId.data)
-  if (!context.success) return { canRate: false, hasRated: false }
+  const context = await getAuthedOrderRatingContext(orderItemId)
+  if (!context) return { canRate: false, hasRated: false }
 
   try {
     const { orderItemId: parsedOrderItemId, userId, supabase } = context
@@ -75,11 +82,8 @@ export async function canBuyerRateSeller(
 export async function canSellerRateBuyer(
   orderItemId: string
 ): Promise<{ canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string }> {
-  const parsedOrderItemId = OrderActionItemIdSchema.safeParse(orderItemId)
-  if (!parsedOrderItemId.success) return { canRate: false, hasRated: false }
-
-  const context = await getOrderActionContext(parsedOrderItemId.data)
-  if (!context.success) return { canRate: false, hasRated: false }
+  const context = await getAuthedOrderRatingContext(orderItemId)
+  if (!context) return { canRate: false, hasRated: false }
 
   try {
     const { orderItemId: parsedOrderItemId, userId, supabase } = context

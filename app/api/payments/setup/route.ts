@@ -6,6 +6,7 @@ import type { NextRequest } from "next/server"
 import { buildLocaleUrl, inferLocaleFromRequest } from "@/lib/stripe-locale"
 import { noStoreJson } from "@/lib/api/response-helpers"
 
+import { logger } from "@/lib/logger"
 export async function POST(request: NextRequest) {
     const { supabase, applyCookies } = createRouteHandlerClient(request)
     const json = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
 
         return json(successEnvelope({ url: session.url }))
     } catch (error) {
-        console.error("Error creating setup session:", error)
+        logger.error("Error creating setup session:", error)
         return json(
             errorEnvelope({ error: "Failed to create setup session" }),
             { status: 500 }

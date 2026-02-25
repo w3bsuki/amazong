@@ -46,13 +46,13 @@ export async function searchProducts(
 
     return supabase
       .from("products")
-      .select(select, { count: "exact", head: true }) as unknown as SearchQuery
+      .select(select, { count: "exact", head: true }) as SearchQuery
   }
 
   const buildDbBase = () => {
     return supabase.from("products").select(
       "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,is_boosted,boost_expires_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
-    ) as unknown as SearchQuery
+    ) as SearchQuery
   }
 
   const applyFilters = (q: SearchQuery) => {

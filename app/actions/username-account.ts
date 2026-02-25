@@ -5,7 +5,6 @@ import {
   revalidatePublicProfileTagsByUsername,
   revalidatePublicProfileTagsForUser,
 } from "@/lib/cache/revalidate-profile-tags"
-import { logger } from "@/lib/logger"
 import { revalidateTag } from "next/cache"
 import {
   RESERVED_USERNAMES,
@@ -16,6 +15,7 @@ import {
 } from "./username-shared"
 import type { z } from "zod"
 
+import { logger } from "@/lib/logger"
 export type UsernameAccountErrorCode =
   | "NOT_AUTHENTICATED"
   | "INVALID_USERNAME"

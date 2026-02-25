@@ -1,8 +1,6 @@
 import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
-import { bg, enUS } from "date-fns/locale"
-import { getLocale, getTranslations } from "next-intl/server"
-import { connection } from "next/server"
+import { getAdminPageShell } from "../_lib/admin-page-shell"
 import { Badge } from "@/components/ui/badge"
 import {
   TableBody,
@@ -15,6 +13,7 @@ import { Check as IconCheck, X as IconX } from "lucide-react";
 import { AdminTablePageLayout } from "../_components/admin-table-page-layout"
 
 
+import { logger } from "@/lib/logger"
 // Define seller type to avoid 'any'
 interface Seller {
   id: string
@@ -69,7 +68,7 @@ async function getSellers(): Promise<Seller[]> {
     const message = error.message
 
     if (!message.includes('During prerendering, fetch() rejects when the prerender is complete')) {
-      console.error('Failed to fetch sellers:', error)
+      logger.error('Failed to fetch sellers:', error)
     }
     return []
   }
@@ -107,9 +106,7 @@ async function AdminSellersContent() {
   await (await createClient()).auth.getUser()
 
   const sellers = await getSellers()
-  const t = await getTranslations("AdminSellers")
-  const locale = await getLocale()
-  const dateLocale = locale === "bg" ? bg : enUS
+  const { t, dateLocale } = await getAdminPageShell("AdminSellers")
   
   const getTierLabel = (tier: string | null) => {
     switch (tier) {
@@ -204,7 +201,5 @@ export const metadata = {
 }
 
 export default async function AdminSellersPage() {
-  await connection()
-
   return <AdminSellersContent />
 }

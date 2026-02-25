@@ -18,6 +18,7 @@ import type {
   MessageProviderProps,
 } from "./message-context.types"
 
+import { logger } from "@/lib/logger"
 // =============================================================================
 // TYPES - Re-exported from lib/types/messages.ts
 // =============================================================================
@@ -114,7 +115,7 @@ function MessageAutoStartConversation({
           router.replace(`/chat/${conversationId}`)
         }
       } catch (err) {
-        console.error("Error initializing conversation:", err)
+        logger.error("Error initializing conversation:", err)
       }
     }
 

@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
@@ -12,6 +11,7 @@ import { SalesTableSection } from "./_components/sales-table-section"
 import { PendingActions } from "./_components/pending-actions"
 import type { SaleItem } from "./types"
 export type { SaleItem } from "./types"
+import { withAccountPageShell } from "../_lib/account-page-shell"
 
 interface SalesPageProps {
   params: Promise<{
@@ -94,22 +94,12 @@ export async function generateMetadata({
 }
 
 export default async function SalesPage({ params, searchParams }: SalesPageProps) {
-  const { locale } = await params
   const { period = "30d", page } = await searchParams
   const requestedPage = parsePageParam(page)
-  const t = await getTranslations({ locale, namespace: "SellerManagement" })
-  const tCommon = await getTranslations({ locale, namespace: "Common" })
-  const supabase = await createClient()
 
-  if (!supabase) {
-    return redirect({ href: "/auth/login", locale })
-  }
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    return redirect({ href: "/auth/login", locale })
-  }
+  return withAccountPageShell(params, async ({ locale, supabase, user }) => {
+    const t = await getTranslations({ locale, namespace: "SellerManagement" })
+    const tCommon = await getTranslations({ locale, namespace: "Common" })
 
   // Check if user has a seller profile (has username)
   const [
@@ -323,73 +313,80 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
     }).format(value)
   }
 
-  return (
-    <PageShell>
-      <div className="container py-4 sm:py-6">
-        <AppBreadcrumb items={[
-          { label: t("sales.breadcrumb.account"), href: "/account" },
-          { label: t("sales.breadcrumb.sales") }
-        ]} />
-
-        <SalesPageHeader
-          title={t("sales.header.title")}
-          description={t("sales.header.description")}
-          myStoreLabel={t("sales.actions.myStore")}
-          newListingLabel={t("sales.actions.newListing")}
-        />
-
-        <PendingActions
-          ordersToShipCount={ordersToShipCount ?? 0}
-          unreadMessagesCount={unreadMessagesCount ?? 0}
-          lowStockCount={lowStockCount ?? 0}
-        />
-
-        <SalesStats
-          locale={locale}
-          totalRevenue={totalRevenue}
-          netRevenue={netRevenue}
-          totalSales={totalSales}
-          totalUnits={totalUnits}
-          avgOrderValue={avgOrderValue}
-          revenueGrowth={revenueGrowth}
-          salesGrowth={salesGrowth}
-          commissionRate={commissionRate}
-          totalCommission={totalCommission}
-          formatCurrency={formatCurrency}
-        />
-
-        <SalesChartSection
-          title={t("sales.sections.revenueOverTime.title")}
-          description={t("sales.sections.revenueOverTime.description")}
-          period={period}
-          locale={locale}
-          chartData={chartData}
-        />
-
-        <SalesTableSection
-          title={t("sales.sections.recentSales.title")}
-          description={t("sales.sections.recentSales.description", { count: totalSalesCount, period })}
-          sales={sales}
-          locale={locale}
-          period={period}
-          startDate={startDate}
-          now={now}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          previousLabel={tCommon("previous")}
-          nextLabel={tCommon("next")}
-          paginationLabel={tCommon("pagination")}
-        />
-
-        {sales.length === 0 && (
-          <SalesEmptyState
-            title={t("sales.empty.title")}
-            description={t("sales.empty.description")}
-            ctaLabel={t("sales.empty.cta")}
+  return {
+    content: (
+      <PageShell>
+        <div className="container py-4 sm:py-6">
+          <AppBreadcrumb
+            items={[
+              { label: t("sales.breadcrumb.account"), href: "/account" },
+              { label: t("sales.breadcrumb.sales") },
+            ]}
           />
-        )}
-      </div>
-    </PageShell>
-  )
-}
 
+          <SalesPageHeader
+            title={t("sales.header.title")}
+            description={t("sales.header.description")}
+            myStoreLabel={t("sales.actions.myStore")}
+            newListingLabel={t("sales.actions.newListing")}
+          />
+
+          <PendingActions
+            ordersToShipCount={ordersToShipCount ?? 0}
+            unreadMessagesCount={unreadMessagesCount ?? 0}
+            lowStockCount={lowStockCount ?? 0}
+          />
+
+          <SalesStats
+            locale={locale}
+            totalRevenue={totalRevenue}
+            netRevenue={netRevenue}
+            totalSales={totalSales}
+            totalUnits={totalUnits}
+            avgOrderValue={avgOrderValue}
+            revenueGrowth={revenueGrowth}
+            salesGrowth={salesGrowth}
+            commissionRate={commissionRate}
+            totalCommission={totalCommission}
+            formatCurrency={formatCurrency}
+          />
+
+          <SalesChartSection
+            title={t("sales.sections.revenueOverTime.title")}
+            description={t("sales.sections.revenueOverTime.description")}
+            period={period}
+            locale={locale}
+            chartData={chartData}
+          />
+
+          <SalesTableSection
+            title={t("sales.sections.recentSales.title")}
+            description={t("sales.sections.recentSales.description", {
+              count: totalSalesCount,
+              period,
+            })}
+            sales={sales}
+            locale={locale}
+            period={period}
+            startDate={startDate}
+            now={now}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            previousLabel={tCommon("previous")}
+            nextLabel={tCommon("next")}
+            paginationLabel={tCommon("pagination")}
+          />
+
+          {sales.length === 0 && (
+            <SalesEmptyState
+              title={t("sales.empty.title")}
+              description={t("sales.empty.description")}
+              ctaLabel={t("sales.empty.cta")}
+            />
+          )}
+        </div>
+      </PageShell>
+    ),
+  }
+  })
+}

@@ -1,13 +1,14 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
-import { locales, notFound } from "@/i18n/routing"
+import { notFound } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 import { OrderDetailView } from "../../../_components/order-detail-view"
+import { emptyStaticParams } from "@/lib/next/static-params"
 
 // Return placeholder param for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated sellers
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale, orderId: "__placeholder__" }))
+  return emptyStaticParams()
 }
 
 interface OrderDetailPageProps {
@@ -74,7 +75,7 @@ async function getOrderDetails(orderId: string, sellerId: string) {
   }
   
   // Cast to correct types
-  const typedItems = orderItems as unknown as Array<{
+  const typedItems = orderItems as Array<{
     id: string
     quantity: number
     price_at_purchase: number
@@ -99,17 +100,17 @@ async function getOrderDetails(orderId: string, sellerId: string) {
       }
     : null
 
-  const typedOrder = {
-    ...order,
-    shipping_address: shippingAddress,
-    user: typedOrderUser,
-  } as unknown as {
+  const typedOrder: {
     id: string
     status: string | null
     created_at: string
     total_amount: number
     shipping_address: Record<string, unknown> | null
     user: { id: string; email: string | null; full_name: string | null; phone: string | null } | null
+  } = {
+    ...order,
+    shipping_address: shippingAddress,
+    user: typedOrderUser,
   }
   
   return {

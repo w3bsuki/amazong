@@ -66,7 +66,7 @@ function Button({ className, variant, size, asChild = false, ref, ...props }: Bu
   if (asChild) {
     return (
       <Slot
-        ref={ref as unknown as React.Ref<HTMLElement>}
+        ref={ref as React.Ref<HTMLElement>}
         data-slot="button"
         className={classes}
         {...props}

@@ -6,7 +6,6 @@ import { toast } from "sonner"
 
 import { useCart } from "@/components/providers/cart-context"
 import { createClient } from "@/lib/supabase/client"
-import { logger } from "@/lib/logger"
 import type { AccountWishlistGridProps, WishlistItem } from "./account-wishlist.types"
 
 import type { WishlistGridLabels } from "./account-wishlist-grid/account-wishlist-grid.types"
@@ -15,6 +14,7 @@ import { WishlistDesktopGrid } from "./account-wishlist-grid/wishlist-desktop-gr
 import { WishlistEmptyState } from "./account-wishlist-grid/wishlist-empty-state"
 import { WishlistMobileGrid } from "./account-wishlist-grid/wishlist-mobile-grid"
 
+import { logger } from "@/lib/logger"
 export function AccountWishlistGrid({ items, locale, onRemove }: AccountWishlistGridProps) {
   const t = useTranslations("Wishlist")
   const { addToCart } = useCart()

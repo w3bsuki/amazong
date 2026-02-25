@@ -1,11 +1,11 @@
 import 'server-only'
 
 import { createClient, createAdminClient } from "@/lib/supabase/server"
-import { logger } from "@/lib/logger"
 import { redirect } from "@/i18n/routing"
 import { connection } from "next/server"
 import { getLocale } from "next-intl/server"
 
+import { logger } from "@/lib/logger"
 export type UserRole = 'buyer' | 'seller' | 'admin'
 
 export interface AdminUser {

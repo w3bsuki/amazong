@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { Star, PencilLine } from "lucide-react";
 import { useTranslations } from "next-intl";

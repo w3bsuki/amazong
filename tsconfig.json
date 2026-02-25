@@ -43,6 +43,7 @@
   "exclude": [
     "node_modules",
     ".next",
+    "designs",
     "scripts",
     "vitest.config.ts",
     "vitest.hooks.config.ts",

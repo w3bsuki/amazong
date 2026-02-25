@@ -5,6 +5,7 @@ import { STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { stripe } from '@/lib/stripe'
 import { noStoreJson } from "@/lib/api/response-helpers"
 
+import { logger } from "@/lib/logger"
 function getAppUrl() {
   return (
     process.env.NEXT_PUBLIC_APP_URL ||
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
 
     return json(successEnvelope({ url: portalSession.url }))
   } catch (error) {
-    console.error('Portal session error:', error)
+    logger.error('Portal session error:', error)
     return json(
       errorEnvelope({ error: 'Failed to create portal session' }),
       { status: 500 }

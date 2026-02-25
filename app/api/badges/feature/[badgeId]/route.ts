@@ -3,6 +3,7 @@ import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { noStoreJson } from "@/lib/api/response-helpers"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 const BadgeFeatureParamsSchema = z
   .object({
     badgeId: z.string().uuid(),
@@ -59,13 +60,18 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       return json({ error: "Badge not found" }, { status: 404 })
     }
 
-    const badge = badgeData as unknown as FeatureBadgeRow
-    
-    if (badge.user_id !== user.id) {
+    const badgeUserId = (badgeData as { user_id?: unknown }).user_id
+    const badgeIsFeatured = (badgeData as { is_featured?: boolean | null }).is_featured ?? null
+
+    if (typeof badgeUserId !== "string") {
+      return json({ error: "Badge not found" }, { status: 404 })
+    }
+
+    if (badgeUserId !== user.id) {
       return json({ error: "Forbidden" }, { status: 403 })
     }
 
-    const nextIsFeatured = !(badge.is_featured ?? false)
+    const nextIsFeatured = !(badgeIsFeatured ?? false)
 
     const { data: updatedData, error: updateError } = await supabase
       .from("user_badges")
@@ -82,15 +88,13 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       return json({ error: "Failed to update badge" }, { status: 500 })
     }
 
-    const updatedBadge = updatedData as unknown as { is_featured: boolean | null }
-
     return json({
       success: true,
-      is_featured: updatedBadge.is_featured === true,
+      is_featured: (updatedData as { is_featured?: boolean | null }).is_featured === true,
     })
     
   } catch (error) {
-    console.error("Error updating badge:", error)
+    logger.error("Error updating badge:", error)
     return json({ error: "Internal server error" }, { status: 500 })
   }
 }

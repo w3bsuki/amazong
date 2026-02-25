@@ -4,9 +4,9 @@ import { redirect } from "@/i18n/routing"
 import { headers } from "next/headers"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { loginSchema, signUpSchema } from "@/lib/validation/auth"
-import { logger } from "@/lib/logger"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 export type AuthActionState = {
   error?: string
   fieldErrors?: Record<string, string>

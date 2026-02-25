@@ -14,8 +14,8 @@ export type {
 export {
   getCategoryBySlug,
   getCategoryContext,
+  getCategoryContextById,
   getCategoryHierarchy,
-  getCategoryTreeDepth3,
 } from "./categories/hierarchy"
 
 export { getSubcategoriesForBrowse, getSubcategoriesWithCounts } from "./categories/subcategories"

@@ -206,13 +206,13 @@ export function useDesktopHomeController({
     return rootCategory?.children ?? []
   }, [activeLeafSlug, activeRootSlug, categories])
 
-  const { attributes: categoryAttributes, isLoading: isLoadingAttributes } = useCategoryAttributes(activeCategorySlug)
+  const { attributes: categoryAttributes, isLoading: isLoadingAttributes } = useCategoryAttributes(activeCategoryNode?.id ?? null)
 
   useEffect(() => {
     setFilters((previous) => ({ ...previous, attributes: {} }))
   }, [activeCategorySlug])
 
-  const handleSubcategorySelect = useCallback(
+  const handleLeafCategorySelect = useCallback(
     (category: CategoryDisplay) => {
       if (!activeRootSlug) return
 
@@ -229,22 +229,8 @@ export function useDesktopHomeController({
     [activeRootSlug, categories, locale, router]
   )
 
-  const handleSiblingSelect = useCallback(
-    (category: CategoryDisplay) => {
-      if (!activeRootSlug) return
-
-      const rootCategory = categories.find((entry) => entry.slug === activeRootSlug)
-      if (!rootCategory) return
-
-      setCategoryPath([
-        { slug: rootCategory.slug, name: getCategoryName(rootCategory, locale) },
-        { slug: category.slug, name: getCategoryName(category, locale) },
-      ])
-      setPage(1)
-      router.push(`/categories/${rootCategory.slug}/${category.slug}`)
-    },
-    [activeRootSlug, categories, locale, router]
-  )
+  const handleSubcategorySelect = handleLeafCategorySelect
+  const handleSiblingSelect = handleLeafCategorySelect
 
   const fetchProducts = useCallback(
     async (tab: FeedTab, pageNum: number, limit: number, append = false, catSlug?: string | null, city?: string | null, quickFilters: string[] = []) => {

@@ -4,14 +4,14 @@ import { useEffect, useState, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { ArrowRight, Check, LoaderCircle as SpinnerGap, X } from "lucide-react";
 import Avatar from "boring-avatars"
 
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { OnboardingShell } from "../_components/onboarding-shell"
 import { AvatarUpload } from "../_components/avatar-upload"
+import { OnboardingContinueButton } from "../_components/onboarding-continue-button"
+import { OnboardingUsernameField } from "../_components/onboarding-username-field"
 import { cn } from "@/lib/utils"
 import { AVATAR_VARIANTS, type AvatarVariant, getColorPalette } from "@/lib/avatar-palettes"
 import { useUsernameAvailability } from "@/hooks/use-username-availability"
@@ -78,39 +78,6 @@ export default function ProfilePage() {
 
   const canContinue = username.trim().length >= 3 && usernameAvailable === true
 
-  const usernameIndicator = (() => {
-    if (!username || username.trim().length < 3) return null
-
-    if (isCheckingUsername) {
-      return (
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
-          {t("profile.checking")}
-        </span>
-      )
-    }
-
-    if (usernameAvailable === true) {
-      return (
-        <span className="flex items-center gap-1.5 text-xs text-success">
-          <Check className="size-4" />
-          {t("profile.available")}
-        </span>
-      )
-    }
-
-    if (usernameAvailable === false) {
-      return (
-        <span className="flex items-center gap-1.5 text-xs text-destructive">
-          <X className="size-4" />
-          {t("profile.unavailable")}
-        </span>
-      )
-    }
-
-    return null
-  })()
-
   return (
     <OnboardingShell
       title={t("profile.title")}
@@ -120,24 +87,13 @@ export default function ProfilePage() {
       onBack={handleBack}
       backLabel={t("common.back")}
       footer={
-        <Button
+        <OnboardingContinueButton
           onClick={handleContinue}
-          disabled={!canContinue || isPending}
-          size="lg"
-          className="w-full"
-        >
-          {isPending ? (
-            <>
-              <SpinnerGap className="size-5 animate-spin motion-reduce:animate-none" />
-              {t("common.processing")}
-            </>
-          ) : (
-            <>
-              {t("common.continue")}
-              <ArrowRight className="size-5" />
-            </>
-          )}
-        </Button>
+          disabled={!canContinue}
+          isPending={isPending}
+          processingLabel={t("common.processing")}
+          continueLabel={t("common.continue")}
+        />
       }
     >
       <div className="space-y-6">
@@ -190,26 +146,20 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="username" className="text-sm font-semibold text-foreground">
-            {t("profile.usernameLabel")}
-          </Label>
-          <div className="relative mt-2">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
-              <Input
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value.toLowerCase().replaceAll(/[^a-z0-9_]/g, ""))}
-                placeholder={t("profile.usernamePlaceholder")}
-                className="pl-8"
-                maxLength={30}
-            />
-          </div>
-          <div className="flex justify-between items-center gap-3 mt-1.5">
-            <p className="text-xs text-muted-foreground">{t("profile.usernameHint")}</p>
-            {usernameIndicator}
-          </div>
-        </div>
+        <OnboardingUsernameField
+          label={t("profile.usernameLabel")}
+          placeholder={t("profile.usernamePlaceholder")}
+          hint={t("profile.usernameHint")}
+          value={username}
+          onChange={(value) =>
+            setUsername(value.toLowerCase().replaceAll(/[^a-z0-9_]/g, ""))
+          }
+          checkingLabel={t("profile.checking")}
+          availableLabel={t("profile.available")}
+          unavailableLabel={t("profile.unavailable")}
+          isChecking={isCheckingUsername}
+          isAvailable={usernameAvailable}
+        />
 
         <div>
           <Label htmlFor="displayName" className="text-sm font-semibold text-foreground">

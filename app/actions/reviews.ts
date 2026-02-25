@@ -5,6 +5,7 @@ import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsByUsername } from "@/lib/cache/revalidate-profile-tags"
 import { revalidateTag } from "next/cache"
 
+import { logger } from "@/lib/logger"
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -122,7 +123,7 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
     .single()
 
   if (insertError) {
-    console.error("Error inserting review:", insertError)
+    logger.error("Error inserting review:", insertError)
     
     // Handle unique constraint violation
     if (insertError.code === "23505") {

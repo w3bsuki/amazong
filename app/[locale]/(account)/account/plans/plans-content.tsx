@@ -28,13 +28,14 @@ import {
 
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { logger } from "@/lib/logger"
+import { getSubscriptionCheckoutUrl, redirectToBillingPortal } from "../_lib/stripe-redirects"
 import { PlansGrid, type Plan } from "../_components/plan-card"
 import {
   mapSubscriptionPlanToPlan,
   type PlansContentProps,
 } from "./plans-content.types"
 
+import { logger } from "@/lib/logger"
 export function PlansContent({
   locale,
   plans,
@@ -108,19 +109,12 @@ export function PlansContent({
     setLoadingPlanId(plan.id)
 
     try {
-      const { url, error } = await actions.createSubscriptionCheckoutSession({
+      const url = await getSubscriptionCheckoutUrl(actions.createSubscriptionCheckoutSession, {
         planId: plan.id,
         billingPeriod,
-        locale: locale === "bg" ? "bg" : "en",
+        locale,
       })
-
-      if (error) {
-        throw new Error(error)
-      }
-
-      if (url) {
-        window.location.href = url
-      }
+      if (url) window.location.href = url
     } catch (err) {
       logger.error("[account-plans] checkout_session_failed", err)
       toast.error(copy.checkoutError)
@@ -131,17 +125,7 @@ export function PlansContent({
 
   const handleManageSubscription = async () => {
     try {
-      const { url, error } = await actions.createBillingPortalSession({
-        locale: locale === "bg" ? "bg" : "en",
-      })
-
-      if (error) {
-        throw new Error(error)
-      }
-
-      if (url) {
-        window.location.href = url
-      }
+      await redirectToBillingPortal(actions.createBillingPortalSession, locale)
     } catch (err) {
       logger.error("[account-plans] portal_open_failed", err)
       toast.error(copy.portalError)

@@ -3,6 +3,7 @@ import { z } from "zod"
 
 import { createRouteJsonHelpers } from "@/lib/api/route-json"
 
+import { logger } from "@/lib/logger"
 const BADGE_DEFINITIONS_SELECT =
   "id,account_type,category,code,color,created_at,criteria,description,description_bg,icon,is_active,is_automatic,name,name_bg,tier" as const
 
@@ -335,7 +336,7 @@ export async function POST(request: NextRequest) {
       .single<EvaluationProfileRow>()
 
     if (profileError && !isNoRowsError(profileError)) {
-      console.error("Failed to fetch profile:", profileError)
+      logger.error("Failed to fetch profile:", profileError)
       return json({ error: "Failed to fetch profile" }, { status: 500 })
     }
 
@@ -354,7 +355,7 @@ export async function POST(request: NextRequest) {
     const { data: badges, error: badgesError } = await badgeQuery
 
     if (badgesError) {
-      console.error("Failed to fetch badge definitions:", badgesError)
+      logger.error("Failed to fetch badge definitions:", badgesError)
       return json({ error: "Failed to fetch badges" }, { status: 500 })
     }
 
@@ -365,7 +366,7 @@ export async function POST(request: NextRequest) {
       .eq("user_id", userId)
 
     if (existingBadgesError) {
-      console.error("Failed to fetch existing user badges:", existingBadgesError)
+      logger.error("Failed to fetch existing user badges:", existingBadgesError)
       return json({ error: "Failed to fetch existing badges" }, { status: 500 })
     }
 
@@ -383,7 +384,7 @@ export async function POST(request: NextRequest) {
         .single<SellerStatsRow>()
 
       if (sellerStatsError && !isNoRowsError(sellerStatsError)) {
-        console.error("Failed to fetch seller stats:", sellerStatsError)
+        logger.error("Failed to fetch seller stats:", sellerStatsError)
         return json({ error: "Failed to fetch seller stats" }, { status: 500 })
       }
 
@@ -397,7 +398,7 @@ export async function POST(request: NextRequest) {
         .single<BuyerStatsRow>()
 
       if (buyerStatsError && !isNoRowsError(buyerStatsError)) {
-        console.error("Failed to fetch buyer stats:", buyerStatsError)
+        logger.error("Failed to fetch buyer stats:", buyerStatsError)
         return json({ error: "Failed to fetch buyer stats" }, { status: 500 })
       }
 
@@ -412,7 +413,7 @@ export async function POST(request: NextRequest) {
       .single<UserVerificationRow>()
 
     if (verificationError && !isNoRowsError(verificationError)) {
-      console.error("Failed to fetch user verification:", verificationError)
+      logger.error("Failed to fetch user verification:", verificationError)
       return json({ error: "Failed to fetch verification" }, { status: 500 })
     }
 
@@ -446,7 +447,7 @@ export async function POST(request: NextRequest) {
       const { error: insertError } = await supabase.from("user_badges").insert(badgesToInsert)
 
       if (insertError) {
-        console.error("Failed to insert badges:", insertError)
+        logger.error("Failed to insert badges:", insertError)
         return json({ error: "Failed to award badges" }, { status: 500 })
       }
 
@@ -459,11 +460,10 @@ export async function POST(request: NextRequest) {
       total_awarded: awardedBadges.length,
     })
   } catch (error) {
-    console.error("Badge evaluation error:", error)
+    logger.error("Badge evaluation error:", error)
     return json({ error: "Internal server error" }, { status: 500 })
   }
 }
-
 /**
  * Evaluate badge criteria against user stats
  */

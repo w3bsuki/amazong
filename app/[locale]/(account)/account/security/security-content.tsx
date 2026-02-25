@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
 import { createClient } from "@/lib/supabase/client"
-import { logger } from "@/lib/logger"
 import { validateEmail, validatePassword } from "@/lib/validation/auth"
 
 import { SecurityChangeEmailDialog } from "./security-change-email-dialog"
@@ -13,6 +12,7 @@ import { SecurityChangePasswordDialog } from "./security-change-password-dialog"
 import { getPasswordStrength, getSecurityCopy } from "./security-content.copy"
 import { SecurityContentOverview } from "./security-content-overview"
 
+import { logger } from "@/lib/logger"
 interface SecurityContentProps {
   locale: string
   userEmail: string

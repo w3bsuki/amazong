@@ -1,8 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
-import { bg, enUS } from "date-fns/locale"
-import { getLocale, getTranslations } from "next-intl/server"
-import { connection } from "next/server"
+import { getAdminPageShell } from "../_lib/admin-page-shell"
 
 import { Badge } from "@/components/ui/badge"
 import {
@@ -14,6 +12,7 @@ import {
 } from "@/components/ui/table"
 import { AdminTablePageLayout } from "../_components/admin-table-page-layout"
 
+import { logger } from "@/lib/logger"
 // Type for admin order with profile info
 interface AdminOrder {
   id: string
@@ -62,7 +61,7 @@ async function getOrders(): Promise<AdminOrder[]> {
     .limit(100)
   
   if (error) {
-    console.error('Failed to fetch orders:', error)
+    logger.error('Failed to fetch orders:', error)
     return []
   }
 
@@ -96,13 +95,8 @@ export const metadata = {
 }
 
 export default async function AdminOrdersPage() {
-  // Mark route as dynamic without using route segment config (incompatible with cacheComponents).
-  await connection()
-
+  const { t, locale, dateLocale } = await getAdminPageShell("AdminOrders")
   const orders = await getOrders()
-  const t = await getTranslations("AdminOrders")
-  const locale = await getLocale()
-  const dateLocale = locale === "bg" ? bg : enUS
   
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {

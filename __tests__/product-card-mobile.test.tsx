@@ -1,48 +1,10 @@
-import React from "react"
 import { render, screen } from "@testing-library/react"
 import { describe, expect, test, vi } from "vitest"
 
+import "@/test/mocks/next-image"
+import "@/test/mocks/treido-link"
+
 import { MobileProductCard } from "@/components/shared/product/card/mobile"
-
-type MockNextImageProps = React.ImgHTMLAttributes<HTMLImageElement> & {
-  alt: string
-  src: string
-  fill?: boolean
-  priority?: boolean
-  blurDataURL?: string
-  placeholder?: "blur" | "empty"
-}
-
-type MockNextImageRestProps = Omit<MockNextImageProps, "alt" | "src">
-
-function sanitizeNextImageProps(props: MockNextImageRestProps): React.ImgHTMLAttributes<HTMLImageElement> {
-  const imgProps: MockNextImageRestProps = { ...props }
-  for (const key of ["fill", "priority", "blurDataURL", "placeholder"] as const) {
-    delete imgProps[key]
-  }
-  return imgProps
-}
-
-type MockLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
-  href: string
-  children: React.ReactNode
-  prefetch?: boolean
-}
-
-type MockLinkRestProps = Omit<MockLinkProps, "href" | "children">
-
-function sanitizeLinkProps(props: MockLinkRestProps): React.AnchorHTMLAttributes<HTMLAnchorElement> {
-  const linkProps: MockLinkRestProps = { ...props }
-  delete linkProps.prefetch
-  return linkProps
-}
-
-vi.mock("next/image", () => ({
-  default: ({ alt, src, ...props }: MockNextImageProps) => (
-    // eslint-disable-next-line @next/next/no-img-element -- next/image is mocked with <img> in unit tests
-    <img alt={alt} src={src} {...sanitizeNextImageProps(props)} />
-  ),
-}))
 
 vi.mock("next-intl", () => ({
   useLocale: () => "en",
@@ -53,14 +15,6 @@ vi.mock("next-intl", () => ({
       if (key === "b2b.verifiedShort") return "Verified"
       return key
     },
-}))
-
-vi.mock("@/i18n/routing", () => ({
-  Link: ({ href, children, ...props }: MockLinkProps) => (
-    <a href={href} {...sanitizeLinkProps(props)}>
-      {children}
-    </a>
-  ),
 }))
 
 vi.mock("@/components/providers/drawer-context", () => ({

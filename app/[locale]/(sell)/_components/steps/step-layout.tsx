@@ -10,13 +10,13 @@ interface StepLayoutProps {
 
 export function StepLayout({ title, description, children, contentClassName }: StepLayoutProps) {
   return (
-    <div className="space-y-6">
-      <div className="space-y-1">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">{title}</h2>
-        {description ? <p className="text-reading text-muted-foreground">{description}</p> : null}
+    <div className="space-y-5">
+      <div className="space-y-0.5">
+        <h2 className="text-base font-semibold text-foreground">{title}</h2>
+        {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
       </div>
 
-      <div className={cn(contentClassName ?? "space-y-6")}>{children}</div>
+      <div className={cn(contentClassName ?? "space-y-5")}>{children}</div>
     </div>
   )
 }

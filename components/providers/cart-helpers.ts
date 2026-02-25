@@ -91,21 +91,38 @@ export function normalizeCartImageUrl(image: unknown): string {
   }
 }
 
-export function sanitizeCartItems(rawItems: CartItem[]): CartItem[] {
+export function sanitizeCartItems(rawItems: readonly unknown[]): CartItem[] {
   const sanitized: CartItem[] = []
   for (const item of rawItems) {
-    if (!item?.id) continue
-    const price = normalizePrice(item.price)
-    const quantity = normalizeQuantity(item.quantity)
+    const record = toRecord(item)
+    if (!record) continue
+
+    const id = asString(record.id)
+    const title = asString(record.title)
+    if (!id || !title) continue
+
+    const price = normalizePrice(record.price)
+    const quantity = normalizeQuantity(record.quantity)
     if (price === null || quantity === null) continue
+
+    const variantId = asString(record.variantId)
+    const variantName = asString(record.variantName)
+    const slug = asString(record.slug)
+
+    const username = asString(record.username)
+    const storeSlug = asString(record.storeSlug)
     const sellerSlugs = normalizeSellerSlugs({
-      username: item.username,
-      storeSlug: item.storeSlug ?? null,
+      username: username ?? undefined,
+      storeSlug: storeSlug ?? undefined,
     })
     sanitized.push({
-      ...item,
+      id,
+      title,
+      ...(variantId ? { variantId } : {}),
+      ...(variantName ? { variantName } : {}),
+      ...(slug ? { slug } : {}),
       ...sellerSlugs,
-      image: normalizeCartImageUrl(item.image),
+      image: normalizeCartImageUrl(record.image),
       price,
       quantity,
     })
@@ -141,7 +158,7 @@ export function readCartFromStorage(): CartStorageReadResult {
     }
   }
 
-  const sanitized = sanitizeCartItems(parsed as unknown as CartItem[])
+  const sanitized = sanitizeCartItems(parsed)
   return {
     items: sanitized,
     hadRawValue: true,
@@ -152,5 +169,5 @@ export function readCartFromStorage(): CartStorageReadResult {
 
 export function parseStoredCartItems(raw: string | null): CartItem[] {
   const parsed = safeJsonParseUnknown(raw)
-  return sanitizeCartItems((Array.isArray(parsed) ? parsed : []) as unknown as CartItem[])
+  return sanitizeCartItems(Array.isArray(parsed) ? parsed : [])
 }

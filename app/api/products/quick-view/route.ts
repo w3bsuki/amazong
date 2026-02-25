@@ -6,6 +6,7 @@ import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interru
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 const QuickViewQuerySchema = z
   .object({
     username: z.string().trim().min(1).max(80),
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest) {
     )
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
-    console.error("Quick view API error:", error)
+    logger.error("Quick view API error:", error)
     return noStoreJson({ error: "internal_error" }, { status: 500 })
   }
 }

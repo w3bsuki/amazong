@@ -375,7 +375,8 @@
             "v4": {
                 "title": "Treido Начало",
                 "aria": {
-                    "primaryCategories": "Основни категории"
+                    "primaryCategories": "Основни категории",
+                    "discoveryScopes": "Фийд за разглеждане"
                 },
                 "scopes": {
                     "forYou": "За теб",

@@ -6,6 +6,7 @@ import { normalizePlanTier } from "@/lib/subscriptions/normalize-tier"
 import type { Database } from "@/lib/supabase/database.types"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 export interface BoostResult {
   success: boolean
   error?: string
@@ -110,6 +111,39 @@ export async function getOwnedBoostProduct(
   }
 
   return { success: true, product }
+}
+
+export type OwnedBoostActionContext =
+  | {
+      success: true
+      productId: string
+      userId: string
+      supabase: Awaited<ReturnType<typeof createClient>>
+      product: OwnedBoostProduct
+    }
+  | {
+      success: false
+      error: string
+    }
+
+export async function getOwnedBoostActionContext(productId: string): Promise<OwnedBoostActionContext> {
+  const context = await getBoostActionContext(productId)
+  if (!context.success) {
+    return context
+  }
+
+  const ownedProductResult = await getOwnedBoostProduct(context.supabase, context.productId, context.userId)
+  if (!ownedProductResult.success) {
+    return { success: false, error: ownedProductResult.error }
+  }
+
+  return {
+    success: true,
+    productId: context.productId,
+    userId: context.userId,
+    supabase: context.supabase,
+    product: ownedProductResult.product,
+  }
 }
 
 export function revalidateBoostCaches(productId: string, userId: string) {
@@ -225,7 +259,7 @@ export async function syncProfileBoostCredits(userId: string): Promise<ProfileBo
       .eq("id", userId)
 
     if (syncError) {
-      console.error("Failed to sync subscription boost credits:", syncError)
+      logger.error("Failed to sync subscription boost credits:", syncError)
       return profileBoosts
     }
   }

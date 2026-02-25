@@ -1,9 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { revalidateTag } from "next/cache"
 
-import { logger } from "@/lib/logger"
 import type { Database } from "@/lib/supabase/database.types"
 
+import { logger } from "@/lib/logger"
 export type ProfileRevalidateProfile = "max" | "user" | "products"
 
 function normalizeUsername(value: string | null | undefined): string | null {

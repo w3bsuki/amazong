@@ -1,4 +1,5 @@
-'use client'
+"use client"
+
 
 import { createErrorBoundaryPage } from '../../_components/create-error-boundary-page'
 

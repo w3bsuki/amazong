@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { Controller } from "react-hook-form";
 import { Type as TextAa } from "lucide-react";
@@ -57,48 +58,45 @@ export function TitleField({
             iconWrapClassName="bg-form-section-bg border-form-section-border"
           />
 
-          {/* Input - Premium card design */}
           <FieldContent className={cn(!compact && "p-5")}>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {compact && (
-                <div className="flex items-center justify-between px-1">
-                  <label htmlFor={inputId} className="text-sm font-bold text-foreground">
+                <div className="flex items-center justify-between">
+                  <label htmlFor={inputId} className="text-sm font-semibold text-foreground">
                     {tSell("fields.title.label")} <span className="text-destructive">*</span>
                   </label>
                   <span className={cn(
-                    "text-xs font-bold tabular-nums",
+                    "text-2xs tabular-nums",
                     charCount > maxLength - 10 ? "text-warning" : "text-muted-foreground"
                   )}>
                     {charCount}/{maxLength}
                   </span>
                 </div>
               )}
-              <div className={cn(
-                "relative rounded-xl border bg-card overflow-hidden transition-colors",
-                "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring",
-                fieldState.invalid ? "border-destructive/50 bg-destructive-subtle" : "border-border"
-              )}>
-                <Input
-                  {...field}
-                  id={inputId}
-                  aria-invalid={fieldState.invalid}
-                  placeholder={tSell("fields.title.placeholder")}
-                  maxLength={maxLength}
-                  className="border-none bg-transparent h-14 px-4 text-base font-medium placeholder:text-muted-foreground focus-visible:ring-0"
-                />
-              </div>
+              <Input
+                {...field}
+                id={inputId}
+                aria-invalid={fieldState.invalid}
+                placeholder={tSell("fields.title.placeholder")}
+                maxLength={maxLength}
+                className={cn(
+                  "h-10 rounded-lg border-none bg-secondary px-3 text-sm text-foreground placeholder:text-muted-foreground",
+                  "focus-visible:ring-1 focus-visible:ring-ring",
+                  fieldState.invalid && "ring-1 ring-destructive"
+                )}
+              />
             </div>
 
             {/* Helper text - shows progress toward minimum */}
             {charCount > 0 && charCount < minLength && (
-              <p className="mt-2 text-sm font-medium text-primary flex items-center gap-1.5 px-1">
+              <p className="mt-1.5 text-xs text-muted-foreground">
                 {tSell("fields.title.remaining", { count: minLength - charCount })}
               </p>
             )}
 
             {/* Error Message */}
             {fieldState.invalid && (
-              <FieldError className="mt-form-sm">
+              <FieldError className="mt-1">
                 {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
               </FieldError>
             )}

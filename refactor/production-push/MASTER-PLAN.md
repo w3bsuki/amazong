@@ -26,6 +26,16 @@
 | 2026-02-25 | REF-CLEANUP-002 | Repo hygiene: gitignore root artifacts (`.codex_*.txt`, eslint logs); moved Python scripts to `scripts/`; archived legacy `.pen` snapshots into `designs/archive/legacy-pen-files-2026-02-24.zip` | GREEN (typecheck, lint, styles:gate, test:unit) |
 | 2026-02-25 | REF-CLEANUP-003 | Docs link drift repaired: added `ARCHITECTURE.md` + `docs/DOMAINS.md`; restored legacy `refactor-with-opus` task file links (10 pointer docs under `refactor/`) and `pnpm -s refactor:links:gate` passes | GREEN (typecheck, lint, styles:gate, test:unit) |
 | 2026-02-25 | REF-CLEANUP-004 | Refactor docs consistency: updated `current.md` snapshots (overview metrics, project structure root clutter notes, TypeScript allowJs status) to reflect REF-CLEANUP progress | GREEN (typecheck, lint, styles:gate, test:unit) |
+| 2026-02-25 | REF-CLEANUP-008 | Disabled `allowJs` in `tsconfig.json` | GREEN (typecheck) |
+| 2026-02-25 | REF-CLEANUP-013 | CI/DX hygiene audit: `pnpm` scripts verified (typecheck, lint, styles:gate, test:unit, architecture:gate, knip, refactor:links:gate) | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate, knip) |
+| 2026-02-25 | REF-CLEANUP-005 | Knip cleanup: removed unused category tree lite helpers; `pnpm -s knip` now clean | GREEN (typecheck, lint, styles:gate, test:unit) |
+| 2026-02-25 | REF-CLEANUP-006 | Dead deps: none reported by Knip (dependencies clean) | GREEN (typecheck, lint, styles:gate, test:unit) |
+| 2026-02-25 | REF-CLEANUP-007 | Logging standardization: replaced `console.*` with `logger.*` in production code; console grep now 0 | GREEN (typecheck, lint, styles:gate, test:unit) |
+| 2026-02-25 | REF-CLEANUP-009 | Unsafe cast reduction: `as unknown as` now 15 occurrences (prod 3), remaining casts justified | GREEN (typecheck, lint, styles:gate, test:unit) |
+| 2026-02-25 | REF-CLEANUP-010 | `generateStaticParams` helpers + duplicate reduction: helperized locale/empty params; jscpd clones 53→50, duplicated lines 628→587 | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate) |
+| 2026-02-25 | REF-CLEANUP-011 | Tooling dedupe: reviewed scan scripts (distinct, shared utils); removed orphan `scripts/audit-set-request-locale.py` | GREEN (typecheck, lint, styles:gate, test:unit) |
+| 2026-02-25 | REF-CLEANUP-012 | Test hygiene: extracted shared Next mocks into `test/mocks/*`; reduced duplicated mock setup | GREEN (typecheck, lint, styles:gate, test:unit) |
+| 2026-02-25 | Phase 1 (REF-CLEANUP) | Before/after: casts 46→15 (prod 34→3); console 111→0; knip warnings 6→0; dupes clones 53→50 lines 628→587 | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate) |
 
 ---
 
@@ -39,15 +49,15 @@
 | Server actions | 40 files |
 | API routes | 21 domains |
 | CSS tokens | ~260 |
-| Unit tests | 455/455 passing |
+| Unit tests | 456/456 passing |
 | Client component ratio | 21.2% (241/1,139) |
-| Duplicate clones | 89 clusters, 1,111 lines |
-| Unsafe casts (`as unknown as`) | 46 occurrences |
-| Console statements (prod) | 111 occurrences |
+| Duplicate clones | 50 clusters, 587 lines |
+| Unsafe casts (`as unknown as`) | 15 occurrences (prod: 3) |
+| Console statements (prod) | 0 occurrences |
 | `pb-20` hacks | 14 occurrences in 13 files |
 | Non-Envelope actions | 29/40 (73%) |
 | Root clutter artifacts | ~16 files |
-| `generateStaticParams` duplicates | 14 identical implementations |
+| `generateStaticParams` duplicates | 0 identical implementations (shared helpers) |
 
 ---
 
@@ -71,15 +81,15 @@
 | REF-CLEANUP-002 | Repo hygiene: artifacts + root clutter | medium | — | ✅ |
 | REF-CLEANUP-003 | Docs link drift repair | medium | — | ✅ |
 | REF-CLEANUP-004 | Refactor-program doc consistency | small | 003 | ✅ |
-| REF-CLEANUP-005 | Dead code: unused files/exports via Knip | medium | 001 | ⬜ |
-| REF-CLEANUP-006 | Dead deps: remove unused dependencies | medium | 005 | ⬜ |
-| REF-CLEANUP-007 | Logging standardization (ALL files, including auth/payments) | large | — | ⬜ |
+| REF-CLEANUP-005 | Dead code: unused files/exports via Knip | medium | 001 | ✅ |
+| REF-CLEANUP-006 | Dead deps: remove unused dependencies | medium | 005 | ✅ |
+| REF-CLEANUP-007 | Logging standardization (ALL files, including auth/payments) | large | — | ✅ |
 | REF-CLEANUP-008 | TypeScript config: disable `allowJs` | small | — | ✅ |
-| REF-CLEANUP-009 | Unsafe cast reduction (ALL files, including auth/payments) | large | 001 | ⬜ |
-| REF-CLEANUP-010 | Duplicate reduction + `generateStaticParams` centralization | large | 001 | ⬜ |
-| REF-CLEANUP-011 | Tooling dedupe: scan script consolidation | medium | — | ⬜ |
-| REF-CLEANUP-012 | Tests hygiene: dedupe mocks/fixtures | medium | — | ⬜ |
-| REF-CLEANUP-013 | CI/DX hygiene audit | small | — | ⬜ |
+| REF-CLEANUP-009 | Unsafe cast reduction (ALL files, including auth/payments) | large | 001 | ✅ |
+| REF-CLEANUP-010 | Duplicate reduction + `generateStaticParams` centralization | large | 001 | ✅ |
+| REF-CLEANUP-011 | Tooling dedupe: scan script consolidation | medium | — | ✅ |
+| REF-CLEANUP-012 | Tests hygiene: dedupe mocks/fixtures | medium | — | ✅ |
+| REF-CLEANUP-013 | CI/DX hygiene audit | small | — | ✅ |
 | REF-CLEANUP-014 | Migration fallback removal (post MIG-001) | large | MIG-001 | ⬜ |
 
 ---

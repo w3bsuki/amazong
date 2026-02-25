@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Area } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-is-mobile"
 import {
@@ -12,12 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "../../../_components/charts/chart"
+import { AreaChartScaffold } from "../../../_components/charts/_lib/area-chart-config"
+import { type ChartConfig } from "../../../_components/charts/chart"
 import {
   Select,
   SelectContent,
@@ -166,65 +162,36 @@ export function AccountChart({ locale }: AccountChartProps) {
         </CardAction>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
+        <AreaChartScaffold
           config={chartConfig}
+          data={filteredData}
+          gradients={[
+            {
+              id: "fillOrders",
+              color: "var(--color-orders)",
+              startOpacity: 1.0,
+              endOpacity: 0.1,
+            },
+            {
+              id: "fillSales",
+              color: "var(--color-sales)",
+              startOpacity: 0.8,
+              endOpacity: 0.1,
+            },
+          ]}
+          tickFormatter={(value) => formatChartDate(value, locale)}
+          tooltipLabelFormatter={(value) => formatChartDate(value, locale)}
+          tooltipDefaultIndex={isMobile ? -1 : 10}
           className="aspect-auto h-(--chart-h-sm) w-full"
         >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillOrders" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-orders)"
-                  stopOpacity={1.0}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-orders)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillSales" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-sales)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-sales)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => formatChartDate(value, locale)}
-            />
-            <ChartTooltip
-              cursor={false}
-              defaultIndex={isMobile ? -1 : 10}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => formatChartDate(value, locale)}
-                  indicator="dot"
-                />
-              }
-            />
-            <Area
-              dataKey={activeChart}
-              type="natural"
-              fill={activeChart === "orders" ? "url(#fillOrders)" : "url(#fillSales)"}
-              stroke={activeChart === "orders" ? "var(--color-orders)" : "var(--color-sales)"}
-              stackId="a"
-            />
-          </AreaChart>
-        </ChartContainer>
+          <Area
+            dataKey={activeChart}
+            type="natural"
+            fill={activeChart === "orders" ? "url(#fillOrders)" : "url(#fillSales)"}
+            stroke={activeChart === "orders" ? "var(--color-orders)" : "var(--color-sales)"}
+            stackId="a"
+          />
+        </AreaChartScaffold>
       </CardContent>
     </Card>
   )

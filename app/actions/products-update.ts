@@ -15,8 +15,8 @@ import { resolveLeafCategoryForListing } from "@/lib/sell/resolve-leaf-category"
 import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
 import type { Database } from "@/lib/supabase/database.types"
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 type ProductSupabaseClient = SupabaseClient<Database>
 
 type ExistingProductForUpdate = {

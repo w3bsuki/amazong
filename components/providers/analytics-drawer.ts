@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger"
 /**
  * Analytics tracking for drawer interactions.
  * 
@@ -14,7 +15,6 @@
 
 import "client-only"
 
-import { logger } from "@/lib/logger"
 
 export type DrawerType =
   | "product_quick_view"

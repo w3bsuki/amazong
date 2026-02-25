@@ -1,13 +1,14 @@
-'use server'
+"use server"
+
 
 import { z } from 'zod'
 import { errorEnvelope, successEnvelope, type Envelope } from '@/lib/api/envelope'
 import { requireAuth } from '@/lib/auth/require-auth'
-import { logError } from '@/lib/logger'
 import { stripe } from '@/lib/stripe'
 import { STRIPE_CUSTOMER_ID_SELECT } from '@/lib/supabase/selects/billing'
 import { buildLocaleUrl } from '@/lib/stripe-locale'
 
+import { logError } from "@/lib/logger"
 const NOT_AUTHENTICATED = 'Not authenticated'
 
 const paymentMethodInputSchema = z.object({
@@ -53,6 +54,71 @@ async function getOwnedPaymentMethod(params: {
   }
 
   return { ok: true }
+}
+
+async function getOwnedPaymentMethodMutationContext(
+  input: { paymentMethodId: string; dbId: string }
+): Promise<
+  | {
+      ok: true
+      user: NonNullable<Awaited<ReturnType<typeof requireAuth>>>['user']
+      supabase: NonNullable<Awaited<ReturnType<typeof requireAuth>>>['supabase']
+      paymentMethodId: string
+      dbId: string
+    }
+  | { ok: false; result: PaymentMethodMutationResult }
+> {
+  const auth = await requireAuth()
+  if (!auth) {
+    return { ok: false, result: errorEnvelope({ error: NOT_AUTHENTICATED }) }
+  }
+
+  const { user, supabase } = auth
+
+  const parsed = paymentMethodInputSchema.safeParse(input)
+  if (!parsed.success) {
+    return { ok: false, result: errorEnvelope({ error: 'Invalid input' }) }
+  }
+
+  const { paymentMethodId, dbId } = parsed.data
+
+  const ownedMethodCheck = await getOwnedPaymentMethod({
+    userId: user.id,
+    dbId,
+    paymentMethodId,
+    supabase,
+  })
+  if (!ownedMethodCheck.ok) {
+    return {
+      ok: false,
+      result: errorEnvelope({ error: ownedMethodCheck.error }),
+    }
+  }
+
+  return { ok: true, user, supabase, paymentMethodId, dbId }
+}
+
+async function withOwnedPaymentMethodMutationContext(
+  input: { paymentMethodId: string; dbId: string },
+  opts: { logKey: string; errorMessage: string },
+  fn: (ctx: {
+    user: NonNullable<Awaited<ReturnType<typeof requireAuth>>>['user']
+    supabase: NonNullable<Awaited<ReturnType<typeof requireAuth>>>['supabase']
+    paymentMethodId: string
+    dbId: string
+  }) => Promise<PaymentMethodMutationResult>
+): Promise<PaymentMethodMutationResult> {
+  try {
+    const context = await getOwnedPaymentMethodMutationContext(input)
+    if (!context.ok) {
+      return context.result
+    }
+
+    return await fn(context)
+  } catch (error) {
+    logError(opts.logKey, error)
+    return errorEnvelope({ error: opts.errorMessage })
+  }
 }
 
 export async function createPaymentMethodSetupSession(
@@ -129,121 +195,75 @@ export async function createPaymentMethodSetupSession(
 export async function deletePaymentMethod(
   input: { paymentMethodId: string; dbId: string }
 ): Promise<PaymentMethodMutationResult> {
-  try {
-    const auth = await requireAuth()
-    if (!auth) {
-      return errorEnvelope({ error: NOT_AUTHENTICATED })
+  return withOwnedPaymentMethodMutationContext(
+    input,
+    { logKey: 'payments_delete_method_failed', errorMessage: 'Failed to delete payment method' },
+    async ({ user, supabase, paymentMethodId, dbId }) => {
+      await stripe.paymentMethods.detach(paymentMethodId)
+
+      const { error: deleteError } = await supabase
+        .from('user_payment_methods')
+        .delete()
+        .eq('id', dbId)
+        .eq('user_id', user.id)
+
+      if (deleteError) {
+        return errorEnvelope({ error: 'Failed to delete payment method' })
+      }
+
+      return successEnvelope()
     }
-
-    const { user, supabase } = auth
-
-    const parsed = paymentMethodInputSchema.safeParse(input)
-    if (!parsed.success) {
-      return errorEnvelope({ error: 'Invalid input' })
-    }
-
-    const { paymentMethodId, dbId } = parsed.data
-
-    const ownedMethodCheck = await getOwnedPaymentMethod({
-      userId: user.id,
-      dbId,
-      paymentMethodId,
-      supabase,
-    })
-    if (!ownedMethodCheck.ok) {
-      return errorEnvelope({ error: ownedMethodCheck.error })
-    }
-
-    await stripe.paymentMethods.detach(paymentMethodId)
-
-    const { error: deleteError } = await supabase
-      .from('user_payment_methods')
-      .delete()
-      .eq('id', dbId)
-      .eq('user_id', user.id)
-
-    if (deleteError) {
-      return errorEnvelope({ error: 'Failed to delete payment method' })
-    }
-
-    return successEnvelope()
-  } catch (error) {
-    logError('payments_delete_method_failed', error)
-    return errorEnvelope({ error: 'Failed to delete payment method' })
-  }
+  )
 }
 
 export async function setDefaultPaymentMethod(
   input: { paymentMethodId: string; dbId: string }
 ): Promise<PaymentMethodMutationResult> {
-  try {
-    const auth = await requireAuth()
-    if (!auth) {
-      return errorEnvelope({ error: NOT_AUTHENTICATED })
+  return withOwnedPaymentMethodMutationContext(
+    input,
+    { logKey: 'payments_set_default_method_failed', errorMessage: 'Failed to set default payment method' },
+    async ({ user, supabase, paymentMethodId, dbId }) => {
+      const { data: profile, error: profileError } = await supabase
+        .from('private_profiles')
+        .select(STRIPE_CUSTOMER_ID_SELECT)
+        .eq('id', user.id)
+        .single()
+
+      if (profileError) {
+        logError('payments_profile_lookup_failed', profileError, { userId: user.id })
+        return errorEnvelope({ error: 'Failed to set default payment method' })
+      }
+
+      if (!profile?.stripe_customer_id) {
+        return errorEnvelope({ error: 'No Stripe customer found' })
+      }
+
+      await stripe.customers.update(profile.stripe_customer_id, {
+        invoice_settings: {
+          default_payment_method: paymentMethodId,
+        },
+      })
+
+      const { error: clearDefaultsError } = await supabase
+        .from('user_payment_methods')
+        .update({ is_default: false })
+        .eq('user_id', user.id)
+
+      if (clearDefaultsError) {
+        return errorEnvelope({ error: 'Failed to set default payment method' })
+      }
+
+      const { error: updateError } = await supabase
+        .from('user_payment_methods')
+        .update({ is_default: true })
+        .eq('id', dbId)
+        .eq('user_id', user.id)
+
+      if (updateError) {
+        return errorEnvelope({ error: 'Failed to set default payment method' })
+      }
+
+      return successEnvelope()
     }
-
-    const { user, supabase } = auth
-
-    const parsed = paymentMethodInputSchema.safeParse(input)
-    if (!parsed.success) {
-      return errorEnvelope({ error: 'Invalid input' })
-    }
-
-    const { paymentMethodId, dbId } = parsed.data
-
-    const ownedMethodCheck = await getOwnedPaymentMethod({
-      userId: user.id,
-      dbId,
-      paymentMethodId,
-      supabase,
-    })
-    if (!ownedMethodCheck.ok) {
-      return errorEnvelope({ error: ownedMethodCheck.error })
-    }
-
-    const { data: profile, error: profileError } = await supabase
-      .from('private_profiles')
-      .select(STRIPE_CUSTOMER_ID_SELECT)
-      .eq('id', user.id)
-      .single()
-
-    if (profileError) {
-      logError('payments_profile_lookup_failed', profileError, { userId: user.id })
-      return errorEnvelope({ error: 'Failed to set default payment method' })
-    }
-
-    if (!profile?.stripe_customer_id) {
-      return errorEnvelope({ error: 'No Stripe customer found' })
-    }
-
-    await stripe.customers.update(profile.stripe_customer_id, {
-      invoice_settings: {
-        default_payment_method: paymentMethodId,
-      },
-    })
-
-    const { error: clearDefaultsError } = await supabase
-      .from('user_payment_methods')
-      .update({ is_default: false })
-      .eq('user_id', user.id)
-
-    if (clearDefaultsError) {
-      return errorEnvelope({ error: 'Failed to set default payment method' })
-    }
-
-    const { error: updateError } = await supabase
-      .from('user_payment_methods')
-      .update({ is_default: true })
-      .eq('id', dbId)
-      .eq('user_id', user.id)
-
-    if (updateError) {
-      return errorEnvelope({ error: 'Failed to set default payment method' })
-    }
-
-    return successEnvelope()
-  } catch (error) {
-    logError('payments_set_default_method_failed', error)
-    return errorEnvelope({ error: 'Failed to set default payment method' })
-  }
+  )
 }

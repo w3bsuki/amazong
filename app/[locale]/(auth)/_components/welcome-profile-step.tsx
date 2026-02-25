@@ -2,14 +2,13 @@
 
 import Avatar from "boring-avatars"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { COLOR_PALETTES, type AvatarVariant } from "@/lib/avatar-palettes"
-import { ArrowRight, LoaderCircle as SpinnerGap } from "lucide-react"
 import { motion } from "framer-motion"
 import { useTranslations } from "next-intl"
 import { StepHeader } from "./welcome-step-header"
+import { WelcomeStepActions } from "./_lib/welcome-step-wrapper"
 
 export function WelcomeProfileStep({
   profileUsername,
@@ -103,24 +102,13 @@ export function WelcomeProfileStep({
           </p>
         </div>
 
-        <div className="flex gap-3 pt-4">
-          <Button variant="outline" onClick={onBack} className="flex-1">
-            {tOnboarding("common.back")}
-          </Button>
-          <Button
-            onClick={onContinue}
-            disabled={isPending}
-            className="flex-1 bg-primary text-primary-foreground hover:bg-interactive-hover"
-          >
-            {isPending ? (
-              <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
-            ) : (
-              <>
-                {tOnboarding("common.continue")} <ArrowRight className="size-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </div>
+        <WelcomeStepActions
+          backLabel={tOnboarding("common.back")}
+          continueLabel={tOnboarding("common.continue")}
+          isPending={isPending}
+          onBack={onBack}
+          onContinue={onContinue}
+        />
       </div>
     </motion.div>
   )

@@ -1,9 +1,9 @@
 import type { ReactNode } from "react"
 
-import { AppHeader } from "./app-header"
-import { SiteFooter } from "./site-footer"
+import { AppHeader } from "@/components/layout/header/app-header"
+import { SiteFooter } from "@/components/layout/site-footer"
 import { HeaderProvider } from "@/components/providers/header-context"
-import { SkipLinks } from "./skip-links"
+import { SkipLinks } from "@/components/layout/skip-links"
 import { PageShell } from "./page-shell"
 import { CategoryDrawerProvider } from "@/components/mobile/category-nav/category-drawer-context"
 import { DeferredStorefrontUi } from "./deferred-storefront-ui"

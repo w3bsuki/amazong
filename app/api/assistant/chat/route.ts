@@ -6,9 +6,9 @@ import { assistantTools } from "@/lib/ai/tools/assistant-tools"
 import { getAiChatModel, getAiFallbackModel } from "@/lib/ai/models"
 import { isAiAssistantEnabled, getGroqApiKey } from "@/lib/ai/env"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
-import { logger } from "@/lib/logger"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 
+import { logger } from "@/lib/logger"
 const noStoreHeaders = { "Cache-Control": "private, no-store" } as const
 
 const AssistantMessageRoleSchema = z.enum(["user", "assistant", "system"])

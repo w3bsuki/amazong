@@ -1,11 +1,12 @@
 "use client"
 
-import { useActionState, useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { useLocale, useTranslations } from "next-intl"
 
 import { SubmitButton } from "@/components/auth/submit-button"
-import { GoogleOAuthButton } from "@/components/auth/google-oauth-button"
+import { AuthOAuthSection } from "@/components/auth/auth-oauth-section"
+import { useAuthActionState, type BoundAuthAction } from "@/components/auth/use-auth-action-state"
 import { getPasswordStrength } from "@/lib/validation/password-strength"
 import {
   SignUpConfirmPasswordField,
@@ -16,21 +17,10 @@ import {
 } from "@/components/auth/sign-up-form-fields"
 import { SignUpFormFooter } from "@/components/auth/sign-up-form-footer"
 
-type AuthActionState = {
-  error?: string
-  fieldErrors?: Record<string, string>
-  success?: boolean
-}
-
-type BoundSignUpAction = (
-  prevState: AuthActionState,
-  formData: FormData
-) => Promise<AuthActionState>
-
 type CheckUsernameAvailabilityAction = (username: string) => Promise<{ available: boolean }>
 
 interface SignUpFormBodyProps {
-  action: BoundSignUpAction
+  action: BoundAuthAction
   checkUsernameAvailabilityAction: CheckUsernameAvailabilityAction
   onSuccess?: () => void
   onSwitchToSignIn?: () => void
@@ -52,7 +42,6 @@ export function SignUpFormBody({
 }: SignUpFormBodyProps) {
   const t = useTranslations("Auth")
   const locale = useLocale()
-  const handledSuccess = useRef(false)
   const invalidInputClass = "border-destructive"
 
   const [oauthError, setOauthError] = useState<string | null>(null)
@@ -69,18 +58,7 @@ export function SignUpFormBody({
   const [isCheckingUsername, setIsCheckingUsername] = useState(false)
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
 
-  const initialState = useMemo<AuthActionState>(() => ({ fieldErrors: {}, success: false }), [])
-  const [state, formAction] = useActionState(action, initialState)
-
-  useEffect(() => {
-    if (state?.success && !handledSuccess.current) {
-      handledSuccess.current = true
-      onSuccess?.()
-    }
-    if (!state?.success) {
-      handledSuccess.current = false
-    }
-  }, [state?.success, onSuccess])
+  const { state, formAction } = useAuthActionState(action, onSuccess)
 
   useEffect(() => {
     let cancelled = false
@@ -150,18 +128,13 @@ export function SignUpFormBody({
         </div>
       ) : null}
 
-      <div className="space-y-3" data-testid="sign-up-oauth-section">
-        <GoogleOAuthButton
-          nextPath="/onboarding"
-          onError={(message) => setOauthError(message)}
-          onNavigateAway={onNavigateAway}
-        />
-        <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-border" />
-          <p className="text-xs text-muted-foreground">{t("or")}</p>
-          <div className="h-px flex-1 bg-border" />
-        </div>
-      </div>
+      <AuthOAuthSection
+        testId="sign-up-oauth-section"
+        nextPath="/onboarding"
+        orLabel={t("or")}
+        onError={(message) => setOauthError(message)}
+        onNavigateAway={onNavigateAway}
+      />
 
       <form
         action={formAction}

@@ -3,14 +3,15 @@
 import { useEffect, useState, useTransition } from "react"
 import { useRouter } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { ArrowRight, Check, Globe, MapPin, LoaderCircle as SpinnerGap, X } from "lucide-react";
+import { Globe, MapPin } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { OnboardingShell } from "../_components/onboarding-shell"
 import { AvatarUpload } from "../_components/avatar-upload"
+import { OnboardingContinueButton } from "../_components/onboarding-continue-button"
+import { OnboardingUsernameField } from "../_components/onboarding-username-field"
 import { type AvatarVariant } from "@/lib/avatar-palettes"
 import { useUsernameAvailability } from "@/hooks/use-username-availability"
 
@@ -99,39 +100,6 @@ export default function BusinessProfilePage() {
     usernameAvailable === true &&
     category.length > 0
 
-  const usernameIndicator = (() => {
-    if (!username || username.trim().length < 3) return null
-
-    if (isCheckingUsername) {
-      return (
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <SpinnerGap className="size-4 animate-spin motion-reduce:animate-none" />
-          {t("businessProfile.checking")}
-        </span>
-      )
-    }
-
-    if (usernameAvailable === true) {
-      return (
-        <span className="flex items-center gap-1.5 text-xs text-success">
-          <Check className="size-4" />
-          {t("businessProfile.available")}
-        </span>
-      )
-    }
-
-    if (usernameAvailable === false) {
-      return (
-        <span className="flex items-center gap-1.5 text-xs text-destructive">
-          <X className="size-4" />
-          {t("businessProfile.unavailable")}
-        </span>
-      )
-    }
-
-    return null
-  })()
-
   return (
     <OnboardingShell
       title={t("businessProfile.title")}
@@ -141,19 +109,13 @@ export default function BusinessProfilePage() {
       onBack={handleBack}
       backLabel={t("common.back")}
       footer={
-        <Button onClick={handleContinue} disabled={!canContinue || isPending} size="lg" className="w-full">
-          {isPending ? (
-            <>
-              <SpinnerGap className="size-5 animate-spin motion-reduce:animate-none" />
-              {t("common.processing")}
-            </>
-          ) : (
-            <>
-              {t("common.continue")}
-              <ArrowRight className="size-5" />
-            </>
-          )}
-        </Button>
+        <OnboardingContinueButton
+          onClick={handleContinue}
+          disabled={!canContinue}
+          isPending={isPending}
+          processingLabel={t("common.processing")}
+          continueLabel={t("common.continue")}
+        />
       }
     >
       <div className="space-y-6">
@@ -188,26 +150,18 @@ export default function BusinessProfilePage() {
           <p className="text-xs text-muted-foreground mt-1.5">{t("businessProfile.businessNameHint")}</p>
         </div>
 
-        <div>
-          <Label htmlFor="username" className="text-sm font-semibold text-foreground">
-            {t("businessProfile.usernameLabel")}
-          </Label>
-          <div className="relative mt-2">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
-            <Input
-              id="username"
-              value={username}
-              onChange={(e) => handleUsernameChange(e.target.value)}
-              placeholder={t("businessProfile.usernamePlaceholder")}
-              className="pl-8"
-              maxLength={30}
-            />
-          </div>
-          <div className="flex justify-between items-center gap-3 mt-1.5">
-            <p className="text-xs text-muted-foreground">{t("businessProfile.usernameHint")}</p>
-            {usernameIndicator}
-          </div>
-        </div>
+        <OnboardingUsernameField
+          label={t("businessProfile.usernameLabel")}
+          placeholder={t("businessProfile.usernamePlaceholder")}
+          hint={t("businessProfile.usernameHint")}
+          value={username}
+          onChange={handleUsernameChange}
+          checkingLabel={t("businessProfile.checking")}
+          availableLabel={t("businessProfile.available")}
+          unavailableLabel={t("businessProfile.unavailable")}
+          isChecking={isCheckingUsername}
+          isAvailable={usernameAvailable}
+        />
 
         <div>
           <Label htmlFor="category" className="text-sm font-semibold text-foreground">

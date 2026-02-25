@@ -1,39 +1,25 @@
-import { Suspense, use } from "react"
+import { Suspense } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 
-import { notFound, routing, validateLocale } from "@/i18n/routing"
-import { getCategoryBySlug, getCategoryContext } from "@/lib/data/categories"
-import { CategoryPageDynamicContent } from "../_components/category-page-dynamic-content"
-
-const PLACEHOLDER_SLUG = "__placeholder__"
-const PLACEHOLDER_SUBSLUG = "__placeholder__"
-
-function isPlaceholderSegment(segment: string) {
-  return segment.startsWith("[") || segment === PLACEHOLDER_SLUG || segment === PLACEHOLDER_SUBSLUG
-}
+import { validateLocale } from "@/i18n/routing"
+import { getCategoryBySlug } from "@/lib/data/categories"
+import {
+  CategoryNestedPageContent,
+  type CategoryPageSearchParams,
+  isPlaceholderSegment,
+  PLACEHOLDER_SEGMENT,
+} from "../_components/category-page-content"
+import { localeStaticParams } from "@/lib/next/static-params"
+import { placeholderCategoryMetadata } from "../_lib/category-metadata"
 
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({
-    locale,
-    slug: PLACEHOLDER_SLUG,
-    subslug: PLACEHOLDER_SUBSLUG,
+  return localeStaticParams().map((params) => ({
+    ...params,
+    slug: PLACEHOLDER_SEGMENT,
+    subslug: PLACEHOLDER_SEGMENT,
   }))
-}
-
-interface CategoryPageSearchParams {
-  minPrice?: string
-  maxPrice?: string
-  minRating?: string
-  subcategory?: string
-  tag?: string
-  deals?: string
-  brand?: string
-  availability?: string
-  sort?: string
-  page?: string
-  [key: string]: string | string[] | undefined
 }
 
 export async function generateMetadata({
@@ -52,17 +38,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "CategoryPage" })
 
   if (isPlaceholderSegment(slug) || isPlaceholderSegment(subslug)) {
-    const tCategories = await getTranslations({ locale, namespace: "Categories" })
-    const categoryName = tCategories("title")
-
-    return {
-      title: categoryName,
-      description: t("metaDescription", { categoryName }),
-      openGraph: {
-        title: categoryName,
-        description: t("metaDescription", { categoryName }),
-      },
-    }
+    return placeholderCategoryMetadata(locale, t)
   }
 
   const leafCategory = await getCategoryBySlug(subslug)
@@ -106,61 +82,5 @@ export default function CategoryNestedPage({
         searchParamsPromise={searchParamsPromise}
       />
     </Suspense>
-  )
-}
-
-function CategoryNestedPageContent({
-  paramsPromise,
-  searchParamsPromise,
-}: {
-  paramsPromise: Promise<{ slug: string; subslug: string; locale: string }>
-  searchParamsPromise: Promise<CategoryPageSearchParams>
-}) {
-  const { locale, slug: rootSlug, subslug } = use(paramsPromise)
-  setRequestLocale(locale)
-
-  if (isPlaceholderSegment(rootSlug) || isPlaceholderSegment(subslug)) {
-    return null
-  }
-
-  const categoryContext = use(getCategoryContext(subslug))
-  if (!categoryContext) {
-    notFound()
-  }
-
-  const {
-    current: currentCategory,
-    parent: parentCategory,
-    siblings: siblingCategories,
-    children,
-    attributes,
-  } = categoryContext
-
-  const isLeafCategory = children.length === 0
-  const hasValidRootParent =
-    parentCategory?.slug === rootSlug && parentCategory.parent_id === null
-
-  if (!currentCategory.parent_id || !isLeafCategory || !hasValidRootParent) {
-    notFound()
-  }
-
-  const categoryName = locale === "bg" && currentCategory.name_bg
-    ? currentCategory.name_bg
-    : currentCategory.name
-  const filterableAttributes = attributes.filter((attribute) => attribute.is_filterable)
-
-  return (
-    <CategoryPageDynamicContent
-      locale={locale}
-      slug={subslug}
-      categoryId={currentCategory.id}
-      searchParamsPromise={searchParamsPromise}
-      currentCategory={currentCategory}
-      parentCategory={parentCategory}
-      siblingCategories={siblingCategories}
-      subcategoriesWithCounts={[]}
-      filterableAttributes={filterableAttributes}
-      categoryName={categoryName}
-    />
   )
 }

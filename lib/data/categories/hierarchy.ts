@@ -3,19 +3,14 @@ import "server-only"
 import { cacheLife, cacheTag } from "next/cache"
 import { createStaticClient } from "@/lib/supabase/server"
 import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
-import { logger } from "@/lib/logger"
-import type {
-  CategoryTreeNodeLite,
-  CategoryWithChildren,
-} from "./types"
+import type { CategoryWithChildren } from "./types"
 import {
   buildCategoryTree,
-  buildCategoryTreeLite,
-  fetchChildCategoriesLiteBatched,
   type CategoryHierarchyRow,
 } from "./tree"
 
-export { getCategoryBySlug, getCategoryContext } from "./context"
+import { logger } from "@/lib/logger"
+export { getCategoryBySlug, getCategoryContext, getCategoryContextById } from "./context"
 
 function isMissingBrowseableColumnError(error: unknown): boolean {
   if (typeof error !== "object" || error === null) return false
@@ -178,88 +173,4 @@ export async function getCategoryHierarchy(
     logger.error("[getCategoryHierarchy] Unexpected error", error)
     return []
   }
-}
-
-/**
- * Category tree for selector UIs that need stable client-side navigation.
- *
- * Used by:
- * - Sell flow (category picker needs L0 → L3 without extra client fetching)
- * - Business dashboard product forms (same selector requirement)
- */
-export async function getCategoryTreeDepth3(): Promise<CategoryTreeNodeLite[]> {
-  "use cache"
-  cacheTag("categories:tree", "categories:sell", "categories:sell:depth:3")
-  cacheLife("categories")
-
-  const supabase = createStaticClient()
-
-  const { data: rootCats, error: rootError } = await supabase
-    .from("categories")
-    .select("id, name, name_bg, slug, parent_id, display_order")
-    .is("parent_id", null)
-    .lt("display_order", 9000)
-    .order("display_order", { ascending: true })
-
-  if (rootError) {
-    logger.error("[getCategoryTreeDepth3] Root query error", rootError)
-    return []
-  }
-
-  if (!rootCats || rootCats.length === 0) return []
-
-  const rootIds = rootCats.map((c) => c.id)
-  const { data: l1Cats, error: l1Error } = await supabase
-    .from("categories")
-    .select("id, name, name_bg, slug, parent_id, display_order")
-    .in("parent_id", rootIds)
-    .lt("display_order", 9000)
-    .order("display_order", { ascending: true })
-
-  if (l1Error) {
-    logger.error("[getCategoryTreeDepth3] L1 query error", l1Error)
-  }
-
-  const l1Ids = (l1Cats || []).map((c) => c.id)
-  const l2Cats = await fetchChildCategoriesLiteBatched(supabase, l1Ids, {
-    batchSize: 100,
-    concurrency: 4,
-    label: "L2",
-  })
-
-  const l2Ids = l2Cats.map((c) => c.id)
-  const l3Cats = await fetchChildCategoriesLiteBatched(supabase, l2Ids, {
-    batchSize: 100,
-    concurrency: 4,
-    label: "L3",
-  })
-
-  // Fetch child counts for L3 categories to know which have L4 children
-  const l3Ids = l3Cats.map((c) => c.id)
-  const childCountMap = new Map<string, number>()
-
-  if (l3Ids.length > 0) {
-    // Query to get count of children for each L3 category
-    const BATCH_SIZE = 200
-    for (let i = 0; i < l3Ids.length; i += BATCH_SIZE) {
-      const batchIds = l3Ids.slice(i, i + BATCH_SIZE)
-      const { data: childCounts, error: countError } = await supabase
-        .from("categories")
-        .select("parent_id")
-        .in("parent_id", batchIds)
-        .lt("display_order", 9000)
-
-      if (!countError && childCounts) {
-        // Count children per parent
-        for (const row of childCounts) {
-          if (row.parent_id) {
-            childCountMap.set(row.parent_id, (childCountMap.get(row.parent_id) || 0) + 1)
-          }
-        }
-      }
-    }
-  }
-
-  const allCats = [...rootCats, ...(l1Cats || []), ...l2Cats, ...l3Cats]
-  return buildCategoryTreeLite(allCats, childCountMap)
 }

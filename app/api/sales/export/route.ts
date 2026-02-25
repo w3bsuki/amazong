@@ -4,6 +4,7 @@ import { noStoreJson } from "@/lib/api/response-helpers"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
+import { logger } from "@/lib/logger"
 const DateParamSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
 const SalesExportQuerySchema = z.object({
   from: DateParamSchema,
@@ -65,7 +66,7 @@ export async function GET(req: NextRequest) {
       .eq("seller_id", user.id)
 
     if (itemsError) {
-      console.error("Sales export failed to fetch order items:", itemsError)
+      logger.error("Sales export failed to fetch order items:", itemsError)
       return noStore({ error: EXPORT_FAILED_ERROR }, { status: 500 })
     }
 
@@ -92,7 +93,7 @@ export async function GET(req: NextRequest) {
         }
 
     if (ordersError) {
-      console.error("Sales export failed to fetch orders:", ordersError)
+      logger.error("Sales export failed to fetch orders:", ordersError)
       return noStore({ error: EXPORT_FAILED_ERROR }, { status: 500 })
     }
 
@@ -107,7 +108,7 @@ export async function GET(req: NextRequest) {
       : { data: [] as Array<{ id: string; title: string }>, error: null }
 
     if (productsError) {
-      console.error("Sales export failed to fetch products:", productsError)
+      logger.error("Sales export failed to fetch products:", productsError)
       return noStore({ error: EXPORT_FAILED_ERROR }, { status: 500 })
     }
 
@@ -123,7 +124,7 @@ export async function GET(req: NextRequest) {
       : { data: [] as Array<{ id: string; full_name: string | null }>, error: null }
 
     if (buyersError) {
-      console.error("Sales export failed to fetch buyer profiles:", buyersError)
+      logger.error("Sales export failed to fetch buyer profiles:", buyersError)
       return noStore({ error: EXPORT_FAILED_ERROR }, { status: 500 })
     }
 
@@ -190,7 +191,7 @@ export async function GET(req: NextRequest) {
       return noStoreJson({ skipped: true }, { status: 200 })
     }
 
-    console.error("Sales export API error:", error)
+    logger.error("Sales export API error:", error)
     return noStoreJson({ error: EXPORT_FAILED_ERROR }, { status: 500 })
   }
 }

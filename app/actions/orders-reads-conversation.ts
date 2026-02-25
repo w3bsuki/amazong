@@ -1,5 +1,4 @@
 import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
-import { logger } from "@/lib/logger"
 import {
   NOT_AUTHENTICATED_ERROR,
   OrderIdSchema,
@@ -8,6 +7,7 @@ import {
   type OrderConversationResult,
 } from "./orders-reads-shared"
 
+import { logger } from "@/lib/logger"
 export async function getOrderConversationImpl(
   orderId: string
 ): Promise<OrderConversationResult> {

@@ -5,7 +5,7 @@ import { useIsMobile } from "@/hooks/use-is-mobile"
 import { useIdleReady } from "@/hooks/use-idle-ready"
 
 const MobileTabBar = dynamic(
-  () => import("./mobile-tab-bar").then((mod) => mod.MobileTabBar),
+  () => import("@/components/layout/bottom-nav/mobile-tab-bar").then((mod) => mod.MobileTabBar),
   { ssr: false }
 )
 const CategoryBrowseDrawer = dynamic(

@@ -1,0 +1,92 @@
+/* ===== iOS ZOOM PREVENTION ===== */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="password"],
+  input[type="number"],
+  input:not([type]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Normalize Chrome/Safari autofill paint to token rails (prevents blue/yellow field fills). */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: oklch(var(--foreground));
+  caret-color: oklch(var(--foreground));
+  box-shadow: inset 0 0 0 1000px oklch(var(--background));
+  -webkit-box-shadow: inset 0 0 0 1000px oklch(var(--background));
+  transition: background-color 9999s ease-out 0s;
+}
+
+/* ===== BASE LAYER ===== */
+@layer base {
+  * {
+    @apply border-border outline-ring;
+  }
+
+  ::selection {
+    background: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  :where(a, button, input, select, textarea, summary, [role="button"], [role="link"], [tabindex]:not([tabindex="-1"])):focus-visible:not(.no-focus-ring) {
+    outline: 2px solid var(--color-ring) !important;
+    outline-offset: 2px !important;
+  }
+
+  html {
+    overflow-x: clip;
+    scrollbar-gutter: stable;
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings: "cv11", "ss01", "ss03", "cv05", "cv08", "cv09", "cv10";
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Permanent position: relative prevents header flash when modals toggle */
+    position: relative;
+    overflow-x: clip;
+    width: 100%;
+    max-width: 100vw;
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-optical-sizing: auto;
+    letter-spacing: var(--tracking-normal);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* ===== HEADER ISOLATION FROM MODAL SCROLL LOCK ===== */
+  /* Prevents header "flash" when react-remove-scroll modifies body styles */
+  [data-slot="app-header"] {
+    /* GPU layer promotion for smooth animations and isolation */
+    will-change: transform;
+    /* Contain layout reflows - prevents body changes from reflowing header */
+    contain: layout style;
+    /* New stacking context - isolates from body position changes */
+    isolation: isolate;
+  }
+}

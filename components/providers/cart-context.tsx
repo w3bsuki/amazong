@@ -25,6 +25,7 @@ import {
 } from "./cart-server-storage"
 import type { CartItem } from "./cart-types"
 
+import { logger } from "@/lib/logger"
 export type { CartItem } from "./cart-types"
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -140,7 +141,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const normalizedQuantity = normalizeQuantity(newItem.quantity ?? 1)
 
     if (!newItem.id || normalizedPrice === null || normalizedQuantity === null) {
-      console.error("Invalid cart item:", newItem)
+      logger.error("Invalid cart item:", newItem)
       return
     }
 
@@ -270,7 +271,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 export function useCart(): CartContextType {
   const storybookCartContext = (
     typeof window !== "undefined"
-      ? (window as unknown as { __STORYBOOK_CART_CONTEXT__?: unknown }).__STORYBOOK_CART_CONTEXT__
+      ? window.__STORYBOOK_CART_CONTEXT__
       : undefined
   ) as React.Context<CartContextType | undefined> | undefined
 

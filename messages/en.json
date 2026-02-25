@@ -375,7 +375,8 @@
             "v4": {
                 "title": "Treido Home",
                 "aria": {
-                    "primaryCategories": "Primary categories"
+                    "primaryCategories": "Primary categories",
+                    "discoveryScopes": "Discovery feed"
                 },
                 "scopes": {
                     "forYou": "For you",

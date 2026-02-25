@@ -8,8 +8,8 @@ import { Building2 as Buildings, Check, Crown, LoaderCircle as SpinnerGap, User 
 
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 export type UpgradeContentServerActions = {
   createSubscriptionCheckoutSession: (args: {
     planId: string

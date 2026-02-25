@@ -1,9 +1,9 @@
-"use client";
+"use client"
+
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { type ShippingRegion } from '@/lib/shipping';
-import { logger } from '@/lib/logger';
 
 import { detectGeoWelcomeState } from './use-geo-welcome-detection';
 import {
@@ -18,6 +18,7 @@ import {
   setLocalStorage,
 } from './use-geo-welcome.shared';
 
+import { logger } from "@/lib/logger"
 interface GeoWelcomeState {
   isOpen: boolean;
   detectedCountry: string;

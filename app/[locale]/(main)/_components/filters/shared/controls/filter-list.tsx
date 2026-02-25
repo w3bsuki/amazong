@@ -4,6 +4,7 @@ import { useState, useMemo } from "react"
 import { Check, Search as MagnifyingGlass } from "lucide-react";
 
 import { cn } from "@/lib/utils"
+import { toggleOptionSelection } from "@/components/shared/filters/controls/toggle-option-selection"
 import { useTranslations } from "next-intl"
 
 // =============================================================================
@@ -45,14 +46,7 @@ export function FilterList({
   }, [options, searchQuery])
 
   const handleSelect = (option: string) => {
-    if (!multiSelect) {
-      onSelect(selected.includes(option) ? [] : [option])
-      return
-    }
-    const newValues = selected.includes(option)
-      ? selected.filter((v) => v !== option)
-      : [...selected, option]
-    onSelect(newValues)
+    onSelect(toggleOptionSelection({ selected, option, multiSelect }))
   }
 
   return (

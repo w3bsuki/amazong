@@ -48,3 +48,19 @@ export interface BoostTimeLeft {
 }
 
 export type TranslateFn = (key: string, values?: Record<string, string | number>) => string
+
+export interface SellingProductsListCommonProps {
+  products: SellingProduct[]
+  sellerUsername: string
+  locale: string
+  formatCurrency: (value: number) => string
+  t: TranslateFn
+  tBoost: TranslateFn
+  isBoostActive: (product: SellingProduct) => boolean
+  isBoostExpired: (product: SellingProduct) => boolean
+  getBoostTimeLeft: (product: SellingProduct) => BoostTimeLeft | null
+  isSaleActive: (product: SellingProduct) => boolean
+  getSalePercentForDisplay: (product: SellingProduct) => number
+  onDelete: (productId: string) => void
+  deletingId: string | null
+}

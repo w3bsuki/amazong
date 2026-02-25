@@ -1,12 +1,13 @@
 "use client"
 
-import { useActionState, useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { Eye, EyeOff as EyeSlash } from "lucide-react";
 
 import { useTranslations } from "next-intl"
 
 import { SubmitButton } from "@/components/auth/submit-button"
-import { GoogleOAuthButton } from "@/components/auth/google-oauth-button"
+import { AuthOAuthSection } from "@/components/auth/auth-oauth-section"
+import { useAuthActionState, type BoundAuthAction } from "@/components/auth/use-auth-action-state"
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/shared/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -14,19 +15,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
-type AuthActionState = {
-  error?: string
-  fieldErrors?: Record<string, string>
-  success?: boolean
-}
-
-type BoundLoginAction = (
-  prevState: AuthActionState,
-  formData: FormData
-) => Promise<AuthActionState>
-
 interface LoginFormBodyProps {
-  action: BoundLoginAction
+  action: BoundAuthAction
   onSuccess?: () => void
   onSwitchToSignUp?: () => void
   onNavigateAway?: () => void
@@ -59,23 +49,8 @@ export function LoginFormBody({
   const [oauthError, setOauthError] = useState<string | null>(null)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const handledSuccess = useRef(false)
 
-  const initialState = useMemo(
-    (): AuthActionState => ({ fieldErrors: {}, success: false }),
-    []
-  )
-  const [state, formAction] = useActionState(action, initialState)
-
-  useEffect(() => {
-    if (state?.success && !handledSuccess.current) {
-      handledSuccess.current = true
-      onSuccess?.()
-    }
-    if (!state?.success) {
-      handledSuccess.current = false
-    }
-  }, [state?.success, onSuccess])
+  const { state, formAction } = useAuthActionState(action, onSuccess)
 
   const emailHasValue = email.trim().length > 0
   const passwordHasValue = password.length > 0
@@ -127,18 +102,13 @@ export function LoginFormBody({
         </div>
       )}
 
-      <div className="space-y-3" data-testid="login-oauth-section">
-        <GoogleOAuthButton
-          nextPath={redirectPath ?? "/"}
-          onError={(message) => setOauthError(message)}
-          onNavigateAway={onNavigateAway}
-        />
-        <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-border" />
-          <p className="text-xs text-muted-foreground">{t("or")}</p>
-          <div className="h-px flex-1 bg-border" />
-        </div>
-      </div>
+      <AuthOAuthSection
+        testId="login-oauth-section"
+        nextPath={redirectPath ?? "/"}
+        orLabel={t("or")}
+        onError={(message) => setOauthError(message)}
+        onNavigateAway={onNavigateAway}
+      />
 
       <form
         action={formAction}

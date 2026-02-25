@@ -1,8 +1,8 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
-import { logger } from "@/lib/logger"
 import { fetchWithTimeout, getPublicSupabaseEnvOptional, withAuthCookieDomain } from "@/lib/supabase/shared"
 
+import { logger } from "@/lib/logger"
 function getLocaleFromPath(pathname: string): string | null {
   const match = pathname.match(/^\/([a-zA-Z]{2})(?:\/|$)/)
   const locale = match?.[1]

@@ -7,6 +7,7 @@ import { stripe } from "@/lib/stripe"
 import { ID_AND_STRIPE_CUSTOMER_ID_SELECT, STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
 import type Stripe from "stripe"
 
+import { logger } from "@/lib/logger"
 // =============================================================================
 // TYPES
 // =============================================================================
@@ -69,7 +70,7 @@ export async function createSubscriptionCheckoutSession(args: {
   locale?: "en" | "bg"
 }): Promise<CheckoutSessionResult> {
   if (!process.env.STRIPE_SECRET_KEY) {
-    console.error("STRIPE_SECRET_KEY is missing")
+    logger.error("STRIPE_SECRET_KEY is missing")
     return errorEnvelope({ error: "Stripe configuration is missing. Please check your server logs." })
   }
 
@@ -186,7 +187,7 @@ export async function createSubscriptionCheckoutSession(args: {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Internal server error"
     const errorType = error instanceof Error ? error.constructor.name : typeof error
-    console.error(`[subscriptions] ${errorType}: ${errorMessage}`)
+    logger.error(`[subscriptions] ${errorType}: ${errorMessage}`)
     return errorEnvelope({ error: errorMessage })
   }
 }
@@ -196,7 +197,7 @@ export async function createBillingPortalSession(
 ): Promise<BillingPortalSessionResult> {
   const accountPlansUrl = getAbsoluteAccountPlansUrl(args?.locale)
   if (!process.env.STRIPE_SECRET_KEY) {
-    console.error("STRIPE_SECRET_KEY is missing")
+    logger.error("STRIPE_SECRET_KEY is missing")
     return errorEnvelope({ error: "Stripe configuration is missing. Please check your server logs." })
   }
 
@@ -246,7 +247,7 @@ export async function createBillingPortalSession(
 
     return successEnvelope({ url: portalSession.url })
   } catch (error) {
-    console.error("Portal session error:", error)
+    logger.error("Portal session error:", error)
     return errorEnvelope({ error: "Failed to create portal session" })
   }
 }

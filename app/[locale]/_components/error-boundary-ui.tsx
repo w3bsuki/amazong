@@ -8,6 +8,7 @@ import { type LucideIcon as PhosphorIcon } from "lucide-react";
 import { Link } from "@/i18n/routing"
 
 
+import { logger } from "@/lib/logger"
 type ErrorIcon = 
   | "house" 
   | "storefront" 
@@ -81,7 +82,7 @@ export function ErrorBoundaryUI({
   logPrefix = "Page",
 }: ErrorBoundaryUIProps) {
   useEffect(() => {
-    console.error(`${logPrefix} error:`, error)
+    logger.error(`${logPrefix} error:`, error)
   }, [error, logPrefix])
 
   const CtaIcon = iconMap[ctaIcon]

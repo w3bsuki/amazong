@@ -1,12 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb } from "../../../_components/navigation/app-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Bug, CircleCheck as CheckCircle, CreditCard, Mail as EnvelopeSimple, Eye, Fingerprint, Lock, KeyRound as LockKey, ShieldCheck, Shield as ShieldStar, CircleUserRound as UserCircleCheck, TriangleAlert as Warning } from "lucide-react";
 
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { PageShell } from "../../../_components/page-shell"
-import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
+import { StaticHeroPageShell } from "../../_components/static-hero-page-shell"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
 
@@ -59,31 +57,24 @@ export default async function SecurityPage({
   ]
   
   return (
-    <PageShell className="pb-20 sm:pb-12 overflow-x-hidden">
-      <StaticPageHeaderSync title={t("metaTitle")} backHref="/" />
-      {/* Hero Section */}
-      <div className="bg-primary text-primary-foreground">
-        <div className="container px-4 sm:px-6 py-10 md:py-16">
-          <div className="hidden md:block [&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
-            <AppBreadcrumb
-              items={breadcrumbItems}
-              ariaLabel={tBreadcrumbs("ariaLabel")}
-              homeLabel={tBreadcrumbs("homeLabel")}
-            />
+    <StaticHeroPageShell
+      title={t("metaTitle")}
+      breadcrumbItems={breadcrumbItems}
+      breadcrumbAriaLabel={tBreadcrumbs("ariaLabel")}
+      breadcrumbHomeLabel={tBreadcrumbs("homeLabel")}
+      bodyContainerClassName="container px-4 sm:px-6 py-8 md:py-12"
+      hero={
+        <div className="flex items-center gap-4 mb-4">
+          <div className="size-14 bg-hover rounded-full flex items-center justify-center">
+            <ShieldCheck className="size-7 text-primary-foreground" />
           </div>
-          <div className="flex items-center gap-4 mb-4">
-            <div className="size-14 bg-hover rounded-full flex items-center justify-center">
-              <ShieldCheck className="size-7 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-2xl md:text-4xl font-bold tracking-tight">{t('heroTitle')}</h1>
-              <p className="text-foreground text-lg mt-1">{t('heroSubtitle')}</p>
-            </div>
+          <div>
+            <h1 className="text-2xl md:text-4xl font-bold tracking-tight">{t('heroTitle')}</h1>
+            <p className="text-foreground text-lg mt-1">{t('heroSubtitle')}</p>
           </div>
         </div>
-      </div>
-
-      <div className="container px-4 sm:px-6 py-8 md:py-12">
+      }
+    >
         {/* Stripe Badge Section */}
         <Card className="mb-8 border-selected-border bg-selected">
           <CardContent className="p-4">
@@ -243,8 +234,7 @@ export default async function SecurityPage({
             </div>
           </CardContent>
         </Card>
-      </div>
-    </PageShell>
+    </StaticHeroPageShell>
   )
 }
 

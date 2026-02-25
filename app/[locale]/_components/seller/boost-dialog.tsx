@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 
+import { logger } from "@/lib/logger"
 type PricingOption = {
   days: number
   sku: string
@@ -137,7 +138,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess }: BoostD
         window.location.href = url
       }
     } catch (error) {
-      console.error('Boost error:', error)
+      logger.error('Boost error:', error)
       toast.error(t('paymentError'))
     } finally {
       setIsLoading(false)

@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 
 import { cn } from "@/lib/utils"
+import { toggleOptionSelection } from "./toggle-option-selection"
 
 // =============================================================================
 // COLOR SWATCHES — Circle-based color selector for Filter Hub
@@ -76,14 +77,7 @@ export function ColorSwatches({
   multiSelect = true,
 }: ColorSwatchesProps) {
   const handleSelect = (option: string) => {
-    if (!multiSelect) {
-      onSelect(selected.includes(option) ? [] : [option])
-      return
-    }
-    const newValues = selected.includes(option)
-      ? selected.filter((v) => v !== option)
-      : [...selected, option]
-    onSelect(newValues)
+    onSelect(toggleOptionSelection({ selected, option, multiSelect }))
   }
 
   return (

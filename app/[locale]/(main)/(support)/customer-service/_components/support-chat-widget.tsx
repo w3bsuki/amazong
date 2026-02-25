@@ -6,6 +6,7 @@ import { useSupabasePostgresChanges } from "@/hooks/use-supabase-postgres-change
 import { useTranslations } from "next-intl"
 import { SupportChatWidgetView, type SupportMessage } from "./support-chat-widget-view"
 
+import { logger } from "@/lib/logger"
 const SUPPORT_SUBJECT = "SUPPORT_CHAT"
 
 interface SupportChatWidgetProps {
@@ -102,7 +103,7 @@ export function SupportChatWidget({
         }
       }
     } catch (error) {
-      console.error("Error loading support conversation:", error)
+      logger.error("Error loading support conversation:", error)
     } finally {
       setIsLoading(false)
     }
@@ -225,7 +226,7 @@ export function SupportChatWidget({
       }
       setMessages((previous) => [...previous, optimisticMsg])
     } catch (error) {
-      console.error("Error sending message:", error)
+      logger.error("Error sending message:", error)
       setNewMessage(messageContent)
     } finally {
       setIsSending(false)

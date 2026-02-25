@@ -2,11 +2,11 @@ import "server-only"
 
 import { cacheLife, cacheTag } from "next/cache"
 import { createStaticClient } from "@/lib/supabase/server"
-import { logger } from "@/lib/logger"
 import { getShippingFilter, type ShippingRegion } from "@/lib/shipping"
 import type { Product } from "./types"
 import { mapRowToProduct } from "./normalize"
 
+import { logger } from "@/lib/logger"
 const CATEGORY_WITH_PARENT_CHAIN_SELECT =
   `id,slug,name,name_bg,icon,
    parent:categories!parent_id(

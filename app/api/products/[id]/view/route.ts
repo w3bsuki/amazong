@@ -3,6 +3,7 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { noStoreJson } from "@/lib/api/response-helpers"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 const ProductViewParamsSchema = z
   .object({
     id: z.string().uuid(),
@@ -45,7 +46,7 @@ export async function POST(
 
   if (error) {
     // Log but don't fail - view tracking is non-critical
-    console.error("[view-count] Failed to increment:", error)
+    logger.error("[view-count] Failed to increment:", error)
   }
 
   // Set cookie to prevent duplicate counts (expires in 1 hour)

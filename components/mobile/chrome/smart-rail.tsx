@@ -61,6 +61,29 @@ function getActionClass(action: SmartRailAction): string {
   )
 }
 
+type SmartRailActionContentProps = {
+  icon?: React.ReactNode
+  label: string
+  badgeCount?: number | undefined
+}
+
+function SmartRailActionContent({ icon, label, badgeCount }: SmartRailActionContentProps) {
+  return (
+    <>
+      {icon}
+      <span className="whitespace-nowrap">{label}</span>
+      {typeof badgeCount === "number" && badgeCount > 0 && (
+        <span
+          className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background"
+          aria-label={String(badgeCount)}
+        >
+          {badgeCount}
+        </span>
+      )}
+    </>
+  )
+}
+
 export function SmartRail({
   ariaLabel,
   pills,
@@ -177,16 +200,11 @@ export function SmartRail({
                   aria-label={trailingAction.ariaLabel ?? trailingAction.label}
                   {...(trailingAction.testId ? { "data-testid": trailingAction.testId } : {})}
                 >
-                  {trailingAction.icon}
-                  <span className="whitespace-nowrap">{trailingAction.label}</span>
-                  {typeof trailingAction.badgeCount === "number" && trailingAction.badgeCount > 0 && (
-                    <span
-                      className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background"
-                      aria-label={String(trailingAction.badgeCount)}
-                    >
-                      {trailingAction.badgeCount}
-                    </span>
-                  )}
+                  <SmartRailActionContent
+                    icon={trailingAction.icon}
+                    label={trailingAction.label}
+                    badgeCount={trailingAction.badgeCount}
+                  />
                 </Link>
               ) : (
                 <button
@@ -197,16 +215,11 @@ export function SmartRail({
                   aria-label={trailingAction.ariaLabel ?? trailingAction.label}
                   {...(trailingAction.testId ? { "data-testid": trailingAction.testId } : {})}
                 >
-                  {trailingAction.icon}
-                  <span className="whitespace-nowrap">{trailingAction.label}</span>
-                  {typeof trailingAction.badgeCount === "number" && trailingAction.badgeCount > 0 && (
-                    <span
-                      className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background"
-                      aria-label={String(trailingAction.badgeCount)}
-                    >
-                      {trailingAction.badgeCount}
-                    </span>
-                  )}
+                  <SmartRailActionContent
+                    icon={trailingAction.icon}
+                    label={trailingAction.label}
+                    badgeCount={trailingAction.badgeCount}
+                  />
                 </button>
               )}
             </>

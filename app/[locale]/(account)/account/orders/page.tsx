@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
-import { createClient } from "@/lib/supabase/server"
-import { Link, redirect } from "@/i18n/routing"
+import { Link } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { getOrderConversation } from "../../../../actions/orders-reads"
 import { canBuyerRateSeller } from "../../../../actions/orders-rating"
@@ -11,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { AccountOrdersToolbar } from "./_components/account-orders-toolbar"
 import { AccountOrdersStats } from "./_components/account-orders-stats"
 import { AccountOrdersGrid } from "./_components/account-orders-grid"
+import { withAccountPageShell } from "../_lib/account-page-shell"
 
 type OrderStatus =
   | "pending"
@@ -124,181 +124,170 @@ export async function generateMetadata({
 }
 
 export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
-  const { locale: localeParam } = await params
-  const locale = localeParam === "bg" ? "bg" : "en"
-  const t = await getTranslations({ locale, namespace: "Account" })
-  const tCommon = await getTranslations({ locale, namespace: "Common" })
-  const sp = (await searchParams) || {}
-  const query = (sp.q || "").trim()
-  const statusFilter = normalizeStatusFilter((sp.status || "all").trim())
-  const requestedPage = parsePageParam(sp.page)
-  const supabase = await createClient()
+  return withAccountPageShell(params, async ({ locale, supabase, user }) => {
+    const t = await getTranslations({ locale, namespace: "Account" })
+    const tCommon = await getTranslations({ locale, namespace: "Common" })
+    const sp = (await searchParams) || {}
+    const query = (sp.q || "").trim()
+    const statusFilter = normalizeStatusFilter((sp.status || "all").trim())
+    const requestedPage = parsePageParam(sp.page)
 
-  if (!supabase) {
-    return redirect({ href: "/auth/login", locale })
-  }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return redirect({ href: "/auth/login", locale })
-  }
-
-  // Fetch orders from Supabase with full details
-  const { data: ordersRaw } = await supabase
-    .from("orders")
-    .select(`
-        id,
-        created_at,
-        status,
-        fulfillment_status,
-        total_amount,
-        order_items (
+    // Fetch orders from Supabase with full details
+    const { data: ordersRaw } = await supabase
+      .from("orders")
+      .select(`
           id,
-          product_id,
-          seller_id,
-          quantity,
-          price_at_purchase,
+          created_at,
           status,
-          tracking_number,
-          shipping_carrier,
-          shipped_at,
-          product:products(
+          fulfillment_status,
+          total_amount,
+          order_items (
             id,
-            title,
-            images,
-            slug,
-            price
+            product_id,
+            seller_id,
+            quantity,
+            price_at_purchase,
+            status,
+            tracking_number,
+            shipping_carrier,
+            shipped_at,
+            product:products(
+              id,
+              title,
+              images,
+              slug,
+              price
+            )
           )
-        )
-    `)
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
+      `)
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
 
-  const sellerIds = [
-    ...new Set(
-      ((ordersRaw || []) as unknown as OrderRow[])
-        .flatMap((order) => (Array.isArray(order.order_items) ? order.order_items : []))
-        .map((item) => item.seller_id)
-        .filter((id): id is string => typeof id === "string" && id.length > 0)
-    ),
-  ]
+    const sellerIds = [
+      ...new Set(
+        ((ordersRaw || []) as OrderRow[])
+          .flatMap((order) => (Array.isArray(order.order_items) ? order.order_items : []))
+          .map((item) => item.seller_id)
+          .filter((id): id is string => typeof id === "string" && id.length > 0)
+      ),
+    ]
 
-  const { data: sellerProfiles } = sellerIds.length
-    ? await supabase
-      .from("profiles")
-      .select("id,username")
-      .in("id", sellerIds)
-    : { data: [] as Array<{ id: string; username: string | null }> }
+    const { data: sellerProfiles } = sellerIds.length
+      ? await supabase
+          .from("profiles")
+          .select("id,username")
+          .in("id", sellerIds)
+      : { data: [] as Array<{ id: string; username: string | null }> }
 
-  const sellerUsernameById = new Map(
-    (sellerProfiles || []).map((profile) => [profile.id, profile.username ?? null])
-  )
+    const sellerUsernameById = new Map(
+      (sellerProfiles || []).map((profile) => [profile.id, profile.username ?? null])
+    )
 
-  const allOrders = ((ordersRaw || []) as unknown as OrderRow[]).map((order) => ({
-    ...order,
-    order_items: Array.isArray(order.order_items)
-      ? order.order_items.map((item) => ({
-        ...item,
-        seller_username: item.seller_id ? sellerUsernameById.get(item.seller_id) ?? null : null,
-      }))
-      : [],
-  }))
+    const allOrders = ((ordersRaw || []) as OrderRow[]).map((order) => ({
+      ...order,
+      order_items: Array.isArray(order.order_items)
+        ? order.order_items.map((item) => ({
+            ...item,
+            seller_username: item.seller_id ? sellerUsernameById.get(item.seller_id) ?? null : null,
+          }))
+        : [],
+    }))
 
-  const filteredOrders = allOrders.filter((o) => matchesStatus(o, statusFilter) && matchesQuery(o, query))
-  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PAGE_SIZE))
-  const currentPage = Math.min(requestedPage, totalPages)
-  const pageStart = (currentPage - 1) * ORDERS_PAGE_SIZE
-  const paginatedOrders = filteredOrders.slice(pageStart, pageStart + ORDERS_PAGE_SIZE)
+    const filteredOrders = allOrders.filter((o) => matchesStatus(o, statusFilter) && matchesQuery(o, query))
+    const totalPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PAGE_SIZE))
+    const currentPage = Math.min(requestedPage, totalPages)
+    const pageStart = (currentPage - 1) * ORDERS_PAGE_SIZE
+    const paginatedOrders = filteredOrders.slice(pageStart, pageStart + ORDERS_PAGE_SIZE)
 
-  const buildPageHref = (page: number) => {
-    const next = new URLSearchParams()
-    if (query) next.set("q", query)
-    if (statusFilter !== "all") next.set("status", statusFilter)
-    if (page > 1) next.set("page", String(page))
+    const buildPageHref = (page: number) => {
+      const next = new URLSearchParams()
+      if (query) next.set("q", query)
+      if (statusFilter !== "all") next.set("status", statusFilter)
+      if (page > 1) next.set("page", String(page))
 
-    const qs = next.toString()
-    return qs ? `/account/orders?${qs}` : "/account/orders"
-  }
+      const qs = next.toString()
+      return qs ? `/account/orders?${qs}` : "/account/orders"
+    }
 
-  // Calculate stats
-  const stats = {
-    total: allOrders.length,
-    pending: allOrders.filter((o) => matchesStatus(o, "pending")).length,
-    shipped: allOrders.filter((o) => matchesStatus(o, "shipped")).length,
-    completed: allOrders.filter((o) => matchesStatus(o, "completed")).length,
-    totalSpend: allOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0),
-  }
+    // Calculate stats
+    const stats = {
+      total: allOrders.length,
+      pending: allOrders.filter((o) => matchesStatus(o, "pending")).length,
+      shipped: allOrders.filter((o) => matchesStatus(o, "shipped")).length,
+      completed: allOrders.filter((o) => matchesStatus(o, "completed")).length,
+      totalSpend: allOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0),
+    }
 
-  const counts = {
-    all: allOrders.length,
-    pending: stats.pending,
-    shipped: stats.shipped,
-    completed: stats.completed,
-  }
+    const counts = {
+      all: allOrders.length,
+      pending: stats.pending,
+      shipped: stats.shipped,
+      completed: stats.completed,
+    }
 
-  return (
-    <div className="flex flex-col gap-4 md:gap-4">
-      <h1 className="sr-only">{t("header.orders")}</h1>
+    return {
+      content: (
+        <div className="flex flex-col gap-4 md:gap-4">
+          <h1 className="sr-only">{t("header.orders")}</h1>
 
-      <div className="hidden md:block">
-        <AccountOrdersStats stats={stats} locale={locale} />
-      </div>
+          <div className="hidden md:block">
+            <AccountOrdersStats stats={stats} locale={locale} />
+          </div>
 
-      {/* Toolbar with Tabs and Search */}
-      <AccountOrdersToolbar
-        locale={locale}
-        initialQuery={query}
-        initialStatus={statusFilter}
-        counts={counts}
-      />
+          {/* Toolbar with Tabs and Search */}
+          <AccountOrdersToolbar
+            locale={locale}
+            initialQuery={query}
+            initialStatus={statusFilter}
+            counts={counts}
+          />
 
-      <AccountOrdersGrid
-        orders={paginatedOrders}
-        locale={locale}
-        actions={{
-          getOrderConversation,
-          buyerConfirmDelivery,
-          canBuyerRateSeller,
-          requestOrderCancellation,
-          reportOrderIssue,
-          submitSellerFeedback,
-        }}
-      />
+          <AccountOrdersGrid
+            orders={paginatedOrders}
+            locale={locale}
+            actions={{
+              getOrderConversation,
+              buyerConfirmDelivery,
+              canBuyerRateSeller,
+              requestOrderCancellation,
+              reportOrderIssue,
+              submitSellerFeedback,
+            }}
+          />
 
-      {filteredOrders.length > 0 ? (
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-muted-foreground">
-            {locale === "bg"
-              ? `Страница ${currentPage} от ${totalPages}`
-              : `Page ${currentPage} of ${totalPages}`}
-          </p>
+          {filteredOrders.length > 0 ? (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-muted-foreground">
+                {locale === "bg"
+                  ? `Страница ${currentPage} от ${totalPages}`
+                  : `Page ${currentPage} of ${totalPages}`}
+              </p>
 
-          <nav className="flex items-center gap-2" aria-label={tCommon("pagination")}>
-            {currentPage > 1 ? (
-              <Button variant="outline" size="sm" asChild>
-                <Link href={buildPageHref(currentPage - 1)}>{tCommon("previous")}</Link>
-              </Button>
-            ) : (
-              <Button variant="outline" size="sm" disabled>
-                {tCommon("previous")}
-              </Button>
-            )}
+              <nav className="flex items-center gap-2" aria-label={tCommon("pagination")}>
+                {currentPage > 1 ? (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={buildPageHref(currentPage - 1)}>{tCommon("previous")}</Link>
+                  </Button>
+                ) : (
+                  <Button variant="outline" size="sm" disabled>
+                    {tCommon("previous")}
+                  </Button>
+                )}
 
-            {currentPage < totalPages ? (
-              <Button variant="outline" size="sm" asChild>
-                <Link href={buildPageHref(currentPage + 1)}>{tCommon("next")}</Link>
-              </Button>
-            ) : (
-              <Button variant="outline" size="sm" disabled>
-                {tCommon("next")}
-              </Button>
-            )}
-          </nav>
+                {currentPage < totalPages ? (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={buildPageHref(currentPage + 1)}>{tCommon("next")}</Link>
+                  </Button>
+                ) : (
+                  <Button variant="outline" size="sm" disabled>
+                    {tCommon("next")}
+                  </Button>
+                )}
+              </nav>
+            </div>
+          ) : null}
         </div>
-      ) : null}
-    </div>
-  )
+      ),
+    }
+  })
 }

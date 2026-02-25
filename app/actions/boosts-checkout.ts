@@ -9,11 +9,12 @@ import {
   type CreateBoostCheckoutResult,
 } from "./boosts-shared"
 
+import { logger } from "@/lib/logger"
 export async function createBoostCheckoutSessionImpl(
   args: CreateBoostCheckoutArgs
 ): Promise<CreateBoostCheckoutResult> {
   if (!process.env.STRIPE_SECRET_KEY) {
-    console.error("STRIPE_SECRET_KEY is missing")
+    logger.error("STRIPE_SECRET_KEY is missing")
     return errorEnvelope({ error: "Payment configuration is missing" })
   }
 
@@ -109,7 +110,7 @@ export async function createBoostCheckoutSessionImpl(
       ? successEnvelope({ url: session.url })
       : errorEnvelope({ error: "Failed to create checkout" })
   } catch (error) {
-    console.error("Boost checkout error:", error)
+    logger.error("Boost checkout error:", error)
     return errorEnvelope({ error: "Failed to create payment session" })
   }
 }

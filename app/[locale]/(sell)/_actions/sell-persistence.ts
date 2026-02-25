@@ -1,7 +1,6 @@
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 import { toCategoryPolicy } from "@/lib/sell/category-policy"
 import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
-import { logger } from "@/lib/logger"
 import type { Database } from "@/lib/supabase/database.types"
 import type {
   CreateListingFailure,
@@ -11,6 +10,7 @@ import type {
   SupabaseClient,
 } from "./sell-shared"
 
+import { logger } from "@/lib/logger"
 async function verifyListingLimits(
   supabase: SupabaseClient,
   userId: string,
@@ -47,11 +47,16 @@ async function selectCategoryPolicyRow(
   categoryId: string,
   selectClause: string,
 ): Promise<CategoryPolicyQueryResult> {
-  return (await (supabase
+  const { data, error } = await supabase
     .from("categories")
     .select(selectClause)
     .eq("id", categoryId)
-    .maybeSingle() as unknown as Promise<CategoryPolicyQueryResult>))
+    .maybeSingle()
+
+  return {
+    data: (data as Record<string, unknown> | null) ?? null,
+    error: error as { message?: string; code?: string } | null,
+  }
 }
 
 async function resolveCategoryPolicy(
@@ -96,14 +101,20 @@ async function insertProduct(
   supabase: SupabaseClient,
   productData: ProductInsert,
 ) {
-  let insertResult = await (supabase
-    .from("products")
-    .insert(productData as Database["public"]["Tables"]["products"]["Insert"])
-    .select("id, slug")
-    .single() as unknown as {
-    data: { id: string; slug: string | null } | null
-    error: { message?: string; code?: string } | null
-  })
+  const doInsert = async (payload: Database["public"]["Tables"]["products"]["Insert"]) => {
+    const { data, error } = await supabase
+      .from("products")
+      .insert(payload)
+      .select("id, slug")
+      .single()
+
+    return {
+      data: data ? { id: data.id, slug: data.slug } : null,
+      error: error as { message?: string; code?: string } | null,
+    }
+  }
+
+  let insertResult = await doInsert(productData as Database["public"]["Tables"]["products"]["Insert"])
 
   if (insertResult.error && isMissingColumnError(insertResult.error)) {
     const {
@@ -118,14 +129,7 @@ async function insertProduct(
     void _fulfillmentMode
     void _pricingMode
 
-    insertResult = await (supabase
-      .from("products")
-      .insert(legacyProductData as Database["public"]["Tables"]["products"]["Insert"])
-      .select("id, slug")
-      .single() as unknown as {
-      data: { id: string; slug: string | null } | null
-      error: { message?: string; code?: string } | null
-    })
+    insertResult = await doInsert(legacyProductData as Database["public"]["Tables"]["products"]["Insert"])
   }
 
   return insertResult

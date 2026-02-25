@@ -1,5 +1,4 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { logger } from "@/lib/logger"
 import type { Database } from "@/lib/supabase/database.types"
 import type { Conversation, Message, RawConversationRow, RawMessageRow, RawProfileRow } from "@/lib/types/messages"
 import {
@@ -11,6 +10,7 @@ import {
   transformMessage,
 } from "./messages.helpers"
 
+import { logger } from "@/lib/logger"
 type UserConversationRpcRow = {
   id: string
   buyer_id: string

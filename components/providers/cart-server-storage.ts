@@ -11,6 +11,7 @@ import {
 } from "./cart-helpers"
 import type { CartItem } from "./cart-types"
 
+import { logger } from "@/lib/logger"
 export async function fetchServerCart(
   activeUserId: string,
   unknownProductLabel: string
@@ -39,7 +40,7 @@ export async function fetchServerCart(
     .order("created_at", { ascending: false })
 
   if (error) {
-    console.error("Error fetching server cart:", error)
+    logger.error("Error fetching server cart:", error)
     return []
   }
 
@@ -110,7 +111,7 @@ export async function syncLocalCartToServerStorage(): Promise<boolean> {
 
     if (error) {
       if (process.env.NODE_ENV === "development") {
-        console.warn("Cart sync skipped (RPC unavailable):", error.message || error.code || "unknown")
+        logger.warn("Cart sync skipped (RPC unavailable):", error.message || error.code || "unknown")
       }
       return false
     }
@@ -132,7 +133,7 @@ export async function addServerCartItem(item: CartItem): Promise<void> {
   })
 
   if (error) {
-    console.error("Error adding to server cart:", error)
+    logger.error("Error adding to server cart:", error)
   }
 }
 
@@ -149,7 +150,7 @@ export async function setServerCartQuantity(
   })
 
   if (error) {
-    console.error("Error updating server cart quantity:", error)
+    logger.error("Error updating server cart quantity:", error)
   }
 }
 
@@ -157,6 +158,6 @@ export async function clearServerCart(): Promise<void> {
   const supabase = createClient()
   const { error } = await supabase.rpc("cart_clear")
   if (error) {
-    console.error("Error clearing server cart:", error)
+    logger.error("Error clearing server cart:", error)
   }
 }

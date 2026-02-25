@@ -3,9 +3,9 @@ import 'server-only'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@/lib/supabase/server'
-import { logger } from '@/lib/logger'
 import sharp from 'sharp'
 
+import { logger } from "@/lib/logger"
 export interface ImageUploadOptions {
   /** Maximum image dimension (default: 1920) */
   maxDimension?: number

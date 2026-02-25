@@ -9,7 +9,6 @@ import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
-import { logger } from "@/lib/logger"
 import { cn } from "@/lib/utils"
 
 import type { NotificationRow } from "./notification-types"
@@ -32,6 +31,7 @@ import {
   type NotificationPreferences,
 } from "./notifications-content.types"
 
+import { logger } from "@/lib/logger"
 export function NotificationsContent({
   initialNotifications,
 }: {

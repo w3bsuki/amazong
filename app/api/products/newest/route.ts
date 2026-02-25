@@ -10,6 +10,7 @@ import {
 import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 const SortParamSchema = z.enum(["newest", "price-asc", "price-desc", "rating"]).catch("newest").default("newest")
 const TypeParamSchema = z.enum(["newest", "promoted"]).catch("newest").default("newest")
 
@@ -123,14 +124,8 @@ interface ProductRowWithRelations {
   rating: number | null
   review_count: number | null
   images: string[] | null
+  free_shipping: boolean | null
   seller_city: string | null
-  product_images?: Array<{
-    image_url: string
-    thumbnail_url: string | null
-    display_order: number | null
-    is_primary: boolean | null
-  }> | null
-  product_attributes: Array<{ name: string; value: string }> | null
   is_boosted: boolean | null
   boost_expires_at: string | null
   created_at: string
@@ -302,7 +297,7 @@ export async function GET(request: NextRequest) {
           return { ok: true, rows: [], totalCount: count ?? 0 }
         }
 
-        console.error(errorLogPrefix, error)
+        logger.error(errorLogPrefix, error)
         return {
           ok: false,
           response: noStoreJson({ 
@@ -315,7 +310,7 @@ export async function GET(request: NextRequest) {
 
       return {
         ok: true,
-        rows: (data ?? []) as unknown as ProductRowWithRelations[],
+        rows: (data ?? []) as ProductRowWithRelations[],
         totalCount: count ?? 0,
       }
     }
@@ -337,7 +332,7 @@ export async function GET(request: NextRequest) {
         .maybeSingle()
       
       if (categoryError) {
-        console.error("[API] Category lookup error:", categoryError.message)
+        logger.error("[API] Category lookup error:", categoryError.message)
         return noStoreJson({ 
           products: [], 
           hasMore: false,
@@ -392,7 +387,7 @@ export async function GET(request: NextRequest) {
       page,
     })
   } catch (error) {
-    console.error("[API] Newest products exception:", error)
+    logger.error("[API] Newest products exception:", error)
     return noStoreJson({ 
       products: [], 
       hasMore: false,

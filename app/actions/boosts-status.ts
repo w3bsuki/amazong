@@ -1,30 +1,22 @@
 import {
-  getBoostActionContext,
-  getOwnedBoostProduct,
+  getOwnedBoostActionContext,
   syncProfileBoostCredits,
   type BoostStatusResult,
 } from "./boosts-shared"
 
 export async function getBoostStatusImpl(productId: string): Promise<BoostStatusResult> {
-  const context = await getBoostActionContext(productId)
+  const context = await getOwnedBoostActionContext(productId)
   if (!context.success) {
-    return { success: false, error: context.error }
-  }
-
-  const { productId: safeProductId, userId, supabase } = context
-
-  const ownedProductResult = await getOwnedBoostProduct(supabase, safeProductId, userId)
-  if (!ownedProductResult.success) {
     return {
       success: false,
       error:
-        ownedProductResult.error === "You can only boost your own products"
+        context.error === "You can only boost your own products"
           ? "Not your product"
-          : ownedProductResult.error,
+          : context.error,
     }
   }
 
-  const product = ownedProductResult.product
+  const { userId, product } = context
   const boostData = await syncProfileBoostCredits(userId)
 
   return {

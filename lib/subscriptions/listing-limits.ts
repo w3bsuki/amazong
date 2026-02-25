@@ -1,9 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 
-import { logger } from "@/lib/logger"
 import type { Database } from "@/lib/supabase/database.types"
 import { normalizePlanTier } from "@/lib/subscriptions/normalize-tier"
 
+import { logger } from "@/lib/logger"
 type SellerAccountType = "personal" | "business"
 
 type PlanLookupResult = {

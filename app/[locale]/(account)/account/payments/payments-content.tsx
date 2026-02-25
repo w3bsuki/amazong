@@ -18,8 +18,8 @@ import {
 import { CreditCard, Lock, Plus, Shield, LoaderCircle as SpinnerGap, Star, Trash } from "lucide-react";
 
 import { toast } from "sonner"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 export type PaymentsContentServerActions = {
     createPaymentMethodSetupSession: (input?: { locale?: "en" | "bg" }) => Promise<{
         success: boolean

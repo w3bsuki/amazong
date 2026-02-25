@@ -1,28 +1,17 @@
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
 import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { RefreshCcw as ArrowCounterClockwise, CircleCheck as CheckCircle, CreditCard, FileText, Gavel, Ban as Prohibit, Scale as Scales, Shield, ShoppingBag, Truck, Users, TriangleAlert as Warning } from "lucide-react";
 
-import type { Metadata } from 'next'
-import { validateLocale } from "@/i18n/routing"
 import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"
-import { LegalPageLayout, type LegalSection, type RelatedLink } from "../_components/legal-page-layout"
-import { getLegalDocLayoutProps } from "../_lib/legal-doc-layout-props"
+import { buildLegalRouteMetadata, renderLegalDocPage, resolveLegalRouteLocale } from "../_components/legal-page-header"
+import type { LegalSection, RelatedLink } from "../_components/legal-page-layout"
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "Terms" })
-  return {
-    title: t("metaTitle"),
-    description: t("metaDescription"),
-  }
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  return buildLegalRouteMetadata({ params, namespace: "Terms" })
 }
 
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
+  const locale = await resolveLegalRouteLocale(params)
   const t = await getTranslations('Terms')
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
@@ -80,7 +69,10 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
     { href: '/customer-service', icon: Users, title: t('helpLink'), description: t('helpLinkDesc') },
   ]
 
-  const layoutProps = getLegalDocLayoutProps({
+  return renderLegalDocPage({
+    heroIcon: FileText,
+    title: t('title'),
+    breadcrumbItems: breadcrumbPresets(tBreadcrumbs).terms,
     t,
     tBreadcrumbs,
     lastUpdatedDate,
@@ -92,14 +84,4 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
     introVariant: "warning",
     introNoticeFallbackKey: "importantNotice",
   })
-  
-  return (
-    <LegalPageLayout
-      heroIcon={FileText}
-      title={t('title')}
-      breadcrumbItems={breadcrumbPresets(tBreadcrumbs).terms}
-      {...layoutProps}
-    />
-  )
 }
-

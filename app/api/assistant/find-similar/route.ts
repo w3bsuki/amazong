@@ -2,14 +2,18 @@ import type { NextRequest } from "next/server"
 import { generateObject } from "ai"
 import { z } from "zod"
 
-import { isAiAssistantEnabled } from "@/lib/ai/env"
 import { getAiVisionModel } from "@/lib/ai/models"
 import { searchListings } from "@/lib/ai/tools/search-listings"
-import { isSafeUserProvidedUrl } from "@/lib/ai/safe-url"
 import { createRouteJsonHelpers } from "@/lib/api/route-json"
+import {
+  parseRequestJson,
+  requireAiAssistantEnabled,
+  requireAuthedUser,
+  validateAiImageUrl,
+} from "../_lib/ai-request-helpers"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 const FindSimilarRequestSchema = z.object({
   imageUrl: z.string().url().max(2048),
   limit: z.coerce.number().int().min(1).max(20).optional(),
@@ -25,28 +29,18 @@ const FindSimilarExtractedSchema = z.object({
 export async function POST(request: NextRequest) {
   const { supabase, json, noStore } = createRouteJsonHelpers(request)
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return json(
-      { error: "Unauthorized" },
-      { status: 401, headers: { "Cache-Control": "private, no-store" } },
-    )
-  }
+  const auth = await requireAuthedUser({ supabase, json })
+  if (!auth.ok) return auth.response
 
-  if (!isAiAssistantEnabled()) {
-    return json({ error: "AI assistant disabled" }, { status: 404 })
-  }
+  const enabled = requireAiAssistantEnabled(json)
+  if (!enabled.ok) return enabled.response
 
   try {
-    const body = await request.json()
-    const parsed = FindSimilarRequestSchema.safeParse(body)
-    if (!parsed.success) {
-      return json({ error: "Invalid request" }, { status: 400 })
-    }
+    const parsed = await parseRequestJson(request, FindSimilarRequestSchema, json)
+    if (!parsed.ok) return parsed.response
 
-    if (!isSafeUserProvidedUrl(parsed.data.imageUrl)) {
-      return json({ error: "Invalid imageUrl" }, { status: 400 })
-    }
+    const safeUrl = validateAiImageUrl(parsed.data.imageUrl, json)
+    if (!safeUrl.ok) return safeUrl.response
 
     const safeLimit = parsed.data.limit ?? 10
 

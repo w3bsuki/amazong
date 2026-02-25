@@ -1,4 +1,3 @@
-import { logger } from "@/lib/logger"
 import { revalidateTag } from "next/cache"
 import {
   requireSupportContext,
@@ -6,6 +5,7 @@ import {
   type OrdersSupportResult,
 } from "./orders-support-shared"
 
+import { logger } from "@/lib/logger"
 export async function requestReturnImpl(
   orderItemId: string,
   reason: string

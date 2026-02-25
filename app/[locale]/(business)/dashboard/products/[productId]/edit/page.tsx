@@ -1,14 +1,15 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
-import { locales, notFound } from "@/i18n/routing"
+import { notFound } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 import { ProductEditClient } from "./_components/product-edit-client"
 import { getBusinessDashboardCategories } from "../../../_lib/categories"
+import { emptyStaticParams } from "@/lib/next/static-params"
 
 // Return placeholder param for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated sellers
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale, productId: "__placeholder__" }))
+  return emptyStaticParams()
 }
 
 export const metadata = {

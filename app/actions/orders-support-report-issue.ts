@@ -1,4 +1,3 @@
-import { logger } from "@/lib/logger"
 import { createAdminClient } from "@/lib/supabase/server"
 import { revalidateTag } from "next/cache"
 import type { IssueType } from "./orders-shared"
@@ -9,6 +8,7 @@ import {
   type OrdersSupportResult,
 } from "./orders-support-shared"
 
+import { logger } from "@/lib/logger"
 export async function reportOrderIssueImpl(
   orderItemId: string,
   issueType: IssueType,

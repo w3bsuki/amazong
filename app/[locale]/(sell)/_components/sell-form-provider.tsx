@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
 import { useForm, FormProvider, useFormContext, type UseFormReturn, type Resolver } from "react-hook-form";
@@ -118,8 +119,8 @@ export function SellFormProvider({
 
   // Form setup with react-hook-form
   const methods = useForm<SellFormDataV4>({
-    // zodResolver infers schema input/output separately; useForm tracks a single value shape.
-    // This cast keeps the form model aligned with SellFormDataV4 while preserving runtime validation.
+    // CAST: zodResolver infers schema input/output separately; useForm tracks a single value shape.
+    // This keeps the form model aligned with SellFormDataV4 while preserving runtime validation.
     resolver: zodResolver(sellFormSchemaV4) as unknown as Resolver<SellFormDataV4>,
     defaultValues: existingProduct
       ? { ...defaultSellFormValuesV4, ...existingProduct }
@@ -299,4 +300,3 @@ export function SellFormProvider({
 
 export { sellFormSchemaV4, defaultSellFormValuesV4, calculateFormProgress };
 export type { SellFormDataV4, ProgressItem };
-

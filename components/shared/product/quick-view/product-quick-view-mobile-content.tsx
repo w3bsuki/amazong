@@ -2,7 +2,6 @@ import { ChevronRight, Heart, Link as LinkSimple, X } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 import { IconButton } from "@/components/ui/icon-button"
@@ -13,6 +12,7 @@ import { getConditionBadgeVariant } from "@/components/shared/product/condition"
 import type { ProductQuickViewViewProps } from "./product-quick-view-content"
 import { QuickViewImageGallery } from "./quick-view-image-gallery"
 import { QuickViewShippingBadge } from "./quick-view-chrome"
+import { QuickViewPriceRow } from "./quick-view-price-row"
 
 export function ProductQuickViewMobileContent({
   product,
@@ -115,29 +115,15 @@ export function ProductQuickViewMobileContent({
               {descriptionPreview}
             </p>
           ) : null}
-          <div className="flex flex-wrap items-baseline gap-2">
-            <span className="text-xl font-semibold tabular-nums tracking-tight text-price">
-              {formattedPrice}
-            </span>
-            {formattedOriginalPrice && (
-              <span className="text-sm tabular-nums text-muted-foreground line-through">
-                {formattedOriginalPrice}
-              </span>
-            )}
-            {showDiscount && discountPercent > 0 && (
-              <Badge variant="destructive" size="compact" className="tabular-nums">
-                -{discountPercent}%
-              </Badge>
-            )}
-            {!inStock && (
-              <Badge
-                variant="outline"
-                className="ml-auto border-destructive bg-destructive-subtle text-destructive"
-              >
-                {tProduct("outOfStock")}
-              </Badge>
-            )}
-          </div>
+          <QuickViewPriceRow
+            formattedPrice={formattedPrice}
+            formattedOriginalPrice={formattedOriginalPrice}
+            showDiscount={showDiscount}
+            discountPercent={discountPercent}
+            inStock={inStock}
+            outOfStockLabel={tProduct("outOfStock")}
+            priceClassName="text-xl font-semibold"
+          />
         </div>
 
         {/* Badges */}

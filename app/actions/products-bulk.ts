@@ -10,8 +10,8 @@ import {
   requireProductAuth,
 } from "./products-shared"
 import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 const ProductIdSchema = z.string().uuid()
 const ProductIdsSchema = z.array(ProductIdSchema).min(1)
 const ProductStatusSchema = z.enum(["active", "draft", "archived", "out_of_stock"])

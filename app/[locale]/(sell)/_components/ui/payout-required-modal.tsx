@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { useTranslations } from "next-intl";
 import { Wallet, ShieldCheck, Zap, ArrowRight } from "lucide-react";

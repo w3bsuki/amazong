@@ -1,5 +1,4 @@
 import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
-import { logger } from "@/lib/logger"
 import type { OrderItemStatus } from "@/lib/order-status"
 import {
   ORDER_ITEM_LIST_SELECT,
@@ -18,6 +17,7 @@ import {
   type SellerOrdersReadResult,
 } from "./orders-reads-shared"
 
+import { logger } from "@/lib/logger"
 export async function getSellerOrdersImpl(
   statusFilter?: SellerOrdersStatusFilter,
   page = 1,

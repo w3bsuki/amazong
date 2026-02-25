@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "sonner"
-import { logger } from "@/lib/logger"
+import { redirectToBillingPortal } from "../_lib/stripe-redirects"
 import { bg, enUS } from "date-fns/locale"
 import {
   ArrowRight,
@@ -27,6 +27,7 @@ import type {
   Invoice,
 } from "./billing.types"
 
+import { logger } from "@/lib/logger"
 export type { BillingContentServerActions } from "./billing.types"
 
 export function BillingContent({
@@ -196,17 +197,7 @@ export function BillingContent({
   const handleManageSubscription = async () => {
     setIsPortalLoading(true)
     try {
-      const { url, error } = await actions.createBillingPortalSession({
-        locale: locale === "bg" ? "bg" : "en",
-      })
-
-      if (error) {
-        throw new Error(error)
-      }
-
-      if (url) {
-        window.location.href = url
-      }
+      await redirectToBillingPortal(actions.createBillingPortalSession, locale)
     } catch (error) {
       logger.error("[account-billing] open_portal_failed", error)
       toast.error(t.portalOpenError)

@@ -55,6 +55,25 @@ export function DesktopHome({
     promotedProducts,
   })
 
+  const getCategoryCircle = (category: {
+    id: string
+    name: string
+    name_bg: string | null
+    slug: string
+    parent_id?: string | null
+    image_url?: string | null
+  }) => ({
+    id: category.id,
+    name: category.name,
+    name_bg: category.name_bg,
+    slug: category.slug,
+    parent_id: category.parent_id ?? null,
+    image_url: category.image_url ?? null,
+    ...(typeof categoryCounts[category.slug] === "number"
+      ? { subtree_product_count: categoryCounts[category.slug] }
+      : {}),
+  })
+
   const sidebarContent = (
     <>
       <CompactCategorySidebar
@@ -101,17 +120,7 @@ export function DesktopHome({
             <SubcategoryCircles
               className="mt-3"
               variant="desktop"
-              currentCategory={{
-                id: activeCategoryNode.id,
-                name: activeCategoryNode.name,
-                name_bg: activeCategoryNode.name_bg,
-                slug: activeCategoryNode.slug,
-                parent_id: activeCategoryNode.parent_id ?? null,
-                image_url: activeCategoryNode.image_url ?? null,
-                ...(typeof categoryCounts[activeCategoryNode.slug] === "number"
-                  ? { subtree_product_count: categoryCounts[activeCategoryNode.slug] }
-                  : {}),
-              }}
+              currentCategory={getCategoryCircle(activeCategoryNode)}
               subcategories={activeCategoryNode.children.map((category) => ({
                 id: category.id,
                 name: category.name,
@@ -129,17 +138,7 @@ export function DesktopHome({
             <SubcategoryCircles
               className="mt-3"
               variant="desktop"
-              currentCategory={{
-                id: activeCategoryNode.id,
-                name: activeCategoryNode.name,
-                name_bg: activeCategoryNode.name_bg,
-                slug: activeCategoryNode.slug,
-                parent_id: activeCategoryNode.parent_id ?? null,
-                image_url: activeCategoryNode.image_url ?? null,
-                ...(typeof categoryCounts[activeCategoryNode.slug] === "number"
-                  ? { subtree_product_count: categoryCounts[activeCategoryNode.slug] }
-                  : {}),
-              }}
+              currentCategory={getCategoryCircle(activeCategoryNode)}
               subcategories={siblingCategories.map((category) => ({
                 id: category.id,
                 name: category.name,

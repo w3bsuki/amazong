@@ -2,10 +2,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 
 import { validateLocale } from "@/i18n/routing"
-import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
-import { PageShell } from "../../../_components/page-shell"
+import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
+import { StaticHeroPageShell } from "../../_components/static-hero-page-shell"
 import { CreditCard, Package, CircleHelp as Question } from "lucide-react";
-import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
 import {
   ContactFaqTeaser,
   ContactFormCard,
@@ -42,25 +41,18 @@ export default async function ContactPage({
   ]
 
   return (
-    <PageShell className="pb-20 sm:pb-12 overflow-x-hidden">
-      <StaticPageHeaderSync title={t("title")} backHref="/" />
-      <div className="bg-primary text-primary-foreground">
-        <div className="container px-4 sm:px-6 py-10 md:py-16">
-          <div className="hidden md:block [&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
-            <AppBreadcrumb
-              items={breadcrumbPresets(tBreadcrumbs).contact}
-              ariaLabel={tBreadcrumbs("ariaLabel")}
-              homeLabel={tBreadcrumbs("homeLabel")}
-            />
-          </div>
-          <div className="max-w-2xl">
-            <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3">{t("heroTitle")}</h1>
-            <p className="text-foreground text-lg">{t("heroSubtitle")}</p>
-          </div>
+    <StaticHeroPageShell
+      title={t("title")}
+      breadcrumbItems={breadcrumbPresets(tBreadcrumbs).contact}
+      breadcrumbAriaLabel={tBreadcrumbs("ariaLabel")}
+      breadcrumbHomeLabel={tBreadcrumbs("homeLabel")}
+      hero={
+        <div className="max-w-2xl">
+          <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3">{t("heroTitle")}</h1>
+          <p className="text-foreground text-lg">{t("heroSubtitle")}</p>
         </div>
-      </div>
-
-      <div className="container px-4 sm:px-6 py-8">
+      }
+    >
         <ContactQuickHelpSection t={t} quickHelp={quickHelp} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -72,7 +64,6 @@ export default async function ContactPage({
         </div>
 
         <ContactFaqTeaser t={t} />
-      </div>
-    </PageShell>
+    </StaticHeroPageShell>
   )
 }

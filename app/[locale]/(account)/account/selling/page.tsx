@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server"
 import { Link, redirect } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { bulkUpdateProductStatus } from "../../../../actions/products-bulk"
@@ -10,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { ChartLine as ChartLineUp, CircleDollarSign as CurrencyCircleDollar, Package, Plus, ShoppingCart, Star, Store as Storefront, TriangleAlert as Warning } from "lucide-react";
 
 import { SellingProductsList } from "./selling-products-list"
+import { withAccountPageShell } from "../_lib/account-page-shell"
 
 interface SellingPageProps {
   params: Promise<{
@@ -55,37 +55,26 @@ export async function generateMetadata({
 }
 
 export default async function SellingPage({ params }: SellingPageProps) {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: "SellerManagement" })
-  const supabase = await createClient()
+  return withAccountPageShell(params, async ({ locale, supabase, user }) => {
+    const t = await getTranslations({ locale, namespace: "SellerManagement" })
 
-  if (!supabase) {
-    return redirect({ href: "/auth/login", locale })
-  }
+    // Check if user has a seller profile (has username)
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id,username,display_name,business_name,verified,created_at")
+      .eq("id", user.id)
+      .single()
 
-  const { data: { user } } = await supabase.auth.getUser()
+    // If no username, redirect to sell page to set one up
+    if (!profile || !profile.username) {
+      return redirect({ href: "/sell", locale })
+    }
 
-  if (!user) {
-    return redirect({ href: "/auth/login", locale })
-  }
-
-  // Check if user has a seller profile (has username)
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id,username,display_name,business_name,verified,created_at")
-    .eq("id", user.id)
-    .single()
-
-  // If no username, redirect to sell page to set one up
-  if (!profile || !profile.username) {
-    return redirect({ href: "/sell", locale })
-  }
-
-  // Map profile to seller format for compatibility
-  const seller = {
-    ...profile,
-    store_name: profile.display_name || profile.business_name || profile.username,
-  }
+    // Map profile to seller format for compatibility
+    const seller = {
+      ...profile,
+      store_name: profile.display_name || profile.business_name || profile.username,
+    }
 
   // Fetch seller's products
   const { data: products } = await supabase
@@ -161,9 +150,10 @@ export default async function SellingPage({ params }: SellingPageProps) {
     }).format(value)
   }
 
-  return (
-    <div className="flex flex-col gap-4 md:gap-4">
-      <h1 className="sr-only">{t("selling.pageTitle")}</h1>
+  return {
+    content: (
+      <div className="flex flex-col gap-4 md:gap-4">
+        <h1 className="sr-only">{t("selling.pageTitle")}</h1>
 
       {/* Mobile: Revolut-style header with stats pills */}
       <div className="sm:hidden">
@@ -377,6 +367,8 @@ export default async function SellingPage({ params }: SellingPageProps) {
           />
         </CardContent>
       </Card>
-    </div>
-  )
+      </div>
+    ),
+  }
+  })
 }

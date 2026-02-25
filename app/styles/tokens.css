@@ -1,0 +1,353 @@
+/* Tailwind v4: class-based dark mode applies to `.dark` root and descendants. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ===== UI THEME (OKLCH TOKENS) ===== */
+/* Rules: token-based colors only, one accent (primary blue), minimal shadows. */
+:root {
+  /* Use raw OKLCH components; Tailwind mapping wraps with `oklch(var(--...))`. */
+  --background: 1 0 0;
+  /* white */
+  --foreground: 0.18 0.02 255;
+  /* near-black */
+  --card: 1 0 0;
+  --card-foreground: 0.18 0.02 255;
+  --popover: 1 0 0;
+  --popover-foreground: 0.18 0.02 255;
+
+  /* Brand blue (primary) */
+  --primary: 0.62 0.20 255;
+  --primary-foreground: 1 0 0;
+
+  /* Secondary surfaces */
+  --secondary: 0.96 0.01 255;
+  --secondary-foreground: 0.22 0.02 255;
+
+  --muted: 0.97 0.005 255;
+  --muted-foreground: 0.52 0.02 255;
+
+  --accent: 0.96 0.01 255;
+  --accent-foreground: 0.22 0.02 255;
+
+  /* Destructive (discount/error) */
+  --destructive: 0.62 0.22 30;
+  --destructive-foreground: 1 0 0;
+
+  --border: 0.92 0.01 255;
+  --border-subtle: 0.96 0.005 255;
+  --input: 0.92 0.01 255;
+  --ring: 0.62 0.20 255;
+  --ring-subtle: var(--border-subtle);
+  --category-ring: 0.18 0.02 255;
+
+  /* Layout */
+  /* Updated at runtime by AppHeader (measured px) to keep fixed mobile header from overlapping content. */
+  --app-header-offset: calc(var(--header-h-mobile, 3.5rem) + env(safe-area-inset-top));
+
+  /* Interactive states (avoid opacity hacks in class names) */
+  --hover: 0.985 0.005 255;
+  --active: 0.96 0.01 255;
+  --selected: 0.96 0.01 255;
+  --selected-foreground: 0.18 0.02 255;
+  --selected-border: 0.62 0.20 255;
+  --hover-border: 0.92 0.01 255;
+  --nav-active: var(--foreground);
+  --nav-inactive: 0.42 0.01 255;
+  --nav-indicator: 0.94 0.015 255;
+
+  /* Notification badge (red dot on avatar/icon) */
+  --notification: 0.62 0.22 30;
+  /* vivid red-orange */
+
+  /* Brand/CTA accents (raw components; mapped to `--color-*` tokens in @theme) */
+  --cta-primary-hover: 0.55 0.19 243;
+  --cta-secondary-hover: 0.94 0 0;
+  --brand-dark: 0.50 0.19 243;
+  --brand-light: 0.80 0.10 243;
+
+  /* High-priority merchandising/trust tones */
+  --promoted: 0.20 0.01 255;
+  --promoted-foreground: 0.98 0 0;
+  --promoted-muted: 0.94 0.01 255;
+  --verified-business: 0.54 0.16 255;
+  --verified-business-foreground: 0.98 0 0;
+  --verified-personal: 0.36 0.10 255;
+  --verified-personal-foreground: 0.98 0 0;
+  --top-rated: 0.78 0.15 86;
+  --top-rated-foreground: 0.22 0.05 86;
+
+  /* Category tone families (strong browsing cues) */
+  --category-tech-bg: 0.92 0.07 255;
+  --category-tech-fg: 0.36 0.11 255;
+  --category-tech-ring: 0.56 0.17 255;
+  --category-fashion-bg: 0.92 0.10 350;
+  --category-fashion-fg: 0.40 0.14 350;
+  --category-fashion-ring: 0.56 0.20 350;
+  --category-home-bg: 0.92 0.08 145;
+  --category-home-fg: 0.38 0.11 145;
+  --category-home-ring: 0.56 0.15 145;
+  --category-sports-bg: 0.91 0.09 200;
+  --category-sports-fg: 0.36 0.12 200;
+  --category-sports-ring: 0.53 0.16 200;
+  --category-gaming-bg: 0.90 0.12 285;
+  --category-gaming-fg: 0.36 0.13 285;
+  --category-gaming-ring: 0.52 0.17 285;
+  --category-beauty-bg: 0.92 0.09 35;
+  --category-beauty-fg: 0.40 0.11 35;
+  --category-beauty-ring: 0.55 0.15 35;
+  --category-family-bg: 0.93 0.08 95;
+  --category-family-fg: 0.42 0.11 95;
+  --category-family-ring: 0.58 0.15 95;
+  --category-media-bg: 0.92 0.09 315;
+  --category-media-fg: 0.38 0.12 315;
+  --category-media-ring: 0.54 0.16 315;
+  --category-business-bg: 0.92 0.05 255;
+  --category-business-fg: 0.30 0.07 255;
+  --category-business-ring: 0.46 0.11 255;
+  --category-lifestyle-bg: 0.93 0.08 65;
+  --category-lifestyle-fg: 0.42 0.10 65;
+  --category-lifestyle-ring: 0.58 0.14 65;
+  --category-auto-bg: 0.91 0.10 40;
+  --category-auto-fg: 0.40 0.12 40;
+  --category-auto-ring: 0.55 0.17 40;
+
+  /* Social / activity */
+  --social-instagram: 0.60 0.22 350;
+  --social-tiktok: 0.15 0 0;
+  --social-youtube: 0.55 0.25 27;
+  --social-twitter: 0.15 0 0;
+  --live-dot: 0.60 0.20 145;
+
+  /* Shadows */
+  --shadow-ink-subtle: 0 0 0 / 10%;
+  --shadow-ink-strong: 0 0 0 / 15%;
+
+  /* Legacy semantic aliases (keep visuals within blue/red system) */
+  --success: var(--primary);
+  --success-foreground: var(--primary-foreground);
+  --warning: var(--primary);
+  --warning-foreground: var(--primary-foreground);
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --error: var(--destructive);
+  --error-foreground: var(--destructive-foreground);
+
+  --primary-subtle: 0.97 0.02 255;
+  --destructive-subtle: 0.96 0.02 30;
+
+  /* Sidebar */
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-muted: var(--muted);
+  --sidebar-muted-foreground: var(--muted-foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  /* Charts: keep within blue/neutral range */
+  --chart-1: var(--primary);
+  --chart-2: 0.72 0.06 255;
+  --chart-3: 0.62 0.03 255;
+  --chart-4: 0.52 0.02 255;
+  --chart-5: 0.42 0.01 255;
+
+  /* Overlays (drawer/sheet/dialog backdrops) */
+  --overlay-dark: 0 0 0 / 50%;
+  --overlay-light: 1 0 0 / 80%;
+
+  /* Glass surface (frosted panels / floating chrome) */
+  /* Mobile contract: use this token instead of background alpha utility hacks. */
+  --surface-glass: 1 0 0 / 0.88;
+
+  /* App surfaces */
+  --surface-page: var(--background);
+  --surface-subtle: var(--muted);
+  --surface-section-header: var(--muted);
+  --surface-card: var(--card);
+  --surface-elevated: var(--background);
+  --surface-gallery: 0.10 0 0;
+  --surface-overlay: 0 0 0 / 60%;
+  --surface-floating: var(--background);
+  --home-promoted-surface: var(--surface-subtle);
+  --home-promoted-border: var(--border-subtle);
+  --home-promoted-text: var(--foreground);
+  --home-promoted-cta-surface: var(--surface-card);
+  --home-promoted-cta-border: var(--border);
+  --home-promoted-cta-text: var(--foreground);
+  --home-promoted-cta-eyebrow: var(--muted-foreground);
+  --home-promoted-cta-subtitle: var(--muted-foreground);
+  --home-promoted-cta-button-surface: var(--primary);
+  --home-promoted-cta-button-text: var(--primary-foreground);
+  --home-promoted-cta-button-border: var(--primary);
+  --home-sell-cta-surface: var(--card);
+  --home-sell-cta-border: var(--border-subtle);
+  --home-sell-cta-text: var(--foreground);
+  --home-sell-cta-action: var(--primary);
+  --home-sell-cta-icon-surface: var(--primary);
+  --home-sell-cta-icon-text: var(--primary-foreground);
+  --home-sell-cta-icon-border: var(--primary);
+  --home-section-title: var(--foreground);
+  --home-section-action: var(--muted-foreground);
+
+  /* Overlay/Gallery Text */
+  --overlay-text: 1 0 0;
+  --overlay-text-muted: 0.85 0 0;
+  --gallery-ring: 1 0 0;
+  --gallery-ring-offset: 0.10 0 0;
+
+  /* Text aliases (used in a few legacy components) */
+  --text-strong: var(--foreground);
+  --text-default: var(--foreground);
+  --text-muted-alt: var(--muted-foreground);
+  --text-subtle: var(--muted-foreground);
+
+  /* Focus/checked helpers */
+  --focus-ring: 0.62 0.20 255 / 30%;
+  --checked: var(--primary);
+  --checked-foreground: var(--primary-foreground);
+  --switch-unchecked-bg: var(--input);
+  --success-subtle: var(--primary-subtle);
+
+  /* Consistent radii */
+  --radius: 0.5rem;
+  /* iOS-like baseline */
+}
+
+/* ===== DARK MODE (Optional) ===== */
+.dark {
+  --background: 0.14 0.02 255;
+  --foreground: 0.98 0 0;
+  --card: 0.16 0.02 255;
+  --card-foreground: 0.98 0 0;
+  --popover: 0.16 0.02 255;
+  --popover-foreground: 0.98 0 0;
+
+  --muted: 0.20 0.02 255;
+  --muted-foreground: 0.72 0.02 255;
+
+  --border: 0.26 0.02 255;
+  --border-subtle: 0.22 0.02 255;
+  --input: 0.26 0.02 255;
+  --ring: 0.72 0.18 255;
+  --ring-subtle: var(--border-subtle);
+
+  --primary: 0.72 0.18 255;
+  --primary-foreground: 0.12 0.02 255;
+
+  --secondary: 0.22 0.02 255;
+  --secondary-foreground: 0.98 0 0;
+
+  --destructive: 0.68 0.22 30;
+  --destructive-foreground: 0.98 0 0;
+
+  --accent: 0.22 0.02 255;
+  --accent-foreground: 0.98 0 0;
+
+  --category-ring: 0.98 0 0;
+
+  --hover: 0.18 0.02 255;
+  --active: 0.22 0.02 255;
+  --selected: 0.22 0.02 255;
+  --selected-foreground: 0.98 0 0;
+  --selected-border: 0.72 0.18 255;
+  --hover-border: 0.26 0.02 255;
+  --nav-active: var(--foreground);
+  --nav-inactive: 0.68 0.01 255;
+  --nav-indicator: 0.22 0.02 255;
+
+  /* Notification badge */
+  --notification: 0.68 0.22 30;
+
+  /* Brand/CTA accents */
+  --cta-primary-hover: 0.66 0.18 255;
+  --cta-secondary-hover: 0.26 0.02 255;
+  --brand-dark: 0.66 0.18 255;
+  --brand-light: 0.80 0.10 255;
+
+  /* Social / activity */
+  --social-instagram: 0.60 0.22 350;
+  --social-tiktok: 1 0 0;
+  --social-youtube: 0.55 0.25 27;
+  --social-twitter: 1 0 0;
+  --live-dot: 0.60 0.20 145;
+
+  /* Shadows */
+  --shadow-ink-subtle: 0 0 0 / 40%;
+  --shadow-ink-strong: 0 0 0 / 55%;
+
+  --success: var(--primary);
+  --success-foreground: var(--primary-foreground);
+  --warning: var(--primary);
+  --warning-foreground: var(--primary-foreground);
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --error: var(--destructive);
+  --error-foreground: var(--destructive-foreground);
+
+  --primary-subtle: 0.25 0.04 255;
+  --destructive-subtle: 0.28 0.04 30;
+  --success-subtle: var(--primary-subtle);
+
+  /* Text aliases (used in a few legacy components) */
+  --text-strong: var(--foreground);
+  --text-default: var(--foreground);
+  --text-muted-alt: var(--muted-foreground);
+  --text-subtle: var(--muted-foreground);
+
+  /* Focus/checked helpers */
+  --focus-ring: 0.72 0.18 255 / 40%;
+  --checked: var(--primary);
+  --checked-foreground: var(--primary-foreground);
+  --switch-unchecked-bg: var(--input);
+
+  --overlay-dark: 0 0 0 / 70%;
+  --overlay-light: 0.14 0.02 255 / 80%;
+  --surface-glass: 0.14 0.02 255 / 0.88;
+
+  --surface-page: var(--background);
+  --surface-subtle: var(--muted);
+  --surface-section-header: var(--muted);
+  --surface-card: var(--card);
+  --surface-elevated: var(--card);
+  --surface-gallery: 0.08 0 0;
+  --surface-overlay: 0 0 0 / 70%;
+  --surface-floating: var(--card);
+  --home-promoted-surface: var(--surface-subtle);
+  --home-promoted-border: var(--border-subtle);
+  --home-promoted-text: var(--foreground);
+  --home-promoted-cta-surface: var(--surface-card);
+  --home-promoted-cta-border: var(--border);
+  --home-promoted-cta-text: var(--foreground);
+  --home-promoted-cta-eyebrow: var(--muted-foreground);
+  --home-promoted-cta-subtitle: var(--muted-foreground);
+  --home-promoted-cta-button-surface: var(--primary);
+  --home-promoted-cta-button-text: var(--primary-foreground);
+  --home-promoted-cta-button-border: var(--primary);
+  --home-sell-cta-surface: var(--card);
+  --home-sell-cta-border: var(--border-subtle);
+  --home-sell-cta-text: var(--foreground);
+  --home-sell-cta-action: var(--primary);
+  --home-sell-cta-icon-surface: var(--primary);
+  --home-sell-cta-icon-text: var(--primary-foreground);
+  --home-sell-cta-icon-border: var(--primary);
+  --home-section-title: var(--foreground);
+  --home-section-action: var(--muted-foreground);
+
+  --overlay-text: 1 0 0;
+  --overlay-text-muted: 0.85 0 0;
+  --gallery-ring: 1 0 0;
+  --gallery-ring-offset: 0.08 0 0;
+
+  --radius: 0.5rem;
+
+  /* Charts: keep within blue/neutral range */
+  --chart-1: var(--primary);
+  --chart-2: 0.80 0.06 255;
+  --chart-3: 0.70 0.03 255;
+  --chart-4: 0.60 0.02 255;
+  --chart-5: 0.50 0.01 255;
+
+  /* Overlays/surfaces/text/shadows are defined earlier in this block. */
+}

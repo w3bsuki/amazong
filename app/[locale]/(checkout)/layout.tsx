@@ -2,15 +2,15 @@ import { CheckoutHeader } from "./_components/checkout-header"
 import { CheckoutFooter } from "./_components/checkout-footer"
 import { CheckoutStepProvider } from "./_components/checkout-step-context"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { routing } from "@/i18n/routing"
 import { PageShell } from "../_components/page-shell"
 import { CommerceProviders } from "../_providers/commerce-providers"
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider"
 import type { Metadata } from "next"
+import { localeStaticParams } from "@/lib/next/static-params"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
+  return localeStaticParams()
 }
 
 export async function generateMetadata({

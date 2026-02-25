@@ -6,6 +6,7 @@ import { revalidateTag } from "next/cache"
 import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import type { Database } from "@/lib/supabase/database.types"
 
+import { logger } from "@/lib/logger"
 // =====================================================
 // BUYER FEEDBACK SERVER ACTIONS
 // For SELLERS to rate BUYERS after completed orders
@@ -186,7 +187,7 @@ export async function submitBuyerFeedback(
       .single<BuyerFeedbackRow>()
 
     if (error) {
-      console.error("Error submitting buyer feedback:", error)
+      logger.error("Error submitting buyer feedback:", error)
       return errorEnvelope({ error: "Failed to submit feedback" })
     }
 
@@ -195,7 +196,7 @@ export async function submitBuyerFeedback(
 
     return successEnvelope({ data: mapBuyerFeedbackRow(data) })
   } catch (error) {
-    console.error("submitBuyerFeedback error:", error)
+    logger.error("submitBuyerFeedback error:", error)
     return errorEnvelope({ error: "An unexpected error occurred" })
   }
 }

@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 // =============================================================================
 // MOBILE PRODUCT PAGE - Single Scroll Layout (TradeSphere Pattern)
@@ -37,16 +38,11 @@ import { HeroSpecs } from "../pdp/hero-specs";
 import { CustomerReviewsHybrid } from "../pdp/customer-reviews-hybrid";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
-import type { Database } from "@/lib/supabase/database.types";
+import type { ProductPageProduct, ProductPageVariant } from "@/lib/data/product-page";
 import type { CustomerReview } from "../pdp/customer-reviews-hybrid";
 import type { SubmitReviewFn } from "../pdp/write-review-dialog";
 
-type ProductRow = Database["public"]["Tables"]["products"]["Row"];
-type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
-type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"];
-
-type ProductWithSellerStats = ProductRow & {
-  seller_stats?: Partial<SellerStatsRow> | null;
+type ProductWithSellerStats = ProductPageProduct & {
   viewers_count?: number | null;
   sold_count?: number | null;
   is_negotiable?: boolean;
@@ -73,7 +69,7 @@ interface MobileProductSingleScrollProps {
   relatedProducts: ProductPageViewModel["relatedProducts"];
   reviews: CustomerReview[];
   viewModel: ProductPageViewModel;
-  variants?: ProductVariantRow[];
+  variants?: ProductPageVariant[];
   submitReview?: SubmitReviewFn;
   favoritesCount?: number | null;
 }
@@ -361,4 +357,3 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
     </PageShell>
   );
 }
-

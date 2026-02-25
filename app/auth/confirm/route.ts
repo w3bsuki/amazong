@@ -2,6 +2,7 @@ import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { NextResponse, type NextRequest } from "next/server"
 import type { EmailOtpType } from "@supabase/supabase-js"
 
+import { logger } from "@/lib/logger"
 type AuthConfirmSupabaseClient = ReturnType<typeof createRouteHandlerClient>["supabase"]
 
 function safeNextPath(input: string | null | undefined): string {
@@ -67,7 +68,7 @@ async function resolveCodeFlowRedirect(params: {
   const { error } = await supabase.auth.exchangeCodeForSession(code)
 
   if (error) {
-    console.error("Code exchange error:", error.message)
+    logger.error("Code exchange error:", error.message)
     return `${redirectTo}${withLocalePrefix(locale, "/auth/error")}?error=invalid_code`
   }
 
@@ -93,7 +94,7 @@ async function resolveTokenHashFlowRedirect(params: {
   })
 
   if (error) {
-    console.error("Email verification error:", error.message)
+    logger.error("Email verification error:", error.message)
     return null
   }
 

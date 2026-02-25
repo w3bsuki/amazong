@@ -59,10 +59,10 @@ describe("hooks/use-home-discovery-feed", () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it("maps promoted scope to type=promoted", async () => {
+  it("maps promoted scope to type=promoted and preserves category context", async () => {
     mockFetch.mockImplementation((input: string) => {
       const url = String(input)
-      if (url.includes("type=promoted")) {
+      if (url.includes("type=promoted") && url.includes("category=tech")) {
         return Promise.resolve({
           ok: true,
           json: async () => ({ products: [createProduct("promoted-1")], hasMore: false }),
@@ -79,12 +79,15 @@ describe("hooks/use-home-discovery-feed", () => {
     )
 
     act(() => {
+      result.current.setActiveCategorySlug("tech")
       result.current.setScope("promoted")
     })
 
     await waitFor(() => {
       const calledUrls = mockFetch.mock.calls.map((call) => String(call[0] ?? ""))
-      expect(calledUrls.some((href) => href.includes("type=promoted"))).toBe(true)
+      expect(
+        calledUrls.some((href) => href.includes("type=promoted") && href.includes("category=tech"))
+      ).toBe(true)
       expect(result.current.products[0]?.id).toBe("promoted-1")
     })
   })
@@ -215,6 +218,51 @@ describe("hooks/use-home-discovery-feed", () => {
         )
       ).toBe(true)
       expect(result.current.products[0]?.id).toBe("filtered-1")
+    })
+  })
+
+  it("keeps nearby scope active when category is selected", async () => {
+    mockFetch.mockImplementation((input: string) => {
+      const url = String(input)
+      if (
+        url.includes("type=newest") &&
+        url.includes("nearby=true") &&
+        url.includes("city=sofia") &&
+        url.includes("category=tech")
+      ) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ products: [createProduct("nearby-category-1")], hasMore: false }),
+        })
+      }
+
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ products: [], hasMore: false }),
+      })
+    })
+
+    const { result } = renderHook(() =>
+      useHomeDiscoveryFeed({ initialPools: createEmptyPools(), initialScope: "forYou", limit: 24 })
+    )
+
+    act(() => {
+      result.current.setCity("sofia")
+      result.current.setActiveCategorySlug("tech")
+      result.current.setScope("nearby")
+    })
+
+    await waitFor(() => {
+      const calledUrls = mockFetch.mock.calls.map((call) => String(call[0] ?? ""))
+      expect(
+        calledUrls.some((href) =>
+          href.includes("type=newest") &&
+          href.includes("nearby=true") &&
+          href.includes("city=sofia") &&
+          href.includes("category=tech")
+        )
+      ).toBe(true)
+      expect(result.current.products[0]?.id).toBe("nearby-category-1")
     })
   })
 

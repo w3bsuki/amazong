@@ -1,10 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { locales } from "@/i18n/routing"
 import { EditProductClient } from "../../edit/edit-product-client"
+import { emptyStaticParams } from "@/lib/next/static-params"
 
 // Generate static params for build validation (required by cacheComponents)
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale, id: "__placeholder__" }))
+  return emptyStaticParams()
 }
 
 export async function generateMetadata({

@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { revalidateTag } from "next/cache"
 
+import { logger } from "@/lib/logger"
 export type ActionResult<T = void> = Envelope<
   { data?: T },
   { error: string }
@@ -38,7 +39,7 @@ export async function downgradeToFreeTier(): Promise<DowngradeResult> {
 
     return successEnvelope({ tier: "free" as const })
   } catch (error) {
-    console.error("Downgrade to free error:", error)
+    logger.error("Downgrade to free error:", error)
     return errorEnvelope({ error: "Failed to change plan. Please try again." })
   }
 }
@@ -77,7 +78,7 @@ export async function cancelSubscription(): Promise<ActionResult> {
           cancel_at_period_end: true, // KEY: Cancel at END of period, not immediately
         })
       } catch (stripeError) {
-        console.error("Stripe cancellation error:", stripeError)
+        logger.error("Stripe cancellation error:", stripeError)
         return errorEnvelope({ error: "Failed to cancel with payment provider" })
       }
     }
@@ -94,7 +95,7 @@ export async function cancelSubscription(): Promise<ActionResult> {
       .eq("id", subscription.id)
 
     if (updateError) {
-      console.error("Database update error:", updateError)
+      logger.error("Database update error:", updateError)
       return errorEnvelope({ error: "Failed to update subscription" })
     }
 
@@ -102,7 +103,7 @@ export async function cancelSubscription(): Promise<ActionResult> {
     revalidateTag("subscriptions", "max")
     return successEnvelope()
   } catch (error) {
-    console.error("cancelSubscription error:", error)
+    logger.error("cancelSubscription error:", error)
     return errorEnvelope({ error: "An unexpected error occurred" })
   }
 }
@@ -141,7 +142,7 @@ export async function reactivateSubscription(): Promise<ActionResult> {
           cancel_at_period_end: false, // Reactivate auto-renewal
         })
       } catch (stripeError) {
-        console.error("Stripe reactivation error:", stripeError)
+        logger.error("Stripe reactivation error:", stripeError)
         return errorEnvelope({ error: "Failed to reactivate with payment provider" })
       }
     }
@@ -156,7 +157,7 @@ export async function reactivateSubscription(): Promise<ActionResult> {
       .eq("id", subscription.id)
 
     if (updateError) {
-      console.error("Database update error:", updateError)
+      logger.error("Database update error:", updateError)
       return errorEnvelope({ error: "Failed to update subscription" })
     }
 
@@ -164,7 +165,7 @@ export async function reactivateSubscription(): Promise<ActionResult> {
     revalidateTag("subscriptions", "max")
     return successEnvelope()
   } catch (error) {
-    console.error("reactivateSubscription error:", error)
+    logger.error("reactivateSubscription error:", error)
     return errorEnvelope({ error: "An unexpected error occurred" })
   }
 }

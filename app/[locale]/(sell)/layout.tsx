@@ -1,13 +1,13 @@
 import { setRequestLocale } from 'next-intl/server'
 import Script from 'next/script'
-import { routing } from '@/i18n/routing'
 import { PerformanceMeasureGuard } from './performance-measure-guard'
 import { PageShell } from "../_components/page-shell"
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider"
+import { localeStaticParams } from "@/lib/next/static-params"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
-    return routing.locales.map((locale) => ({ locale }));
+    return localeStaticParams()
 }
 
 /**

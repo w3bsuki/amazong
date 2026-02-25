@@ -1,0 +1,449 @@
+/* ===== MARKETPLACE-SPECIFIC TOKENS ===== */
+@theme {
+  /* === BREAKPOINTS (fixed px to avoid rem drift by browser font-size settings) === */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* === FONTS === */
+  --font-sans: "Inter", var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-serif: "Source Serif 4", serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* === FONT SIZE: Marketplace scales === */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
+  --text-tiny: 0.6875rem;
+  --text-tiny--line-height: 1rem;
+  --text-compact: 0.8125rem;
+  --text-compact--line-height: 1.125rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.25rem;
+  --text-reading: 0.9375rem;
+  --text-reading--line-height: 1.375rem;
+  --text-price: 1rem;
+  --text-price--line-height: 1.25rem;
+
+  /* === RICH TEXT HEADINGS (CMS) === */
+  --text-heading-1: 1.125rem;
+  --text-heading-1--line-height: 1.5rem;
+  --text-heading-2: 1.0625rem;
+  --text-heading-2--line-height: 1.5rem;
+  --text-heading-3: 1rem;
+  --text-heading-3--line-height: 1.5rem;
+
+  /* === LETTER SPACING === */
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.01em;
+  --letter-spacing-wider: 0.02em;
+
+  /* === LAYOUT HEIGHTS === */
+  --spacing-header: 3rem;
+  --spacing-bottom-nav: 4rem;
+  /* 64px - mobile bottom navigation dock (icon + label) */
+  --spacing-button: 2.75rem;
+  --spacing-button-sm: 2.25rem;
+  --spacing-button-lg: 3rem;
+  --spacing-input: 2.75rem;
+  --spacing-search: 2.75rem;
+
+  /* === LAYOUT GRID SYSTEM (Desktop Shell) === */
+  --layout-sidebar-w: 17.5rem;
+  --layout-sidebar-w-collapsed: 4rem;
+  --layout-content-max-w: 87.5rem;
+  --layout-gap: 1.5rem;
+  --layout-gap-sm: 1rem;
+  --product-card-min-w: 12.5rem;
+  --product-grid-gap: 0.625rem;
+
+  /* === TOUCH TARGETS (mobile contract) === */
+  --control-compact: 2.25rem;
+  /* 36px - dense icon overlays only */
+  --control-default: 2.75rem;
+  /* 44px - default tap target */
+  --control-primary: 3rem;
+  /* 48px - primary CTA / bars */
+  --spacing-mobile-rail-gap: 0px;
+  --offset-mobile-primary-rail: var(--app-header-offset);
+  --offset-mobile-secondary-rail: calc(var(--app-header-offset) + var(--control-default) + var(--spacing-mobile-rail-gap));
+  --offset-mobile-tertiary-rail: calc(var(--offset-mobile-secondary-rail) + var(--control-compact) + var(--spacing-mobile-rail-gap));
+
+  /* === CATEGORY-SPECIFIC TOUCH TARGETS === */
+  --touch-target-category-row: var(--control-primary);
+  /* 48px - category list rows */
+  --touch-target-category-chip: var(--control-default);
+  /* 44px - chips & pills in category flows */
+
+  /* Legacy aliases (kept for staged migration) */
+  --spacing-touch-xs: 2rem;
+  /* 32px - non-primary compact surfaces */
+  --spacing-touch-sm: var(--control-compact);
+  --spacing-touch: var(--control-default);
+  --spacing-touch-md: var(--control-default);
+  --spacing-touch-lg: var(--control-primary);
+
+  /* === PAGE INSETS (responsive edge padding) === */
+  --spacing-inset: 0.5rem;
+  /* 8px - mobile */
+  --spacing-inset-md: 0.75rem;
+  /* 12px - tablet */
+  --spacing-inset-lg: 1rem;
+  /* 16px - desktop */
+
+  /* === DIALOG/DRAWER SIZING === */
+  --height-dialog: 90dvh;
+  --height-dialog-sm: 75dvh;
+  --height-dialog-lg: 95dvh;
+  --width-dialog: calc(100% - 2rem);
+  --width-sheet-mobile: 85vw;
+
+  /* === ONBOARDING MODAL SIZING === */
+  /* Mobile: Full width minus safe margins */
+  --onboarding-modal-w: min(calc(100vw - 2rem), 28rem);
+  /* Mobile: Use dynamic viewport height, leave room for keyboard */
+  --onboarding-modal-max-h: calc(100dvh - 3rem);
+  /* Desktop: More controlled height */
+  --onboarding-modal-max-h-sm: min(85dvh, 40rem);
+
+  /* === ICON SIZES (balanced against 36/44/48 controls) === */
+  --size-icon-xs: 1.25rem;
+  /* 20px - small inline */
+  --size-icon-sm: 1.25rem;
+  /* 20px - compact controls */
+  --size-icon: 1.375rem;
+  /* 22px - default nav/action */
+  --size-icon-header: 1.5rem;
+  /* 24px - header chrome */
+  --size-icon-tab-bar: 1.5rem;
+  /* 24px - mobile tab bar icons */
+  --size-icon-lg: 1.75rem;
+  /* 28px - large/bold */
+
+  /* === CATEGORY NAVIGATION === */
+  --spacing-category-circle: 3.5rem;
+  /* 56px - tighter mobile circles */
+  --spacing-category-circle-desktop: 3.75rem;
+  /* 60px on desktop */
+  --spacing-category-item: 3.5rem;
+  /* 56px - compact item width */
+  --spacing-category-item-mobile: 3.5rem;
+  /* 56px - mobile subcategory buttons */
+  --spacing-category-item-lg: 3.5rem;
+  /* 56px - compact grid/circle width */
+  --spacing-category-item-nav: 4.75rem;
+  /* 76px - better label legibility on home */
+  --spacing-category-item-desktop: 5rem;
+  /* 80px on desktop */
+  --spacing-nav-row: 3rem;
+
+  /* === MEDIA ASPECT CONTRACT === */
+  --ratio-product-card-mobile: 4 / 5;
+  --ratio-product-strip: 4 / 3;
+  --ratio-quick-view-hero: 1 / 1;
+
+  /* === HOMEPAGE SECTION SPACING === */
+  --spacing-section-top: 0.5rem;
+  /* 8px - balanced top */
+  --spacing-section-bottom: 0.5rem;
+  /* 8px - consistent breathing room */
+  --spacing-section-gap: 0.75rem;
+  /* 12px - section rhythm */
+  --spacing-home-inset: 0.75rem;
+  /* 12px - landing content inset */
+  --spacing-home-section-gap: 1rem;
+  /* 16px - landing section rhythm */
+  --spacing-home-card-gap: 0.625rem;
+  /* 10px - tighter, denser landing rhythm */
+  --spacing-home-cta-tile-min-h: 11.5rem;
+  /* 184px - home merchandising CTA tile height */
+  --spacing-home-card-column-w: calc((100vw - (var(--spacing-home-inset) * 2) - var(--spacing-home-card-gap)) / 2);
+  --spacing-home-promo-card-w: var(--spacing-home-card-column-w);
+  /* keep promoted width aligned to feed grid */
+  --spacing-home-promo-rail-card-w: var(--spacing-home-card-column-w);
+  /* legacy alias; emphasis now comes from taller media ratio */
+  --spacing-home-curated-card-w: calc(var(--spacing-home-card-column-w) + 0.5rem);
+  /* curated discovery rail cards */
+  --spacing-home-strip-card-w: var(--spacing-home-card-column-w);
+  /* legacy alias */
+
+  /* === FILTER SIDEBAR === */
+  --spacing-filter-sidebar: 15rem;
+  --spacing-sidebar-max-h: calc(100vh - 6rem);
+
+  /* === CONTAINER WIDTHS === */
+  --container-3xs: 16rem;
+  --container-2xs: 18rem;
+  --container-xs: 20rem;
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-xl: 36rem;
+  --container-header: 72rem;
+
+  /* === DROPDOWN/MODAL WIDTHS === */
+  --width-dropdown-sm: 22rem;
+  --width-dropdown: 24rem;
+  --width-dropdown-lg: 35rem;
+  --width-modal-sm: 25rem;
+  --width-modal: 35rem;
+  --width-modal-lg: 56.25rem;
+
+  /* === SHADOWS (Professional depth) === */
+  --shadow-2xs: 0 1px 1px -1px oklch(var(--shadow-ink-subtle));
+  --shadow-xs: 0 1px 2px -1px oklch(var(--shadow-ink-subtle));
+  --shadow-sm: 0 1px 3px 0 oklch(var(--shadow-ink-subtle));
+  --shadow-md: 0 8px 24px -18px oklch(var(--shadow-ink-subtle));
+  --shadow-lg: 0 16px 40px -28px oklch(var(--shadow-ink-strong));
+  --shadow-xl: 0 24px 60px -36px oklch(var(--shadow-ink-strong));
+  --shadow-2xl: 0 40px 96px -48px oklch(var(--shadow-ink-strong));
+  --shadow-dropdown: 0 4px 12px -2px oklch(var(--shadow-ink-subtle));
+  --shadow-modal: 0 12px 40px -8px oklch(var(--shadow-ink-strong));
+  --shadow-card: var(--shadow-sm);
+  /* Upward-facing shadow for fixed bottom elements (bottom nav, sticky footers) */
+  --shadow-nav: 0 -2px 16px -4px oklch(var(--shadow-ink-subtle));
+  /* Drop shadow for floating CTA buttons (sell, checkout) */
+  --shadow-cta: 0 4px 12px -2px oklch(var(--shadow-ink-strong));
+
+  /* === TRANSITIONS === */
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-instant: 50ms;
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+
+  /* === COLORS: Semantic Status === */
+  /* Defined in :root/.dark as --success/--warning/--error/--info (see @theme inline bridge). */
+
+  /* === COLORS: Marketplace Semantic === */
+  --color-verified: var(--color-verified-personal);
+  --color-shipping-free: var(--color-muted-foreground);
+
+  /* === COLORS: Category Badge (neutral — calm context, not emphasis) === */
+  --color-category-badge-bg: var(--color-surface-subtle);
+  --color-category-badge-border: var(--color-border-subtle);
+  --color-category-badge-text: var(--color-muted-foreground);
+  --color-category-badge-icon: var(--color-muted-foreground);
+
+  /* === COLORS: Badge System - Professional E-commerce === */
+  /*
+   * Two-tier badge system for WCAG AA compliance:
+   * - SOLID badges: Dark bg + white text (high emphasis)
+   * - SUBTLE badges: Tinted bg + dark text (low emphasis)
+   */
+
+  /* Solid Badges (white text on dark bg - 4.5:1+ contrast) */
+  --color-badge-success-solid: var(--color-success);
+  --color-badge-warning-solid: var(--color-warning);
+  --color-badge-critical-solid: var(--color-destructive);
+  --color-badge-info-solid: var(--color-info);
+  --color-badge-neutral-solid: var(--color-secondary);
+  --color-badge-fg-on-solid: var(--color-primary-foreground);
+
+  /* Subtle Badges (dark text on tinted bg) */
+  --color-badge-success-subtle-bg: var(--color-success-subtle);
+  --color-badge-success-subtle-fg: var(--color-success);
+  --color-badge-warning-subtle-bg: var(--color-primary-subtle);
+  --color-badge-warning-subtle-fg: var(--color-warning);
+  --color-badge-critical-subtle-bg: var(--color-destructive-subtle);
+  --color-badge-critical-subtle-fg: var(--color-destructive);
+  --color-badge-info-subtle-bg: var(--color-primary-subtle);
+  --color-badge-info-subtle-fg: var(--color-info);
+  --color-badge-neutral-subtle-bg: var(--color-muted);
+  --color-badge-neutral-subtle-fg: var(--color-muted-foreground);
+
+  /* Condition Badges - Solid dark bg + white text (eBay style) */
+  --color-badge-condition-new: var(--color-foreground);
+  --color-badge-condition-likenew: var(--color-foreground);
+  --color-badge-condition-good: var(--color-foreground);
+  --color-badge-condition-fair: var(--color-foreground);
+  --color-badge-condition-used: var(--color-foreground);
+  --color-badge-condition-refurb: var(--color-foreground);
+
+  /* Legacy aliases for existing code */
+  --color-badge-condition-bg: var(--color-secondary);
+  --color-badge-condition-border: var(--color-border);
+  --color-badge-condition-text: var(--color-foreground);
+  --color-badge-promoted-bg: var(--color-promoted);
+  --color-badge-promoted-border: var(--color-promoted);
+  --color-badge-promoted-text: var(--color-promoted-foreground);
+  --color-badge-sponsored-bg: var(--color-promoted);
+  --color-badge-sponsored-border: var(--color-promoted);
+  --color-badge-sponsored-text: var(--color-promoted-foreground);
+
+  /* Promoted Section (desktop) - Light Mode */
+  --surface-promoted: var(--color-promoted);
+  --surface-promoted-accent: var(--color-promoted-muted);
+  --border-promoted: var(--color-promoted);
+  --text-promoted: var(--color-promoted-foreground);
+  --text-promoted-muted: var(--color-promoted-muted);
+  --color-badge-shipping-bg: var(--color-success-subtle);
+  --color-badge-shipping-border: var(--color-success);
+  --color-badge-shipping-text: var(--color-success);
+  --color-badge-stock-bg: var(--color-primary-subtle);
+  --color-badge-stock-border: var(--color-warning);
+  --color-badge-stock-text: var(--color-warning);
+
+  /* === COLORS: Prices - Professional === */
+  --color-price-regular: var(--color-foreground);
+  --color-price-sale: var(--color-foreground);
+  --color-price-original: var(--color-muted-foreground);
+  --color-price-savings: var(--color-muted-foreground);
+
+  /* === COLORS: Deals/Urgency === */
+  --color-deal: var(--color-destructive);
+  --color-deal-light: var(--color-destructive-subtle);
+  --color-deal-foreground: var(--color-destructive-foreground);
+
+  /* === COLORS: Condition Badges (C2C Marketplace) - Professional === */
+  --color-condition-new: var(--color-foreground);
+  --color-condition-new-bg: var(--color-secondary);
+  --color-condition-likenew: var(--color-foreground);
+  --color-condition-likenew-bg: var(--color-secondary);
+  --color-condition-good: var(--color-foreground);
+  --color-condition-good-bg: var(--color-secondary);
+  --color-condition-fair: var(--color-foreground);
+  --color-condition-fair-bg: var(--color-secondary);
+  --color-condition-used: var(--color-foreground);
+  --color-condition-used-bg: var(--color-secondary);
+  --color-condition-refurb: var(--color-foreground);
+  --color-condition-refurb-bg: var(--color-secondary);
+
+  /* === COLORS: Verification Tiers === */
+  --color-verify-email: var(--color-verified-personal);
+  --color-verify-phone: var(--color-verified-personal);
+  --color-verify-id: var(--color-verified-personal);
+  --color-verify-business: var(--color-verified-business);
+
+  /* === COLORS: Freshness Indicators === */
+  --color-fresh: var(--color-muted-foreground);
+  --color-fresh-bg: var(--color-muted);
+  --color-recent: var(--color-muted-foreground);
+  --color-recent-bg: var(--color-muted);
+
+  /* === COLORS: Social Proof === */
+  --color-hot: var(--color-muted-foreground);
+  --color-hot-bg: var(--color-muted);
+  --color-favorite: var(--color-muted-foreground);
+
+  /* === COLORS: Ratings - Golden yellow === */
+  --color-rating: var(--color-muted-foreground);
+  --color-rating-empty: var(--color-border);
+
+  /* === COLORS: Badge aliases === */
+  --color-cart-badge: var(--color-primary);
+
+  /* === COLORS: Wishlist - Warm red === */
+  --color-wishlist: var(--color-muted-foreground);
+  --color-wishlist-active: var(--color-primary);
+
+  /* === COLORS: Order Status === */
+  --color-order-pending: var(--color-warning);
+  --color-order-processing: var(--color-primary);
+  --color-order-shipped: var(--color-primary);
+  --color-order-delivered: var(--color-success);
+  --color-order-cancelled: var(--color-error);
+
+  /* === COLORS: Header (Desktop) - Professional containment === */
+  --color-header-bg: var(--color-surface-subtle);
+  --color-header-border: var(--color-border);
+  --color-header-text: var(--color-foreground);
+  --color-header-text-muted: var(--color-muted-foreground);
+  --color-header-hover: var(--color-hover);
+  --color-header-active: var(--color-active);
+  --color-header-nav-bg: var(--color-background);
+  --color-subheader-hover: var(--color-accent);
+
+  /* === COLORS: Search Bar (Twitter-style) === */
+  --color-search-bg: var(--color-muted);
+  --color-search-border: var(--color-border);
+  --color-search-text: var(--color-foreground);
+  --color-search-placeholder: var(--color-muted-foreground);
+  --color-search-focus-border: var(--color-primary);
+  --color-search-focus-ring: var(--color-primary);
+
+  /* === COLORS: CTA Buttons - Professional === */
+  --color-cta-primary: var(--color-primary);
+  --color-cta-primary-hover: oklch(var(--cta-primary-hover));
+  --color-cta-primary-text: var(--color-primary-foreground);
+  --color-cta-secondary: var(--color-secondary);
+  --color-cta-secondary-hover: oklch(var(--cta-secondary-hover));
+  --color-cta-secondary-text: var(--color-secondary-foreground);
+
+  /* === LEGACY ALIASES === */
+  --color-brand: var(--color-primary);
+  --color-brand-dark: oklch(var(--brand-dark));
+  --color-brand-light: oklch(var(--brand-light));
+  --color-interactive: var(--color-primary);
+  --color-interactive-hover: oklch(var(--cta-primary-hover));
+  --color-link: var(--color-primary);
+  --color-link-hover: oklch(var(--brand-dark));
+
+  /* === COLORS: Seller UI === */
+  --color-seller-card: var(--color-card);
+  --color-seller-card-border: var(--color-border);
+  --color-seller-banner: var(--color-muted);
+  --color-seller-banner-pill: var(--color-background);
+
+  /* === COLORS: Urgency Banners === */
+  --color-urgency-stock-bg: var(--color-muted);
+  --color-urgency-stock-border: var(--color-border);
+  --color-urgency-stock-text: var(--color-foreground);
+  --color-urgency-stock-icon: var(--color-primary);
+  --color-urgency-stock-icon-bg: var(--color-primary-subtle);
+
+  --color-urgency-sale-bg: var(--color-muted);
+  --color-urgency-sale-border: var(--color-border);
+  --color-urgency-sale-text: var(--color-foreground);
+  --color-urgency-sale-icon: var(--color-primary);
+  --color-urgency-sale-icon-bg: var(--color-primary-subtle);
+
+  --color-urgency-viewers-bg: var(--color-muted);
+  --color-urgency-viewers-border: var(--color-border);
+  --color-urgency-viewers-text: var(--color-foreground);
+  --color-urgency-viewers-icon: var(--color-primary);
+  --color-urgency-viewers-icon-bg: var(--color-primary-subtle);
+
+  /* === COLORS: Mobile Product Page Surfaces & Text === */
+  /* REMOVED: Hardcoded duplicates. These tokens are now correctly derived
+     from CSS vars via @theme inline block (respects .dark mode) */
+
+  /* === COLORS: Social Platforms === */
+  --color-social-instagram: oklch(var(--social-instagram));
+  --color-social-tiktok: oklch(var(--social-tiktok));
+  --color-social-youtube: oklch(var(--social-youtube));
+  --color-social-twitter: oklch(var(--social-twitter));
+
+  /* === COLORS: Live/Activity === */
+  --color-live-dot: oklch(var(--live-dot));
+
+  /* === COLORS: Status (aliases to semantic) === */
+  --color-status-success: var(--color-success);
+  --color-status-warning: var(--color-warning);
+  --color-status-error: var(--color-error);
+  --color-status-info: var(--color-info);
+
+  /* === COLORS: Order Received (additional status) === */
+  --color-order-received: var(--color-primary);
+
+  /* === COLORS: Admin/Kanban Status Badges === */
+  --color-admin-draft: var(--color-primary);
+  --color-admin-draft-bg: var(--color-primary-subtle);
+  --color-admin-published: var(--color-primary);
+  --color-admin-published-bg: var(--color-primary-subtle);
+  --color-admin-in-progress: var(--color-primary);
+  --color-admin-in-progress-bg: var(--color-primary-subtle);
+  --color-admin-review: var(--color-primary);
+  --color-admin-review-bg: var(--color-primary-subtle);
+  --color-admin-urgent: var(--color-destructive);
+  --color-admin-high: var(--color-primary);
+  --color-admin-high-bg: var(--color-primary-subtle);
+  --color-admin-medium: var(--color-primary);
+
+  /* === COLORS: Promoted/Fire icon === */
+  --color-fire: var(--color-primary);
+}

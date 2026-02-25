@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { logger } from "@/lib/logger"
+import { getSubscriptionCheckoutUrl } from "../_lib/stripe-redirects"
 
+import { logger } from "@/lib/logger"
 // Reuse shared components from plan-card
 import { PlansGrid, PlansGridSkeleton, type Plan } from "./plan-card"
 
@@ -168,17 +169,12 @@ export function PlansModal({
     setSubscribingPlan(plan.id)
 
     try {
-      const { url, error } = await actions.createSubscriptionCheckoutSession({
+      const url = await getSubscriptionCheckoutUrl(actions.createSubscriptionCheckoutSession, {
         planId: plan.id,
         billingPeriod,
-        locale: locale === "bg" ? "bg" : "en",
+        locale,
       })
 
-      if (error) {
-        throw new Error(error)
-      }
-
-      // Redirect to Stripe
       if (url) {
         window.location.href = url
       } else {

@@ -24,6 +24,7 @@ import { productFormSchema, type ProductFormData } from "./product-form-modal.sc
 import { ProductFormSideColumn } from "./product-form-modal-side-column"
 import type { ProductFormModalProps } from "./product-form-modal.types"
 
+import { logger } from "@/lib/logger"
 export type { ProductFormData } from "./product-form-modal.schema"
 
 export function ProductFormModal({
@@ -38,6 +39,8 @@ export function ProductFormModal({
   const [uploadingImages, setUploadingImages] = React.useState(false)
 
   const form = useForm<ProductFormData>({
+    // CAST: zodResolver infers schema input/output separately; useForm tracks a single value shape.
+    // This keeps the form model aligned with ProductFormData while preserving runtime validation.
     resolver: zodResolver(productFormSchema) as unknown as Resolver<ProductFormData>,
     defaultValues: {
       title: "",
@@ -135,7 +138,7 @@ export function ProductFormModal({
       onOpenChange(false)
       reset()
     } catch (error) {
-      console.error("Failed to save product:", error)
+      logger.error("Failed to save product:", error)
     } finally {
       setIsSubmitting(false)
     }

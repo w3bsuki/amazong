@@ -19,16 +19,10 @@ import { DesktopSpecsAccordion } from "./desktop/desktop-specs-accordion";
 import { HeroSpecs } from "./pdp/hero-specs";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
-import type { Database } from "@/lib/supabase/database.types";
+import type { ProductPageProduct, ProductPageVariant } from "@/lib/data/product-page";
 import type { CustomerReview } from "./pdp/customer-reviews-hybrid";
 import type { SubmitReviewFn } from "./pdp/write-review-dialog";
 import { PageShell } from "../../../_components/page-shell";
-
-type ProductRow = Database["public"]["Tables"]["products"]["Row"];
-type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
-type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"];
-
-type ProductWithSellerStats = ProductRow & { seller_stats?: Partial<SellerStatsRow> | null };
 
 type SellerSummary = {
   id: string;
@@ -56,7 +50,7 @@ interface ProductPageLayoutProps {
   locale: string;
   username: string;
   productSlug: string;
-  product: ProductWithSellerStats;
+  product: ProductPageProduct;
   seller: SellerSummary;
   category: CategorySummary | null;
   parentCategory: CategorySummary | null;
@@ -64,7 +58,7 @@ interface ProductPageLayoutProps {
   relatedProducts: ProductPageViewModel["relatedProducts"];
   reviews: CustomerReview[];
   viewModel: ProductPageViewModel;
-  variants?: ProductVariantRow[];
+  variants?: ProductPageVariant[];
   submitReview?: SubmitReviewFn;
   favoritesCount?: number;
 }

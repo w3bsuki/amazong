@@ -16,6 +16,7 @@ import {
 import type { Message } from "@/lib/types/messages"
 import type { UseMessagesActionsParams } from "./message-context.types"
 
+import { logger } from "@/lib/logger"
 export function useMessagesActions({
   supabase,
   currentUserId,
@@ -39,7 +40,7 @@ export function useMessagesActions({
 
         await refreshUnreadCount()
       } catch (err) {
-        console.error("Error marking messages as read:", err)
+        logger.error("Error marking messages as read:", err)
       }
     },
     [supabase, currentUserId, refreshUnreadCount, setMessages, setConversations],
@@ -81,7 +82,7 @@ export function useMessagesActions({
           updateConversationLastMessage(prev, currentConversation.id, content.trim(), currentUserId),
         )
       } catch (err) {
-        console.error("Error sending message:", err)
+        logger.error("Error sending message:", err)
         setError("Failed to send message")
         throw err
       }
@@ -98,7 +99,7 @@ export function useMessagesActions({
 
         return conversationId
       } catch (err) {
-        console.error("Error starting conversation:", err)
+        logger.error("Error starting conversation:", err)
         setError("Failed to start conversation")
         throw err
       }
@@ -119,7 +120,7 @@ export function useMessagesActions({
           setCurrentConversation((prev) => (prev ? { ...prev, status: "closed" as const } : null))
         }
       } catch (err) {
-        console.error("Error closing conversation:", err)
+        logger.error("Error closing conversation:", err)
         setError("Failed to close conversation")
       }
     },

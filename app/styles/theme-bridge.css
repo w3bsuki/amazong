@@ -1,0 +1,171 @@
+/* ===== TAILWIND V4 THEME BRIDGE ===== */
+@theme inline {
+  /* Map CSS vars to Tailwind */
+  --color-background: oklch(var(--background));
+  --color-foreground: oklch(var(--foreground));
+  --color-card: oklch(var(--card));
+  --color-card-foreground: oklch(var(--card-foreground));
+  --color-popover: oklch(var(--popover));
+  --color-popover-foreground: oklch(var(--popover-foreground));
+  --color-primary: oklch(var(--primary));
+  --color-primary-foreground: oklch(var(--primary-foreground));
+  --color-secondary: oklch(var(--secondary));
+  --color-secondary-foreground: oklch(var(--secondary-foreground));
+  --color-muted: oklch(var(--muted));
+  --color-muted-foreground: oklch(var(--muted-foreground));
+  --color-accent: oklch(var(--accent));
+  --color-accent-foreground: oklch(var(--accent-foreground));
+  --color-destructive: oklch(var(--destructive));
+  --color-destructive-foreground: oklch(var(--destructive-foreground));
+  --color-success: oklch(var(--success));
+  --color-success-foreground: oklch(var(--success-foreground));
+  --color-success-subtle: oklch(var(--success-subtle));
+  --color-destructive-subtle: oklch(var(--destructive-subtle));
+  --color-primary-subtle: oklch(var(--primary-subtle));
+  --color-warning: oklch(var(--warning));
+  --color-warning-foreground: oklch(var(--warning-foreground));
+  --color-error: oklch(var(--error));
+  --color-error-foreground: oklch(var(--error-foreground));
+  --color-info: oklch(var(--info));
+  --color-info-foreground: oklch(var(--info-foreground));
+  --color-border: oklch(var(--border));
+  --color-border-subtle: oklch(var(--border-subtle));
+  --color-input: oklch(var(--input));
+  --color-ring: oklch(var(--ring));
+  --color-ring-subtle: oklch(var(--ring-subtle));
+  --color-category-ring: oklch(var(--category-ring));
+  --color-promoted: oklch(var(--promoted));
+  --color-promoted-foreground: oklch(var(--promoted-foreground));
+  --color-promoted-muted: oklch(var(--promoted-muted));
+  --color-verified-business: oklch(var(--verified-business));
+  --color-verified-business-foreground: oklch(var(--verified-business-foreground));
+  --color-verified-personal: oklch(var(--verified-personal));
+  --color-verified-personal-foreground: oklch(var(--verified-personal-foreground));
+  --color-top-rated: oklch(var(--top-rated));
+  --color-top-rated-foreground: oklch(var(--top-rated-foreground));
+  --color-category-tech-bg: oklch(var(--category-tech-bg));
+  --color-category-tech-fg: oklch(var(--category-tech-fg));
+  --color-category-tech-ring: oklch(var(--category-tech-ring));
+  --color-category-fashion-bg: oklch(var(--category-fashion-bg));
+  --color-category-fashion-fg: oklch(var(--category-fashion-fg));
+  --color-category-fashion-ring: oklch(var(--category-fashion-ring));
+  --color-category-home-bg: oklch(var(--category-home-bg));
+  --color-category-home-fg: oklch(var(--category-home-fg));
+  --color-category-home-ring: oklch(var(--category-home-ring));
+  --color-category-sports-bg: oklch(var(--category-sports-bg));
+  --color-category-sports-fg: oklch(var(--category-sports-fg));
+  --color-category-sports-ring: oklch(var(--category-sports-ring));
+  --color-category-gaming-bg: oklch(var(--category-gaming-bg));
+  --color-category-gaming-fg: oklch(var(--category-gaming-fg));
+  --color-category-gaming-ring: oklch(var(--category-gaming-ring));
+  --color-category-beauty-bg: oklch(var(--category-beauty-bg));
+  --color-category-beauty-fg: oklch(var(--category-beauty-fg));
+  --color-category-beauty-ring: oklch(var(--category-beauty-ring));
+  --color-category-family-bg: oklch(var(--category-family-bg));
+  --color-category-family-fg: oklch(var(--category-family-fg));
+  --color-category-family-ring: oklch(var(--category-family-ring));
+  --color-category-media-bg: oklch(var(--category-media-bg));
+  --color-category-media-fg: oklch(var(--category-media-fg));
+  --color-category-media-ring: oklch(var(--category-media-ring));
+  --color-category-business-bg: oklch(var(--category-business-bg));
+  --color-category-business-fg: oklch(var(--category-business-fg));
+  --color-category-business-ring: oklch(var(--category-business-ring));
+  --color-category-lifestyle-bg: oklch(var(--category-lifestyle-bg));
+  --color-category-lifestyle-fg: oklch(var(--category-lifestyle-fg));
+  --color-category-lifestyle-ring: oklch(var(--category-lifestyle-ring));
+  --color-category-auto-bg: oklch(var(--category-auto-bg));
+  --color-category-auto-fg: oklch(var(--category-auto-fg));
+  --color-category-auto-ring: oklch(var(--category-auto-ring));
+
+  /* Interactive state colors (semantic - use these instead of primary/10) */
+  --color-selected: oklch(var(--selected));
+  --color-selected-foreground: oklch(var(--selected-foreground));
+  --color-selected-border: oklch(var(--selected-border));
+  --color-hover: oklch(var(--hover));
+  --color-hover-border: oklch(var(--hover-border));
+  --color-active: oklch(var(--active));
+  --color-nav-active: oklch(var(--nav-active));
+  --color-nav-inactive: oklch(var(--nav-inactive));
+  --color-nav-indicator: oklch(var(--nav-indicator));
+  --color-notification: oklch(var(--notification));
+  --color-focus-ring: oklch(var(--focus-ring));
+  --color-checked: oklch(var(--checked));
+  --color-checked-foreground: oklch(var(--checked-foreground));
+
+  --color-chart-1: oklch(var(--chart-1));
+  --color-chart-2: oklch(var(--chart-2));
+  --color-chart-3: oklch(var(--chart-3));
+  --color-chart-4: oklch(var(--chart-4));
+  --color-chart-5: oklch(var(--chart-5));
+  --color-sidebar: oklch(var(--sidebar));
+  --color-sidebar-foreground: oklch(var(--sidebar-foreground));
+  --color-sidebar-muted: oklch(var(--sidebar-muted));
+  --color-sidebar-muted-foreground: oklch(var(--sidebar-muted-foreground));
+  --color-sidebar-primary: oklch(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: oklch(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: oklch(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: oklch(var(--sidebar-accent-foreground));
+  --color-sidebar-border: oklch(var(--sidebar-border));
+  --color-sidebar-ring: oklch(var(--sidebar-ring));
+
+  /* Overlay colors (backdrop for drawers/sheets/dialogs) */
+  --color-overlay-dark: oklch(var(--overlay-dark));
+  --color-overlay-light: oklch(var(--overlay-light));
+
+  /* Mobile Product Page Surfaces */
+  --color-surface-page: oklch(var(--surface-page));
+  --color-surface-subtle: oklch(var(--surface-subtle));
+  --color-surface-card: oklch(var(--surface-card));
+  --color-surface-elevated: oklch(var(--surface-elevated));
+  --color-surface-gallery: oklch(var(--surface-gallery));
+  --color-surface-overlay: oklch(var(--surface-overlay));
+  --color-surface-floating: oklch(var(--surface-floating));
+  --color-surface-glass: oklch(var(--surface-glass));
+  --color-surface-section-header: oklch(var(--surface-section-header));
+  --color-home-promoted: oklch(var(--home-promoted-surface));
+  --color-home-promoted-border: oklch(var(--home-promoted-border));
+  --color-home-promoted-text: oklch(var(--home-promoted-text));
+  --color-home-promoted-cta-surface: oklch(var(--home-promoted-cta-surface));
+  --color-home-promoted-cta-border: oklch(var(--home-promoted-cta-border));
+  --color-home-promoted-cta-text: oklch(var(--home-promoted-cta-text));
+  --color-home-promoted-cta-eyebrow: oklch(var(--home-promoted-cta-eyebrow));
+  --color-home-promoted-cta-subtitle: oklch(var(--home-promoted-cta-subtitle));
+  --color-home-promoted-cta-button-surface: oklch(var(--home-promoted-cta-button-surface));
+  --color-home-promoted-cta-button-text: oklch(var(--home-promoted-cta-button-text));
+  --color-home-promoted-cta-button-border: oklch(var(--home-promoted-cta-button-border));
+  --color-home-sell-cta-surface: oklch(var(--home-sell-cta-surface));
+  --color-home-sell-cta-border: oklch(var(--home-sell-cta-border));
+  --color-home-sell-cta-text: oklch(var(--home-sell-cta-text));
+  --color-home-sell-cta-action: oklch(var(--home-sell-cta-action));
+  --color-home-sell-cta-icon-surface: oklch(var(--home-sell-cta-icon-surface));
+  --color-home-sell-cta-icon-text: oklch(var(--home-sell-cta-icon-text));
+  --color-home-sell-cta-icon-border: oklch(var(--home-sell-cta-icon-border));
+  --color-home-section-title: oklch(var(--home-section-title));
+  --color-home-section-action: oklch(var(--home-section-action));
+
+  /* Mobile Product Page Text */
+  --color-text-strong: oklch(var(--text-strong));
+  --color-text-default: oklch(var(--text-default));
+  --color-text-muted-alt: oklch(var(--text-muted-alt));
+  --color-text-subtle: oklch(var(--text-subtle));
+
+  /* Overlay/Gallery Text (for dark backgrounds) */
+  --color-overlay-text: oklch(var(--overlay-text));
+  --color-overlay-text-muted: oklch(var(--overlay-text-muted));
+  --color-gallery-ring: oklch(var(--gallery-ring));
+  --color-gallery-ring-offset: oklch(var(--gallery-ring-offset));
+
+  /* Tight radius scale for marketplace */
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+
+  /* Card-specific: tighter radius for professional e-commerce feel */
+  --radius-card: var(--radius-md);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 6px);
+  --radius-3xl: calc(var(--radius) + 8px);
+  --radius-4xl: calc(var(--radius) + 12px);
+
+  /* Tailwind shadow-color hook (disabled: cards/lists are border-only) */
+}

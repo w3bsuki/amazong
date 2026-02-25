@@ -33,10 +33,12 @@ async function queryCategoryPolicies(
   selectClause: string,
   categoryIds: string[],
 ): Promise<QueryResult> {
-  return (await (supabase
+  const { data, error } = await supabase
     .from("categories")
     .select(selectClause)
-    .in("id", categoryIds) as unknown as Promise<QueryResult>))
+    .in("id", categoryIds)
+
+  return { data, error }
 }
 
 function toObjectRows(data: unknown): Array<Record<string, unknown>> {

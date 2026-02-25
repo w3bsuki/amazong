@@ -1,7 +1,7 @@
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { type NextRequest, NextResponse } from "next/server"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 export async function POST(req: NextRequest) {
   const { supabase, applyCookies } = createRouteHandlerClient(req)
 

@@ -1,4 +1,5 @@
-'use client'
+"use client"
+
 
 import { useEffect } from 'react'
 
@@ -26,7 +27,15 @@ export function PerformanceMeasureGuard() {
           message.includes("Failed to execute 'measure' on 'Performance'") &&
           message.includes('negative time stamp')
         ) {
-          return undefined as unknown as ReturnType<Performance['measure']>
+          if (typeof args[0] === "string") {
+            // Fallback: retry with name-only measure to avoid negative timestamps.
+            // This preserves the return type (PerformanceMeasure) without crashing.
+            try {
+              return original(args[0])
+            } catch {
+              // Fall through to rethrow the original error below.
+            }
+          }
         }
 
         throw error

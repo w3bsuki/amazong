@@ -353,69 +353,6 @@
   opacity: 0.7;
 }
 
-/* ===== MOTION UTILITIES ===== */
-@keyframes fade-up-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes drawer-content-in {
-  from {
-    opacity: 0;
-    transform: translateY(2px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes badge-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes content-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@utility animate-fade-up-in {
-  animation: fade-up-in 250ms ease-out both;
-}
-
-@utility animate-drawer-content-in {
-  animation: drawer-content-in var(--duration-normal) var(--ease-smooth) both;
-}
-
-@utility animate-badge-pop {
-  animation: badge-pop 200ms ease-out both;
-}
-
-@utility animate-content-fade-in {
-  animation: content-fade-in 200ms ease-out both;
-}
-
 /* ===== OVERLAY / SCROLL LOCK STABILITY ===== */
 /* We already reserve scrollbar space globally via `html { scrollbar-gutter: stable; }`.
    Keep scroll-lock compensation at zero to avoid drawer-open layout jumps. */

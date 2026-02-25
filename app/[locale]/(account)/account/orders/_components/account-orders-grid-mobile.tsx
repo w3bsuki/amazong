@@ -3,7 +3,7 @@
 import { formatDistanceToNow, type Locale } from "date-fns"
 import { Link } from "@/i18n/routing"
 import { OrderStatusBadge } from "../../../../_components/orders/order-status-badge"
-import { SHIPPING_CARRIER_VALUES, getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-status"
+import { getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-status"
 import { DrawerBody } from "@/components/ui/drawer"
 import { DrawerShell } from "@/components/shared/drawer-shell"
 import { Separator } from "@/components/ui/separator"
@@ -11,7 +11,7 @@ import { ChevronRight as IconChevronRight, MessageCircle as IconMessageCircle, P
 import { BuyerOrderActions } from "./buyer-order-actions"
 import type { AccountOrdersGridServerActions, OrderRow } from "./account-orders-grid.types"
 import {
-  getProductHref,
+  getOrderItemSummaryData,
   isOrderStatusKey,
 } from "./account-orders-grid.utils"
 import { OrderListProductThumb, OrderListStatusBadge } from "@/components/shared/order-list-item"
@@ -177,16 +177,11 @@ export function AccountOrdersGridMobile({
 
                   <div className="space-y-4">
                     {order.order_items.map((item) => {
-                      const product = item.product
-                      const image = product?.images?.[0] || "/placeholder.svg"
-                      const title = product?.title || tAccount("ordersPage.card.productFallbackTitle")
-                      const href = getProductHref(item)
-                      const itemStatus = item.status || "pending"
-                      const carrierLabel = item.shipping_carrier
-                        ? SHIPPING_CARRIER_VALUES.includes(item.shipping_carrier as (typeof SHIPPING_CARRIER_VALUES)[number])
-                          ? tOrders(`shippingCarriers.${item.shipping_carrier}`)
-                          : item.shipping_carrier
-                        : null
+                      const { image, title, href, itemStatus, carrierLabel } = getOrderItemSummaryData(
+                        item,
+                        tAccount,
+                        tOrders,
+                      )
 
                       return (
                         <OrderSummaryLine

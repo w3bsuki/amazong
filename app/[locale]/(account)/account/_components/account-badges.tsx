@@ -89,6 +89,27 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
     }).format(new Date(dateStr))
   }
 
+  type AccountBadge = (typeof badges)[number]
+
+  const BadgeTooltipContent = ({
+    badge,
+    actionLabel,
+    actionLabelClassName,
+  }: {
+    badge: AccountBadge
+    actionLabel: string
+    actionLabelClassName?: string
+  }) => (
+    <TooltipContent side="bottom" className="max-w-xs">
+      <p className="font-medium">{badge.name}</p>
+      <p className="text-xs text-muted-foreground">{badge.description}</p>
+      <p className="text-xs text-muted-foreground mt-1">
+        {t.earnedOn}: {formatDate(badge.earned_at)}
+      </p>
+      <p className={cn("text-xs mt-1", actionLabelClassName)}>{actionLabel}</p>
+    </TooltipContent>
+  )
+
   if (isLoading) {
     return (
       <Card>
@@ -177,16 +198,11 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                         )}
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs">
-                      <p className="font-medium">{badge.name}</p>
-                      <p className="text-xs text-muted-foreground">{badge.description}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {t.earnedOn}: {formatDate(badge.earned_at)}
-                      </p>
-                      <p className="text-xs text-rating mt-1">
-                        {t.unfeature}
-                      </p>
-                    </TooltipContent>
+                    <BadgeTooltipContent
+                      badge={badge}
+                      actionLabel={t.unfeature}
+                      actionLabelClassName="text-rating"
+                    />
                   </Tooltip>
                 </TooltipProvider>
               ))}
@@ -227,16 +243,10 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                         )}
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs">
-                      <p className="font-medium">{badge.name}</p>
-                      <p className="text-xs text-muted-foreground">{badge.description}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {t.earnedOn}: {formatDate(badge.earned_at)}
-                      </p>
-                      <p className="text-xs mt-1">
-                        {badge.is_featured ? t.unfeature : t.feature}
-                      </p>
-                    </TooltipContent>
+                    <BadgeTooltipContent
+                      badge={badge}
+                      actionLabel={badge.is_featured ? t.unfeature : t.feature}
+                    />
                   </Tooltip>
                 </TooltipProvider>
               ))}

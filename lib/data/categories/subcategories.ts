@@ -3,9 +3,9 @@ import "server-only"
 import { cacheLife, cacheTag } from "next/cache"
 import { createStaticClient } from "@/lib/supabase/server"
 import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
-import { logger } from "@/lib/logger"
 import type { CategoryWithCount } from "./types"
 
+import { logger } from "@/lib/logger"
 /**
  * Fetch subcategories with their product counts from category_stats.
  * Used for buyer browse UX to filter out empty categories.

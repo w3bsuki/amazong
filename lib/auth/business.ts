@@ -4,9 +4,9 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "@/i18n/routing"
 import { connection } from "next/server"
 import { getLocale } from "next-intl/server"
-import { logger } from "@/lib/logger"
 import { headers } from "next/headers"
 
+import { logger } from "@/lib/logger"
 export type AccountType = 'personal' | 'business'
 
 // Internal types for order management - must match OrdersTable component expectations

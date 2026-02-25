@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger"
 /**
  * Feature Flags System
  * 
@@ -157,7 +158,7 @@ export function isFeatureEnabled(flagName: FeatureFlagName): boolean {
   const flag = FEATURE_FLAGS[flagName]
   
   if (!flag) {
-    console.warn(`[FeatureFlags] Unknown flag: ${flagName}`)
+    logger.warn(`[FeatureFlags] Unknown flag: ${flagName}`)
     return false
   }
 

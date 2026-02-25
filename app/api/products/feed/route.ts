@@ -9,6 +9,7 @@ import {
 } from "@/lib/api/response-helpers"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 const FEED_TYPE_VALUES = [
   'all',
   'newest',
@@ -240,7 +241,7 @@ export async function GET(request: NextRequest) {
     const { data, error, count } = await query.range(offset, offset + safeLimit - 1)
 
     if (error) {
-      console.error("[API] Feed products error:", error.message)
+      logger.error("[API] Feed products error:", error.message)
       return noStoreJson({ 
         products: [], 
         hasMore: false,
@@ -272,7 +273,7 @@ export async function GET(request: NextRequest) {
       type === "deals" ? "deals" : "products"
     )
   } catch (error) {
-    console.error("[API] Feed products exception:", error)
+    logger.error("[API] Feed products exception:", error)
     return noStoreJson({ 
       products: [], 
       hasMore: false,

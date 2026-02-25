@@ -2,17 +2,21 @@ import { NextRequest, NextResponse } from "next/server"
 import { generateObject } from "ai"
 
 import { getAiVisionModel } from "@/lib/ai/models"
-import { isAiAssistantEnabled } from "@/lib/ai/env"
 import {
   SellAutofillDraftSchema,
   SellAutofillRequestSchema,
 } from "@/lib/ai/schemas/sell-autofill"
-import { isSafeUserProvidedUrl } from "@/lib/ai/safe-url"
 import { noStoreJson } from "@/lib/api/response-helpers"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
-import { logger } from "@/lib/logger"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
+import {
+  parseRequestJson,
+  requireAiAssistantEnabled,
+  requireAuthedUser,
+  validateAiImageUrl,
+} from "../_lib/ai-request-helpers"
 
+import { logger } from "@/lib/logger"
 export async function POST(request: NextRequest) {
   const { supabase, applyCookies } = createRouteHandlerClient(request)
   const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
@@ -20,28 +24,18 @@ export async function POST(request: NextRequest) {
   const noStore = (body: unknown, init?: Parameters<typeof noStoreJson>[1]) =>
     applyCookies(noStoreJson(body, init))
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return json(
-      { error: "Unauthorized" },
-      { status: 401, headers: { "Cache-Control": "private, no-store" } },
-    )
-  }
+  const auth = await requireAuthedUser({ supabase, json })
+  if (!auth.ok) return auth.response
 
-  if (!isAiAssistantEnabled()) {
-    return json({ error: "AI assistant disabled" }, { status: 404 })
-  }
+  const enabled = requireAiAssistantEnabled(json)
+  if (!enabled.ok) return enabled.response
 
   try {
-    const body = await request.json()
-    const parsed = SellAutofillRequestSchema.safeParse(body)
-    if (!parsed.success) {
-      return json({ error: "Invalid request" }, { status: 400 })
-    }
+    const parsed = await parseRequestJson(request, SellAutofillRequestSchema, json)
+    if (!parsed.ok) return parsed.response
 
-    if (!isSafeUserProvidedUrl(parsed.data.imageUrl)) {
-      return json({ error: "Invalid imageUrl" }, { status: 400 })
-    }
+    const safeUrl = validateAiImageUrl(parsed.data.imageUrl, json)
+    if (!safeUrl.ok) return safeUrl.response
 
     const locale = parsed.data.locale ?? "en"
     const prompt =

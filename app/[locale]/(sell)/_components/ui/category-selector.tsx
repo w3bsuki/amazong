@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { useState, useMemo, useCallback } from "react";
 import { ChevronRight as CaretRight, Check } from "lucide-react";

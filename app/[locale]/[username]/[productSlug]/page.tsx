@@ -206,7 +206,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
       .select("id, name, name_bg, slug, icon, parent_id")
       .eq("id", category.parent_id)
       .maybeSingle()
-    parentCategory = (parent as unknown as ProductPageProduct["category"] | null) ?? null
+    parentCategory = parent
+      ? {
+          id: parent.id,
+          name: parent.name,
+          name_bg: parent.name_bg,
+          slug: parent.slug,
+          icon: parent.icon,
+          parent_id: parent.parent_id,
+        }
+      : null
   }
 
   const rootCategory = parentCategory?.parent_id ? parentCategory : parentCategory ?? category

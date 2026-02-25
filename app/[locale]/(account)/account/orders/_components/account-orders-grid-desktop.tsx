@@ -23,10 +23,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { SHIPPING_CARRIER_VALUES, getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-status"
+import { getOrderStatusFromItems, type OrderItemStatus } from "@/lib/order-status"
 import { OrderStatusBadge } from "../../../../_components/orders/order-status-badge"
 import type { AccountOrdersGridServerActions, OrderRow } from "./account-orders-grid.types"
-import { getProductHref, isOrderStatusKey } from "./account-orders-grid.utils"
+import { getOrderItemSummaryData, isOrderStatusKey } from "./account-orders-grid.utils"
 import { BuyerOrderActions } from "./buyer-order-actions"
 import { OrderListProductThumb, OrderListStatusBadge } from "@/components/shared/order-list-item"
 import { OrderSummaryLine } from "@/components/shared/order-summary-line"
@@ -178,16 +178,11 @@ export function AccountOrdersGridDesktop({
 
                       <div className="space-y-4">
                         {order.order_items.map((item) => {
-                          const product = item.product
-                          const image = product?.images?.[0] || "/placeholder.svg"
-                          const title = product?.title || tAccount("ordersPage.card.productFallbackTitle")
-                          const href = getProductHref(item)
-                          const itemStatus = item.status || "pending"
-                          const carrierLabel = item.shipping_carrier
-                            ? SHIPPING_CARRIER_VALUES.includes(item.shipping_carrier as (typeof SHIPPING_CARRIER_VALUES)[number])
-                              ? tOrders(`shippingCarriers.${item.shipping_carrier}`)
-                              : item.shipping_carrier
-                            : null
+                          const { image, title, href, itemStatus, carrierLabel } = getOrderItemSummaryData(
+                            item,
+                            tAccount,
+                            tOrders,
+                          )
 
                           return (
                             <OrderSummaryLine

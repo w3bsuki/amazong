@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { useCallback, useState, useRef } from "react";
 import { useDropzone } from "react-dropzone";
@@ -347,34 +348,32 @@ export function PhotosField({
       {/* Main Photos Field */}
       <Field data-invalid={hasError}>
         {!compact ? (
-          <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
+          <div className="space-y-4">
             {/* Header */}
-            <div className="p-4 pb-3 border-b border-border-subtle bg-surface-subtle">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
-                    <Camera className="size-5 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                      {tSell("photos.label")}
-                    </FieldLabel>
-                    <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                      {tSell("photos.helpText", { max: maxPhotos })}
-                    </FieldDescription>
-                  </div>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-surface-subtle">
+                  <Camera className="size-5 text-muted-foreground" />
                 </div>
-                <Badge
-                  variant={images.length === 0 ? "destructive" : "secondary"}
-                  className="h-6 rounded-sm px-2 text-xs font-semibold tabular-nums"
-                >
-                  {images.length}/{maxPhotos}
-                </Badge>
+                <div>
+                  <FieldLabel className="text-sm font-semibold text-foreground">
+                    {tSell("photos.label")}
+                  </FieldLabel>
+                  <FieldDescription className="text-xs text-muted-foreground mt-0.5">
+                    {tSell("photos.helpText", { max: maxPhotos })}
+                  </FieldDescription>
+                </div>
               </div>
+              <Badge
+                variant={images.length === 0 ? "destructive" : "secondary"}
+                className="h-6 rounded-full px-2 text-xs font-semibold tabular-nums"
+              >
+                {images.length}/{maxPhotos}
+              </Badge>
             </div>
 
             {/* Content */}
-            <FieldContent className="p-5">
+            <FieldContent>
               {sharedContent}
             </FieldContent>
           </div>
@@ -388,7 +387,7 @@ export function PhotosField({
               </div>
               <Badge
                 variant={images.length === 0 ? "destructive" : "secondary"}
-                className="h-6 rounded-sm px-2 text-xs font-semibold tabular-nums"
+                className="h-6 rounded-full px-2 text-xs font-semibold tabular-nums"
               >
                 {images.length}/{maxPhotos}
               </Badge>

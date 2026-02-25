@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server"
 import { parseShippingRegion, type ShippingRegion } from "@/lib/shipping"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 const CACHEABLE_ZONE_VALUES = new Set(["BG", "UK", "EU", "US", "WW", "GB"])
 
 const ZoneParamSchema = z.preprocess(
@@ -67,7 +68,7 @@ export async function GET(
       ? cachedJsonResponse({ products: uiProducts }, "products")
       : noStoreJson({ products: uiProducts })
   } catch (error) {
-    console.error("Category products API error:", error)
+    logger.error("Category products API error:", error)
     return noStoreJson({ error: "Internal Server Error" }, { status: 500 })
   }
 }

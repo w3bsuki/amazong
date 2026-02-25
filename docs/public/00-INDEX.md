@@ -13,10 +13,10 @@
 
 | Route | Source |
 |------|--------|
-| `/[locale]/terms` | `docs/public/legal/terms.<locale>.md` |
-| `/[locale]/privacy` | `docs/public/legal/privacy.<locale>.md` |
-| `/[locale]/cookies` | `docs/public/legal/cookies.<locale>.md` |
-| `/[locale]/returns` | `docs/public/policies/returns.<locale>.md` |
+| `/[locale]/terms` | `docs/public/legal/terms.en.md`, `docs/public/legal/terms.bg.md` |
+| `/[locale]/privacy` | `docs/public/legal/privacy.en.md`, `docs/public/legal/privacy.bg.md` |
+| `/[locale]/cookies` | `docs/public/legal/cookies.en.md`, `docs/public/legal/cookies.bg.md` |
+| `/[locale]/returns` | `docs/public/policies/returns.en.md`, `docs/public/policies/returns.bg.md` |
 
 ---
 

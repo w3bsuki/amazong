@@ -6,6 +6,10 @@ const MOBILE_QUICK_PILL_ACTIVE_CLASS = "bg-foreground text-background font-semib
 const MOBILE_QUICK_PILL_INACTIVE_CLASS =
   "bg-surface-subtle text-foreground font-medium hover:bg-hover"
 
+const MOBILE_GHOST_PILL_ACTIVE_CLASS = "border-foreground bg-surface-subtle text-foreground font-semibold"
+const MOBILE_GHOST_PILL_INACTIVE_CLASS =
+  "border-border-subtle bg-background text-muted-foreground font-medium hover:border-border hover:bg-surface-subtle hover:text-foreground"
+
 export const MOBILE_ACTION_CHIP_CLASS =
   "inline-flex shrink-0 min-h-(--control-compact) px-3 items-center gap-2 rounded-full bg-surface-subtle text-compact font-medium leading-none text-foreground tap-transparent motion-safe:transition-all motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
 
@@ -21,6 +25,15 @@ export function getMobileQuickPillClass(active: boolean, className?: string): st
   return cn(
     MOBILE_QUICK_PILL_BASE_CLASS,
     active ? MOBILE_QUICK_PILL_ACTIVE_CLASS : MOBILE_QUICK_PILL_INACTIVE_CLASS,
+    className
+  )
+}
+
+export function getMobileGhostPillClass(active: boolean, className?: string): string {
+  return cn(
+    MOBILE_QUICK_PILL_BASE_CLASS,
+    "border",
+    active ? MOBILE_GHOST_PILL_ACTIVE_CLASS : MOBILE_GHOST_PILL_INACTIVE_CLASS,
     className
   )
 }

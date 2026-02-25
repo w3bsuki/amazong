@@ -4,6 +4,14 @@ import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from "@/lib/supabase/server"
 import type { Database } from "@/lib/supabase/database.types"
 import { isUuid } from "@/lib/utils/is-uuid"
+import {
+  PRODUCT_CATEGORY_SUMMARY_SELECT,
+  PRODUCT_IMAGES_SELECT,
+  PRODUCT_PAGE_CORE_SELECT,
+  PRODUCT_PAGE_SELECT,
+  PRODUCT_SELLER_IDENTITY_SELECT,
+  PRODUCT_VARIANTS_SELECT,
+} from "@/lib/supabase/selects/products"
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"]
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"]
@@ -11,6 +19,35 @@ type CategoryRow = Database["public"]["Tables"]["categories"]["Row"]
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"]
 type ProductImageRow = Database["public"]["Tables"]["product_images"]["Row"]
 type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"]
+
+type ProductPageCore = Pick<
+  ProductRow,
+  | "id"
+  | "title"
+  | "slug"
+  | "price"
+  | "list_price"
+  | "description"
+  | "condition"
+  | "images"
+  | "attributes"
+  | "meta_description"
+  | "rating"
+  | "review_count"
+  | "stock"
+  | "pickup_only"
+  | "free_shipping"
+  | "seller_city"
+  | "seller_id"
+  | "category_id"
+  | "view_count"
+  | "created_at"
+>
+
+export type ProductPageVariant = Pick<
+  ProductVariantRow,
+  "id" | "name" | "sku" | "stock" | "price_adjustment" | "is_default" | "sort_order"
+>
 
 type SellerStatsSummary = Pick<
   SellerStatsRow,
@@ -39,19 +76,29 @@ type ProductImage = Pick<
   "id" | "image_url" | "display_order" | "is_primary"
 >
 
-export type ProductPageProduct = ProductRow & {
+export type ProductPageProduct = ProductPageCore & {
   seller: ProductSeller
   category: ProductCategory | null
   seller_stats: SellerStatsSummary | null
-  product_images?: ProductImage[]
-  product_variants?: ProductVariantRow[]
+  product_images: ProductImage[]
+  product_variants: ProductPageVariant[]
 }
-
-const PRODUCT_SELECT =
-  'id,title,slug,price,list_price,description,condition,images,attributes,meta_description,rating,review_count,stock,pickup_only,seller_city,seller_id,category_id,view_count,created_at' as const
 
 const SELLER_STATS_SELECT =
   'seller_id,average_rating,total_reviews,positive_feedback_pct,follower_count,total_sales,response_time_hours,active_listings' as const
+
+const sortProductVariants = (variants: ProductPageVariant[]) =>
+  [...variants].sort((a, b) => {
+    const ad = a.is_default ? 0 : 1
+    const bd = b.is_default ? 0 : 1
+    if (ad !== bd) return ad - bd
+
+    const ao = a.sort_order ?? 999
+    const bo = b.sort_order ?? 999
+    if (ao !== bo) return ao - bo
+
+    return String(a.name ?? "").localeCompare(String(b.name ?? ""))
+  })
 
 /**
  * Fetch product by seller username + product slug.
@@ -104,27 +151,7 @@ export async function fetchProductByUsernameAndSlug(
   // Fetch profile and product in a single optimized query using joins
   const { data: product, error: productError } = await supabase
     .from("products")
-    .select(`
-      ${PRODUCT_SELECT},
-      seller:profiles!products_seller_id_fkey (
-        id, username, display_name, avatar_url, verified, is_seller, created_at, last_active
-      ),
-      category:categories (
-        id, name, name_bg, slug, parent_id, icon
-      ),
-      product_images (
-        id, image_url, display_order, is_primary
-      ),
-      product_variants (
-        id,
-        name,
-        sku,
-        stock,
-        price_adjustment,
-        is_default,
-        sort_order
-      )
-    `)
+    .select(PRODUCT_PAGE_SELECT)
     .eq("slug", safeSlug)
     // IMPORTANT: filter using the embedded relation alias (seller), not the base table name.
     // Using "profiles.username" can silently return no rows, causing the UI to fall back to sample/preview.
@@ -135,18 +162,16 @@ export async function fetchProductByUsernameAndSlug(
     // Fallback: Try the two-step approach if join fails
     const { data: exactProfile } = await supabase
       .from("profiles")
-      .select("id, username, display_name, avatar_url, verified, is_seller, created_at, last_active")
+      .select(PRODUCT_SELLER_IDENTITY_SELECT)
       .eq("username", safeUsername)
       .maybeSingle()
 
-    const profile = (exactProfile as ProductSeller | null)
-      ?? (
-        await supabase
-          .from("profiles")
-          .select("id, username, display_name, avatar_url, verified, is_seller, created_at, last_active")
-          .ilike("username", safeUsername)
-          .maybeSingle()
-      ).data as ProductSeller | null
+    const profile: ProductSeller | null =
+      exactProfile ?? (await supabase
+        .from("profiles")
+        .select(PRODUCT_SELLER_IDENTITY_SELECT)
+        .ilike("username", safeUsername)
+        .maybeSingle()).data ?? null
 
     if (!profile) return null
 
@@ -154,7 +179,7 @@ export async function fetchProductByUsernameAndSlug(
     let fallbackProduct = (
       await supabase
         .from("products")
-        .select(PRODUCT_SELECT)
+        .select(PRODUCT_PAGE_CORE_SELECT)
         .eq("slug", safeSlug)
         .eq("seller_id", profile.id)
         .maybeSingle()
@@ -166,7 +191,7 @@ export async function fetchProductByUsernameAndSlug(
       fallbackProduct = (
         await supabase
           .from("products")
-          .select(PRODUCT_SELECT)
+          .select(PRODUCT_PAGE_CORE_SELECT)
           .eq("id", safeSlug)
           .eq("seller_id", profile.id)
           .maybeSingle()
@@ -179,10 +204,10 @@ export async function fetchProductByUsernameAndSlug(
     if (fallbackProduct.category_id) {
       const { data } = await supabase
         .from("categories")
-        .select("id, name, name_bg, slug, parent_id, icon, image_url")
+        .select(PRODUCT_CATEGORY_SUMMARY_SELECT)
         .eq("id", fallbackProduct.category_id)
-        .single()
-      category = (data as ProductCategory | null) ?? null
+        .maybeSingle()
+      category = data ?? null
     }
 
     const { data: sellerStats } = await supabase
@@ -194,68 +219,46 @@ export async function fetchProductByUsernameAndSlug(
     // Fetch product_images for the fallback path
     const { data: productImages } = await supabase
       .from("product_images")
-      .select("id, image_url, display_order, is_primary")
+      .select(PRODUCT_IMAGES_SELECT)
       .eq("product_id", fallbackProduct.id)
       .order("display_order", { ascending: true })
 
+    const { data: productVariants } = await supabase
+      .from("product_variants")
+      .select(PRODUCT_VARIANTS_SELECT)
+      .eq("product_id", fallbackProduct.id)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true })
+
     const enriched: ProductPageProduct = {
-      ...(fallbackProduct as ProductRow),
+      ...fallbackProduct,
       seller: profile,
       category,
       seller_stats: sellerStats ?? null,
       product_images: productImages ?? [],
-      product_variants: (
-        (await supabase
-          .from("product_variants")
-          .select("id,name,sku,stock,price_adjustment,is_default,sort_order")
-          .eq("product_id", fallbackProduct.id)
-          .order("sort_order", { ascending: true })
-          .order("created_at", { ascending: true })
-        ).data ?? []
-      ) as ProductVariantRow[],
+      product_variants: sortProductVariants(productVariants ?? []),
     }
 
     addEntityTags(enriched)
     return enriched
   }
 
-  const productWithRelations = product as unknown as (ProductRow & {
-    seller: ProductSeller | null
-    category: ProductCategory | null
-    product_images?: ProductImage[]
-    product_variants?: Array<Pick<ProductVariantRow, "id" | "name" | "sku" | "stock" | "price_adjustment" | "is_default" | "sort_order">>
-  })
-
-  const seller = productWithRelations.seller
-  const sellerId = seller?.id
-  if (!sellerId || !seller) return null
+  const seller = product.seller
+  if (!seller) return null
 
   const { data: sellerStats } = await supabase
     .from("seller_stats")
     .select(SELLER_STATS_SELECT)
-    .eq("seller_id", sellerId)
+    .eq("seller_id", seller.id)
     .single()
 
   const enriched: ProductPageProduct = {
-    ...(productWithRelations as ProductRow),
+    ...product,
     seller,
-    category: productWithRelations.category ?? null,
+    category: product.category ?? null,
     seller_stats: sellerStats ?? null,
-    product_images: productWithRelations.product_images ?? [],
-    product_variants: ([...(productWithRelations.product_variants ?? [])] as Array<
-      Pick<ProductVariantRow, "id" | "name" | "sku" | "stock" | "price_adjustment" | "is_default" | "sort_order">
-    >)
-      .sort((a, b) => {
-        const ad = a.is_default ? 0 : 1
-        const bd = b.is_default ? 0 : 1
-        if (ad !== bd) return ad - bd
-
-        const ao = a.sort_order ?? 999
-        const bo = b.sort_order ?? 999
-        if (ao !== bo) return ao - bo
-
-        return String(a.name ?? "").localeCompare(String(b.name ?? ""))
-      }) as ProductVariantRow[],
+    product_images: product.product_images ?? [],
+    product_variants: sortProductVariants(product.product_variants ?? []),
   }
 
   addEntityTags(enriched)

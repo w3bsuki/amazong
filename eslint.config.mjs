@@ -85,7 +85,7 @@ const appImportLeakPatterns = [
 
 const config = [
   // Local scratch/audit workspace; not production source code.
-  { ignores: [".tmp/**"] },
+  { ignores: [".tmp/**", "designs/**"] },
   ...nextVitals,
   ...nextTs,
   {

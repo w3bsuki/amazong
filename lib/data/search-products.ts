@@ -15,7 +15,7 @@ type SortQueryLike<T> = {
   order: (column: string, options: { ascending: boolean; nullsFirst?: boolean }) => T
 }
 
-interface SharedProductFilters {
+export interface SharedProductFilters {
   minPrice?: string | undefined
   maxPrice?: string | undefined
   tag?: string | undefined

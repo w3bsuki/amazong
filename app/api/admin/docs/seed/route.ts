@@ -4,6 +4,7 @@ import { z } from "zod"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { ADMIN_DOC_TEMPLATES, ADMIN_DOC_TEMPLATES_BG } from "./templates"
 
+import { logger } from "@/lib/logger"
 const SeedRequestSchema = z
   .object({
     locale: z.enum(["en", "bg"]).optional(),
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
 
     return json({ inserted: toInsert.length })
   } catch (error) {
-    console.error("Admin docs seed API error:", error)
+    logger.error("Admin docs seed API error:", error)
     return json({ error: "failed_to_seed" }, { status: 500 })
   }
 }

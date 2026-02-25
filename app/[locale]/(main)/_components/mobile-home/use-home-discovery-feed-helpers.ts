@@ -82,7 +82,7 @@ function buildRequestParams({
   limit: number
 }): URLSearchParams {
   const params = new URLSearchParams()
-  const effectiveScope = activeCategorySlug ? "newest" : scope
+  const effectiveScope = scope
 
   params.set("page", String(page))
   params.set("limit", String(limit))
@@ -157,4 +157,3 @@ export async function fetchDiscoveryPage(options: {
   const hasMore = typeof data.hasMore === "boolean" ? data.hasMore : products.length === options.limit
   return { products, hasMore }
 }
-

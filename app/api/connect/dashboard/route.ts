@@ -3,6 +3,7 @@ import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { createLoginLink, getConnectAccount, isAccountReady } from "@/lib/stripe-connect"
 import { noStoreJson } from "@/lib/api/response-helpers"
 
+import { logger } from "@/lib/logger"
 /**
  * POST /api/connect/dashboard
  * 
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     return noStoreJson({ url: loginLink.url })
   } catch (error) {
-    console.error("Connect dashboard error:", error)
+    logger.error("Connect dashboard error:", error)
     return noStoreJson(
       { error: error instanceof Error ? error.message : "Failed to create dashboard link" },
       { status: 500 }

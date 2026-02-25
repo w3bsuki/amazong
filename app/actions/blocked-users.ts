@@ -5,6 +5,7 @@ import { revalidateTag } from "next/cache"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 
+import { logger } from "@/lib/logger"
 export interface BlockedUser {
   blocked_id: string
   blocked_at: string
@@ -62,7 +63,7 @@ export async function blockUser(userId: string, reason?: string): Promise<BlockU
   })
 
   if (error) {
-    console.error("Error blocking user:", error)
+    logger.error("Error blocking user:", error)
     return errorEnvelope({ error: error.message })
   }
 
@@ -94,7 +95,7 @@ export async function unblockUser(userId: string): Promise<BlockUserResult> {
   })
 
   if (error) {
-    console.error("Error unblocking user:", error)
+    logger.error("Error unblocking user:", error)
     return errorEnvelope({ error: error.message })
   }
 
@@ -121,13 +122,13 @@ export async function getBlockedUsers(): Promise<BlockedUsersResult> {
   const { data, error } = await supabase.rpc("get_blocked_users")
 
   if (error) {
-    console.error("Error getting blocked users:", error)
+    logger.error("Error getting blocked users:", error)
     return errorEnvelope({ data: null, error: error.message })
   }
 
   const parsedBlockedUsers = BlockedUsersSchema.safeParse(data ?? [])
   if (!parsedBlockedUsers.success) {
-    console.error("Invalid blocked users payload:", parsedBlockedUsers.error)
+    logger.error("Invalid blocked users payload:", parsedBlockedUsers.error)
     return errorEnvelope({ data: null, error: "Invalid blocked users response" })
   }
 
@@ -152,7 +153,7 @@ export async function isUserBlocked(userId: string): Promise<IsUserBlockedResult
   })
 
   if (error) {
-    console.error("Error checking block status:", error)
+    logger.error("Error checking block status:", error)
     return errorEnvelope({ blocked: false, error: "Failed to check block status" })
   }
 

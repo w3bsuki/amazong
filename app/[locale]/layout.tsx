@@ -6,11 +6,12 @@ import type { Metadata } from 'next';
 import { Suspense, type ReactNode } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import LocaleProviders from './locale-providers';
+import { localeStaticParams } from "@/lib/next/static-params"
 
 // Generate static params for all supported locales
 // Required in Next.js 16+ for dynamic route segments
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+  return localeStaticParams()
 }
 
 // Optimized font loading with display: swap for better LCP

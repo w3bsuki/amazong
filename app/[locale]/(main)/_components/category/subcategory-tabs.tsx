@@ -53,6 +53,16 @@ export function SubcategoryTabs({
 
   if (!currentCategory) return null
 
+  const commonCircleProps = {
+    currentCategory,
+    searchParamsString: searchParams.toString(),
+    variant,
+    showCounts,
+    ...(basePath ? { basePath } : {}),
+    ...(allHref ? { allHref } : {}),
+    ...(onSelectCategory ? { onSelectCategory } : {}),
+  }
+
   // At deepest level - show sibling navigation circles (current category highlighted among siblings)
   if (subcategories.length === 0) {
     // If we have siblings, show them as navigation circles
@@ -65,14 +75,8 @@ export function SubcategoryTabs({
           {/* Sibling circles for navigation - current is highlighted */}
           <SubcategoryCircles
             subcategories={siblingCategories}
-            currentCategory={currentCategory}
-            searchParamsString={searchParams.toString()}
-            variant={variant}
             activeSubcategorySlug={currentCategory.slug}
-            showCounts={showCounts}
-            {...(basePath ? { basePath } : {})}
-            {...(allHref ? { allHref } : {})}
-            {...(onSelectCategory ? { onSelectCategory } : {})}
+            {...commonCircleProps}
           />
         </div>
       )
@@ -87,14 +91,8 @@ export function SubcategoryTabs({
     <div className="mb-4 pb-3 border-b border-border">
       <SubcategoryCircles
         subcategories={subcategories}
-        currentCategory={currentCategory}
-        searchParamsString={searchParams.toString()}
-        variant={variant}
         activeSubcategorySlug={activeSubcategorySlug}
-        showCounts={showCounts}
-        {...(basePath ? { basePath } : {})}
-        {...(allHref ? { allHref } : {})}
-        {...(onSelectCategory ? { onSelectCategory } : {})}
+        {...commonCircleProps}
       />
     </div>
   )

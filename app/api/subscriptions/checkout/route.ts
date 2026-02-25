@@ -8,6 +8,7 @@ import { stripe } from "@/lib/stripe"
 import { buildLocaleUrl, inferLocaleFromRequest } from "@/lib/stripe-locale"
 import { ID_AND_STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
 
+import { logger } from "@/lib/logger"
 const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
   "id,tier,name,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,commission_rate,final_value_fee"
 
@@ -114,7 +115,7 @@ async function getCheckoutProfile(
     .single<CheckoutProfile>()
 
   if (profileError) {
-    console.error("Failed to fetch billing profile:", profileError)
+    logger.error("Failed to fetch billing profile:", profileError)
     throw new CheckoutRouteError(500, "Internal server error")
   }
 
@@ -137,7 +138,7 @@ async function getCheckoutPlan(
     .single<CheckoutPlan>()
 
   if (planError) {
-    console.error("Failed to fetch subscription plan:", planError)
+    logger.error("Failed to fetch subscription plan:", planError)
     throw new CheckoutRouteError(500, "Internal server error")
   }
 
@@ -177,7 +178,7 @@ async function ensureCustomerId(params: {
     .eq("id", profile.id)
 
   if (updateProfileError) {
-    console.error("Failed to store Stripe customer on profile:", updateProfileError)
+    logger.error("Failed to store Stripe customer on profile:", updateProfileError)
     throw new CheckoutRouteError(500, "Internal server error")
   }
 
@@ -249,7 +250,7 @@ function handleCheckoutError(error: unknown, json: RouteJson) {
 
   const errorMessage = error instanceof Error ? error.message : "Unknown error"
   const errorType = error instanceof Error ? error.constructor.name : typeof error
-  console.error(`[checkout] ${errorType}: ${errorMessage}`)
+  logger.error(`[checkout] ${errorType}: ${errorMessage}`)
 
   const isStripeError =
     (error instanceof Error && error.message.includes("Stripe")) || isStripeLikeError(error)

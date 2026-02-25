@@ -1,31 +1,19 @@
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { BoostDialog } from "../../../_components/seller/boost-dialog"
-import { Eye, Package, Pause, Pencil, Play, Star, Tag, Trash, Zap as Lightning } from "lucide-react"
-import type { BoostTimeLeft, SellingProduct, TranslateFn } from "./selling-products-list.types"
-import { getListingStatus, getStatusBadgeProps } from "./selling-products-listing-status"
+import { Eye, Package, Pause, Pencil, Play, Star, Tag, Zap as Lightning } from "lucide-react"
 
-interface SellingProductsDesktopListProps {
-  products: SellingProduct[]
-  sellerUsername: string
-  locale: string
-  formatCurrency: (value: number) => string
-  t: TranslateFn
-  tBoost: TranslateFn
-  isBoostActive: (product: SellingProduct) => boolean
-  isBoostExpired: (product: SellingProduct) => boolean
-  getBoostTimeLeft: (product: SellingProduct) => BoostTimeLeft | null
-  isSaleActive: (product: SellingProduct) => boolean
-  getSalePercentForDisplay: (product: SellingProduct) => number
+import type { SellingProduct, SellingProductsListCommonProps } from "./selling-products-list.types"
+import { SellingProductDeleteDialog } from "./selling-product-delete-dialog"
+import { SellingProductsListScaffold } from "./selling-products-list-scaffold"
+
+interface SellingProductsDesktopListProps extends SellingProductsListCommonProps {
   formatBoostExpiry: (dateStr: string) => string
   openDiscountDialog: (product: SellingProduct) => void
   onToggleStatus: (productId: string, currentStatus?: string) => void
-  onDelete: (productId: string) => void
   togglingId: string | null
-  deletingId: string | null
 }
 
 export function SellingProductsDesktopList({
@@ -48,22 +36,20 @@ export function SellingProductsDesktopList({
   deletingId,
 }: SellingProductsDesktopListProps) {
   return (
-    <div className="hidden md:block divide-y divide-border">
-      {products.map((product) => {
-        const boosted = isBoostActive(product)
-        const boostExpired = isBoostExpired(product)
-        const timeLeft = getBoostTimeLeft(product)
-        const saleActive = isSaleActive(product)
-        const salePercent = getSalePercentForDisplay(product)
-        const status = getListingStatus(product)
-        const statusBadge = getStatusBadgeProps(status, t)
-
-        return (
-          <div
-            key={product.id}
-            className={`flex items-center gap-4 p-4 hover:bg-hover transition-colors ${boosted ? "bg-selected" : ""}`}
-          >
-            <div className="relative size-16 rounded-md overflow-hidden bg-card border border-border shrink-0">
+    <SellingProductsListScaffold
+      wrapperClassName="hidden md:block divide-y divide-border"
+      products={products}
+      t={t}
+      isBoostActive={isBoostActive}
+      isBoostExpired={isBoostExpired}
+      getBoostTimeLeft={getBoostTimeLeft}
+      isSaleActive={isSaleActive}
+      getSalePercentForDisplay={getSalePercentForDisplay}
+      renderItem={({ product, boosted, boostExpired, timeLeft, saleActive, salePercent, statusBadge }) => (
+        <div
+          className={`flex items-center gap-4 p-4 hover:bg-hover transition-colors ${boosted ? "bg-selected" : ""}`}
+        >
+          <div className="relative size-16 rounded-md overflow-hidden bg-card border border-border shrink-0">
               {product.images?.[0] && product.images[0].startsWith("http") ? (
                 <Image
                   src={product.images[0]}
@@ -214,40 +200,18 @@ export function SellingProductsDesktopList({
                 </Link>
               </Button>
 
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    className="text-destructive hover:bg-destructive-subtle"
-                    disabled={deletingId === product.id}
-                  >
-                    <Trash className="size-4" />
-                    <span className="sr-only">{t("deleteSrOnly")}</span>
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{t("deleteDialogTitle")}</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t("deleteDialogDesc", { title: product.title })}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t("cancelButton")}</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => onDelete(product.id)}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive"
-                    >
-                      {t("deleteButton")}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <SellingProductDeleteDialog
+                productId={product.id}
+                productTitle={product.title}
+                t={t}
+                onDelete={onDelete}
+                disabled={deletingId === product.id}
+                buttonSize="icon-sm"
+                showSrOnlyLabel
+              />
             </div>
           </div>
-        )
-      })}
-    </div>
+      )}
+    />
   )
 }

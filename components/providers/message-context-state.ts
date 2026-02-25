@@ -9,6 +9,7 @@ import {
 import type { Conversation, Message } from "@/lib/types/messages"
 import type { SupabaseBrowserClient, UseMessagesStateReturn } from "./message-context.types"
 
+import { logger } from "@/lib/logger"
 export function useMessagesState({
   supabase,
   enabled = true,
@@ -70,7 +71,7 @@ export function useMessagesState({
       const count = await fetchTotalUnreadCount(supabase)
       setTotalUnreadCount(count)
     } catch (err) {
-      console.error("Error fetching unread count:", err)
+      logger.error("Error fetching unread count:", err)
     }
   }, [enabled, supabase, currentUserId])
 
@@ -85,7 +86,7 @@ export function useMessagesState({
       setConversations(result.conversations)
       setTotalUnreadCount(result.unreadCount)
     } catch (err) {
-      console.error("Error loading conversations:", err)
+      logger.error("Error loading conversations:", err)
       setError("Failed to load conversations")
     } finally {
       setIsLoading(false)
@@ -109,7 +110,7 @@ export function useMessagesState({
         const msgs = await fetchMessages(supabase, conversationId)
         setMessages(msgs)
       } catch (err) {
-        console.error("Error loading messages:", err)
+        logger.error("Error loading messages:", err)
         setError("Failed to load messages")
       } finally {
         setIsLoadingMessages(false)

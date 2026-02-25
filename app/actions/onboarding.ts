@@ -4,8 +4,8 @@ import { z } from "zod"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 export interface OnboardingData {
   userId: string
   accountType: "personal" | "business" | null

@@ -1,7 +1,5 @@
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "@/i18n/routing"
-import { setRequestLocale } from "next-intl/server"
 import { SecurityContent } from "./security-content"
+import { withAccountPageShell } from "../_lib/account-page-shell"
 
 export const metadata = {
   title: "Security | Treido",
@@ -9,31 +7,14 @@ export const metadata = {
 }
 
 export default async function SecurityPage({
-    params,
+  params,
 }: {
-    params: Promise<{ locale: string }>
+  params: Promise<{ locale: string }>
 }) {
-    const { locale } = await params
-    setRequestLocale(locale)
-    const supabase = await createClient()
-    
-    if (!supabase) {
-        return redirect({ href: "/auth/login", locale })
+  return withAccountPageShell(params, async ({ locale, user }) => {
+    return {
+      title: locale === "bg" ? "Сигурност" : "Security",
+      content: <SecurityContent locale={locale} userEmail={user.email || ""} />,
     }
-    
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-        return redirect({ href: "/auth/login", locale })
-    }
-
-    return (
-        <div className="flex flex-col gap-4 md:gap-4">
-            <h1 className="sr-only">{locale === "bg" ? "Сигурност" : "Security"}</h1>
-            <SecurityContent 
-                locale={locale}
-                userEmail={user.email || ''}
-            />
-        </div>
-    )
+  })
 }

@@ -1,8 +1,8 @@
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { logger } from '@/lib/logger'
 
+import { logger } from "@/lib/logger"
 // =============================================================================
 // Cache Revalidation Webhook API (Next.js 16+)
 // =============================================================================

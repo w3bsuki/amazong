@@ -1,4 +1,5 @@
-'use client';
+"use client"
+
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -70,16 +71,11 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
     };
 
     // Prefer requestIdleCallback when available.
-    const w = window as unknown as {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-      cancelIdleCallback?: (id: number) => void;
-    };
-
-    if (typeof w.requestIdleCallback === 'function') {
-      const id = w.requestIdleCallback(markReady, { timeout: 1000 });
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(markReady, { timeout: 1000 });
       return () => {
         cancelled = true;
-        w.cancelIdleCallback?.(id);
+        window.cancelIdleCallback?.(id);
       };
     }
 

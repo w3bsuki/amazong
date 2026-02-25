@@ -2,8 +2,8 @@ import "server-only"
 
 import { cacheLife, cacheTag } from "next/cache"
 import { createStaticClient } from "@/lib/supabase/server"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 export type MembersFilter = "all" | "sellers" | "buyers" | "business"
 
 export type MembersSort = "rating" | "sales" | "purchases" | "newest" | "active"

@@ -9,8 +9,35 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { toast } from "sonner"
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { PageShell } from "../../../_components/page-shell"
+
+function WishlistScaffold({
+  heading,
+  homeLabel,
+  children,
+}: {
+  heading: string
+  homeLabel: string
+  children: ReactNode
+}) {
+  return (
+    <PageShell variant="muted" className="py-4 md:py-6">
+      <div className="container px-3 md:px-4">
+        {/* Breadcrumb */}
+        <nav className="flex gap-2 items-center mb-4 text-sm text-muted-foreground">
+          <Link href="/" className="hover:text-foreground transition-colors">
+            {homeLabel}
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">{heading}</span>
+        </nav>
+
+        {children}
+      </div>
+    </PageShell>
+  )
+}
 
 export default function WishlistPageClient() {
   const { items, isLoading, removeFromWishlist } = useWishlist()
@@ -34,7 +61,7 @@ export default function WishlistPageClient() {
     return `/${item.username}/${item.slug || item.product_id}`
   }
 
-  const handleMoveToCart = (item: (typeof items)[0]) => {
+  const addWishlistItemToCart = (item: (typeof items)[0]) => {
     addToCart({
       id: item.product_id,
       title: item.title,
@@ -44,22 +71,16 @@ export default function WishlistPageClient() {
       ...(item.slug ? { slug: item.slug } : {}),
       ...(item.username ? { username: item.username } : {}),
     })
+  }
+
+  const handleMoveToCart = (item: (typeof items)[0]) => {
+    addWishlistItemToCart(item)
     removeFromWishlist(item.product_id)
     toast.success(t("movedToCart"))
   }
 
   const handleAddAllToCart = () => {
-    items.forEach((item) => {
-      addToCart({
-        id: item.product_id,
-        title: item.title,
-        price: item.price,
-        image: item.image,
-        quantity: 1,
-        ...(item.slug ? { slug: item.slug } : {}),
-        ...(item.username ? { username: item.username } : {}),
-      })
-    })
+    items.forEach(addWishlistItemToCart)
     toast.success(t("allAddedToCart"))
   }
 
@@ -128,53 +149,32 @@ export default function WishlistPageClient() {
 
   if (items.length === 0) {
     return (
-      <PageShell variant="muted" className="py-4 md:py-6">
-        <div className="container px-3 md:px-4">
-          {/* Breadcrumb */}
-          <nav className="flex gap-2 items-center mb-4 text-sm text-muted-foreground">
-            <Link href="/" className="hover:text-foreground transition-colors">
-              {tNav("home")}
-            </Link>
-            <span>/</span>
-            <span className="text-foreground">{heading}</span>
-          </nav>
+      <WishlistScaffold heading={heading} homeLabel={tNav("home")}>
+        <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
+          <Heart className="h-5 w-5 md:h-6 md:w-6" />
+          {heading}
+        </h1>
 
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
-            <Heart className="h-5 w-5 md:h-6 md:w-6" />
-            {heading}
-          </h1>
-
-          <div className="bg-card rounded-md border border-border p-4 md:p-4 text-center">
-            <div className="size-20 md:size-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-              <Heart className="size-10 md:size-12 text-muted-foreground" />
-            </div>
-            <h2 className="text-lg md:text-xl font-semibold tracking-tight text-foreground mb-2">{t("empty")}</h2>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">{t("emptyDescription")}</p>
-            <Button asChild variant="cta" className="gap-2">
-              <Link href="/search">
-                {t("startShopping")}
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
+        <div className="bg-card rounded-md border border-border p-4 md:p-4 text-center">
+          <div className="size-20 md:size-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+            <Heart className="size-10 md:size-12 text-muted-foreground" />
           </div>
+          <h2 className="text-lg md:text-xl font-semibold tracking-tight text-foreground mb-2">{t("empty")}</h2>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">{t("emptyDescription")}</p>
+          <Button asChild variant="cta" className="gap-2">
+            <Link href="/search">
+              {t("startShopping")}
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
         </div>
-      </PageShell>
+      </WishlistScaffold>
     )
   }
 
   return (
-    <PageShell variant="muted" className="py-4 md:py-6">
-      <div className="container px-3 md:px-4">
-        {/* Breadcrumb */}
-        <nav className="flex gap-2 items-center mb-4 text-sm text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            {tNav("home")}
-          </Link>
-          <span>/</span>
-          <span className="text-foreground">{heading}</span>
-        </nav>
-
-        {/* Header with title and actions */}
+    <WishlistScaffold heading={heading} homeLabel={tNav("home")}>
+      {/* Header with title and actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Heart className="h-5 w-5 md:h-6 md:w-6 text-wishlist" />
@@ -267,8 +267,7 @@ export default function WishlistPageClient() {
             </div>
           ))}
         </div>
-      </div>
-    </PageShell>
+    </WishlistScaffold>
   )
 }
 

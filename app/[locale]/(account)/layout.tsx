@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect, routing } from "@/i18n/routing";
+import { redirect } from "@/i18n/routing";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AccountLayoutContent } from "./_components/account-layout-content";
 import { headers } from "next/headers";
@@ -8,10 +8,11 @@ import { connection } from "next/server";
 import { CommerceProviders } from "../_providers/commerce-providers";
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider";
 import type { Metadata } from "next";
+import { localeStaticParams } from "@/lib/next/static-params";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
-    return routing.locales.map((locale) => ({ locale }));
+    return localeStaticParams();
 }
 
 export async function generateMetadata({

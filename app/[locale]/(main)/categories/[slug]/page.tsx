@@ -1,36 +1,24 @@
-import { Suspense, use } from "react"
+import { Suspense } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 
-import { notFound, redirect, routing, validateLocale } from "@/i18n/routing"
+import { validateLocale } from "@/i18n/routing"
+import { getCategoryBySlug } from "@/lib/data/categories"
 import {
-  getCategoryBySlug,
-  getCategoryContext,
-  getSubcategoriesForBrowse,
-} from "@/lib/data/categories"
-
-const PLACEHOLDER_SLUG = "__placeholder__"
+  CategoryRootPageContent,
+  type CategoryPageSearchParams,
+  isPlaceholderSegment,
+  PLACEHOLDER_SEGMENT,
+} from "./_components/category-page-content"
+import { localeStaticParams } from "@/lib/next/static-params"
+import { placeholderCategoryMetadata } from "./_lib/category-metadata"
 
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({
-    locale,
-    slug: PLACEHOLDER_SLUG,
+  return localeStaticParams().map((params) => ({
+    ...params,
+    slug: PLACEHOLDER_SEGMENT,
   }))
-}
-
-interface CategoryPageSearchParams {
-  minPrice?: string
-  maxPrice?: string
-  minRating?: string
-  subcategory?: string
-  tag?: string
-  deals?: string
-  brand?: string
-  availability?: string
-  sort?: string
-  page?: string
-  [key: string]: string | string[] | undefined
 }
 
 export async function generateMetadata({
@@ -48,18 +36,8 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: "CategoryPage" })
 
-  if (slug.startsWith("[") || slug === PLACEHOLDER_SLUG) {
-    const tCategories = await getTranslations({ locale, namespace: "Categories" })
-    const categoryName = tCategories("title")
-
-    return {
-      title: categoryName,
-      description: t("metaDescription", { categoryName }),
-      openGraph: {
-        title: categoryName,
-        description: t("metaDescription", { categoryName }),
-      },
-    }
+  if (isPlaceholderSegment(slug)) {
+    return placeholderCategoryMetadata(locale, t)
   }
 
   const category = await getCategoryBySlug(slug)
@@ -94,68 +72,10 @@ export default function CategoryPage({
 }) {
   return (
     <Suspense fallback={null}>
-      <CategoryPageContent paramsPromise={paramsPromise} searchParamsPromise={searchParamsPromise} />
+      <CategoryRootPageContent
+        paramsPromise={paramsPromise}
+        searchParamsPromise={searchParamsPromise}
+      />
     </Suspense>
-  )
-}
-
-function CategoryPageContent({
-  paramsPromise,
-  searchParamsPromise,
-}: {
-  paramsPromise: Promise<{ slug: string; locale: string }>
-  searchParamsPromise: Promise<CategoryPageSearchParams>
-}) {
-  const { slug, locale } = use(paramsPromise)
-  setRequestLocale(locale)
-
-  if (slug.startsWith("[") || slug === PLACEHOLDER_SLUG) {
-    return null
-  }
-
-  const categoryContext = use(getCategoryContext(slug))
-  if (!categoryContext) {
-    notFound()
-  }
-
-  const {
-    current: currentCategory,
-    parent: parentCategory,
-    siblings: siblingCategories,
-  } = categoryContext
-
-  if (currentCategory.parent_id) {
-    // Canonical leaf route is /categories/[root]/[leaf] in the strict 2-level tree.
-    if (parentCategory && !parentCategory.parent_id) {
-      redirect({
-        href: `/categories/${parentCategory.slug}/${currentCategory.slug}`,
-        locale,
-      })
-    }
-    notFound()
-  }
-
-  const subcategoriesWithCounts = use(getSubcategoriesForBrowse(currentCategory.id, false))
-
-  const categoryName = locale === "bg" && currentCategory.name_bg
-    ? currentCategory.name_bg
-    : currentCategory.name
-
-  const filterableAttributes = categoryContext.attributes.filter((attribute) => attribute.is_filterable)
-  const { CategoryPageDynamicContent } = use(import("./_components/category-page-dynamic-content"))
-
-  return (
-    <CategoryPageDynamicContent
-      locale={locale}
-      slug={slug}
-      categoryId={currentCategory.id}
-      searchParamsPromise={searchParamsPromise}
-      currentCategory={currentCategory}
-      parentCategory={parentCategory}
-      siblingCategories={siblingCategories}
-      subcategoriesWithCounts={subcategoriesWithCounts}
-      filterableAttributes={filterableAttributes}
-      categoryName={categoryName}
-    />
   )
 }

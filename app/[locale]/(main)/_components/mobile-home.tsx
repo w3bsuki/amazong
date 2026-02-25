@@ -16,11 +16,12 @@ import {
   type SmartRailAction,
   type SmartRailPill,
 } from "@/components/mobile/chrome/smart-rail"
-import { MobileSearchOverlay } from "../../_components/search/mobile-search-overlay"
+import { DiscoveryRail } from "@/components/mobile/chrome/discovery-rail"
+import { MobileSearchOverlay } from "@/components/layout/header/search/mobile-search-overlay"
 import { HomeCityPickerSheet } from "./mobile/home-city-picker-sheet"
 import { PageShell } from "../../_components/page-shell"
 import { FilterHub } from "./filters/filter-hub"
-import { useHomeDiscoveryFeed } from "./mobile-home/use-home-discovery-feed"
+import { useHomeDiscoveryFeed, type HomeDiscoveryScope } from "./mobile-home/use-home-discovery-feed"
 import { MobileHomeFeed } from "./mobile-home/mobile-home-feed"
 import { useMobileHomeCategoryNav } from "./mobile-home/use-mobile-home-category-nav"
 import { useHomeCityStorage } from "./mobile-home/use-home-city-storage"
@@ -147,6 +148,13 @@ export function MobileHome({
     setActiveSubcategorySlug((previous) => (previous === slug ? null : slug))
   }, [setActiveSubcategorySlug])
 
+  const handleScopeChange = useCallback((nextScope: HomeDiscoveryScope) => {
+    setScope(nextScope)
+    if (nextScope === "nearby" && !city) {
+      setCityPickerOpen(true)
+    }
+  }, [city, setScope])
+
   const handleApplyFilters = useCallback((next: { queryString: string }) => {
     const params = new URLSearchParams(next.queryString)
     setFilters(params)
@@ -261,6 +269,13 @@ export function MobileHome({
           sticky={true}
           stickyTop="var(--offset-mobile-primary-rail)"
           testId="home-v4-smart-rail"
+        />
+
+        <DiscoveryRail
+          activeScope={scope}
+          onScopeChange={handleScopeChange}
+          t={tV4}
+          testId="home-v4-discovery-rail"
         />
 
         {/* Section header — visible when a category is active */}

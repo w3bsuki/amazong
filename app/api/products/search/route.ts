@@ -4,6 +4,7 @@ import { cachedJsonResponse, dbUnavailableResponse, errorResponse } from "@/lib/
 import { z } from "zod"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
+import { logger } from "@/lib/logger"
 const SearchQuerySchema = z.object({
   q: z.string().trim().min(2).max(80),
   limit: z.coerce.number().int().min(1).max(20).optional(),
@@ -50,7 +51,7 @@ export async function GET(request: Request) {
       .order("created_at", { ascending: false })
 
     if (error) {
-      console.error("Search error:", error)
+      logger.error("Search error:", error)
       return errorResponse("Failed to search products", 500, { products: [], hasMore: false })
     }
 
@@ -71,7 +72,7 @@ export async function GET(request: Request) {
     return cachedJsonResponse({ products: transformedProducts })
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
-    console.error("Search API Error:", error)
+    logger.error("Search API Error:", error)
     return errorResponse("Internal server error", 500, { products: [], hasMore: false })
   }
 }

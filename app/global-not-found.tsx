@@ -1,62 +1,48 @@
 /**
  * Global Not Found Page
- * 
- * This page is shown for any unmatched routes across the entire application.
- * It handles 404 errors at the root level.
- * 
- * Note: This is a Server Component so we use basic HTML elements
- * to avoid issues with client-only components (Button uses React Context).
+ *
+ * Shown for unmatched routes outside the locale segment.
+ *
+ * Keep this file dependency-minimal: Turbopack prerendering is sensitive to
+ * route-segment imports and locale-bound helpers here.
  */
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { Link, routing } from "@/i18n/routing"
-import { PageShell } from "./[locale]/_components/page-shell"
+import { Suspense } from "react"
 
-export default async function GlobalNotFound() {
-  const locale = routing.defaultLocale
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "GlobalNotFound" })
+import { Link } from "@/i18n/routing"
 
+export default function GlobalNotFound() {
   return (
-    <html lang={locale}>
+    <html lang="en">
       <body className="bg-background text-foreground">
-        <PageShell className="flex flex-col items-center justify-center p-4">
+        <main className="min-h-dvh flex items-center justify-center p-4">
           <div className="mx-auto max-w-md text-center">
-            {/* 404 Illustration */}
             <div className="mb-8">
-              <div className="relative mx-auto h-40 w-40">
-                <div className="flex items-center justify-center h-full">
-                  <span className="text-8xl font-bold text-muted-foreground">
-                    404
-                  </span>
-                </div>
+              <span className="text-8xl font-bold text-muted-foreground">404</span>
+            </div>
+
+            <h1 className="mb-2 text-2xl font-bold tracking-tight">Page not found</h1>
+            <p className="mb-6 text-muted-foreground">The page you are looking for does not exist.</p>
+
+            <Suspense fallback={null}>
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <Link
+                  href="/"
+                  locale="en"
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-interactive-hover"
+                >
+                  Go to homepage
+                </Link>
+                <Link
+                  href="/contact"
+                  locale="en"
+                  className="inline-flex items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                >
+                  Contact us
+                </Link>
               </div>
-            </div>
-
-            <h1 className="mb-2 text-2xl font-bold tracking-tight text-foreground">
-              {t("title")}
-            </h1>
-            <p className="mb-6 text-muted-foreground">
-              {t("description")}
-            </p>
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Link
-                href="/"
-                className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-interactive-hover"
-              >
-                {t("goToHomepage")}
-              </Link>
-            </div>
-
-            <p className="mt-8 text-xs text-muted-foreground">
-              {t("supportPrefix")}{" "}
-              <Link href="/contact" className="text-primary hover:underline">
-                {t("supportLink")}
-              </Link>
-              {t("supportSuffix")}
-            </p>
+            </Suspense>
           </div>
-        </PageShell>
+        </main>
       </body>
     </html>
   )

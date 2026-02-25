@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { toggleOptionSelection } from "@/components/shared/filters/controls/toggle-option-selection"
 
 // =============================================================================
 // SIZE TILES — Tile grid for size selection (no dropdowns)
@@ -22,14 +23,7 @@ export function SizeTiles({
   multiSelect = true,
 }: SizeTilesProps) {
   const handleSelect = (option: string) => {
-    if (!multiSelect) {
-      onSelect(selected.includes(option) ? [] : [option])
-      return
-    }
-    const newValues = selected.includes(option)
-      ? selected.filter((v) => v !== option)
-      : [...selected, option]
-    onSelect(newValues)
+    onSelect(toggleOptionSelection({ selected, option, multiSelect }))
   }
 
   return (

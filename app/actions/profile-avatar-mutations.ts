@@ -2,13 +2,13 @@
 
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
-import { logger } from "@/lib/logger"
 import {
   avatarUrlSchema,
   buildGeneratedAvatar,
   isGeneratedAvatar,
 } from "./profile-reads"
 
+import { logger } from "@/lib/logger"
 export type ProfileAvatarMutationErrorCode =
   | "NOT_AUTHENTICATED"
   | "NO_FILE"
@@ -21,6 +21,31 @@ export type ProfileAvatarMutationErrorCode =
   | "AVATAR_RESET_FAILED"
   | "UNKNOWN_ERROR"
 
+type RequireAuthResult = Awaited<ReturnType<typeof requireAuth>>
+type AuthedContext = NonNullable<RequireAuthResult>
+
+type ProfileAvatarMutationResult = {
+  success: boolean
+  avatarUrl?: string
+  errorCode?: ProfileAvatarMutationErrorCode
+}
+
+async function getProfileAvatarMutationContext(): Promise<
+  | { ok: true; user: AuthedContext["user"]; supabase: AuthedContext["supabase"] }
+  | { ok: false; result: ProfileAvatarMutationResult }
+> {
+  const auth = await requireAuth()
+  if (!auth) {
+    return { ok: false, result: { success: false, errorCode: "NOT_AUTHENTICATED" } }
+  }
+
+  return { ok: true, user: auth.user, supabase: auth.supabase }
+}
+
+async function revalidateAvatarTags(supabase: AuthedContext["supabase"], userId: string) {
+  await revalidatePublicProfileTagsForUser(supabase, userId, "max")
+}
+
 // =====================================================
 // UPLOAD AVATAR
 // =====================================================
@@ -30,12 +55,10 @@ export async function uploadAvatar(formData: FormData): Promise<{
   errorCode?: ProfileAvatarMutationErrorCode
 }> {
   try {
-    const auth = await requireAuth()
-    if (!auth) {
-      return { success: false, errorCode: "NOT_AUTHENTICATED" }
-    }
+    const ctx = await getProfileAvatarMutationContext()
+    if (!ctx.ok) return ctx.result
 
-    const { user, supabase } = auth
+    const { user, supabase } = ctx
 
     const file = formData.get("avatar") as File | null
     if (!file || file.size === 0) {
@@ -95,7 +118,7 @@ export async function uploadAvatar(formData: FormData): Promise<{
       return { success: false, errorCode: "AVATAR_PROFILE_UPDATE_FAILED" }
     }
 
-    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
+    await revalidateAvatarTags(supabase, user.id)
     return { success: true, avatarUrl: publicUrl }
   } catch (error) {
     logger.error("[profile-avatar] upload_avatar_unexpected", error)
@@ -112,12 +135,10 @@ export async function setAvatarUrl(formData: FormData): Promise<{
   errorCode?: ProfileAvatarMutationErrorCode
 }> {
   try {
-    const auth = await requireAuth()
-    if (!auth) {
-      return { success: false, errorCode: "NOT_AUTHENTICATED" }
-    }
+    const ctx = await getProfileAvatarMutationContext()
+    if (!ctx.ok) return ctx.result
 
-    const { user, supabase } = auth
+    const { user, supabase } = ctx
 
     const rawData = {
       avatar_url: formData.get("avatar_url") as string | null,
@@ -143,7 +164,7 @@ export async function setAvatarUrl(formData: FormData): Promise<{
       return { success: false, errorCode: "AVATAR_UPDATE_FAILED" }
     }
 
-    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
+    await revalidateAvatarTags(supabase, user.id)
     return { success: true, avatarUrl }
   } catch (error) {
     logger.error("[profile-avatar] set_avatar_url_unexpected", error)
@@ -160,12 +181,10 @@ export async function deleteAvatar(): Promise<{
   errorCode?: ProfileAvatarMutationErrorCode
 }> {
   try {
-    const auth = await requireAuth()
-    if (!auth) {
-      return { success: false, errorCode: "NOT_AUTHENTICATED" }
-    }
+    const ctx = await getProfileAvatarMutationContext()
+    if (!ctx.ok) return ctx.result
 
-    const { user, supabase } = auth
+    const { user, supabase } = ctx
 
     // Get current avatar URL + username (used for deterministic generated fallback)
     const { data: profile } = await supabase
@@ -207,7 +226,7 @@ export async function deleteAvatar(): Promise<{
       return { success: false, errorCode: "AVATAR_RESET_FAILED" }
     }
 
-    await revalidatePublicProfileTagsForUser(supabase, user.id, "max")
+    await revalidateAvatarTags(supabase, user.id)
     return { success: true, avatarUrl: generatedAvatar }
   } catch (error) {
     logger.error("[profile-avatar] delete_avatar_unexpected", error)

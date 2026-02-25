@@ -1,7 +1,6 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { logger } from "@/lib/logger"
 import {
   RESERVED_USERNAMES,
   normalizeUsername,
@@ -9,6 +8,7 @@ import {
   usernameSchema,
 } from "./username-shared"
 
+import { logger } from "@/lib/logger"
 export type UsernameAvailabilityErrorCode =
   | "INVALID_USERNAME"
   | "USERNAME_RESERVED"

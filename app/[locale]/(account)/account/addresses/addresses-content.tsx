@@ -8,7 +8,6 @@ import { Briefcase, Building2 as Buildings, House, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
-import { logger } from "@/lib/logger"
 import { AccountAddressesStats } from "../_components/account-addresses-stats"
 import { AccountAddressesGrid } from "../_components/account-addresses-grid"
 import { USER_ADDRESSES_SELECT } from "./_lib/selects"
@@ -17,6 +16,7 @@ import { AddressEditorDialog } from "./_components/address-editor-dialog"
 import { DeleteAddressDialog } from "./_components/delete-address-dialog"
 import type { Address, AddressFormData, AddressLabelOption } from "./_lib/addresses-content.types"
 
+import { logger } from "@/lib/logger"
 interface AddressesContentProps {
   initialAddresses: Address[]
 }
@@ -46,6 +46,29 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
   const [formData, setFormData] = useState<AddressFormData>(emptyFormData)
 
   const supabase = createClient()
+
+  const getAddressMutationPayload = (data: AddressFormData) => ({
+    label: data.label,
+    full_name: data.full_name,
+    phone: data.phone || null,
+    address_line1: data.address_line1,
+    address_line2: data.address_line2 || null,
+    city: data.city,
+    state: data.state || null,
+    postal_code: data.postal_code,
+    country: data.country,
+    is_default: data.is_default,
+  })
+
+  const refetchAddresses = async () => {
+    const { data } = await supabase
+      .from("user_addresses")
+      .select(USER_ADDRESSES_SELECT)
+      .order("is_default", { ascending: false })
+      .order("created_at", { ascending: false })
+
+    if (data) setAddresses(data)
+  }
 
   const handleInputChange = (field: keyof AddressFormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -100,18 +123,7 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
         // Update existing
         const { error } = await supabase
           .from("user_addresses")
-          .update({
-            label: formData.label,
-            full_name: formData.full_name,
-            phone: formData.phone || null,
-            address_line1: formData.address_line1,
-            address_line2: formData.address_line2 || null,
-            city: formData.city,
-            state: formData.state || null,
-            postal_code: formData.postal_code,
-            country: formData.country,
-            is_default: formData.is_default,
-          })
+          .update(getAddressMutationPayload(formData))
           .eq("id", editingAddress.id)
 
         if (error) throw error
@@ -126,16 +138,7 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
 
         const { error } = await supabase.from("user_addresses").insert({
           user_id: user.id,
-          label: formData.label,
-          full_name: formData.full_name,
-          phone: formData.phone || null,
-          address_line1: formData.address_line1,
-          address_line2: formData.address_line2 || null,
-          city: formData.city,
-          state: formData.state || null,
-          postal_code: formData.postal_code,
-          country: formData.country,
-          is_default: formData.is_default,
+          ...getAddressMutationPayload(formData),
         })
 
         if (error) throw error
@@ -147,13 +150,7 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
       router.refresh()
 
       // Refetch addresses
-      const { data } = await supabase
-        .from("user_addresses")
-        .select(USER_ADDRESSES_SELECT)
-        .order("is_default", { ascending: false })
-        .order("created_at", { ascending: false })
-
-      if (data) setAddresses(data)
+      await refetchAddresses()
     } catch (error) {
       logger.error("[account-addresses] save_address_failed", error)
       toast.error(t("toasts.saveError"))
@@ -180,13 +177,7 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
       router.refresh()
 
       // Refetch addresses
-      const { data } = await supabase
-        .from("user_addresses")
-        .select(USER_ADDRESSES_SELECT)
-        .order("is_default", { ascending: false })
-        .order("created_at", { ascending: false })
-
-      if (data) setAddresses(data)
+      await refetchAddresses()
     } catch (error) {
       logger.error("[account-addresses] delete_address_failed", error)
       toast.error(t("toasts.deleteError"))
@@ -209,13 +200,7 @@ export function AddressesContent({ initialAddresses }: AddressesContentProps) {
       router.refresh()
 
       // Refetch addresses
-      const { data } = await supabase
-        .from("user_addresses")
-        .select(USER_ADDRESSES_SELECT)
-        .order("is_default", { ascending: false })
-        .order("created_at", { ascending: false })
-
-      if (data) setAddresses(data)
+      await refetchAddresses()
     } catch (error) {
       logger.error("[account-addresses] set_default_failed", error)
       toast.error(t("toasts.updateError"))

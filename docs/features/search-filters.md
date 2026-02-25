@@ -9,7 +9,8 @@ Desktop has a sidebar filter panel; mobile uses a bottom sheet drawer for filter
 - `components/shared/search/` — Search input, suggestions, results
 - `components/shared/filters/` — Filter components (checkboxes, ranges, rating, etc.)
 - `hooks/use-product-search.ts` — Client hook for search state and URL sync
-- `hooks/use-filter-count.ts` — Active filter count for badge display
+- `app/[locale]/(main)/_components/filters/use-filter-count.ts` — Active filter count for badge display (UI-local)
+- `lib/filters/active-filter-count.ts` — Pure helper for active filter counting
 - `lib/filters/` — Filter utility functions
 
 ## How it works

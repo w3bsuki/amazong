@@ -3,8 +3,8 @@ import { createAdminClient, createRouteHandlerClient } from "@/lib/supabase/serv
 import { createConnectAccount, createAccountLink } from "@/lib/stripe-connect"
 import { buildLocaleUrlFromRequest, inferLocaleFromRequest } from "@/lib/stripe-locale"
 import { noStoreJson } from "@/lib/api/response-helpers"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 /**
  * POST /api/connect/onboarding
  * 

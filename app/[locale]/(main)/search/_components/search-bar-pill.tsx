@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Search as MagnifyingGlass } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { MobileSearchOverlay } from "../../../_components/search/mobile-search-overlay"
+import { MobileSearchOverlay } from "@/components/layout/header/search/mobile-search-overlay"
 
 interface SearchBarPillProps {
   query: string

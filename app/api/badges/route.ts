@@ -3,6 +3,7 @@ import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { noStoreJson } from "@/lib/api/response-helpers"
 
+import { logger } from "@/lib/logger"
 /**
  * GET /api/badges
  * Returns the current user's badges with definitions
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
       .order("awarded_at", { ascending: false })
     
     if (error) {
-      console.error("Failed to fetch badges:", error)
+      logger.error("Failed to fetch badges:", error)
       return json({ error: "Failed to fetch badges" }, { status: 500 })
     }
     
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
     if (isNextPrerenderInterrupted(error)) {
       return noStoreJson({ skipped: true }, { status: 200 })
     }
-    console.error("Error fetching badges:", error)
+    logger.error("Error fetching badges:", error)
     return noStoreJson({ error: "Internal server error" }, { status: 500 })
   }
 }

@@ -12,8 +12,8 @@ import {
 } from "./products-shared"
 import { resolveLeafCategoryForListing } from "@/lib/sell/resolve-leaf-category"
 import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 /**
  * Create a new product
  */

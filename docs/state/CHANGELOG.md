@@ -17,6 +17,20 @@
 
 ---
 
+### 2026-02-25 | REF-CLEANUP-001 | Phase 1 Cleanup Completed (except 014)
+- Decision/Outcome: Executed REF-CLEANUP Phase 1 tasks 001–013 (skipping 014 blocked on MIG-001): logging standardization, unsafe cast reduction, `generateStaticParams` helpers + dupe reduction, scripts + tests hygiene. Updated `MASTER-PLAN.md` progress log and statuses.
+- Why: Reduce mechanical debt (casts/console/dupes/dead code) while keeping launch gates stable.
+- Impact: Gates green (`typecheck`, `lint`, `styles:gate`, `test:unit`, `architecture:gate`); console statements in production code now 0; `as unknown as` reduced to 15 total (prod 3); `jscpd` clones 50 with 587 duplicated lines; `pnpm -s knip` clean.
+- Next Action: Keep MIG-001 as top blocker; proceed to REF-ALIGNMENT Phase 2 tasks when ready.
+- Links: `refactor/production-push/MASTER-PLAN.md`, `lib/next/static-params.ts`, `test/mocks/next-image.tsx`, `test/mocks/treido-link.tsx`
+
+### 2026-02-24 | REFACTOR-PROD-005 | Dedup Iteration: Clone Clusters Removed + Build Hardening
+- Decision/Outcome: Completed a dedup-only extraction pass driven by the `jscpd` report; removed remaining high-signal clone clusters (admin page scaffolding, orders grid item renderer, auth metadata wrapper friction) and hardened build correctness.
+- Why: Reduce duplication without touching auth/payment/webhook sensitive logic, and keep all quality gates green.
+- Impact: Architecture gate remains green with improved metrics (`client-boundary=269`, `over300=66`, `over500=3`, `missingLoading=0`, `missingMetadata=0`, `duplicates=628 (clones=53)`); `next build` verified (Turbopack + prerender debug).
+- Next Action: Optional: continue shaving remaining small clones (non-sensitive) and address the pre-existing sonarjs cognitive complexity warning when in scope.
+- Links: `app/[locale]/(admin)/admin/_lib/admin-page-shell.ts`, `app/[locale]/(account)/account/orders/_components/account-orders-grid.utils.ts`, `app/global-not-found.tsx`, `app/actions/order-action-context.ts`
+
 ### 2026-02-24 | REFACTOR-PROD-004 | Batch Refactor: Over300 Target Met, Duplicates Reduced
 - Decision/Outcome: Executed the requested three-batch production-readiness pass: targeted dedupe extractions, decomposition of the main 400-500L files into orchestrator parents + sibling modules, and cleanup verification.
 - Why: Move architecture metrics toward launch-hardening targets while keeping all quality gates green.

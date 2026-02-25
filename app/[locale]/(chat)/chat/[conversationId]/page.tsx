@@ -1,15 +1,16 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { createClient } from "@/lib/supabase/server"
-import { notFound, validateLocale, routing } from "@/i18n/routing"
+import { notFound, validateLocale } from "@/i18n/routing"
 import { ConversationPageClient } from "../../_components/conversation-page-client"
 import { blockUser } from "../../../../actions/blocked-users"
 import { reportConversation } from "../../_actions/report-conversation"
 import { AuthGateCard } from "../../../_components/auth/auth-gate-card"
+import { emptyStaticParams } from "@/lib/next/static-params"
 
 // Generate static params for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated users
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale, conversationId: "__placeholder__" }))
+  return emptyStaticParams()
 }
 
 /**

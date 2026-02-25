@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb, breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
+import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { 
@@ -11,10 +11,9 @@ import {
 import { RefreshCcw as ArrowCounterClockwise, ChevronRight as CaretRight, CircleCheck as CheckCircle, Clock, CreditCard, FileText, MapPin, Package, Printer, Ban as Prohibit, CircleHelp as Question, ShieldCheck, Truck, CircleAlert as WarningCircle } from "lucide-react";
 
 import { Link } from "@/i18n/routing"
+import { StaticHeroPageShell } from "../../_components/static-hero-page-shell"
 import type { Metadata } from 'next'
 import { validateLocale } from "@/i18n/routing"
-import { PageShell } from "../../../_components/page-shell"
-import { StaticPageHeaderSync } from "../../_components/static-page-header-sync"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -34,36 +33,28 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
   setRequestLocale(locale)
   const t = await getTranslations('Returns')
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
-  
+   
   return (
-    <PageShell className="pb-20 sm:pb-12 overflow-x-hidden">
-      <StaticPageHeaderSync title={t("metaTitle")} backHref="/" />
-      {/* Hero Section */}
-      <div className="bg-primary text-primary-foreground">
-        <div className="container px-4 sm:px-6 py-10 md:py-16">
-          <div className="hidden md:block [&_nav]:border-border-subtle [&_nav]:mb-4 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">
-            <AppBreadcrumb
-              items={breadcrumbPresets(tBreadcrumbs).returns}
-              ariaLabel={tBreadcrumbs("ariaLabel")}
-              homeLabel={tBreadcrumbs("homeLabel")}
-            />
+    <StaticHeroPageShell
+      title={t("metaTitle")}
+      breadcrumbItems={breadcrumbPresets(tBreadcrumbs).returns}
+      breadcrumbAriaLabel={tBreadcrumbs("ariaLabel")}
+      breadcrumbHomeLabel={tBreadcrumbs("homeLabel")}
+      hero={
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="max-w-2xl">
+            <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3">{t('heroTitle')}</h1>
+            <p className="text-foreground">{t('heroSubtitle')}</p>
           </div>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="max-w-2xl">
-              <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3">{t('heroTitle')}</h1>
-              <p className="text-foreground">{t('heroSubtitle')}</p>
-            </div>
-            <Button asChild variant="cta" size="lg" className="whitespace-nowrap">
-              <Link href="/account/orders">
-                <ArrowCounterClockwise className="size-5 mr-2" />
-                {t('startReturn')}
-              </Link>
-            </Button>
-          </div>
+          <Button asChild variant="cta" size="lg" className="whitespace-nowrap">
+            <Link href="/account/orders">
+              <ArrowCounterClockwise className="size-5 mr-2" />
+              {t('startReturn')}
+            </Link>
+          </Button>
         </div>
-      </div>
-
-      <div className="container px-4 sm:px-6 py-8">
+      }
+    >
         {/* Return Policy Highlights */}
         <section className="mb-12">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4">
@@ -305,8 +296,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
             </CardContent>
           </Card>
         </section>
-      </div>
-    </PageShell>
+    </StaticHeroPageShell>
   )
 }
 

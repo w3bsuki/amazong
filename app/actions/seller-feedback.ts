@@ -5,6 +5,7 @@ import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 // Types
 export interface SellerFeedback {
   id: string
@@ -39,6 +40,18 @@ export interface SellerFeedbackStats {
   shippingSpeedPercentage: number
   communicationPercentage: number
   ratingDistribution: Record<number, number>
+}
+
+function getEmptySellerFeedbackStats(): SellerFeedbackStats {
+  return {
+    totalFeedback: 0,
+    averageRating: 0,
+    positivePercentage: 100,
+    itemAsDescribedPercentage: 100,
+    shippingSpeedPercentage: 100,
+    communicationPercentage: 100,
+    ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
+  }
 }
 
 // Validation schemas
@@ -156,7 +169,7 @@ export async function submitSellerFeedback(
       .single()
 
     if (insertError) {
-      console.error("Error inserting seller feedback:", insertError)
+      logger.error("Error inserting seller feedback:", insertError)
       if (insertError.code === "23505") {
         return { success: false, error: "You have already left feedback for this order" }
       }
@@ -180,17 +193,17 @@ export async function submitSellerFeedback(
       })
 
       if (notifError) {
-        console.error("Error creating seller feedback notification:", notifError)
+        logger.error("Error creating seller feedback notification:", notifError)
       }
     } catch (err) {
-      console.error("Error creating seller feedback notification:", err)
+      logger.error("Error creating seller feedback notification:", err)
     }
 
     revalidateTag(`seller-${data.sellerId}`, "max")
 
     return { success: true, data: { id: feedback.id } }
   } catch (error) {
-    console.error("Error in submitSellerFeedback:", error)
+    logger.error("Error in submitSellerFeedback:", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }
@@ -203,15 +216,7 @@ async function getSellerFeedbackStats(
   sellerId: string
 ): Promise<SellerFeedbackStats> {
   if (!supabase) {
-    return {
-      totalFeedback: 0,
-      averageRating: 0,
-      positivePercentage: 100,
-      itemAsDescribedPercentage: 100,
-      shippingSpeedPercentage: 100,
-      communicationPercentage: 100,
-      ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
-    }
+    return getEmptySellerFeedbackStats()
   }
 
   const { data } = await supabase
@@ -220,15 +225,7 @@ async function getSellerFeedbackStats(
     .eq("seller_id", sellerId)
 
   if (!data || data.length === 0) {
-    return {
-      totalFeedback: 0,
-      averageRating: 0,
-      positivePercentage: 100,
-      itemAsDescribedPercentage: 100,
-      shippingSpeedPercentage: 100,
-      communicationPercentage: 100,
-      ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
-    }
+    return getEmptySellerFeedbackStats()
   }
 
   const totalFeedback = data.length

@@ -14,6 +14,7 @@ import { usePathname } from "@/i18n/routing"
 import { createClient, createFreshClient } from "@/lib/supabase/client"
 import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js"
 
+import { logger } from "@/lib/logger"
 interface AuthState {
   user: User | null
   session: Session | null
@@ -111,7 +112,7 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
         await syncSingletonSession(user)
       } catch {
         // Avoid logging raw error objects in client (can contain request details).
-        console.error("Failed to refresh session")
+        logger.error("Failed to refresh session")
         setState((prev) => ({ ...prev, isLoading: false, isAuthenticated: Boolean(prev.user) }))
       }
     },
@@ -250,7 +251,7 @@ export function useAuth(): AuthContextType {
   // In Storybook, use the mock context if available
   const storybookAuthContext =
     typeof window !== "undefined"
-      ? (window as unknown as { __STORYBOOK_AUTH_CONTEXT__?: unknown }).__STORYBOOK_AUTH_CONTEXT__
+      ? window.__STORYBOOK_AUTH_CONTEXT__
       : undefined
 
   if (storybookAuthContext) {
@@ -273,4 +274,3 @@ export function useAuth(): AuthContextType {
 export function useAuthOptional() {
   return useContext(AuthContext)
 }
-

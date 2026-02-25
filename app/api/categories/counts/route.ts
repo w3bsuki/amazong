@@ -3,8 +3,8 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { cacheLife, cacheTag } from "next/cache"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { cachedJsonResponse } from "@/lib/api/response-helpers"
-import { logger } from "@/lib/logger"
 
+import { logger } from "@/lib/logger"
 // This endpoint returns product counts for ALL categories (L0, L1, L2).
 // Used for sidebar category navigation to show listing counts
 

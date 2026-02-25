@@ -1,6 +1,6 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { ITEMS_PER_PAGE } from "../../../_lib/pagination"
-import { applySharedProductFilters, applySharedProductSort } from "@/lib/data/search-products"
+import { applySharedProductFilters, applySharedProductSort, type SharedProductFilters } from "@/lib/data/search-products"
 import { logEvent } from "@/lib/logger"
 
 export interface Product {
@@ -28,15 +28,7 @@ export interface Product {
   tags?: string[]
 }
 
-export interface CategoryProductFilters {
-  minPrice?: string | undefined
-  maxPrice?: string | undefined
-  tag?: string | undefined
-  minRating?: string | undefined
-  availability?: string | undefined
-  sort?: string | undefined
-  attributes?: Record<string, string | string[]> | undefined
-}
+export type CategoryProductFilters = SharedProductFilters
 
 export async function searchProducts(
   supabase: ReturnType<typeof createStaticClient>,
@@ -116,7 +108,7 @@ export async function searchProducts(
     profiles: DbSellerProfile | DbSellerProfile[] | null
   }
 
-  const rows = (data || []) as unknown as DbProductRow[]
+  const rows = (data || []) as DbProductRow[]
 
   const products: Product[] = rows.map((p) => {
     const profile = p.profiles && !Array.isArray(p.profiles) ? p.profiles : null

@@ -160,7 +160,7 @@ export function useHomeDiscoveryFeed({
     })
 
     if (!filtersActive && !locationState.effectiveNearby && !locationState.effectiveCity) {
-      if (activeCategorySlug && initialCategoryProducts[activeCategorySlug]) {
+      if (scope === "newest" && activeCategorySlug && initialCategoryProducts[activeCategorySlug]) {
         const source = initialCategoryProducts[activeCategorySlug] ?? []
         const effectiveSlug = activeL2Slug ?? activeSubcategorySlug
         const display =

@@ -2,9 +2,9 @@ import 'server-only'
 
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
-import { logger } from '@/lib/logger'
 import type { BuyerReview, ProfileProduct, PublicProfile, SellerReview } from '@/lib/types/profile-page'
 
+import { logger } from "@/lib/logger"
 // =============================================================================
 // Profile Page Data Functions - CACHED for Performance
 // 

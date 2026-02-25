@@ -24,7 +24,7 @@ function normalizeAttribute(api: CategoryAttribute): CategoryAttribute {
  * Only returns select/multiselect attrs with options (suitable for filter pills).
  */
 export function useCategoryAttributes(
-  categorySlug: string | null
+  categoryId: string | null
 ): UseCategoryAttributesResult {
   const [attributes, setAttributes] = useState<CategoryAttribute[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -33,9 +33,9 @@ export function useCategoryAttributes(
   // Cache to avoid refetching same category
   const cacheRef = useRef<Map<string, CategoryAttribute[]>>(new Map())
 
-  const fetchAttributes = useCallback(async (slug: string) => {
+  const fetchAttributes = useCallback(async (nextCategoryId: string) => {
     // Check cache first
-    const cached = cacheRef.current.get(slug)
+    const cached = cacheRef.current.get(nextCategoryId)
     if (cached) {
       setAttributes(cached)
       return
@@ -45,7 +45,7 @@ export function useCategoryAttributes(
     setError(null)
 
     try {
-      const res = await fetch(`/api/categories/${slug}/attributes`)
+      const res = await fetch(`/api/categories/${encodeURIComponent(nextCategoryId)}/attributes`)
       if (!res.ok) {
         throw new Error(`Failed to fetch: ${res.status}`)
       }
@@ -69,7 +69,7 @@ export function useCategoryAttributes(
 
       const transformed = filterable.map(normalizeAttribute)
 
-      cacheRef.current.set(slug, transformed)
+      cacheRef.current.set(nextCategoryId, transformed)
       setAttributes(transformed)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
@@ -80,16 +80,15 @@ export function useCategoryAttributes(
   }, [])
 
   useEffect(() => {
-    if (!categorySlug) {
+    if (!categoryId) {
       setAttributes([])
       setIsLoading(false)
       setError(null)
       return
     }
 
-    fetchAttributes(categorySlug)
-  }, [categorySlug, fetchAttributes])
+    fetchAttributes(categoryId)
+  }, [categoryId, fetchAttributes])
 
   return { attributes, isLoading, error }
 }
-

@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { Controller } from "react-hook-form";
 import { AlignLeft as TextAlignLeft } from "lucide-react";
@@ -54,53 +55,44 @@ export function DescriptionField({
             sectionClassName="p-4 pb-3 border-b border-border-subtle bg-surface-subtle"
           />
 
-          {/* Rich Textarea with label inside */}
           <FieldContent className={cn(!compact && "p-5")}>
-            <div className={cn(
-              "rounded-md border shadow-xs overflow-hidden transition-colors bg-background",
-              "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring",
-              fieldState.invalid && "border-destructive focus-within:ring-destructive-subtle"
-            )}>
-              <div className="px-4 pt-3">
-                <label
-                  htmlFor={textareaId}
-                  className="text-2xs font-bold uppercase tracking-wider text-muted-foreground leading-none"
-                >
-                  {tSell("fields.description.label")}
+            <div className="space-y-1.5">
+              {compact && (
+                <label htmlFor={textareaId} className="text-sm font-semibold text-foreground">
+                  {tSell("fields.description.label")} <span className="text-destructive">*</span>
                 </label>
-              </div>
+              )}
               <textarea
                 {...field}
-                 id={textareaId}
-                 aria-invalid={fieldState.invalid}
-                 placeholder={tSell("fields.description.placeholder")}
-                 maxLength={maxLength}
-                 rows={minRows}
-                 className={cn(
-                  "block w-full resize-none border-0 bg-transparent px-4 py-2 text-sm font-semibold",
-                  "placeholder:text-muted-foreground focus:ring-0 focus:outline-none",
-                  "min-h-32"
+                id={textareaId}
+                aria-invalid={fieldState.invalid}
+                placeholder={tSell("fields.description.placeholder")}
+                maxLength={maxLength}
+                rows={minRows}
+                className={cn(
+                  "block w-full resize-none rounded-lg bg-secondary px-3 py-2.5 text-sm text-foreground leading-relaxed",
+                  "placeholder:text-muted-foreground",
+                  "focus:ring-1 focus:ring-ring focus:outline-none",
+                  fieldState.invalid && "ring-1 ring-destructive"
                 )}
               />
-
-              {/* Footer - character count */}
-              <div className="flex items-center justify-end border-t border-border-subtle bg-surface-subtle px-4 py-2">
+              <div className="flex justify-end">
                 <span
                   className={cn(
-                    "text-2xs font-bold tabular-nums uppercase tracking-widest",
+                    "text-2xs tabular-nums",
                     charCount >= maxLength
                       ? "text-destructive"
                       : "text-muted-foreground"
                   )}
                 >
-                  {charCount.toLocaleString()} / {maxLength.toLocaleString()}
+                  {charCount.toLocaleString()}/{maxLength.toLocaleString()}
                 </span>
               </div>
             </div>
 
             {/* Error Message */}
             {fieldState.invalid && (
-              <FieldError className="mt-2">
+              <FieldError className="mt-1">
                 {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
               </FieldError>
             )}

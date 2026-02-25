@@ -102,7 +102,7 @@ function buildBaseCountQuery(
         ? "id, profiles!products_seller_id_fkey(is_verified_business)"
         : "id",
       { count: "planned", head: true }
-    ) as unknown as CountQueryBuilder
+    ) as any as CountQueryBuilder
 
   // Public browsing surfaces must not show non-active listings.
   // Temporary legacy allowance: status can be NULL for older rows.

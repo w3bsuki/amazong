@@ -1,0 +1,4 @@
+/* ===== Third-party Overrides ===== */
+.pswp--treido .pswp__bg {
+  background: var(--color-background) !important;
+}

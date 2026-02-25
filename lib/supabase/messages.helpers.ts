@@ -1,5 +1,4 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { logger } from "@/lib/logger"
 import type { Database } from "@/lib/supabase/database.types"
 import type {
   Conversation,
@@ -10,6 +9,7 @@ import type {
   RawProfileRow,
 } from "@/lib/types/messages"
 
+import { logger } from "@/lib/logger"
 export const CONVERSATION_SELECT = `
   id,
   buyer_id,

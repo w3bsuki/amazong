@@ -17,7 +17,6 @@ import { useWishlist } from "@/components/providers/wishlist-context"
 import { useDrawer } from "@/components/providers/drawer-context"
 import { DrawerShell } from "@/components/shared/drawer-shell"
 import { createClient } from "@/lib/supabase/client"
-import { logger } from "@/lib/logger"
 
 import { AccountDrawerAuthenticatedContent } from "./account-drawer/account-drawer-authenticated-content"
 import { AccountDrawerGuestContent } from "./account-drawer/account-drawer-guest-content"
@@ -30,6 +29,7 @@ import type {
   UserProfile,
 } from "./account-drawer/account-drawer.types"
 
+import { logger } from "@/lib/logger"
 // =============================================================================
 
 /**

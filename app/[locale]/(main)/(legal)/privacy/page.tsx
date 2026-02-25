@@ -1,28 +1,17 @@
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
 import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { Bell, Cookie, Database, Eye, FileText, Settings as Gear, Globe, Lock, Shield, UserCheck } from "lucide-react";
 
-import type { Metadata } from 'next'
-import { validateLocale } from "@/i18n/routing"
 import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"
-import { LegalPageLayout, type LegalSection, type RelatedLink } from "../_components/legal-page-layout"
-import { getLegalDocLayoutProps } from "../_lib/legal-doc-layout-props"
+import { buildLegalRouteMetadata, renderLegalDocPage, resolveLegalRouteLocale } from "../_components/legal-page-header"
+import type { LegalSection, RelatedLink } from "../_components/legal-page-layout"
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "Privacy" })
-  return {
-    title: t("metaTitle"),
-    description: t("metaDescription"),
-  }
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  return buildLegalRouteMetadata({ params, namespace: "Privacy" })
 }
 
 export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
+  const locale = await resolveLegalRouteLocale(params)
   const t = await getTranslations('Privacy')
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
@@ -73,14 +62,17 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
     { href: '/customer-service', icon: Shield, title: t('helpLink'), description: t('helpLinkDesc') },
   ]
 
-  const layoutProps = getLegalDocLayoutProps({ t, tBreadcrumbs, lastUpdatedDate, intro, sections, defaultSection, relatedLinks, contactEmail: "privacy@treido.com" })
-  
-  return (
-    <LegalPageLayout
-      heroIcon={Shield}
-      title={t('title')}
-      breadcrumbItems={breadcrumbPresets(tBreadcrumbs).privacy}
-      {...layoutProps}
-    />
-  )
+  return renderLegalDocPage({
+    heroIcon: Shield,
+    title: t('title'),
+    breadcrumbItems: breadcrumbPresets(tBreadcrumbs).privacy,
+    t,
+    tBreadcrumbs,
+    lastUpdatedDate,
+    intro,
+    sections,
+    defaultSection,
+    relatedLinks,
+    contactEmail: "privacy@treido.com",
+  })
 }

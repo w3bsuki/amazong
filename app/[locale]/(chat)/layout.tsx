@@ -1,12 +1,13 @@
 import { setRequestLocale } from "next-intl/server";
-import { routing, validateLocale } from "@/i18n/routing";
+import { validateLocale } from "@/i18n/routing";
 import { CommerceProviders } from "../_providers/commerce-providers";
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider";
 import { PageShell } from "../_components/page-shell";
+import { localeStaticParams } from "@/lib/next/static-params";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
-    return routing.locales.map((locale) => ({ locale }));
+    return localeStaticParams();
 }
 
 /**

@@ -1,4 +1,3 @@
-import { logger } from "@/lib/logger"
 import { createAdminClient } from "@/lib/supabase/server"
 import { revalidateTag } from "next/cache"
 import {
@@ -7,6 +6,7 @@ import {
   type OrdersSupportResult,
 } from "./orders-support-shared"
 
+import { logger } from "@/lib/logger"
 export async function requestOrderCancellationImpl(
   orderItemId: string,
   reason?: string

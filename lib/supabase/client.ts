@@ -2,9 +2,9 @@ import 'client-only'
 
 import { createBrowserClient } from "@supabase/ssr"
 import type { Database } from "@/lib/supabase/database.types"
-import { logger } from "@/lib/logger"
 import { getPublicSupabaseEnvOptional } from "@/lib/supabase/shared"
 
+import { logger } from "@/lib/logger"
 let supabaseInstance: ReturnType<typeof createBrowserClient<Database>> | null = null
 
 /**

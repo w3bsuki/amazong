@@ -1,2 +1,0 @@
-[architecture:scan] Metrics
-- oversized: >300=81, >500=13

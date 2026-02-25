@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { useState, useTransition } from "react";
 import { Star } from "lucide-react";

@@ -1,10 +1,10 @@
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
 import type { Database } from "@/lib/supabase/database.types"
-import { logger } from "@/lib/logger"
 import type { NextRequest } from "next/server"
 import { z } from "zod"
 
+import { logger } from "@/lib/logger"
 type SharedWishlistRow = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
 
 const SharedWishlistParamsSchema = z

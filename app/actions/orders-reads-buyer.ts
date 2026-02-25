@@ -1,5 +1,4 @@
 import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
-import { logger } from "@/lib/logger"
 import {
   ORDER_ITEM_DETAIL_SELECT,
   ORDER_ITEM_LIST_SELECT,
@@ -14,6 +13,7 @@ import {
   type OrdersReadResult,
 } from "./orders-reads-shared"
 
+import { logger } from "@/lib/logger"
 export async function getBuyerOrdersImpl(): Promise<OrdersReadResult> {
   try {
     const authResult = await requireOrdersReadAuth(() =>

@@ -1,9 +1,9 @@
 import { z } from "zod"
 import type { createStaticClient } from "@/lib/supabase/server"
-import { logger } from "@/lib/logger"
 import type { SellerResultCard, SellerSearchFilters } from "./types"
 import { buildTokenizedIlikeOrFilter, normalizeSearchQuery } from "@/lib/filters/search-query"
 
+import { logger } from "@/lib/logger"
 const SellerFilterInputSchema = z.object({
   sellerSort: z.enum(["products", "rating", "newest"]).optional(),
   sellerVerified: z.enum(["true", "false"]).optional(),

@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import Image from "next/image";
 import { Camera, CircleCheck as CheckCircle, DollarSign as CurrencyDollar, FolderOpen, Package, Pencil as PencilSimple, Tag, Truck, TriangleAlert as Warning } from "lucide-react";

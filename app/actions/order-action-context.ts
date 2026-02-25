@@ -1,5 +1,3 @@
-"use server"
-
 import { requireAuth } from "@/lib/auth/require-auth"
 import { z } from "zod"
 

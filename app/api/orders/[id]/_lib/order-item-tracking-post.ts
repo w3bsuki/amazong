@@ -4,6 +4,7 @@ import { updateOrderItemStatus } from "../../../../actions/orders-status"
 import { orderItemIdParamSchema } from "@/lib/validation/orders"
 import type { ShippingCarrier } from "@/lib/order-status"
 
+import { logger } from "@/lib/logger"
 type SafeParseSuccess<T> = { success: true; data: T }
 type SafeParseFailure = { success: false; error: unknown }
 type SafeParseResult<T> = SafeParseSuccess<T> | SafeParseFailure
@@ -63,7 +64,7 @@ export async function handleOrderItemTrackingPost(
 
     return noStoreJson({ ok: true })
   } catch (error) {
-    console.error("[order-item-tracking-post] Unexpected error:", error)
+    logger.error("[order-item-tracking-post] Unexpected error:", error)
     return noStoreJson({ error: "Internal server error" }, { status: 500 })
   }
 }

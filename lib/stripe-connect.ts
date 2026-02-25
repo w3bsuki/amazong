@@ -2,9 +2,9 @@ import "server-only"
 
 import { stripe } from "@/lib/stripe"
 import { createClient } from "@/lib/supabase/server"
-import { logger } from "@/lib/logger"
 import type Stripe from "stripe"
 
+import { logger } from "@/lib/logger"
 // =============================================================================
 // FEE STRUCTURE (Hybrid Buyer-Protection Model)
 // =============================================================================

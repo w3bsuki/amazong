@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryAttribute } from "@/lib/data/categories"
+import { isUuid } from "@/lib/utils/is-uuid"
 
 type CategoryLite = {
   id: string
@@ -125,6 +126,14 @@ export function useInstantCategoryBrowse(options: {
 
   const productsCacheRef = useRef(new Map<string, { products: UIProduct[]; hasMore: boolean }>())
   const contextCacheRef = useRef(new Map<string, CategoryContextResponse>())
+  const idBySlugRef = useRef(
+    new Map<string, string>([
+      ...(initialCategoryId ? ([[initialSlug, initialCategoryId]] as Array<[string, string]>) : []),
+      ...(initialParent ? ([[initialParent.slug, initialParent.id]] as Array<[string, string]>) : []),
+      ...initialChildren.map((cat) => [cat.slug, cat.id] as [string, string]),
+      ...initialSiblings.map((cat) => [cat.slug, cat.id] as [string, string]),
+    ]),
+  )
   const abortRef = useRef<AbortController | null>(null)
 
   const activeSlug = categorySlug
@@ -212,6 +221,29 @@ export function useInstantCategoryBrowse(options: {
     await loadPage({ slug: categorySlug, params: nextParams, page: 1, append: false })
   }, [enabled, categorySlug, loadPage, parent?.slug, syncUrl])
 
+  const resolveCategoryIdForSlug = useCallback(
+    (slug: string): string | null => {
+      if (!slug) return null
+
+      if (isUuid(slug)) return slug
+
+      const fromMap = idBySlugRef.current.get(slug)
+      if (fromMap) return fromMap
+
+      if (slug === categorySlug && categoryId) return categoryId
+      if (parent?.slug === slug) return parent.id
+
+      const fromChildren = children.find((cat) => cat.slug === slug)?.id
+      if (fromChildren) return fromChildren
+
+      const fromSiblings = siblings.find((cat) => cat.slug === slug)?.id
+      if (fromSiblings) return fromSiblings
+
+      return null
+    },
+    [categoryId, categorySlug, children, parent, siblings],
+  )
+
   /**
    * Internal navigation - fetches context + products for a category.
    * Shared by both user-initiated navigation and popstate handler.
@@ -221,18 +253,23 @@ export function useInstantCategoryBrowse(options: {
     nextParams: URLSearchParams,
     updateHistory: boolean
   ) => {
+    const nextCategoryId = resolveCategoryIdForSlug(nextSlug)
+
     setLoadingSlug(nextSlug)
     setCategorySlugState(nextSlug)
+    setCategoryId(nextCategoryId ?? undefined)
     setAppliedParams(nextParams)
 
     // Context (cached) + products
     let resolvedParentSlug: string | null = parent?.slug ?? null
     try {
-      const cached = contextCacheRef.current.get(nextSlug)
+      if (!nextCategoryId) throw new Error("Missing category ID")
+
+      const cached = contextCacheRef.current.get(nextCategoryId)
       const context =
         cached ??
-        (await fetchJson<CategoryContextResponse>(`/api/categories/${encodeURIComponent(nextSlug)}/context`))
-      if (!cached) contextCacheRef.current.set(nextSlug, context)
+        (await fetchJson<CategoryContextResponse>(`/api/categories/${encodeURIComponent(nextCategoryId)}/context`))
+      if (!cached) contextCacheRef.current.set(nextCategoryId, context)
 
       setCategoryId(context.current.id)
       setCategoryTitle(toDisplayName(locale, context.current))
@@ -251,7 +288,7 @@ export function useInstantCategoryBrowse(options: {
 
     await loadPage({ slug: nextSlug, params: nextParams, page: 1, append: false })
     setLoadingSlug(null)
-  }, [loadPage, locale, parent?.slug, syncUrl])
+  }, [loadPage, locale, parent?.slug, resolveCategoryIdForSlug, syncUrl])
 
   const setCategorySlug = useCallback(async (nextSlug: string, opts?: { clearAttrFilters?: boolean }) => {
     if (!enabled) return
@@ -280,23 +317,28 @@ export function useInstantCategoryBrowse(options: {
   // Prefetch category context for faster navigation
   const prefetchCategory = useCallback((slug: string) => {
     if (!enabled) return
-    if (contextCacheRef.current.has(slug)) return // Already cached
+
+    const categoryId = resolveCategoryIdForSlug(slug)
+    if (!categoryId) return
+
+    if (contextCacheRef.current.has(categoryId)) return // Already cached
 
     // Fire-and-forget prefetch
-    fetchJson<CategoryContextResponse>(`/api/categories/${encodeURIComponent(slug)}/context`)
+    fetchJson<CategoryContextResponse>(`/api/categories/${encodeURIComponent(categoryId)}/context`)
       .then((context) => {
-        contextCacheRef.current.set(slug, context)
+        contextCacheRef.current.set(categoryId, context)
       })
       .catch(() => {
         // Prefetch failures are silent - non-critical
       })
-  }, [enabled])
+  }, [enabled, resolveCategoryIdForSlug])
 
   // Auto-prefetch children categories for instant drilling down
   useEffect(() => {
     if (!enabled) return
     // Prefetch all child categories in background
     children.forEach((child) => {
+      idBySlugRef.current.set(child.slug, child.id)
       prefetchCategory(child.slug)
     })
   }, [enabled, children, prefetchCategory])

@@ -1,28 +1,22 @@
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
 import { breadcrumbPresets } from "../../../_components/navigation/app-breadcrumb"
 import { Bell, ChartColumn as ChartBar, Cookie, Eye, Settings as Gear, Lock, Shield } from "lucide-react";
 
-import type { Metadata } from 'next'
-import { validateLocale } from "@/i18n/routing"
 import { extractLastUpdatedDate, getPublicDoc, parsePublicDocIntro, parsePublicDocSections } from "@/lib/public-docs"
-import { LegalPageLayout, type LegalSection, type RelatedLink } from "../_components/legal-page-layout"
-import { getLegalDocLayoutProps } from "../_lib/legal-doc-layout-props"
+import { buildLegalRouteMetadata, renderLegalDocPage, resolveLegalRouteLocale } from "../_components/legal-page-header"
+import type { LegalSection, RelatedLink } from "../_components/legal-page-layout"
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "Cookies" })
-  return {
-    title: t("pageTitle"),
-    description: t("descriptionShort"),
-  }
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  return buildLegalRouteMetadata({
+    params,
+    namespace: "Cookies",
+    titleKey: "pageTitle",
+    descriptionKey: "descriptionShort",
+  })
 }
 
 export default async function CookiesPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
+  const locale = await resolveLegalRouteLocale(params)
   const t = await getTranslations('Cookies')
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
@@ -72,14 +66,17 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
     { href: '/customer-service', icon: Gear, title: t('helpLink'), description: t('helpLinkDesc') },
   ]
 
-  const layoutProps = getLegalDocLayoutProps({ t, tBreadcrumbs, lastUpdatedDate, intro, sections, defaultSection, relatedLinks, contactEmail: "privacy@treido.com" })
-  
-  return (
-    <LegalPageLayout
-      heroIcon={Cookie}
-      title={t('pageTitle')}
-      breadcrumbItems={breadcrumbPresets(tBreadcrumbs).cookies}
-      {...layoutProps}
-    />
-  )
+  return renderLegalDocPage({
+    heroIcon: Cookie,
+    title: t('pageTitle'),
+    breadcrumbItems: breadcrumbPresets(tBreadcrumbs).cookies,
+    t,
+    tBreadcrumbs,
+    lastUpdatedDate,
+    intro,
+    sections,
+    defaultSection,
+    relatedLinks,
+    contactEmail: "privacy@treido.com",
+  })
 }

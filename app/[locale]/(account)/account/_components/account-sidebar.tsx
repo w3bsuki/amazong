@@ -4,11 +4,14 @@ import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { usePathname } from "@/i18n/routing"
 import { useLocale } from "next-intl"
-import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLine, CreditCard as IconCreditCard, Crown as IconCrown, EllipsisVertical as IconDotsVertical, Heart as IconHeart, House as IconHome, Lock as IconLock, LogOut as IconLogout, MapPin as IconMapPin, MessageCircle as IconMessage, Package as IconPackage, Receipt as IconReceipt, Settings as IconSettings, Sparkles as IconSparkles, User as IconUser } from "lucide-react";
+import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLine, CreditCard as IconCreditCard, Crown as IconCrown, Heart as IconHeart, House as IconHome, Lock as IconLock, LogOut as IconLogout, MapPin as IconMapPin, MessageCircle as IconMessage, Package as IconPackage, Receipt as IconReceipt, Settings as IconSettings, Sparkles as IconSparkles, User as IconUser } from "lucide-react";
 
 import { PlansModal, type PlansModalServerActions } from "./plans-modal"
 import { Button } from "@/components/ui/button"
 import { DashboardSidebar } from "@/components/shared/dashboard-sidebar"
+
+import { UserMenuDropdown } from "@/components/shared/user-menu-dropdown"
+import { UserMenuIdentity } from "@/components/shared/user-menu-identity"
 
 import {
   Sidebar,
@@ -19,14 +22,9 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/layout/sidebar/sidebar"
-import { UserAvatar } from "@/components/shared/user-avatar"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
 import { useSidebar } from "@/components/layout/sidebar/sidebar"
@@ -165,74 +163,47 @@ function AccountNavUser({
   const displayName = user.name?.trim() || user.email
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <UserAvatar
-                name={displayName}
-                avatarUrl={user.avatar ?? null}
-                className="size-8 rounded-lg"
-                fallbackClassName="rounded-lg bg-selected text-primary"
-              />
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name || user.email}</span>
-                <span className="text-muted-foreground truncate text-xs">
-                  {locale === 'bg' ? 'Личен акаунт' : 'Personal Account'}
-                </span>
-              </div>
-              <IconDotsVertical className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
+    <UserMenuDropdown
+      isMobile={isMobile}
+      triggerContent={
+        <UserMenuIdentity
+          avatarName={displayName}
+          avatarUrl={user.avatar ?? null}
+          avatarFallbackClassName="rounded-lg bg-selected text-primary"
+          primaryText={user.name || user.email}
+          secondaryText={locale === "bg" ? "Личен акаунт" : "Personal Account"}
+        />
+      }
+      labelContent={
+        <UserMenuIdentity
+          avatarName={displayName}
+          avatarUrl={user.avatar ?? null}
+          avatarFallbackClassName="rounded-lg bg-selected text-primary"
+          primaryText={user.name || user.email}
+          secondaryText={user.email}
+        />
+      }
+    >
+      <DropdownMenuSeparator />
+      <DropdownMenuItem asChild>
+        <Link href="/account/settings">
+          <IconSettings className="mr-2 size-4" />
+          {locale === 'bg' ? 'Настройки' : 'Settings'}
+        </Link>
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem asChild className="p-0">
+        <form action="/api/auth/sign-out" method="post" className="w-full">
+          <button
+            type="submit"
+            className="flex w-full items-center gap-2 px-2 py-1.5 text-sm text-destructive hover:bg-accent focus:bg-accent cursor-pointer"
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <UserAvatar
-                  name={displayName}
-                  avatarUrl={user.avatar ?? null}
-                  className="size-8 rounded-lg"
-                  fallbackClassName="rounded-lg bg-selected text-primary"
-                />
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name || user.email}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
-                  </span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/account/settings">
-                <IconSettings className="mr-2 size-4" />
-                {locale === 'bg' ? 'Настройки' : 'Settings'}
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="p-0">
-              <form action="/api/auth/sign-out" method="post" className="w-full">
-                <button
-                  type="submit"
-                  className="flex w-full items-center gap-2 px-2 py-1.5 text-sm text-destructive hover:bg-accent focus:bg-accent cursor-pointer"
-                >
-                  <IconLogout className="size-4" />
-                  {locale === 'bg' ? 'Изход' : 'Sign Out'}
-                </button>
-              </form>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+            <IconLogout className="size-4" />
+            {locale === 'bg' ? 'Изход' : 'Sign Out'}
+          </button>
+        </form>
+      </DropdownMenuItem>
+    </UserMenuDropdown>
   )
 }
 

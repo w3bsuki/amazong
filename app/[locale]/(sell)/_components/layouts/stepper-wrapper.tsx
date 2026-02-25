@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 
 import { type ReactNode, useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -221,7 +222,7 @@ export function StepperWrapper({
               onClick={handleBack}
               size="lg"
               disabled={isFirstStep || isSubmitting}
-              className="h-(--control-primary) rounded-md text-base font-semibold gap-2.5"
+              className="h-(--control-primary) rounded-xl text-base font-semibold gap-2.5"
             >
               <CaretLeft className="size-5" />
               {tCommon("back")}
@@ -233,7 +234,7 @@ export function StepperWrapper({
                 onClick={onSubmit}
                 disabled={isSubmitting || isSubmitDisabled}
                 size="lg"
-                className="h-(--control-primary) rounded-md text-base font-bold gap-2.5"
+                className="h-(--control-primary) rounded-xl text-base font-bold gap-2.5"
               >
                 {isSubmitting ? (
                   <>
@@ -252,7 +253,7 @@ export function StepperWrapper({
                 type="button"
                 onClick={handleNext}
                 size="lg"
-                className="h-(--control-primary) rounded-md text-base font-bold gap-2.5"
+                className="h-(--control-primary) rounded-xl text-base font-bold gap-2.5"
                 disabled={isNextDisabled}
               >
                 {tCommon("next")}

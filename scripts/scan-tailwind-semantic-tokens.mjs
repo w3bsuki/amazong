@@ -16,11 +16,34 @@ const globalsCss = fs.existsSync(globalsPath)
   ? fs.readFileSync(globalsPath, "utf8")
   : "";
 
-// Extract `--color-*` tokens from globals.css (Tailwind v4 theme bridge + @theme blocks).
+// Extract `--color-*` tokens from the global style entrypoint and its local imports
+// (Tailwind v4 theme bridge + @theme blocks).
+//
+// NOTE: globals.css is an import orchestrator after REF-ALIGNMENT-001, so we must
+// scan the imported style modules too (not just globals.css itself).
+const themeCssFiles = new Set([globalsPath]);
+const reImport = /@import\s+(?:url\()?["']([^"']+)["']\)?\s*;/gi;
+for (let m; (m = reImport.exec(globalsCss)); ) {
+  const spec = m[1] ?? "";
+  if (!spec.startsWith(".")) continue;
+  themeCssFiles.add(path.resolve(path.dirname(globalsPath), spec));
+}
+
 const definedTokens = new Set();
 const reColorVar = /--color-([a-z0-9-]+)\s*:/gi;
-for (let m; (m = reColorVar.exec(globalsCss)); ) {
-  definedTokens.add(m[1]);
+for (const cssFilePath of themeCssFiles) {
+  if (!fs.existsSync(cssFilePath)) continue;
+
+  let cssText;
+  try {
+    cssText = fs.readFileSync(cssFilePath, "utf8");
+  } catch {
+    continue;
+  }
+
+  for (let m; (m = reColorVar.exec(cssText)); ) {
+    definedTokens.add(m[1]);
+  }
 }
 
 // We only flag *semantic color* tokens we own (avoids false positives for

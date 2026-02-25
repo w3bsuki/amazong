@@ -17,20 +17,7 @@ import { ITEMS_PER_PAGE } from "../../../_lib/pagination"
 import type { CategoryWithCount } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryAttribute } from "@/lib/types/categories"
-
-interface CategoryPageSearchParams {
-  minPrice?: string
-  maxPrice?: string
-  minRating?: string
-  subcategory?: string
-  tag?: string
-  deals?: string
-  brand?: string
-  availability?: string
-  sort?: string
-  page?: string
-  [key: string]: string | string[] | undefined
-}
+import type { CategoryPageSearchParams } from "./category-page-content"
 
 interface CategoryShape {
   id: string

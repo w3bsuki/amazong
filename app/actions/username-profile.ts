@@ -2,10 +2,10 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
-import { logger } from "@/lib/logger"
 import { publicProfileSchema, requireUsernameAuth } from "./username-shared"
 import type { z } from "zod"
 
+import { logger } from "@/lib/logger"
 export type UsernameProfileErrorCode =
   | "NOT_AUTHENTICATED"
   | "INVALID_PROFILE_DATA"
@@ -258,9 +258,9 @@ export async function getCurrentUserProfile() {
       .eq("id", userId)
       .maybeSingle()
 
-    const baseProfile = profile as unknown as Record<string, unknown>
+    const baseProfile = profile && typeof profile === "object" ? profile : {}
     return {
-      ...baseProfile,
+      ...(baseProfile as Record<string, unknown>),
       vat_number: privateProfile?.vat_number ?? null,
     }
   } catch {

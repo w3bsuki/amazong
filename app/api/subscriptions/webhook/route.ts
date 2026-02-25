@@ -4,6 +4,7 @@ import { stripe } from '@/lib/stripe'
 import { getStripeSubscriptionWebhookSecrets } from '@/lib/env'
 import type Stripe from 'stripe'
 
+import { logger } from "@/lib/logger"
 /**
  * Canonical ownership:
  * - Subscriptions + invoices: this route (separate webhook secret)
@@ -29,7 +30,7 @@ function logWebhookError(context: string, err: unknown): void {
   const type = err instanceof Error ? err.constructor.name : typeof err
   const message = err instanceof Error ? err.message : 'Unknown error'
   // Only log type + message, never full stack/object
-  console.error(`[webhook/${context}] ${type}: ${message}`)
+  logger.error(`[webhook/${context}] ${type}: ${message}`)
 }
 
 /** Safe Stripe subscription retrieval - returns null on failure instead of throwing */
@@ -176,7 +177,11 @@ async function handleCheckoutSessionCompleted(
     return
   }
 
-  const currentPeriodEnd = (subscriptionResponse as unknown as { current_period_end: number }).current_period_end
+  const currentPeriodEnd = (subscriptionResponse as { current_period_end?: unknown }).current_period_end
+  if (typeof currentPeriodEnd !== "number") {
+    logWebhookError("subscription-checkout", new Error("Missing current_period_end on subscription"))
+    return
+  }
   const expiresAt = new Date(currentPeriodEnd * 1000).toISOString()
   const stripePriceId = subscriptionResponse.items?.data?.[0]?.price?.id ?? null
   const startsAt = new Date(subscriptionResponse.start_date * 1000).toISOString()
@@ -288,7 +293,10 @@ async function handleCustomerSubscriptionUpdated(
     : stripeStatus === 'past_due' ? 'expired'
     : existingSub.status
 
-  const expiresAt = new Date((subscriptionEvent as unknown as { current_period_end: number }).current_period_end * 1000).toISOString()
+  const currentPeriodEnd = (subscriptionEvent as { current_period_end?: unknown }).current_period_end
+  const expiresAt = typeof currentPeriodEnd === "number"
+    ? new Date(currentPeriodEnd * 1000).toISOString()
+    : existingSub.expires_at ?? new Date().toISOString()
 
   // Track auto_renew based on cancel_at_period_end
   const autoRenew = !subscriptionEvent.cancel_at_period_end

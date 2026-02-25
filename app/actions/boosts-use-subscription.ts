@@ -2,27 +2,22 @@ import { revalidatePublicProfileTagsByUsername } from "@/lib/cache/revalidate-pr
 import type { Database } from "@/lib/supabase/database.types"
 import { createAdminClient } from "@/lib/supabase/server"
 import {
-  getBoostActionContext,
-  getOwnedBoostProduct,
+  getOwnedBoostActionContext,
   revalidateBoostCaches,
   syncProfileBoostCredits,
   type BoostResult,
 } from "./boosts-shared"
 
+import { logger } from "@/lib/logger"
 export async function useSubscriptionBoostImpl(productId: string): Promise<BoostResult> {
-  const context = await getBoostActionContext(productId)
+  const context = await getOwnedBoostActionContext(productId)
   if (!context.success) {
     return { success: false, error: context.error }
   }
 
-  const { productId: safeProductId, userId, supabase } = context
+  const { productId: safeProductId, userId, supabase, product } = context
 
-  const ownedProductResult = await getOwnedBoostProduct(supabase, safeProductId, userId)
-  if (!ownedProductResult.success) {
-    return { success: false, error: ownedProductResult.error }
-  }
-
-  if (ownedProductResult.product.is_boosted) {
+  if (product.is_boosted) {
     return { success: false, error: "Product is already boosted" }
   }
 
@@ -48,7 +43,7 @@ export async function useSubscriptionBoostImpl(productId: string): Promise<Boost
     .eq("id", userId)
 
   if (deductError) {
-    console.error("Failed to deduct boost:", deductError)
+    logger.error("Failed to deduct boost:", deductError)
     return { success: false, error: "Failed to use boost. Please try again." }
   }
 
@@ -74,7 +69,7 @@ export async function useSubscriptionBoostImpl(productId: string): Promise<Boost
       .update(rollbackUpdate)
       .eq("id", userId)
 
-    console.error("Failed to boost product:", boostError)
+    logger.error("Failed to boost product:", boostError)
     return { success: false, error: "Failed to boost product. Please try again." }
   }
 

@@ -17,6 +17,35 @@ export type ProductReview = {
   } | null
 }
 
+function toProductReview(row: unknown): ProductReview | null {
+  if (typeof row !== "object" || row === null) return null
+
+  const record = row as Record<string, unknown>
+
+  const id = typeof record.id === "string" ? record.id : null
+  const rating = typeof record.rating === "number" ? record.rating : null
+  const created_at = typeof record.created_at === "string" ? record.created_at : null
+
+  const commentValue = record.comment
+  const comment = commentValue === null || typeof commentValue === "string" ? commentValue : null
+
+  if (!id || rating === null || !created_at) return null
+
+  const userValue = record.user
+  let user: ProductReview["user"] = null
+
+  if (typeof userValue === "object" && userValue !== null && !Array.isArray(userValue)) {
+    const u = userValue as Record<string, unknown>
+    user = {
+      display_name: typeof u.display_name === "string" ? u.display_name : null,
+      username: typeof u.username === "string" ? u.username : null,
+      avatar_url: typeof u.avatar_url === "string" ? u.avatar_url : null,
+    }
+  }
+
+  return { id, rating, comment, created_at, user }
+}
+
 export async function fetchProductReviews(productId: string, limit = 8): Promise<ProductReview[]> {
   "use cache"
   cacheLife("products")
@@ -49,6 +78,14 @@ export async function fetchProductReviews(productId: string, limit = 8): Promise
     .order("created_at", { ascending: false })
     .limit(limit)
 
-  if (error || !data) return []
-  return data as unknown as ProductReview[]
+  if (error || !Array.isArray(data)) return []
+
+  const reviews: ProductReview[] = []
+  for (const row of data) {
+    const parsed = toProductReview(row)
+    if (!parsed) continue
+    reviews.push(parsed)
+  }
+
+  return reviews
 }

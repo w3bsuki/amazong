@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { useAuth } from "./auth-state-manager"
 import { useTranslations } from "next-intl"
 
+import { logger } from "@/lib/logger"
 function stripLocalePrefix(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean)
   const maybeLocale = segments[0]
@@ -110,7 +111,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         .order("created_at", { ascending: false })
 
       if (error) {
-        console.error("Error fetching wishlist:", error)
+        logger.error("Error fetching wishlist:", error)
         return false
       } else if (data) {
         setItems(data.map((item: { 
@@ -142,7 +143,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         return true
       }
     } catch (error) {
-      console.error("Error in refreshWishlist:", error)
+      logger.error("Error in refreshWishlist:", error)
       return false
     } finally {
       setIsLoading(false)
@@ -248,7 +249,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         toast.success(tWishlist("addedToWishlist"))
       }
     } catch (error) {
-      console.error("Error adding to wishlist:", error)
+      logger.error("Error adding to wishlist:", error)
       toast.error(tWishlist("addToWishlistFailed"))
     }
   }
@@ -278,7 +279,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       setItems(prev => prev.filter(item => item.product_id !== productId))
       toast.success(tWishlist("removedFromWishlist"))
     } catch (error) {
-      console.error("Error removing from wishlist:", error)
+      logger.error("Error removing from wishlist:", error)
       toast.error(tWishlist("removeFromWishlistFailed"))
       // On error, refresh to restore correct state
       refreshWishlist()
@@ -318,7 +319,7 @@ export function useWishlist(): WishlistContextType {
   // In Storybook, use the mock context if available
   const storybookWishlistContext =
     typeof window !== "undefined"
-      ? (window as unknown as { __STORYBOOK_WISHLIST_CONTEXT__?: unknown }).__STORYBOOK_WISHLIST_CONTEXT__
+      ? window.__STORYBOOK_WISHLIST_CONTEXT__
       : undefined
 
   const realContext = useContext(WishlistContext)
@@ -336,4 +337,3 @@ export function useWishlist(): WishlistContextType {
 
   return resolvedContext
 }
-
