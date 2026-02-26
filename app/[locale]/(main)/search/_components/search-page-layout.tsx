@@ -16,7 +16,10 @@ import { SellerResultsList } from "./seller-results-list"
 import { MobileSearchSmartRail } from "./mobile-search-smart-rail"
 import { SearchHeaderSync } from "./search-header-sync"
 import { SearchResultsTransition } from "./search-results-transition"
+import { SearchEmptyState } from "./search-empty-state"
+import { SearchRecentSearchRecorder } from "./search-recent-search-recorder"
 import type { BrowseMode, Category, SellerResultCard } from "../_lib/types"
+import { getMobileGhostPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 
 type Translate = (key: string, values?: Record<string, string | number | Date>) => string
 
@@ -25,6 +28,7 @@ interface SearchPageLayoutProps {
   browseMode: BrowseMode
   query: string
   categorySlug: string | null
+  searchParamsString: string
   currentPage: number
   currentCategory: Category | null
   parentCategory?: Category | null
@@ -51,6 +55,7 @@ export function SearchPageLayout({
   browseMode,
   query,
   categorySlug,
+  searchParamsString,
   currentPage,
   currentCategory,
   parentCategory,
@@ -73,6 +78,27 @@ export function SearchPageLayout({
 }: SearchPageLayoutProps) {
   const listingsBatchKey = `${query}|${categorySlug ?? "all"}|${currentPage}|${gridProducts.map((product) => product.id).join("|")}`
   const listingsTransitionKey = `${query}|${categorySlug ?? "all"}|${currentPage}`
+  const trimmedQuery = query.trim()
+  const activeCategorySlug = currentCategory?.slug ?? categorySlug ?? null
+  const showSearchHome = trimmedQuery.length === 0 && !activeCategorySlug
+
+  const rootCategoryChips = allCategories.filter((cat) => cat.parent_id === null).slice(0, 12)
+  const getCategoryLabel = (category: Category) =>
+    locale === "bg" && category.name_bg ? category.name_bg : category.name
+
+  const buildCategoryHref = (slug: string | null) => {
+    const params = new URLSearchParams(searchParamsString)
+    params.delete("page")
+
+    if (slug) {
+      params.set("category", slug)
+    } else {
+      params.delete("category")
+    }
+
+    const queryString = params.toString()
+    return queryString ? `/search?${queryString}` : "/search"
+  }
 
   const sidebarContent = (
     <div className="bg-sidebar rounded-lg p-4">
@@ -119,8 +145,9 @@ export function SearchPageLayout({
     <>
       <PageShell variant="muted" className="lg:hidden overflow-x-hidden">
         <SearchHeaderSync query={query} categorySlug={currentCategory?.slug ?? categorySlug} />
+        <SearchRecentSearchRecorder query={query} />
 
-        {browseMode === "listings" ? (
+        {!showSearchHome && browseMode === "listings" ? (
           <MobileSearchSmartRail
             locale={locale}
             query={query}
@@ -136,13 +163,51 @@ export function SearchPageLayout({
               slug: c.slug,
             }))}
           />
-        ) : (
+        ) : !showSearchHome ? (
           <MobileSellerFilterControls basePath="/search" listingsHref={modeListingsHref} className="mb-2" />
+        ) : null}
+
+        {!showSearchHome && browseMode === "listings" && (
+          <nav aria-label={t("department")} className="border-b border-border-subtle bg-background">
+            <div className="overflow-x-auto scrollbar-hide">
+              <div className="flex w-max min-w-full items-center gap-2 px-inset py-2">
+                <Link
+                  href={buildCategoryHref(null)}
+                  className={getMobileGhostPillClass(!activeCategorySlug, "text-xs")}
+                >
+                  {t("allDepartments")}
+                </Link>
+
+                {rootCategoryChips.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={buildCategoryHref(category.slug)}
+                    className={getMobileGhostPillClass(activeCategorySlug === category.slug, "text-xs")}
+                  >
+                    {getCategoryLabel(category)}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </nav>
         )}
 
         <div className="mx-auto w-full max-w-screen-md overflow-x-hidden px-inset pb-tabbar-safe pt-2">
-          {browseMode === "listings" ? (
+          {showSearchHome ? (
+            <SearchEmptyState testId="search-empty-state" />
+          ) : browseMode === "listings" ? (
             <SearchResultsTransition transitionKey={listingsTransitionKey}>
+              <p className="pb-2 text-xs text-muted-foreground" data-testid="search-results-count">
+                <span className="font-semibold text-foreground">{totalProducts}</span>{" "}
+                {t("results")}
+                {trimmedQuery && (
+                  <>
+                    {" "}
+                    {t("for")}{" "}
+                    <span className="font-medium text-foreground">&quot;{trimmedQuery}&quot;</span>
+                  </>
+                )}
+              </p>
               <AnimatedProductGrid
                 products={gridProducts}
                 viewMode="grid"
@@ -155,6 +220,10 @@ export function SearchPageLayout({
             </SearchResultsTransition>
           ) : (
             <>
+              <p className="pb-2 text-xs text-muted-foreground" data-testid="search-sellers-count">
+                <span className="font-semibold text-foreground">{totalSellers}</span>{" "}
+                {t("sellersFound")}
+              </p>
               {sellerResultsList}
             </>
           )}

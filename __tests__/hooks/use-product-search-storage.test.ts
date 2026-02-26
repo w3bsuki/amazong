@@ -80,7 +80,7 @@ describe("use-product-search.storage", () => {
     localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(searches))
     localStorage.setItem(RECENT_PRODUCTS_KEY, JSON.stringify(products))
 
-    expect(loadRecentSearches()).toHaveLength(5)
+    expect(loadRecentSearches()).toHaveLength(10)
     expect(loadRecentProducts()).toHaveLength(6)
   })
 })

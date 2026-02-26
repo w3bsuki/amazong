@@ -49,63 +49,100 @@ export async function fetchProductsCount(params: {
 
   countQuery = applyPublicProductVisibilityFilter(countQuery)
 
-  if (categoryId) {
-    countQuery = countQuery.filter("category_ancestors", "cs", `{${categoryId}}`)
+  type CountQuery = typeof countQuery
+
+  const applyCategoryFilter = (builder: CountQuery, nextCategoryId: string | null | undefined): CountQuery => {
+    if (!nextCategoryId) return builder
+    return builder.filter("category_ancestors", "cs", `{${nextCategoryId}}`)
   }
 
-  if (query && query.trim()) {
-    const searchTerm = `%${query.trim()}%`
-    countQuery = countQuery.or(`title.ilike.${searchTerm},description.ilike.${searchTerm}`)
+  const applySearchFilter = (builder: CountQuery, searchQuery: string | null | undefined): CountQuery => {
+    const trimmed = searchQuery?.trim()
+    if (!trimmed) return builder
+    const searchTerm = `%${trimmed}%`
+    return builder.or(`title.ilike.${searchTerm},description.ilike.${searchTerm}`)
   }
 
-  if (shippingFilter) {
-    countQuery = countQuery.or(shippingFilter)
+  const applyShippingFilter = (builder: CountQuery, nextShippingFilter: string | null | undefined): CountQuery => {
+    if (!nextShippingFilter) return builder
+    return builder.or(nextShippingFilter)
   }
 
-  if (filters.minPrice != null) countQuery = countQuery.gte("price", filters.minPrice)
-  if (filters.maxPrice != null) countQuery = countQuery.lte("price", filters.maxPrice)
-  if (filters.minRating != null) countQuery = countQuery.gte("rating", filters.minRating)
-  if (filters.availability === "instock") countQuery = countQuery.gt("stock", 0)
+  const applyNumericFilters = (builder: CountQuery, nextFilters: ProductsCountFilters): CountQuery => {
+    let nextBuilder = builder
 
-  if (filters.deals) {
-    countQuery = countQuery.or("and(is_on_sale.eq.true,sale_percent.gt.0),list_price.not.is.null")
+    if (nextFilters.minPrice != null) nextBuilder = nextBuilder.gte("price", nextFilters.minPrice)
+    if (nextFilters.maxPrice != null) nextBuilder = nextBuilder.lte("price", nextFilters.maxPrice)
+    if (nextFilters.minRating != null) nextBuilder = nextBuilder.gte("rating", nextFilters.minRating)
+    if (nextFilters.availability === "instock") nextBuilder = nextBuilder.gt("stock", 0)
+
+    return nextBuilder
   }
 
-  if (verifiedOnly) {
-    countQuery = countQuery.eq("profiles.is_verified_business", true)
+  const applyDealsFilter = (builder: CountQuery, deals: boolean | null | undefined): CountQuery => {
+    if (!deals) return builder
+    return builder.or("and(is_on_sale.eq.true,sale_percent.gt.0),list_price.not.is.null")
   }
 
-  const city = resolveNormalizedCity(filters.city ?? null)
-  if (filters.nearby === true) {
-    countQuery = countQuery.ilike("seller_city", city ?? "sofia")
-  } else if (city) {
-    countQuery = countQuery.ilike("seller_city", city)
+  const applyVerifiedFilter = (builder: CountQuery, nextVerifiedOnly: boolean): CountQuery => {
+    if (!nextVerifiedOnly) return builder
+    return builder.eq("profiles.is_verified_business", true)
   }
 
-  if (filters.attributes) {
-    for (const [rawAttrName, attrValue] of Object.entries(filters.attributes).slice(0, 25)) {
+  const applyCityFilter = (builder: CountQuery, nextFilters: ProductsCountFilters): CountQuery => {
+    const city = resolveNormalizedCity(nextFilters.city ?? null)
+
+    if (nextFilters.nearby === true) {
+      return builder.ilike("seller_city", city ?? "sofia")
+    }
+
+    if (city) {
+      return builder.ilike("seller_city", city)
+    }
+
+    return builder
+  }
+
+  const applyAttributeFilters = (
+    builder: CountQuery,
+    attributes: ProductsCountFilters["attributes"]
+  ): CountQuery => {
+    if (!attributes) return builder
+
+    let nextBuilder = builder
+
+    for (const [rawAttrName, attrValue] of Object.entries(attributes).slice(0, 25)) {
       if (!attrValue) continue
 
       const attrName = normalizeAttributeKey(rawAttrName) || rawAttrName
 
       if (Array.isArray(attrValue)) {
-        const values = attrValue.filter(
-          (value): value is string => typeof value === "string" && value.length > 0,
-        )
+        const values = attrValue.filter((value): value is string => typeof value === "string" && value.length > 0)
 
         if (values.length === 1) {
-          const [firstValue] = values
+          const firstValue = values[0]
           if (firstValue !== undefined) {
-            countQuery = countQuery.contains("attributes", { [attrName]: firstValue })
+            nextBuilder = nextBuilder.contains("attributes", { [attrName]: firstValue })
           }
         } else if (values.length > 1) {
-          countQuery = countQuery.in(`attributes->>${attrName}`, values)
+          nextBuilder = nextBuilder.in(`attributes->>${attrName}`, values)
         }
       } else if (typeof attrValue === "string" && attrValue.length > 0) {
-        countQuery = countQuery.contains("attributes", { [attrName]: attrValue })
+        nextBuilder = nextBuilder.contains("attributes", { [attrName]: attrValue })
       }
     }
+
+    return nextBuilder
   }
+
+  countQuery = applyCategoryFilter(countQuery, categoryId)
+  countQuery = applySearchFilter(countQuery, query)
+  countQuery = applyShippingFilter(countQuery, shippingFilter)
+  countQuery = applyNumericFilters(countQuery, filters)
+  countQuery = applyDealsFilter(countQuery, filters.deals)
+  countQuery = applyVerifiedFilter(countQuery, verifiedOnly)
+  countQuery = applyCityFilter(countQuery, filters)
+  countQuery = applyAttributeFilters(countQuery, filters.attributes)
 
   if (signal) {
     countQuery = countQuery.abortSignal(signal)

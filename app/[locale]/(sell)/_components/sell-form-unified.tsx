@@ -201,7 +201,7 @@ function SellFormContent({
             : null,
         );
           setShowSuccess(true);
-          window.scrollTo({ top: 0, behavior: "instant" });
+          window.scrollTo({ top: 0, behavior: "auto" });
       } catch (error) {
        const errorMessage = error instanceof Error 
          ? error.message 
@@ -225,7 +225,7 @@ function SellFormContent({
     setCreatedProductId(null);
     setCreatedProductHref(null);
     setShowSuccess(false);
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "auto" });
   }, [form, clearDraft, setCurrentStep]);
 
   // Processing screen
@@ -287,4 +287,3 @@ function SellFormContent({
     </>
   );
 }
-

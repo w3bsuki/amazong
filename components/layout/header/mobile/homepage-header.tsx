@@ -25,7 +25,7 @@ export function MobileHomepageHeader({
   const searchPlaceholder = tNav("searchPlaceholderShort")
 
   return (
-    <div className="sticky top-0 z-40 bg-card/95 border-b border-border md:hidden pt-safe">
+    <div className="z-40 border-b border-border bg-card md:hidden pt-safe">
       <div className="flex h-(--control-primary) items-center gap-2 px-2">
         {/* Left: hamburger + logo */}
         <SidebarMenu user={user} {...(userStats && { userStats })} />

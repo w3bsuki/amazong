@@ -25,7 +25,6 @@ export function SellFieldSectionHeader({
   iconWrapClassName,
   labelClassName,
   descriptionClassName,
-  compactLabelClassName,
 }: SellFieldSectionHeaderProps) {
   if (compact) {
     return null

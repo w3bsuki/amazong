@@ -2,16 +2,15 @@
 
 import * as React from "react"
 import { useLocale, useTranslations } from "next-intl"
-import { Zap as Lightning } from "lucide-react";
+import { Check, Megaphone as MegaphoneSimple } from "lucide-react"
 
-
-import { cn } from "@/lib/utils"
-import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
+import { cn, safeAvatarSrc } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { CardContent } from "@/components/ui/card"
 import { shouldShowConditionBadge } from "@/lib/badges/category-badge-specs"
 
 import { ProductCardPrice } from "./price"
-import { ProductCardSocialProof } from "./social-proof"
 import { ProductCardWishlistOverlay } from "./product-card-wishlist-overlay"
 import { buildProductCardFrameSurface, ProductCardFrame } from "./product-card-frame"
 import { useProductCardQuickViewInput } from "./use-product-card-quick-view-input"
@@ -19,10 +18,7 @@ import {
   getDiscountPercent,
   getOverlayBadgeVariants,
   getProductUrl,
-  getRootCategoryLabel,
 } from "./metadata"
-import { FreshnessIndicator } from "../freshness-indicator"
-import { VerifiedSellerBadge } from "../verified-seller-badge"
 import { getConditionKey } from "../condition"
 import type { ProductCardBaseProps } from "./types"
 
@@ -37,7 +33,6 @@ export function DesktopProductCard({
   description,
   originalPrice,
   salePercent,
-  createdAt,
   categoryPath,
   categoryRootSlug,
   sellerId,
@@ -49,6 +44,7 @@ export function DesktopProductCard({
   slug,
   username,
   showWishlist = true,
+  showPromotedBadge = true,
   disableQuickView = false,
   index = 0,
   currentUserId,
@@ -56,7 +52,6 @@ export function DesktopProductCard({
   className,
   rating,
   reviews,
-  soldCount,
   condition,
   location,
   titleLines = 1,
@@ -69,11 +64,10 @@ export function DesktopProductCard({
   const productUrl = getProductUrl(username, slug, id)
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
 
-  const discountPercent = getDiscountPercent(price, originalPrice, salePercent)
-
-  const hasRating = typeof rating === "number" && rating > 0
-  const hasSoldCount = typeof soldCount === "number" && soldCount > 0
-  const hasSocialProof = hasRating || hasSoldCount
+  const discountPercent = React.useMemo(
+    () => getDiscountPercent(price, originalPrice, salePercent),
+    [originalPrice, price, salePercent]
+  )
 
   const resolvedRootSlug = categoryRootSlug ?? categoryPath?.[0]?.slug ?? null
   const shouldShowCondition =
@@ -89,20 +83,32 @@ export function DesktopProductCard({
     return condition
   }, [condition, shouldShowCondition, t])
 
-  const rootCategoryLabel = React.useMemo(() => {
-    return getRootCategoryLabel(categoryPath, locale)
-  }, [categoryPath, locale])
-
-  const locationLabel = React.useMemo(() => location?.trim() || null, [location])
-  const hasFreshness = Boolean(createdAt)
-
   const overlayBadgeVariants = React.useMemo(
     () => getOverlayBadgeVariants({ isBoosted, boostExpiresAt, discountPercent }),
     [boostExpiresAt, discountPercent, isBoosted]
   )
 
-  const hasTrustSignals = Boolean(freeShipping || sellerVerified)
-  const hasInfoMeta = Boolean(conditionLabel || locationLabel || hasTrustSignals)
+  const showDiscountBadge = inStock && discountPercent >= 5
+  const showConditionBadge = inStock && !showDiscountBadge && Boolean(conditionLabel)
+  const showPromotedOverlay =
+    inStock &&
+    !showDiscountBadge &&
+    !showConditionBadge &&
+    showPromotedBadge &&
+    overlayBadgeVariants.includes("promoted")
+
+  const safeSellerName = React.useMemo(() => {
+    const normalized = sellerName?.trim()
+    if (normalized) return normalized
+
+    const fromUsername = username?.trim()
+    if (fromUsername) return fromUsername
+
+    return t("seller")
+  }, [sellerName, t, username])
+
+  const avatarSrc = React.useMemo(() => safeAvatarSrc(sellerAvatarUrl), [sellerAvatarUrl])
+  const isVerifiedBusinessSeller = sellerTier === "business" && Boolean(sellerVerified)
 
   const quickViewInput = useProductCardQuickViewInput({
     id,
@@ -128,37 +134,35 @@ export function DesktopProductCard({
     includeFreeShipping: true,
   })
 
+  const surfaceClassName = cn(className, "border-0 bg-transparent shadow-none")
+
   return (
     <ProductCardFrame
       disableQuickView={disableQuickView}
       quickViewInput={quickViewInput}
-      surface={buildProductCardFrameSurface(productUrl, title, className, image, index, inStock, 1)}
+      surface={buildProductCardFrameSurface(productUrl, title, surfaceClassName, image, index, inStock, 3 / 4)}
       mediaOverlay={
         <>
-          {inStock && overlayBadgeVariants.length > 0 && (
-            <div className="pointer-events-none absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
-              {overlayBadgeVariants.map((variant) => {
-                if (variant === "promoted") {
-                  return (
-                    <span
-                      key="promoted"
-                      className="flex size-6 items-center justify-center rounded-full bg-promoted text-promoted-foreground"
-                      role="img"
-                      aria-label={t("adBadge")}
-                    >
-                      <Lightning size={14} />
-                    </span>
-                  )
-                }
-
-                return (
-                  <MarketplaceBadge key="discount" size="compact" variant="discount">
-                    -{discountPercent}%
-                  </MarketplaceBadge>
-                )
-              })}
+          {showDiscountBadge ? (
+            <div className="pointer-events-none absolute left-2 top-2 z-10">
+              <Badge size="compact" variant="destructive" data-testid="product-card-discount-badge">
+                -{discountPercent}%
+              </Badge>
             </div>
-          )}
+          ) : showConditionBadge ? (
+            <div className="pointer-events-none absolute bottom-2 left-2 z-10">
+              <Badge size="compact" variant="glass" data-testid="product-card-condition-badge">
+                {conditionLabel}
+              </Badge>
+            </div>
+          ) : showPromotedOverlay ? (
+            <div className="pointer-events-none absolute left-2 top-2 z-10">
+              <Badge size="compact" variant="glass" data-testid="product-card-ad-badge">
+                <MegaphoneSimple className="size-2.5" aria-hidden="true" />
+                <span className="sr-only">{t("adBadge")}</span>
+              </Badge>
+            </div>
+          ) : null}
 
           {showWishlist && (
             <ProductCardWishlistOverlay
@@ -175,69 +179,46 @@ export function DesktopProductCard({
         </>
       }
     >
-      <CardContent className="space-y-1.5 p-2.5 pt-2.5">
+      <CardContent className="flex flex-col gap-0.5 p-0 pt-1.5">
+        <div className="flex min-w-0 items-center gap-1.5" data-testid="product-card-price-row">
+          <div className="min-w-0 shrink-0">
+            <ProductCardPrice
+              price={price}
+              originalPrice={originalPrice}
+              locale={locale}
+              presentation="default"
+              showOriginalPrice={Boolean(originalPrice && originalPrice > price)}
+            />
+          </div>
+        </div>
+
         <h3
           className={cn(
-            "min-w-0 text-sm font-semibold leading-tight tracking-tight text-foreground",
+            "min-w-0 text-xs leading-snug text-muted-foreground",
             titleLines === 1 ? "truncate" : "line-clamp-2 break-words"
           )}
         >
           {title}
         </h3>
 
-        {rootCategoryLabel && (
-          <span data-slot="category" className="block min-w-0 truncate text-2xs font-medium text-muted-foreground">
-            {rootCategoryLabel}
-          </span>
-        )}
-
-        <ProductCardPrice
-          price={price}
-          originalPrice={originalPrice}
-          locale={locale}
-          presentation="price-badge"
-          showOriginalPrice
-        />
-
-        {(hasSocialProof || hasFreshness) && (
-          <div className="mt-1 flex min-w-0 items-center gap-1.5 text-tiny text-muted-foreground">
-            {hasSocialProof && (
-              <ProductCardSocialProof
-                rating={hasRating ? rating : undefined}
-                reviews={hasRating ? reviews : undefined}
-                soldCount={soldCount}
-                soldLabel={t("sold")}
-              />
-            )}
-            {hasSocialProof && hasFreshness && <span aria-hidden="true">.</span>}
-            {hasFreshness && (
-              <FreshnessIndicator
-                createdAt={createdAt}
-                variant="text"
-                showIcon={false}
-                className="text-tiny text-muted-foreground"
-              />
-            )}
-          </div>
-        )}
-
-        {hasInfoMeta && (
-          <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-tiny text-muted-foreground">
-            {conditionLabel && <span className="shrink-0 font-medium">{conditionLabel}</span>}
-            {conditionLabel && locationLabel && <span aria-hidden="true" className="text-border">.</span>}
-            {locationLabel && <span className="min-w-0 truncate">{locationLabel}</span>}
-            {(conditionLabel || locationLabel) && hasTrustSignals && (
-              <span aria-hidden="true" className="text-border">.</span>
-            )}
-            {freeShipping && (
-              <span className="shrink-0 font-medium text-success">{t("freeDeliveryShort")}</span>
-            )}
-            {freeShipping && sellerVerified && <span aria-hidden="true" className="text-border">.</span>}
-            {sellerVerified && sellerTier === "business" && (
-              <VerifiedSellerBadge label={t("b2b.verifiedShort")} className="shrink-0" />
-            )}
-          </div>
-        )}
+        <div className="flex min-w-0 items-center gap-1.5 text-2xs text-muted-foreground" data-testid="product-card-seller-row">
+          <Avatar className="size-4">
+            {avatarSrc ? <AvatarImage src={avatarSrc} alt={safeSellerName} /> : null}
+            <AvatarFallback className="text-2xs font-semibold text-foreground">
+              {(safeSellerName.trim()[0] ?? "?").toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <span className="min-w-0 truncate">{safeSellerName}</span>
+          {isVerifiedBusinessSeller ? (
+            <span
+              className="inline-flex size-3 shrink-0 items-center justify-center rounded-full text-success"
+              role="img"
+              aria-label={t("b2b.verifiedShort")}
+            >
+              <Check className="size-3" aria-hidden="true" />
+            </span>
+          ) : null}
+        </div>
       </CardContent>
     </ProductCardFrame>
   )

@@ -50,8 +50,9 @@ describe("MobileProductCard", () => {
       />
     )
 
-    // Promoted badge still visible
-    expect(screen.getByTestId("product-card-ad-badge")).toBeInTheDocument()
+    // Max 1 overlay badge: prefer discount over promoted/condition
+    expect(screen.getByTestId("product-card-discount-badge")).toBeInTheDocument()
+    expect(screen.queryByTestId("product-card-ad-badge")).not.toBeInTheDocument()
 
     // Category badge is NOT rendered (design: no category overlay)
     expect(screen.queryByText("Electronics")).not.toBeInTheDocument()

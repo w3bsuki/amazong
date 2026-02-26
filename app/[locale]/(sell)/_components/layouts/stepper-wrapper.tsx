@@ -77,7 +77,7 @@ export function StepperWrapper({
   isSubmitDisabled = false,
 }: StepperWrapperProps) {
   const form = useSellForm();
-  const { currentStep, setCurrentStep, clearDraft } = useSellFormContext();
+  const { currentStep, setCurrentStep, clearDraft, isSaving, autoSaved } = useSellFormContext();
   const router = useRouter();
   const tCommon = useTranslations("Common");
   const tSell = useTranslations("Sell");
@@ -92,6 +92,7 @@ export function StepperWrapper({
   const totalSteps = steps.length;
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === totalSteps;
+  const savingStatusLabel = isSaving ? tCommon("saving") : autoSaved ? tCommon("saved") : null
 
   useEffect(() => {
     const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -111,7 +112,7 @@ export function StepperWrapper({
   }, [currentStep]);
 
   useEffect(() => {
-    contentRef.current?.scrollTo({ top: 0, behavior: "instant" });
+    contentRef.current?.scrollTo({ top: 0, behavior: "auto" });
   }, [currentStep]);
 
   const handleBack = () => {
@@ -174,8 +175,13 @@ export function StepperWrapper({
           </div>
 
           {/* Step count */}
-          <div className="min-w-20 text-right text-2xs font-semibold tabular-nums text-muted-foreground">
-            {tSell("stepCounter", { current: currentStep, total: totalSteps })}
+          <div className="min-w-20 text-right">
+            <div className="text-2xs font-medium leading-none text-muted-foreground">
+              {savingStatusLabel ?? "\u00A0"}
+            </div>
+            <div className="mt-0.5 text-2xs font-semibold tabular-nums text-muted-foreground">
+              {tSell("stepCounter", { current: currentStep, total: totalSteps })}
+            </div>
           </div>
         </div>
 

@@ -308,6 +308,7 @@ export default async function SearchPage({
       browseMode={browseMode}
       query={query}
       categorySlug={categorySlug ?? null}
+      searchParamsString={searchUrlParams.toString()}
       currentPage={currentPage}
       currentCategory={currentCategory}
       parentCategory={parentCategory}

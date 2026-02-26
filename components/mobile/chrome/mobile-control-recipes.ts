@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils"
 
 const MOBILE_QUICK_PILL_BASE_CLASS =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3.5 py-1.5 min-h-(--control-compact) text-sm leading-none tap-transparent transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-const MOBILE_QUICK_PILL_ACTIVE_CLASS = "bg-foreground text-background font-medium"
+  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3 py-1.5 min-h-(--control-compact) text-compact leading-none tap-transparent transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+const MOBILE_QUICK_PILL_ACTIVE_CLASS = "bg-foreground text-background font-semibold"
 const MOBILE_QUICK_PILL_INACTIVE_CLASS =
   "bg-secondary text-muted-foreground font-medium hover:bg-accent hover:text-foreground"
 

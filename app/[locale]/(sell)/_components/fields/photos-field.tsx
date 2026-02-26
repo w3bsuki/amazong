@@ -180,8 +180,9 @@ export function PhotosField({
 
     // Upload all files
     const uploadPromises = filesToUpload.map(async (file, idx) => {
+      let progressInterval: ReturnType<typeof setInterval> | null = null
       try {
-        const progressInterval = setInterval(() => {
+        progressInterval = setInterval(() => {
           setUploads(prev => prev.map((u, i) =>
             i === idx && u.progress < 90
               ? { ...u, progress: u.progress + 10 }
@@ -191,7 +192,6 @@ export function PhotosField({
 
         const result = await uploadFile(file);
 
-        clearInterval(progressInterval);
         setUploads(prev => prev.map((u, i) =>
           i === idx ? { ...u, progress: 100, status: "done" as const } : u
         ));
@@ -206,6 +206,10 @@ export function PhotosField({
           } : u
         ));
         return null;
+      } finally {
+        if (progressInterval) {
+          clearInterval(progressInterval)
+        }
       }
     });
 
@@ -452,4 +456,3 @@ export function PhotosField({
     </>
   );
 }
-

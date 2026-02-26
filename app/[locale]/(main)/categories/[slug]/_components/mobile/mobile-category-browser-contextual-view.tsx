@@ -1,6 +1,10 @@
+
+"use client"
+
 import type { CategoryAttribute } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/data/products"
 import dynamic from "next/dynamic"
+import { useTranslations } from "next-intl"
 import {
   SmartRail,
   type SmartRailAction,
@@ -63,6 +67,11 @@ export function MobileCategoryBrowserContextualView({
   activeSlug,
   onLoadMore,
 }: MobileCategoryBrowserContextualViewProps) {
+  const tDrawer = useTranslations("CategoryDrawer")
+  const listingsCountLabel = tDrawer("listingsCount", {
+    count: hasMore ? `${products.length}+` : products.length,
+  })
+
   return (
     <PageShell variant="muted" className="w-full">
       <div className={MOBILE_FEED_FRAME_CLASS}>
@@ -75,6 +84,10 @@ export function MobileCategoryBrowserContextualView({
           sticky={true}
           testId="mobile-category-scope-rail"
         />
+
+        <p className="px-inset pt-1 text-xs text-muted-foreground" data-testid="mobile-category-listings-count">
+          {listingsCountLabel}
+        </p>
 
         <div className="px-inset pt-2">
           <div className="overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated">

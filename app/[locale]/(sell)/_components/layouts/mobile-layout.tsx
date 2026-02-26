@@ -1,15 +1,19 @@
 "use client"
 
+import { useCallback, useMemo } from "react"
+import { toast } from "sonner"
+import { useTranslations } from "next-intl"
+import type { FieldErrors } from "react-hook-form"
 
-import { useMemo } from "react";
-import { useSellForm, useSellFormContext } from "../sell-form-provider";
-import { StepCategory } from "../steps/step-category";
-import { StepDetails } from "../steps/step-details";
-import { StepPhotos } from "../steps/step-photos";
-import { StepPricing } from "../steps/step-pricing";
-import { StepReview } from "../steps/step-review";
-import { StepperWrapper } from "./stepper-wrapper";
-import type { SellFormDataV4 } from "@/lib/sell/schema";
+import type { SellFormDataV4 } from "@/lib/sell/schema"
+
+import { useSellForm, useSellFormContext } from "../sell-form-provider"
+import { StepCategory } from "../steps/step-category"
+import { StepDetails } from "../steps/step-details"
+import { StepPhotos } from "../steps/step-photos"
+import { StepPricing } from "../steps/step-pricing"
+import { StepReview } from "../steps/step-review"
+import { StepperWrapper } from "./stepper-wrapper"
 
 // ============================================================================
 // MOBILE LAYOUT - Premium 5-step wizard with Framer Motion animations
@@ -27,118 +31,141 @@ const MOBILE_STEPS = [
   { id: 1, fields: ["images"] },
   { id: 2, fields: ["title", "description", "condition"] },
   { id: 3, fields: ["categoryId", "brandId", "brandName", "attributes"] },
-  { id: 4, fields: ["format", "price", "compareAtPrice", "quantity", "shippingPrice", "sellerCity"] },
+  {
+    id: 4,
+    fields: [
+      "format",
+      "price",
+      "compareAtPrice",
+      "quantity",
+      "shippingPrice",
+      "sellerCity",
+      "shipsToBulgaria",
+      "shipsToUK",
+      "shipsToEurope",
+      "shipsToUSA",
+      "shipsToWorldwide",
+      "pickupOnly",
+      "freeShipping",
+    ],
+  },
   { id: 5, fields: [] },
-];
+]
+
+const FIELD_STEP_INDEX = Object.fromEntries(
+  MOBILE_STEPS.flatMap((step) => step.fields.map((field) => [field, step.id]))
+)
+const ORDERED_FIELDS = MOBILE_STEPS.flatMap((step) => step.fields)
+
+function findFirstErrorMessage(value: unknown): string | undefined {
+  if (!value) return undefined
+
+  if (typeof value === "object") {
+    if ("message" in value && typeof (value as { message?: unknown }).message === "string") {
+      return (value as { message: string }).message
+    }
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const message = findFirstErrorMessage(item)
+        if (message) return message
+      }
+      return undefined
+    }
+
+    for (const nested of Object.values(value as Record<string, unknown>)) {
+      const message = findFirstErrorMessage(nested)
+      if (message) return message
+    }
+  }
+
+  return undefined
+}
 
 interface MobileLayoutProps {
-  onSubmit: (data: SellFormDataV4) => void;
-  isSubmitting?: boolean;
+  onSubmit: (data: SellFormDataV4) => void
+  isSubmitting?: boolean
 }
 
 export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutProps) {
-  const form = useSellForm();
-  const { currentStep, setCurrentStep } = useSellFormContext();
+  const form = useSellForm()
+  const { currentStep, setCurrentStep } = useSellFormContext()
+  const tSell = useTranslations("Sell")
 
-  const images = form.watch("images");
-  const title = form.watch("title");
-  const categoryId = form.watch("categoryId");
-  const condition = form.watch("condition");
-  const description = form.watch("description");
-  const price = form.watch("price");
-
-  const canContinue = useMemo(() => {
-    if (currentStep === 1) {
-      return Boolean(images && images.length > 0);
+  const getTranslatedError = useCallback((message: string | undefined) => {
+    if (!message) return null
+    try {
+      return tSell(message as never)
+    } catch {
+      return message
     }
+  }, [tSell])
 
-    if (currentStep === 2) {
-      const hasTitle = Boolean(title && title.trim().length >= 5);
-      const hasDescription = Boolean(description && description.trim().length >= 50);
-      const hasCondition = Boolean(condition);
-      return hasTitle && hasDescription && hasCondition;
-    }
+  const orderedFields = useMemo(() => ORDERED_FIELDS, [])
 
-    if (currentStep === 3) {
-      return Boolean(categoryId);
-    }
+  const handleSubmit = useCallback(() => {
+    form.handleSubmit((data) => onSubmit(data), (errors: FieldErrors<SellFormDataV4>) => {
+      const errorsRecord = errors as unknown as Record<string, unknown>
 
-    if (currentStep === 4) {
-      return Boolean(price && Number.parseFloat(price) > 0);
-    }
+      const firstError =
+        orderedFields.find((field) => Boolean(errorsRecord[field])) ?? Object.keys(errorsRecord)[0]
+      if (!firstError) return
 
-    return true;
-  }, [categoryId, condition, currentStep, description, images, price, title]);
+      const rawMessage = findFirstErrorMessage(errorsRecord[firstError])
+      const translatedMessage = getTranslatedError(rawMessage) ?? tSell("errors.fixHighlighted")
+      toast.error(translatedMessage)
 
-  const isPublishDisabled = useMemo(() => {
-    const hasPhotos = Boolean(images && images.length > 0);
-    const hasTitle = Boolean(title && title.trim().length >= 5);
-    const hasCategory = Boolean(categoryId);
-    const hasCondition = Boolean(condition);
-    const hasDescription = Boolean(description && description.trim().length >= 50);
-    const hasPrice = Boolean(price && Number.parseFloat(price) > 0);
-    return !(hasPhotos && hasTitle && hasCategory && hasCondition && hasDescription && hasPrice);
-  }, [categoryId, condition, description, images, price, title]);
+      const targetStep = FIELD_STEP_INDEX[firstError] ?? 1
+      setCurrentStep(targetStep)
 
-  // Handle submission
-  const handleSubmit = () => {
-    form.handleSubmit(
-      (data) => onSubmit(data),
-      (errors) => {
-        const errorKeys = Object.keys(errors);
-        const firstError = errorKeys[0];
-        if (!firstError) return;
-
-        if (firstError === "images") {
-          setCurrentStep(1);
-          return;
-        }
-
-        if (firstError === "title" || firstError === "description" || firstError === "condition") {
-          setCurrentStep(2);
-          return;
-        }
-
-        if (
-          firstError === "categoryId" ||
-          firstError === "categoryPath" ||
-          firstError === "attributes" ||
-          firstError === "brandId" ||
-          firstError === "brandName"
-        ) {
-          setCurrentStep(3);
-          return;
-        }
-
-        setCurrentStep(4);
+      if (firstError !== "images") {
+        requestAnimationFrame(() => {
+          try {
+            form.setFocus(firstError as never)
+          } catch {
+            // Best-effort focus only; some steps use custom UI without a focusable input.
+          }
+        })
       }
-    )();
-  };
+    })()
+  }, [form, getTranslatedError, onSubmit, orderedFields, setCurrentStep, tSell])
 
-  const handleNext = async () => {
-    const stepFields = MOBILE_STEPS[currentStep - 1]?.fields ?? [];
-    const ok = stepFields.length > 0 ? await form.trigger(stepFields as never) : true;
-    if (!ok) return;
-    if (currentStep < MOBILE_STEPS.length) setCurrentStep(currentStep + 1);
-  };
+  const handleNext = useCallback(async () => {
+    const stepFields = MOBILE_STEPS[currentStep - 1]?.fields ?? []
+    const ok = stepFields.length > 0
+      ? await form.trigger(stepFields as never, { shouldFocus: true })
+      : true
+
+    if (!ok) {
+      const errors = form.formState.errors as unknown as Record<string, unknown>
+      const firstWithError = stepFields.find((field) => Boolean(errors[field]))
+      const rawMessage = firstWithError ? findFirstErrorMessage(errors[firstWithError]) : undefined
+      const translatedMessage = getTranslatedError(rawMessage)
+        ?? tSell("errors.fixHighlighted")
+      toast.error(translatedMessage)
+      return
+    }
+
+    if (currentStep < MOBILE_STEPS.length) setCurrentStep(currentStep + 1)
+  }, [currentStep, form, getTranslatedError, setCurrentStep, tSell])
 
   // Render current step content
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <StepPhotos />;
+        return <StepPhotos />
       case 2:
-        return <StepDetails />;
+        return <StepDetails />
       case 3:
-        return <StepCategory />;
+        return <StepCategory />
       case 4:
-        return <StepPricing />;
+        return <StepPricing />
       case 5:
-        return <StepReview />;
+        return <StepReview />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <StepperWrapper 
@@ -146,12 +173,10 @@ export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutPro
       onSubmit={handleSubmit} 
       onNext={handleNext}
       isSubmitting={isSubmitting}
-      isNextDisabled={!canContinue}
-      isSubmitDisabled={isPublishDisabled}
+      isNextDisabled={false}
+      isSubmitDisabled={false}
     >
       {renderStepContent()}
     </StepperWrapper>
-  );
+  )
 }
-
-

@@ -683,7 +683,25 @@
             "description": "Meet in public places, inspect items before payment, and use secure payment methods."
         },
         "report": {
-            "listing": "Report this listing"
+            "listing": "Report this listing",
+            "title": "Report listing",
+            "description": "Tell us what’s wrong and we’ll review this listing.",
+            "reasonLabel": "Reason",
+            "reasons": {
+                "scam": "Scam or fraud",
+                "harassment": "Harassment",
+                "spam": "Spam",
+                "inappropriate": "Prohibited or inappropriate item",
+                "other": "Other"
+            },
+            "detailsLabel": "Details (optional)",
+            "detailsPlaceholder": "Add any details that help us review…",
+            "submit": "Submit report",
+            "toasts": {
+                "submitted": "Report submitted",
+                "failed": "Couldn't submit report",
+                "authRequired": "Sign in to report listings"
+            }
         }
     },
     "ProductModal": {
@@ -1022,6 +1040,7 @@
         "payNow": "Pay Now",
         "buyerProtection": "Buyer Protection",
         "buyerProtectionDescription": "Secure payment and protection for order issues",
+        "buyerProtectionFeeHelp": "A small fee that helps cover secure payment processing and buyer support if something goes wrong.",
         "changeAddress": "Change address",
         "selectShippingAddress": "Select shipping address",
         "addNewAddress": "Add new address",
@@ -2105,6 +2124,25 @@
         "stopGenerating": "Stop",
         "sendMessage": "Send message",
         "aiMoreResults": "+{count} more"
+    },
+    "SearchPage": {
+        "trendingSearches": [
+            "iPhone 15 Pro",
+            "PlayStation 5",
+            "AirPods Pro",
+            "Nike sneakers",
+            "Gaming laptop",
+            "Winter jacket",
+            "Vintage dress",
+            "Baby stroller",
+            "Coffee machine",
+            "Smartwatch",
+            "Bluetooth speaker",
+            "LEGO",
+            "Desk chair",
+            "Guitar",
+            "Car accessories"
+        ]
     },
     "SearchFilters": {
         "department": "Department",
@@ -3671,6 +3709,7 @@
         },
         "errors": {
             "signInRequired": "Please sign in to continue",
+            "fixHighlighted": "Please fix the highlighted fields.",
             "createFailed": "Failed to create listing",
             "publishFailed": "Error publishing listing"
         },

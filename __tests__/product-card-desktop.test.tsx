@@ -60,8 +60,8 @@ describe("DesktopProductCard", () => {
     expect(link).toHaveAttribute("href", "/treido/iphone-15")
 
     expect(screen.getByText(/1,950/)).toBeInTheDocument()
-    expect(screen.getByText("freeDeliveryShort")).toBeInTheDocument()
-    expect(screen.getByText("b2b.verifiedShort")).toBeInTheDocument()
-    expect(screen.getByText(/sold/i)).toBeInTheDocument()
+    expect(screen.getByTestId("product-card-discount-badge")).toBeInTheDocument()
+    expect(screen.getByTestId("product-card-seller-row")).toHaveTextContent("Treido")
+    expect(screen.getByLabelText("b2b.verifiedShort")).toBeInTheDocument()
   })
 })

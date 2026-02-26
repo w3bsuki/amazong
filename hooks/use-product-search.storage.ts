@@ -63,6 +63,22 @@ export function persistRecentSearches(searches: string[]) {
   }
 }
 
+export function upsertRecentSearch(search: string): string[] {
+  if (!isBrowser()) return []
+
+  const trimmedSearch = search.trim()
+  if (!trimmedSearch) return loadRecentSearches()
+
+  const recentSearches = loadRecentSearches()
+  const updated = [
+    trimmedSearch,
+    ...recentSearches.filter((item) => item.toLowerCase() !== trimmedSearch.toLowerCase()),
+  ].slice(0, MAX_RECENT_SEARCHES)
+
+  persistRecentSearches(updated)
+  return updated
+}
+
 export function persistRecentProducts(products: RecentSearchedProduct[]) {
   if (!isBrowser()) return
   try {

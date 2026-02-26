@@ -80,6 +80,8 @@
   /* 48px - category list rows */
   --touch-target-category-chip: var(--control-default);
   /* 44px - chips & pills in category flows */
+  --size-category-tile: 3.25rem;
+  /* 52px - category icon tiles (home) */
 
   /* Legacy aliases (kept for staged migration) */
   --spacing-touch-xs: 2rem;

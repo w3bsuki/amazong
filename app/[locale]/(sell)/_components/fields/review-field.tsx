@@ -121,7 +121,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
     } else {
       setCurrentStep(step);
     }
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   // Get condition label
@@ -365,4 +365,3 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
     </div>
   );
 }
-

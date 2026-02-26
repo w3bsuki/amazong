@@ -15,7 +15,7 @@ describe("use-product-search.shared", () => {
   it("keeps search constants stable", () => {
     expect(SEARCH_DEBOUNCE_MS).toBe(300)
     expect(MIN_SEARCH_LENGTH).toBe(2)
-    expect(MAX_RECENT_SEARCHES).toBe(5)
+    expect(MAX_RECENT_SEARCHES).toBe(10)
     expect(MAX_RECENT_PRODUCTS).toBe(6)
   })
 

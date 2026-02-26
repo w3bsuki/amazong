@@ -21,6 +21,7 @@ import { MobileBottomBar } from "./mobile-bottom-bar";
 import { MobileSellerPreviewCard } from "./mobile-seller-preview-card";
 import { MobileSafetyTips, MobileReportButton } from "./mobile-trust-sections";
 import { SellerProfileDrawer } from "./seller-profile-drawer";
+import { ReportListingDialog } from "../report-listing-dialog";
 
 // Shared product components
 import { VisualDrawerSurface } from "@/components/shared/visual-drawer-surface";
@@ -123,6 +124,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
   // Time ago formatting
   const [mounted, setMounted] = useState(false);
   const [sellerDrawerOpen, setSellerDrawerOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const timeAgo =
@@ -320,7 +322,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
 
         <div className="space-y-4 px-inset pt-4">
           <MobileSafetyTips />
-          <MobileReportButton />
+          <MobileReportButton onReport={() => setReportOpen(true)} />
         </div>
 
         {/* Similar items rail */}
@@ -353,6 +355,12 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
         seller={sellerPreview}
         products={sellerProducts}
         onChat={handleMobileSellerChat}
+      />
+
+      <ReportListingDialog
+        productId={String(product.id)}
+        open={reportOpen}
+        onOpenChange={setReportOpen}
       />
     </PageShell>
   );

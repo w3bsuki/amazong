@@ -14,12 +14,6 @@ interface RouteContext {
   params: Promise<{ badgeId: string }>
 }
 
-interface FeatureBadgeRow {
-  id: string
-  user_id: string
-  is_featured: boolean | null
-}
-
 function isMissingIsFeaturedColumnError(error: { code?: string; message?: string }) {
   return error.code === "42703" || error.message?.includes("is_featured") === true
 }

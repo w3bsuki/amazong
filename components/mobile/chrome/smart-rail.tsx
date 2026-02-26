@@ -60,7 +60,8 @@ function getActionClass(action: SmartRailAction): string {
   if (variant === "icon") {
     return cn(
       MOBILE_ACTION_ICON_CLASS,
-      action.active && "border-foreground bg-secondary"
+      "relative border",
+      action.active ? "border-foreground" : "border-border",
     )
   }
 

@@ -24,6 +24,7 @@ import {
   Clock,
   MapPin,
   BadgeCheck,
+  Flag,
   Store,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -37,6 +38,7 @@ import type { CategoryType } from "@/lib/utils/category-type"
 import { DesktopBuyBoxCtaSection } from "./desktop-buy-box-cta-section"
 import { DesktopBuyBoxPriceSection } from "./desktop-buy-box-price-section"
 import { DesktopBuyBoxShippingInfo } from "./desktop-buy-box-shipping-info"
+import { ReportListingDialog } from "../report-listing-dialog"
 
 interface SellerInfo {
   id: string
@@ -93,6 +95,7 @@ export function DesktopBuyBox({
   const { toast } = useToast()
 
   const [quantity, setQuantity] = useState(1)
+  const [reportOpen, setReportOpen] = useState(false)
   const [wishlistPending, setWishlistPending] = useState(false)
 
   const isRealEstate = categoryType === "real-estate"
@@ -360,6 +363,17 @@ export function DesktopBuyBox({
           )}
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setReportOpen(true)}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-hover hover:text-foreground active:bg-active"
+      >
+        <Flag className="size-4" aria-hidden="true" />
+        {t("report.listing")}
+      </button>
+
+      <ReportListingDialog productId={productId} open={reportOpen} onOpenChange={setReportOpen} />
     </div>
   )
 }

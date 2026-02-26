@@ -48,12 +48,12 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 
 ### 0.2 Core Journey Breakages
 
-- [ ] **PH0-FIX-002:** Sell flow UX is terrible — needs redesign
+- [x] **PH0-FIX-002:** Sell flow UX is terrible — needs redesign
   - Context: `docs/features/sell-flow.md`
   - Capability: Sell flow quality and completion
   - Done: seller can list a product end-to-end with clear UX, image upload works, form validation helpful
 
-- [ ] **PH0-FIX-003:** Account settings broken on mobile, incomplete on desktop
+- [x] **PH0-FIX-003:** Account settings broken on mobile, incomplete on desktop
   - Context: `docs/features/auth.md`, `docs/DESIGN.md`
   - Capability: Account/profile reliability
   - Done: all settings accessible on mobile (375px), no overflow, no broken interactions
@@ -66,16 +66,17 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
   - Note (2026-02-23): Completed safe `lib/` hardening pass. Full gate passes.
   - Done: domain refactored per plan, verification passes, no auth/payment regressions
 
-- [ ] **PH0-TRUST-001:** Checkout buyer protection UX (blocking/warning)
+- [x] **PH0-TRUST-001:** Checkout buyer protection UX (blocking/warning)
   - Context: `docs/features/checkout-payments.md`
   - Capability: Stripe checkout + escrow lifecycle
   - Done: buyer protection fee visible before payment, clear explanation text
 
-- [ ] **PH0-TRUST-002:** PDP report modal/flow (trust & safety)
+- [x] **PH0-TRUST-002:** PDP report modal/flow (trust & safety)
   - Done: report button opens modal, user selects reason + submits, report stored in DB
 
-- [ ] **PH0-TRUST-003:** Verify product data sanity — no test/dummy listings
+- [x] **PH0-TRUST-003:** Verify product data sanity — no test/dummy listings
   - Done: audit shows only real listings, categories make sense
+  - Finding (2026-02-26): dummy/test listings found only in `supabase/seed.sql` (local seed); no other repo-held production data sources contain dummy listings.
 
 ### 0.5 UI/UX Polish — Inspiration Audit (ref: `designs/ui-ux-dream-weaver/`)
 
@@ -85,7 +86,7 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 
 #### A. Landing Page (Home) — Layout & Visual Hierarchy
 
-- [ ] **PH0-UX-001:** Add Category Icon Grid above SmartRail on mobile home
+- [x] **PH0-UX-001:** Add Category Icon Grid above SmartRail on mobile home
   - Add a "Categories" section with icon grid (6–8 items) between header and SmartRail
   - Pattern: 52px rounded-xl tiles with lucide icons + 10px labels below
   - Include "See all →" link to /categories
@@ -93,14 +94,14 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
   - Scroll horizontally on overflow, hide scrollbar
   - Done: category icon row visible on mobile home, links to category pages
 
-- [ ] **PH0-UX-002:** Differentiate SmartRail (categories) vs DiscoveryRail (scope) visually
+- [x] **PH0-UX-002:** Differentiate SmartRail (categories) vs DiscoveryRail (scope) visually
   - SmartRail = category navigation (stronger pills, `bg-foreground/text-background` active)
   - DiscoveryRail = discovery scope (lighter ghost pills, keep current border style)
   - Add a thin `border-t border-border` divider between category icon grid and SmartRail
   - Tighten vertical spacing between rails — they currently feel disconnected
   - Done: two rails have clearly different visual weight, no confusion about purpose
 
-- [ ] **PH0-UX-003:** Tighten home page vertical rhythm and section spacing
+- [x] **PH0-UX-003:** Tighten home page vertical rhythm and section spacing
   - Consistent `px-4` (px-inset) gutters throughout
   - Section labels: "Categories" heading (15px semibold) with "See all" link
   - Predictable spacing: `space-y-1` between stacked rails, `pt-2` before feed
@@ -109,14 +110,14 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 
 #### B. Product Cards — Content-First Tightening
 
-- [ ] **PH0-UX-004:** Reorder product card info hierarchy to Price → Title → Seller
+- [x] **PH0-UX-004:** Reorder product card info hierarchy to Price → Title → Seller
   - Current: Category badge → Seller row → Title → Price
   - Target: Price (strongest, `text-sm font-semibold tabular-nums`) → Title (compact, muted) → Seller (smallest, with avatar + verified badge)
   - Price is the hero element — make it the first line after the image
   - Keep seller always visible (per user request) but visually smallest
   - Done: price is the first text element under every product image
 
-- [ ] **PH0-UX-005:** Reduce product card visual noise
+- [x] **PH0-UX-005:** Reduce product card visual noise
   - Remove card borders and shadows if present (flat design)
   - Limit image overlay badges to max 1 (prefer discount % or condition, not both)
   - Category badge: remove from card face (already filterable via rails)
@@ -125,7 +126,7 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
   - Keep wishlist button for hover/tap but ensure it doesn't clutter
   - Done: cards are cleaner, image is the hero, max 1 text overlay on image
 
-- [ ] **PH0-UX-006:** Tighten product card typography and spacing
+- [x] **PH0-UX-006:** Tighten product card typography and spacing
   - Image: `aspect-[3/4]` for taller editorial crop (currently 4/3 landscape)
   - Text area: `space-y-0.5` between lines (currently `gap-1.5`, too loose)
   - Price: `text-sm font-semibold` (14px)
@@ -136,7 +137,7 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 
 #### C. Search Page — Empty State & Discovery
 
-- [ ] **PH0-UX-007:** Add "empty query" search home state with Recent + Trending
+- [x] **PH0-UX-007:** Add "empty query" search home state with Recent + Trending
   - When search input is empty: show "Recent" section (chip pills of past searches) + "Trending" section (numbered list, 1–5)
   - Recent: horizontal wrap chips, `rounded-full bg-surface-subtle text-xs`
   - Trending: numbered list with dividers, rank number + search term
@@ -144,7 +145,7 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
   - Store recent searches in localStorage (max 10, deduplicated)
   - Done: search page has useful empty state, not just a blank page
 
-- [ ] **PH0-UX-008:** Tighten search results layout
+- [x] **PH0-UX-008:** Tighten search results layout
   - When results show: category chips appear as horizontal filter bar below search
   - Show result count: "12 results for 'query'" in muted text
   - Keep existing advanced filter capabilities (seller mode, attributes) accessible via filter button
@@ -175,7 +176,7 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 
 #### E. Category Filtering Bar
 
-- [ ] **PH0-UX-012:** Add filter bar pattern to category browse pages
+- [x] **PH0-UX-012:** Add filter bar pattern to category browse pages
   - Pattern: `Filter` button (with badge count) + `|` vertical divider + "All" pill + category pills
   - Subcategory row appears below when a category is selected (label prefix + child pills)
   - Show listing count below chip rows
@@ -284,4 +285,4 @@ Read AGENTS.md. Read docs/architecture/AI-PLATFORM.md. Then do task PH2-AI-001 f
 
 ---
 
-*Last updated: 2026-02-24*
+*Last updated: 2026-02-26*

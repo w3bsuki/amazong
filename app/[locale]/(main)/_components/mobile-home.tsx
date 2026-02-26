@@ -11,7 +11,6 @@ import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 import { getCategoryName, getCategorySlugKey } from "@/lib/data/categories/display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useHeader } from "@/components/providers/header-context"
-import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
 import {
   SmartRail,
   type SmartRailAction,
@@ -24,8 +23,7 @@ import { MobileHomeFeed } from "./mobile-home/mobile-home-feed"
 import { useMobileHomeCategoryNav } from "./mobile-home/use-mobile-home-category-nav"
 import { useHomeCityStorage } from "./mobile-home/use-home-city-storage"
 import { MobileHomeBrowseOptionsSheet } from "./mobile-home/mobile-home-browse-options-sheet"
-import { MobileHomeContextBanner } from "./mobile-home/mobile-home-context-banner"
-import { MobileHomePrimaryRail } from "./mobile-home/mobile-home-primary-rail"
+import { MobileHomeCategoryIconGrid } from "./mobile-home/mobile-home-category-icon-grid"
 import { useMobileHomeL2Options } from "./mobile-home/use-mobile-home-l2-options"
 
 interface MobileHomeProps {
@@ -111,7 +109,6 @@ export function MobileHome({
   })
   useHomeCityStorage(city, setCity)
 
-  const categoryDrawer = useCategoryDrawerOptional()
   const { setHeaderState } = useHeader()
 
   useEffect(() => {
@@ -217,16 +214,10 @@ export function MobileHome({
         icon: <ArrowLeft size={18} aria-hidden="true" />,
         onSelect: () => handlePrimaryTab(null),
         testId: "home-v4-rail-back",
+        variant: "icon",
+        ariaLabel: tV4("actions.reset"),
       }
-    : categoryDrawer
-      ? {
-          label: tCategories("title"),
-          variant: "pill",
-          onSelect: () => categoryDrawer.openRoot(),
-          ariaLabel: tV4("actions.openCategories"),
-          testId: "home-v4-rail-open-categories",
-        }
-      : undefined
+    : undefined
 
   const railTrailingAction: SmartRailAction = {
     label: tV4("actions.filter"),
@@ -235,11 +226,28 @@ export function MobileHome({
     badgeCount: activeFilterCount,
     onSelect: () => setFilterOpen(true),
     testId: "home-v4-filter-trigger",
+    variant: "icon",
+    ariaLabel: tV4("actions.filter"),
   }
 
   const railPills: SmartRailPill[] = useMemo(() => {
     if (!activeCategorySlug) {
-      return []
+      return [
+        {
+          id: "all",
+          label: tV4("actions.all"),
+          active: true,
+          onSelect: () => handlePrimaryTab(null),
+          testId: "home-v4-root-all",
+        },
+        ...rootCategoryChips.map((category) => ({
+          id: category.slug,
+          label: getCategoryLabel(category),
+          active: false,
+          onSelect: () => handlePrimaryTab(category.slug),
+          testId: `home-v4-root-${category.slug}`,
+        })),
+      ]
     }
 
     const leafPills = popularLeafChips.length > 0 ? popularLeafChips : activeSubcategories
@@ -265,21 +273,12 @@ export function MobileHome({
     activeSubcategories,
     activeSubcategorySlug,
     getCategoryLabel,
+    handlePrimaryTab,
     handleSubcategoryPill,
     popularLeafChips,
+    rootCategoryChips,
     tV4,
   ])
-
-  const primaryTabs = useMemo(
-    () => [
-      { slug: null, label: tV4("actions.all") },
-      ...rootCategoryChips.map((category) => ({
-        slug: category.slug,
-        label: getCategoryLabel(category),
-      })),
-    ],
-    [getCategoryLabel, rootCategoryChips, tV4]
-  )
 
   const [browseOptionsOpen, setBrowseOptionsOpen] = useState(false)
 
@@ -287,7 +286,7 @@ export function MobileHome({
     setBrowseOptionsOpen(false)
   }, [activeSubcategory?.slug])
 
-  const { options: l2Options, isLoading: isLoadingL2Options, activeL2 } = useMobileHomeL2Options({
+  const { options: l2Options, isLoading: isLoadingL2Options } = useMobileHomeL2Options({
     activeSubcategory,
     activeL2Slug,
     setActiveL2Slug,
@@ -304,46 +303,6 @@ export function MobileHome({
         }
       : undefined
 
-  const handleOpenCategoryPicker = useCallback(() => {
-    categoryDrawer?.openRoot()
-  }, [categoryDrawer])
-
-  const contextBannerEyebrow = useMemo(() => {
-    if (activeCategory && activeSubcategory) return tV4("banner.eyebrowCategory")
-    return tV4(`banner.scopeEyebrow.${scope}`)
-  }, [activeCategory, activeSubcategory, scope, tV4])
-
-  const contextBannerTitle = useMemo(() => {
-    if (activeCategory && activeSubcategory && activeL2) {
-      return tV4("banner.categoryPathDeepTitle", {
-        parent: getCategoryLabel(activeCategory),
-        child: getCategoryLabel(activeSubcategory),
-        leaf: getCategoryLabel(activeL2),
-      })
-    }
-
-    if (activeCategory && activeSubcategory) {
-      return tV4("banner.categoryPathTitle", {
-        parent: getCategoryLabel(activeCategory),
-        child: getCategoryLabel(activeSubcategory),
-      })
-    }
-
-    if (activeCategory) {
-      return tV4("banner.categoryPathTitle", {
-        parent: getCategoryLabel(activeCategory),
-        child: tV4("actions.all"),
-      })
-    }
-
-    return tV4(`banner.scopeTitle.${scope}`)
-  }, [activeCategory, activeL2, activeSubcategory, getCategoryLabel, scope, tV4])
-
-  const contextBannerCount = useMemo(
-    () => tV4("banner.listingsCount", { count: products.length }),
-    [products.length, tV4]
-  )
-
   return (
     <PageShell variant="default" className="pb-4">
       {searchOpen ? (
@@ -355,48 +314,63 @@ export function MobileHome({
       ) : null}
 
       <div className="mx-auto w-full max-w-screen-md pb-tabbar-safe">
-        {/* Primary category rail */}
-        <MobileHomePrimaryRail
-          ariaLabel={tV4("aria.primaryCategories")}
-          tabs={primaryTabs}
-          activeCategorySlug={activeCategorySlug}
-          onSelect={handlePrimaryTab}
-        />
+        {!activeCategorySlug ? (
+          <>
+            <MobileHomeCategoryIconGrid
+              title={tCategories("title")}
+              seeAllLabel={tV4("actions.seeAll")}
+              categories={categories}
+              getCategoryLabel={getCategoryLabel}
+              onSelectCategory={(slug) => handlePrimaryTab(slug)}
+              testId="home-v4-category-icon-grid"
+            />
 
-        {/* Secondary rail: contextual subcategories + actions */}
-        <SmartRail
-          ariaLabel={railAriaLabel}
-          pills={railPills}
-          filterAction={browseOptionsAction}
-          leadingAction={railLeadingAction}
-          trailingAction={railTrailingAction}
-          sticky={true}
-          stickyTop="var(--offset-mobile-secondary-rail)"
-          className="py-0"
-          testId="home-v4-secondary-rail"
-        />
+            {/* Discovery scope tabs (with filter) */}
+            <DiscoveryRail
+              activeScope={scope}
+              onScopeChange={handleScopeChange}
+              t={tV4}
+              trailingAction={{
+                label: tV4("actions.filter"),
+                icon: <FiltersIcon size={18} aria-hidden="true" />,
+                active: hasActiveFilters,
+                badgeCount: activeFilterCount,
+                onSelect: () => setFilterOpen(true),
+                testId: "home-v4-filter-trigger",
+              }}
+              className="border-t border-border"
+              testId="home-v4-scope"
+            />
+          </>
+        ) : (
+          <div className="space-y-1">
+            {/* Smart rail: categories/subcategories + actions */}
+            <SmartRail
+              ariaLabel={railAriaLabel}
+              pills={railPills}
+              filterAction={browseOptionsAction}
+              leadingAction={railLeadingAction}
+              trailingAction={railTrailingAction}
+              sticky={true}
+              stickyTop="var(--offset-mobile-primary-rail)"
+              className="border-b-0 py-0"
+              testId="home-v4-secondary-rail"
+            />
 
-        {/* Context banner */}
-        <MobileHomeContextBanner
-          eyebrow={contextBannerEyebrow}
-          title={contextBannerTitle}
-          countLabel={contextBannerCount}
-          onOpenCategories={handleOpenCategoryPicker}
-          moreCategoriesLabel={tV4("actions.moreCategories")}
-        />
-
-        {/* Discovery scope tabs */}
-        <DiscoveryRail
-          activeScope={scope}
-          onScopeChange={handleScopeChange}
-          t={tV4}
-          testId="home-v4-scope"
-        />
+            {/* Discovery scope tabs */}
+            <DiscoveryRail
+              activeScope={scope}
+              onScopeChange={handleScopeChange}
+              t={tV4}
+              testId="home-v4-scope"
+            />
+          </div>
+        )}
 
         {/* Section header — visible when a category is active */}
         {activeCategorySlug && activeCategory && (
-          <div className="flex items-center justify-between px-4 pt-3 pb-2">
-            <h2 className="min-w-0 truncate text-sm font-bold text-foreground">
+          <div className="flex items-center justify-between px-4 pt-2 pb-1">
+            <h2 className="min-w-0 truncate text-reading font-semibold text-foreground">
               {getCategoryLabel(activeSubcategory ?? activeCategory)}
             </h2>
             <Link

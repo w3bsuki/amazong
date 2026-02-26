@@ -1,7 +1,6 @@
 "use client"
 
-
-import { useEffect } from 'react'
+import { useEffect } from "react"
 
 /**
  * Workaround for Chromium bug where performance.measure throws on negative timestamps.
@@ -25,16 +24,15 @@ export function PerformanceMeasureGuard() {
         // This appears intermittently for Next.js prerender timing entries.
         if (
           message.includes("Failed to execute 'measure' on 'Performance'") &&
-          message.includes('negative time stamp')
+          message.includes("negative time stamp") &&
+          typeof args[0] === "string"
         ) {
-          if (typeof args[0] === "string") {
-            // Fallback: retry with name-only measure to avoid negative timestamps.
-            // This preserves the return type (PerformanceMeasure) without crashing.
-            try {
-              return original(args[0])
-            } catch {
-              // Fall through to rethrow the original error below.
-            }
+          // Fallback: retry with name-only measure to avoid negative timestamps.
+          // This preserves the return type (PerformanceMeasure) without crashing.
+          try {
+            return original(args[0])
+          } catch {
+            // Fall through to rethrow the original error below.
           }
         }
 

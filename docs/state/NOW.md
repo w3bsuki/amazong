@@ -16,12 +16,11 @@ top_blockers:
   - "LAUNCH-002: Test refund/dispute flow end-to-end"
   - "LAUNCH-003: Verify Stripe prod/dev environment separation (keys + webhook secrets)"
   - "LAUNCH-004: Enable leaked password protection + rerun advisor (currently blocked by Supabase plan requirement)"
-current_focus: "REF-POLISH complete; resume MIG-001 Step 5 safely while closing the four launch blockers; schedule PH0-FIX-002 sell flow redesign next"
+current_focus: "PH0 safe hardening complete (UX/Search/Sell/Account/Trust); only human-approval blockers remain (MIG-001 Step 5 + LAUNCH-001..004 + PH0-REFACTOR-001)."
 active_workstreams:
   - "Launch blocker closure with human approval for sensitive ops"
-  - "Production-readiness refactor batches (file splits, route completeness, duplicate reduction)"
-  - "Sell flow UX redesign (FIX-002)"
-  - "Account settings mobile/desktop hardening (FIX-003)"
+  - "Resume MIG-001 Step 5 safely (schema/migration sequencing)"
+  - "Optional: continue duplicate reduction without raising client-boundary"
 next_session_boot:
   - "Read AGENTS.md"
   - "Read docs/state/NOW.md"
@@ -44,8 +43,8 @@ Remaining launch risk is concentrated in four sensitive blockers (payments/compl
 ## Recent Changes (Last 3)
 
 - 2026-02-26: Completed REF-POLISH Phase 3 tasks 001–010: removed global MotionProvider, shipped sitemap caching + metadata hardening, closed route loading/error gaps, completed image audit (no raw `<img>`), swept mobile UX (375px), enforced bundle budget (<150KB first-load JS), and verified E2E smoke + a11y green (tuned `--destructive` for discount badge contrast); all gates remain green.
+- 2026-02-26: Completed Phase 0 safe launch hardening batches: PH0-UX-001..008 + PH0-UX-012 (Home/Cards/Search/Categories), PH0-FIX-002..003 (Sell/Account UX hardening), and PH0-TRUST-001..003 (buyer protection copy, PDP report modal, data sanity audit); gates re-verified green (`typecheck`, `lint`, `styles:gate`, `test:unit`).
 - 2026-02-25: Completed REF-ALIGNMENT Phase 2 tasks 001–013: modular CSS split, action boundary standardization (Envelope + Zod→auth→domain), Supabase select/filter helpers, layout chrome move to `components/layout`, API param normalization, and removal of all `pb-20` hacks; full gates remain green (including architecture:gate).
-- 2026-02-25: Refreshed mobile Home landing to match the Dream Weaver browse pattern: 2-row header (icons + search bar), categories icon strip, stronger filled discovery chips, portrait feed cards with discount badges; gates remain green.
 
 ## Open Decisions (Max 3)
 

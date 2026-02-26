@@ -193,18 +193,33 @@ export function MobileCategoryBrowserContextual({
     return () => setHeaderState(null)
   }, [setHeaderState])
 
+  const instantCategorySlug = instant.categorySlug
+  const instantChildrenCount = instant.children.length
+  const instantParentSlug = instant.parent?.slug ?? null
+  const instantGoBack = instant.goBack
+
   const railPills = useMemo<SmartRailPill[]>(() => {
-    const isLeafNode = instant.children.length === 0
+    const isLeafNode = instantChildrenCount === 0
     const pills: SmartRailPill[] = []
 
-    if (!isLeafNode) {
-      pills.push({
-        id: "all",
-        label: tCategories("all"),
-        active: true,
-        testId: "mobile-category-pill-all",
-      })
+    const hasParent = Boolean(instantParentSlug)
 
+    pills.push({
+      id: "all",
+      label: tCategories("all"),
+      active: !hasParent,
+      ...(hasParent
+        ? {
+            onSelect: () => {
+              setSectionPath([])
+              void instantGoBack()
+            },
+          }
+        : {}),
+      testId: "mobile-category-pill-all",
+    })
+
+    if (!isLeafNode) {
       for (const cat of railCategories) {
         const label = railLabelBySlug.get(cat.slug)
         if (!label) continue
@@ -219,7 +234,7 @@ export function MobileCategoryBrowserContextual({
       return pills
     }
 
-    const activeCategory = railCategories.find((cat) => cat.slug === instant.categorySlug) ?? null
+    const activeCategory = railCategories.find((cat) => cat.slug === instantCategorySlug) ?? null
     if (activeCategory) {
       pills.push({
         id: activeCategory.id,
@@ -230,7 +245,7 @@ export function MobileCategoryBrowserContextual({
     }
 
     for (const cat of railCategories) {
-      if (cat.slug === instant.categorySlug) continue
+      if (cat.slug === instantCategorySlug) continue
       const label = railLabelBySlug.get(cat.slug)
       if (!label) continue
       pills.push({
@@ -244,8 +259,10 @@ export function MobileCategoryBrowserContextual({
     return pills
   }, [
     handleOptionSelect,
-    instant.categorySlug,
-    instant.children.length,
+    instantCategorySlug,
+    instantChildrenCount,
+    instantGoBack,
+    instantParentSlug,
     railCategories,
     railLabelBySlug,
     tCategories,
@@ -290,7 +307,7 @@ export function MobileCategoryBrowserContextual({
       active: hasActiveFilters,
       ...(activeFilterCount > 0 ? { badgeCount: activeFilterCount } : {}),
       testId: "mobile-category-filter-trigger",
-      variant: "icon",
+      variant: "chip",
     }
   }, [activeFilterCount, hasActiveFilters, tSearchFilters])
 

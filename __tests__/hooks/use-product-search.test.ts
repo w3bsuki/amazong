@@ -254,20 +254,21 @@ describe('hooks/use-product-search', () => {
       expect(result.current.recentSearches[0]).toBe('phone')
     })
     
-    it('limits recent searches to MAX_RECENT_SEARCHES (5)', () => {
+    it('limits recent searches to MAX_RECENT_SEARCHES (10)', () => {
       mockStorage[STORAGE_KEYS.recentSearches] = JSON.stringify([
-        'one', 'two', 'three', 'four', 'five'
+        'one', 'two', 'three', 'four', 'five',
+        'six', 'seven', 'eight', 'nine', 'ten'
       ])
       
       const { result } = renderHook(() => useProductSearch())
       
       act(() => {
-        result.current.saveSearch('six')
+        result.current.saveSearch('eleven')
       })
       
-      expect(result.current.recentSearches).toHaveLength(5)
-      expect(result.current.recentSearches[0]).toBe('six')
-      expect(result.current.recentSearches).not.toContain('five')
+      expect(result.current.recentSearches).toHaveLength(10)
+      expect(result.current.recentSearches[0]).toBe('eleven')
+      expect(result.current.recentSearches).not.toContain('ten')
     })
     
     it('clears all recent searches', () => {

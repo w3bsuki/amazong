@@ -173,6 +173,59 @@ export function CategoryModalContent({
     const currentStep = mobileStep === "root" ? 1 : 2
     const activeRootName = activeRoot ? getLocalizedName(locale, activeRoot) : levelLabels[0]
 
+    const renderMobileContent = () => {
+      if (showingSearch) {
+        if (searchResults.length === 0) {
+          return <CategoryEmptyState />
+        }
+
+        return (
+          <CategorySearchResults
+            results={searchResults}
+            selectedValue={value}
+            onSelect={handleSearchSelect}
+            locale={locale}
+          />
+        )
+      }
+
+      if (mobileStep === "root") {
+        return (
+          <div className="grid grid-cols-2 gap-3">
+            {rootCategories.map((category) => (
+              <CategoryCard
+                key={category.id}
+                category={category}
+                isSelected={activeRoot?.id === category.id}
+                hasChildren={(category.children?.length ?? 0) > 0}
+                onClick={() => handleRootSelect(category)}
+                locale={locale}
+              />
+            ))}
+          </div>
+        )
+      }
+
+      if (leafCategories.length > 0) {
+        return (
+          <div className="grid grid-cols-2 gap-3">
+            {leafCategories.map((leaf) => (
+              <CategoryCard
+                key={leaf.id}
+                category={leaf}
+                isSelected={value === leaf.id}
+                hasChildren={false}
+                onClick={() => handleLeafSelect(leaf)}
+                locale={locale}
+              />
+            ))}
+          </div>
+        )
+      }
+
+      return <CategoryEmptyState />
+    }
+
     return (
       <div className="flex flex-col min-h-0 flex-1 bg-background">
         <div className="flex flex-col border-b border-border-subtle bg-background shrink-0">
@@ -219,46 +272,7 @@ export function CategoryModalContent({
 
         <ScrollArea className="flex-1 min-h-0">
           <div className="p-4">
-            {showingSearch ? (
-              searchResults.length === 0 ? (
-                <CategoryEmptyState />
-              ) : (
-                <CategorySearchResults
-                  results={searchResults}
-                  selectedValue={value}
-                  onSelect={handleSearchSelect}
-                  locale={locale}
-                />
-              )
-            ) : mobileStep === "root" ? (
-              <div className="grid grid-cols-2 gap-3">
-                {rootCategories.map((category) => (
-                  <CategoryCard
-                    key={category.id}
-                    category={category}
-                    isSelected={activeRoot?.id === category.id}
-                    hasChildren={(category.children?.length ?? 0) > 0}
-                    onClick={() => handleRootSelect(category)}
-                    locale={locale}
-                  />
-                ))}
-              </div>
-            ) : leafCategories.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
-                {leafCategories.map((leaf) => (
-                  <CategoryCard
-                    key={leaf.id}
-                    category={leaf}
-                    isSelected={value === leaf.id}
-                    hasChildren={false}
-                    onClick={() => handleLeafSelect(leaf)}
-                    locale={locale}
-                  />
-                ))}
-              </div>
-            ) : (
-              <CategoryEmptyState />
-            )}
+            {renderMobileContent()}
           </div>
         </ScrollArea>
       </div>

@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-02-26 | PH0-SAFE-001 | Phase 0 Safe Launch Hardening Completed (UX + Core Journeys + Trust)
+- Decision/Outcome: Completed all Codex-executable Phase 0 safe items: PH0-UX-001..008 + PH0-UX-012 (Home/Cards/Search/Categories UX), PH0-FIX-002..003 (Sell flow + Account settings hardening), and PH0-TRUST-001..003 (buyer protection copy, PDP report modal stored via existing DB tables, product data sanity audit).
+- Why: Close all non-sensitive launch hardening work so remaining risk is isolated to human-approved auth/payments/migration blockers.
+- Impact: Gates green (`pnpm -s typecheck`, `pnpm -s lint`, `pnpm -s styles:gate`, `pnpm -s test:unit`); remaining Phase 0 items are LAUNCH-001..004 (human), PH0-REFACTOR-001 (human), and REF-CLEANUP-014 blocked on MIG-001.
+- Next Action: Human to close MIG-001 Step 5 + LAUNCH-001..004, then re-run full suite including `architecture:gate`, `test:e2e:smoke`, and `test:a11y`.
+- Links: `app/[locale]/(main)/_components/mobile-home.tsx`, `components/shared/product/card/mobile.tsx`, `components/shared/product/card/desktop.tsx`, `app/[locale]/(main)/search/_components/search-empty-state.tsx`, `app/[locale]/(main)/categories/[slug]/_components/mobile/mobile-category-browser-contextual-view.tsx`, `app/[locale]/(sell)/_components/fields/photos-field.tsx`, `app/[locale]/(account)/_components/account-layout-content.tsx`, `app/[locale]/(checkout)/_components/checkout-layout-summary-sections.tsx`, `app/[locale]/[username]/[productSlug]/_actions/report-listing.ts`
+
 ### 2026-02-26 | REF-POLISH-010 | Phase 3 Production Polish Completed (REF-POLISH-001..010)
 - Decision/Outcome: Completed REF-POLISH-001..010: removed global MotionProvider (framer-motion only on animated routes), cached sitemap (1h) + tag, ensured metadata/loading/error completeness across routes, removed raw `<img>` usage, completed mobile 375px UX sweep, reduced root provider footprint, kept bundle budget under 150KB first-load JS, and verified E2E smoke + a11y green.
 - Why: Ship-ready production polish (performance + SEO + UX completeness) before launch.

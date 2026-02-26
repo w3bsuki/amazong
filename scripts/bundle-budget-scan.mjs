@@ -193,7 +193,6 @@ function main() {
   }
 
   const metricPrefix = options.metric === "gzip" ? "gzip" : "raw";
-  const metricKey = options.scope === "extra" ? `${metricPrefix}Kb` : `${metricPrefix}Kb`;
   const valueKey = options.scope === "extra" ? `extra${metricPrefix === "gzip" ? "GzipKb" : "RawKb"}` : `${metricPrefix}Kb`;
 
   rows.sort((a, b) => b[valueKey] - a[valueKey]);

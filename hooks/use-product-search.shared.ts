@@ -23,7 +23,7 @@ export type SaveSearchProductInput = Omit<SearchProduct, "storeSlug"> & {
 
 export const SEARCH_DEBOUNCE_MS = 300
 export const MIN_SEARCH_LENGTH = 2
-export const MAX_RECENT_SEARCHES = 5
+export const MAX_RECENT_SEARCHES = 10
 export const MAX_RECENT_PRODUCTS = 6
 export const RECENT_SEARCHES_KEY = "recentSearches"
 export const RECENT_PRODUCTS_KEY = "recentSearchedProducts"

@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Check, Megaphone as MegaphoneSimple } from "lucide-react";
-
+import { Check, Megaphone as MegaphoneSimple } from "lucide-react"
 
 import { useLocale, useTranslations } from "next-intl"
 
-import { cn } from "@/lib/utils"
+import { cn, safeAvatarSrc } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { CardContent } from "@/components/ui/card"
 
@@ -14,10 +14,8 @@ import { ProductCardPrice } from "./price"
 import { ProductCardWishlistOverlay } from "./product-card-wishlist-overlay"
 import { buildProductCardFrameSurface, ProductCardFrame } from "./product-card-frame"
 import { useProductCardQuickViewInput } from "./use-product-card-quick-view-input"
-import {
-  getOverlayBadgeVariants,
-  getProductUrl,
-} from "./metadata"
+import { getDiscountPercent, getOverlayBadgeVariants, getProductUrl } from "./metadata"
+import { getConditionKey } from "../condition"
 import { FreshnessIndicator } from "../freshness-indicator"
 import type { MobileProductCardLayout, ProductCardBaseProps } from "./types"
 
@@ -33,6 +31,7 @@ export function MobileProductCard({
   images,
   description,
   originalPrice,
+  salePercent,
   createdAt,
   categoryPath,
   sellerId,
@@ -42,7 +41,6 @@ export function MobileProductCard({
   sellerVerified,
   slug,
   username,
-  layout = "feed",
   showWishlist = true,
   showWishlistAction,
   showPromotedBadge = true,
@@ -66,20 +64,46 @@ export function MobileProductCard({
   const productUrl = getProductUrl(username, slug, id)
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
 
-  const sellerNameLabel = React.useMemo(() => {
+  const safeSellerName = React.useMemo(() => {
     const normalized = sellerName?.trim()
-    return normalized && normalized.length > 0 ? normalized : null
-  }, [sellerName])
+    if (normalized) return normalized
+
+    const fromUsername = username?.trim()
+    if (fromUsername) return fromUsername
+
+    return t("seller")
+  }, [sellerName, t, username])
+
+  const discountPercent = React.useMemo(
+    () => getDiscountPercent(price, originalPrice, salePercent),
+    [originalPrice, price, salePercent]
+  )
 
   const overlayBadgeVariants = React.useMemo(
-    () => getOverlayBadgeVariants({ isBoosted, boostExpiresAt, discountPercent: 0 }),
-    [boostExpiresAt, isBoosted]
+    () => getOverlayBadgeVariants({ isBoosted, boostExpiresAt, discountPercent }),
+    [boostExpiresAt, discountPercent, isBoosted]
   )
 
   const isVerifiedBusinessSeller = sellerTier === "business" && Boolean(sellerVerified)
-  const mediaRatio = layout === "rail" ? 3 / 4 : 4 / 3
+  const mediaRatio = 3 / 4
   const pricePresentation = "default"
   const surfaceClassName = cn(className, "border-0 bg-transparent shadow-none")
+
+  const showDiscountBadge = inStock && discountPercent >= 5
+  const avatarSrc = React.useMemo(() => safeAvatarSrc(sellerAvatarUrl), [sellerAvatarUrl])
+
+  const conditionLabel = React.useMemo(() => {
+    if (!condition) return null
+    const key = getConditionKey(condition)
+    return key ? t(key) : condition
+  }, [condition, t])
+
+  const showPromotedOverlay =
+    inStock &&
+    !showDiscountBadge &&
+    !conditionLabel &&
+    showPromotedBadge &&
+    overlayBadgeVariants.includes("promoted")
 
   const quickViewInput = useProductCardQuickViewInput({
     id,
@@ -110,31 +134,20 @@ export function MobileProductCard({
       surface={buildProductCardFrameSurface(productUrl, title, surfaceClassName, image, index, inStock, mediaRatio)}
       mediaOverlay={
         <>
-          {inStock && overlayBadgeVariants.length > 0 && (
-            <div className="pointer-events-none absolute left-2 top-2 z-10 flex flex-col gap-1">
-              {overlayBadgeVariants.map((variant) => {
-                if (variant === "promoted") {
-                  if (!showPromotedBadge) return null
-
-                  return (
-                    <Badge
-                      key={variant}
-                      size="compact"
-                      variant="glass"
-                      data-testid="product-card-ad-badge"
-                      className="px-1.5 py-0.5 text-2xs font-semibold rounded"
-                    >
-                      <MegaphoneSimple size={10} aria-hidden="true" />
-                      <span className="sr-only">{t("adBadge")}</span>
-                    </Badge>
-                  )
-                }
-
-                // Mobile card surface stays clean — avoid percent discount badges (tested by e2e smoke).
-                return null
-              })}
+          {showDiscountBadge ? (
+            <div className="pointer-events-none absolute left-2 top-2 z-10">
+              <Badge size="compact" variant="destructive" data-testid="product-card-discount-badge">
+                -{discountPercent}%
+              </Badge>
             </div>
-          )}
+          ) : showPromotedOverlay ? (
+            <div className="pointer-events-none absolute left-2 top-2 z-10">
+              <Badge size="compact" variant="glass" data-testid="product-card-ad-badge">
+                <MegaphoneSimple className="size-2.5" aria-hidden="true" />
+                <span className="sr-only">{t("adBadge")}</span>
+              </Badge>
+            </div>
+          ) : null}
 
           {allowWishlistAction && (
             <ProductCardWishlistOverlay
@@ -149,13 +162,13 @@ export function MobileProductCard({
               overlayDensity="compact"
             />
           )}
-          {condition && (
+          {!showDiscountBadge && conditionLabel ? (
             <div className="pointer-events-none absolute bottom-2 left-2 z-10">
-              <span className="bg-card/90 backdrop-blur-sm text-2xs font-medium text-foreground px-1.5 py-0.5 rounded">
-                {condition}
-              </span>
+              <Badge size="compact" variant="glass" data-testid="product-card-condition-badge">
+                {conditionLabel}
+              </Badge>
             </div>
-          )}
+          ) : null}
         </>
       }
     >
@@ -184,34 +197,37 @@ export function MobileProductCard({
           {title}
         </h3>
 
-        {sellerNameLabel && (
-          <div
-            className="flex min-w-0 items-center gap-1 text-2xs text-muted-foreground mt-0.5"
-            data-testid="product-card-seller-row"
-          >
-            <span className="min-w-0 truncate">{sellerNameLabel}</span>
-            {isVerifiedBusinessSeller && (
-              <span
-                className="inline-flex size-3 shrink-0 items-center justify-center rounded-full text-success"
-                role="img"
-                aria-label={t("b2b.verifiedShort")}
-              >
-                <Check className="size-3" aria-hidden="true" />
+        <div className="flex min-w-0 items-center gap-1.5 text-2xs text-muted-foreground" data-testid="product-card-seller-row">
+          <Avatar className="size-4">
+            {avatarSrc ? <AvatarImage src={avatarSrc} alt={safeSellerName} /> : null}
+            <AvatarFallback className="text-2xs font-semibold text-foreground">
+              {(safeSellerName.trim()[0] ?? "?").toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <span className="min-w-0 truncate">{safeSellerName}</span>
+          {isVerifiedBusinessSeller && (
+            <span
+              className="inline-flex size-3 shrink-0 items-center justify-center rounded-full text-success"
+              role="img"
+              aria-label={t("b2b.verifiedShort")}
+            >
+              <Check className="size-3" aria-hidden="true" />
+            </span>
+          )}
+          {createdAt ? (
+            <>
+              <span aria-hidden="true" className="text-border">
+                ·
               </span>
-            )}
-            {createdAt && (
-              <>
-                <span className="text-muted-foreground/40">·</span>
-                <FreshnessIndicator
-                  createdAt={createdAt}
-                  variant="text"
-                  showIcon={false}
-                  className="min-w-0 shrink-0 text-2xs text-muted-foreground"
-                />
-              </>
-            )}
-          </div>
-        )}
+              <FreshnessIndicator
+                createdAt={createdAt}
+                variant="text"
+                showIcon={false}
+                className="text-2xs text-muted-foreground"
+              />
+            </>
+          ) : null}
+        </div>
       </CardContent>
     </ProductCardFrame>
   )

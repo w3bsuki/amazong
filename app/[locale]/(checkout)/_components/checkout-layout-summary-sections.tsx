@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import {
   ArrowRight,
+  Info,
   LoaderCircle as SpinnerGap,
   Lock,
   ShieldCheck,
@@ -76,6 +77,10 @@ function CheckoutSummaryRows({
       <div className={rowClassName}>
         <span className="text-muted-foreground">{t("buyerProtection")}</span>
         <span className={valueClassName}>{formatPrice(buyerProtectionFee)}</span>
+      </div>
+      <div className="flex items-start gap-2 text-xs text-muted-foreground">
+        <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+        <p>{t("buyerProtectionFeeHelp")}</p>
       </div>
       <p className="text-xs text-muted-foreground">{t("totalFormula")}</p>
     </>

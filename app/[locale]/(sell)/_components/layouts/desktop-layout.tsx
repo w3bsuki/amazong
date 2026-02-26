@@ -67,14 +67,14 @@ export function DesktopLayout({
       await form.handleSubmit(
         (data) => onSubmit(data),
         () => {
-          window.scrollTo({ top: 0, behavior: "instant" });
+          window.scrollTo({ top: 0, behavior: "auto" });
         }
       )();
       return;
     }
 
     const ok = await form.trigger();
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "auto" });
     if (!ok) return;
   }, [form, onSubmit, progress, setSubmitError]);
 
@@ -239,4 +239,3 @@ export function DesktopLayout({
     </div>
   );
 }
-
