@@ -115,12 +115,12 @@ export function ProductCardActions({
                     variant="ghost"
                     size={size}
                     className={cn(
-                        "rounded-full border border-border-subtle bg-surface-card",
-                        "hover:bg-hover active:bg-active",
+                        "rounded-full bg-card/80 backdrop-blur-sm",
+                        "hover:bg-card/90 active:bg-card/90",
                         overlaySizeClass,
                         inWishlist
-                            ? "border-selected-border text-primary"
-                            : "text-muted-foreground hover:text-foreground",
+                            ? "text-destructive"
+                            : "text-foreground hover:text-foreground",
                         isWishlistPending && "pointer-events-none opacity-50",
                         isOwnProduct && "cursor-not-allowed opacity-50"
                     )}
@@ -129,7 +129,7 @@ export function ProductCardActions({
                     aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
                 >
                     <Heart
-                        className={cn(overlayDensity === "compact" ? "size-3.5" : "size-4", inWishlist && "fill-primary text-primary")}
+                        className={cn(overlayDensity === "compact" ? "size-3.5" : "size-4", inWishlist && "fill-destructive text-destructive")}
                     />
                 </IconButton>
             )}

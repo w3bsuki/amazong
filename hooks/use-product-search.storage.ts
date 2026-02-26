@@ -5,8 +5,8 @@ import {
   MAX_RECENT_SEARCHES,
   RECENT_PRODUCTS_KEY,
   RECENT_SEARCHES_KEY,
-  RecentProductsSchema,
-  RecentSearchesSchema,
+  parseRecentProducts,
+  parseRecentSearches,
   type RecentSearchedProduct,
 } from "./use-product-search.shared"
 
@@ -22,13 +22,13 @@ export function loadRecentSearches(): string[] {
     if (!saved) return []
 
     const parsed = safeJsonParse<unknown>(saved)
-    const validated = RecentSearchesSchema.safeParse(parsed)
-    if (!validated.success) {
+    const searches = parseRecentSearches(parsed)
+    if (!searches) {
       localStorage.removeItem(RECENT_SEARCHES_KEY)
       return []
     }
 
-    return validated.data.slice(0, MAX_RECENT_SEARCHES)
+    return searches.slice(0, MAX_RECENT_SEARCHES)
   } catch {
     return []
   }
@@ -42,13 +42,13 @@ export function loadRecentProducts(): RecentSearchedProduct[] {
     if (!savedProducts) return []
 
     const parsed = safeJsonParse<unknown>(savedProducts)
-    const validated = RecentProductsSchema.safeParse(parsed)
-    if (!validated.success) {
+    const products = parseRecentProducts(parsed)
+    if (!products) {
       localStorage.removeItem(RECENT_PRODUCTS_KEY)
       return []
     }
 
-    return validated.data.slice(0, MAX_RECENT_PRODUCTS)
+    return products.slice(0, MAX_RECENT_PRODUCTS)
   } catch {
     return []
   }

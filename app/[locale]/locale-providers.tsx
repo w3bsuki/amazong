@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { NextIntlClientProvider } from 'next-intl'
 import { ROOT_INTL_NAMESPACES, getScopedMessages } from '@/lib/i18n/scoped-messages'
-import { MotionProvider } from '@/components/providers/motion-provider'
+import { AuthStateManager } from '@/components/providers/auth-state-manager'
 
 export default async function LocaleProviders({
   locale,
@@ -23,9 +23,7 @@ export default async function LocaleProviders({
         storageKey="treido-theme"
         disableTransitionOnChange
       >
-        <MotionProvider>
-          {children}
-        </MotionProvider>
+        <AuthStateManager>{children}</AuthStateManager>
       </NextThemesProvider>
     </NextIntlClientProvider>
   )

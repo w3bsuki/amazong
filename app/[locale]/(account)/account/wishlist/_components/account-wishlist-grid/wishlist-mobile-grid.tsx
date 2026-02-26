@@ -44,7 +44,7 @@ export function WishlistMobileGrid({
   handleRemove: (productId: string) => void | Promise<void>
 }) {
   return (
-    <div className="grid grid-cols-2 gap-3 pb-20 md:hidden md:pb-0">
+    <div className="grid grid-cols-2 gap-3 md:hidden">
       {items.map((item) => (
         <div key={item.id}>
           <div
@@ -167,7 +167,7 @@ export function WishlistMobileGrid({
           >
             <DrawerBody className="px-4 py-4">
               <div className="relative mx-auto aspect-square w-full max-w-60 overflow-hidden rounded-xl bg-muted">
-                <Image src={item.image} alt={item.title} fill className="object-contain" />
+                <Image src={item.image} alt={item.title} fill className="object-contain" sizes="240px" />
               </div>
 
               <div className="mt-6 space-y-4">

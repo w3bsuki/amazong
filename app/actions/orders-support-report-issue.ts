@@ -1,10 +1,19 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { revalidateTag } from "next/cache"
-import type { IssueType } from "./orders-shared"
+import type { IssueType } from "@/lib/types/orders"
+import {
+  createConversation,
+  createMessage,
+  fetchOrderItemForIssueReport,
+  findConversationForOrder,
+  insertIssueReportNotification,
+  updateConversationAfterMessage,
+} from "@/lib/data/orders/support"
 import {
   ReportOrderIssueInputSchema,
   requireSupportContext,
   supportFailure,
+  supportSuccess,
   type OrdersSupportResult,
 } from "./orders-support-shared"
 
@@ -37,27 +46,13 @@ export async function reportOrderIssueImpl(
       )
     }
 
-    const { data: orderItem, error: fetchError } = await supabase
-      .from("order_items")
-      .select(`
-        id,
-        status,
-        seller_id,
-        product:products(id, title),
-        order:orders!inner(id, user_id)
-      `)
-      .eq("id", parsedOrderItemId)
-      .single<{
-        id: string
-        status: string | null
-        seller_id: string
-        product: { id: string; title: string } | null
-        order: { id: string; user_id: string }
-      }>()
+    const orderItemResult = await fetchOrderItemForIssueReport({ supabase, orderItemId: parsedOrderItemId })
 
-    if (fetchError || !orderItem) {
+    if (!orderItemResult.ok) {
       return supportFailure("not_found", "Order item not found")
     }
+
+    const orderItem = orderItemResult.item
 
     if (orderItem.order.user_id !== userId) {
       return supportFailure("not_authorized", "Not authorized to report issues for this order")
@@ -75,34 +70,39 @@ export async function reportOrderIssueImpl(
     const productTitleSuffix = orderItem.product?.title ? ` - ${orderItem.product.title}` : ""
     const subject = `${issueSubjects[parsedInput.data.issueType]}${productTitleSuffix}`
 
-    const { data: existingConversation } = await supabase
-      .from("conversations")
-      .select("id")
-      .eq("buyer_id", userId)
-      .eq("seller_id", orderItem.seller_id)
-      .eq("order_id", orderItem.order.id)
-      .single()
+    const now = new Date().toISOString()
 
-    let conversationId = existingConversation?.id
+    const conversationLookup = await findConversationForOrder({
+      supabase,
+      buyerId: userId,
+      sellerId: orderItem.seller_id,
+      orderId: orderItem.order.id,
+    })
+
+    if (!conversationLookup.ok) {
+      logger.error("[orders-support] issue_report_conversation_lookup_failed", conversationLookup.error, {
+        orderItemId: parsedInput.data.orderItemId,
+        orderId: orderItem.order.id,
+        sellerId: orderItem.seller_id,
+      })
+      return supportFailure("create_failed", "Failed to create conversation")
+    }
+
+    let conversationId = conversationLookup.conversationId
 
     if (!conversationId) {
-      const { data: newConversation, error: convError } = await supabase
-        .from("conversations")
-        .insert({
-          buyer_id: userId,
-          seller_id: orderItem.seller_id,
-          product_id: orderItem.product?.id ?? null,
-          order_id: orderItem.order.id,
-          subject,
-          status: "open",
-          last_message_at: new Date().toISOString(),
-          seller_unread_count: 1,
-        })
-        .select("id")
-        .single()
+      const conversationCreate = await createConversation({
+        supabase,
+        buyerId: userId,
+        sellerId: orderItem.seller_id,
+        productId: orderItem.product?.id ?? null,
+        orderId: orderItem.order.id,
+        subject,
+        now,
+      })
 
-      if (convError || !newConversation) {
-        logger.error("[orders-support] issue_report_conversation_create_failed", convError, {
+      if (!conversationCreate.ok) {
+        logger.error("[orders-support] issue_report_conversation_create_failed", conversationCreate.error, {
           orderItemId: parsedInput.data.orderItemId,
           orderId: orderItem.order.id,
           sellerId: orderItem.seller_id,
@@ -110,54 +110,38 @@ export async function reportOrderIssueImpl(
         return supportFailure("create_failed", "Failed to create conversation")
       }
 
-      conversationId = newConversation.id
+      conversationId = conversationCreate.conversationId
     }
 
     const messageContent = `⚠️ **Issue Report: ${issueSubjects[parsedInput.data.issueType]}**\n\n${parsedInput.data.description}`
 
-    const { error: messageError } = await supabase.from("messages").insert({
-      conversation_id: conversationId,
-      sender_id: userId,
-      content: messageContent,
-      message_type: "text",
-    })
+    const messageResult = await createMessage({ supabase, conversationId, senderId: userId, content: messageContent })
 
-    if (messageError) {
-      logger.error("[orders-support] issue_report_message_create_failed", messageError, {
+    if (!messageResult.ok) {
+      logger.error("[orders-support] issue_report_message_create_failed", messageResult.error, {
         conversationId,
         orderItemId: parsedInput.data.orderItemId,
       })
       return supportFailure("create_failed", "Failed to send issue report")
     }
 
-    await supabase
-      .from("conversations")
-      .update({
-        last_message_at: new Date().toISOString(),
-        seller_unread_count: 1,
-        status: "open",
-      })
-      .eq("id", conversationId)
+    await updateConversationAfterMessage({ supabase, conversationId, now })
 
     try {
       const admin = createAdminClient()
-      const { error: notifyError } = await admin.from("notifications").insert({
-        user_id: orderItem.seller_id,
-        type: "message",
-        title: `Issue Report: ${issueSubjects[parsedInput.data.issueType]}`,
-        body: "A buyer has reported an issue with their order",
-        data: {
-          order_item_id: parsedOrderItemId,
-          order_id: orderItem.order.id,
-          issue_type: parsedInput.data.issueType,
-          conversation_id: conversationId,
-        },
-        order_id: orderItem.order.id,
-        conversation_id: conversationId,
+      const title = `Issue Report: ${issueSubjects[parsedInput.data.issueType]}`
+      const notifyResult = await insertIssueReportNotification({
+        adminSupabase: admin,
+        sellerId: orderItem.seller_id,
+        orderId: orderItem.order.id,
+        orderItemId: parsedOrderItemId,
+        issueType: parsedInput.data.issueType,
+        conversationId,
+        title,
       })
 
-      if (notifyError) {
-        logger.error("[orders-support] issue_report_notification_failed", notifyError, {
+      if (!notifyResult.ok) {
+        logger.error("[orders-support] issue_report_notification_failed", notifyResult.error, {
           conversationId,
           orderItemId: parsedOrderItemId,
           orderId: orderItem.order.id,
@@ -175,7 +159,7 @@ export async function reportOrderIssueImpl(
     revalidateTag("messages", "max")
     revalidateTag("conversations", "max")
 
-    return { success: true, conversationId }
+    return supportSuccess(conversationId)
   } catch (error) {
     logger.error("[orders-support] report_order_issue_unexpected", error, {
       orderItemId: parsedInput.data.orderItemId,

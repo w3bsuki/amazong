@@ -1,17 +1,17 @@
 import { cn } from "@/lib/utils"
 
 const MOBILE_QUICK_PILL_BASE_CLASS =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full min-h-(--control-compact) px-3 text-compact leading-none tap-transparent motion-safe:transition-all motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-const MOBILE_QUICK_PILL_ACTIVE_CLASS = "bg-foreground text-background font-semibold"
+  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3.5 py-1.5 min-h-(--control-compact) text-sm leading-none tap-transparent transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+const MOBILE_QUICK_PILL_ACTIVE_CLASS = "bg-foreground text-background font-medium"
 const MOBILE_QUICK_PILL_INACTIVE_CLASS =
-  "bg-surface-subtle text-foreground font-medium hover:bg-hover"
+  "bg-secondary text-muted-foreground font-medium hover:bg-accent hover:text-foreground"
 
-const MOBILE_GHOST_PILL_ACTIVE_CLASS = "border-foreground bg-surface-subtle text-foreground font-semibold"
+const MOBILE_GHOST_PILL_ACTIVE_CLASS = "border-foreground bg-secondary text-foreground font-medium"
 const MOBILE_GHOST_PILL_INACTIVE_CLASS =
-  "border-border-subtle bg-background text-muted-foreground font-medium hover:border-border hover:bg-surface-subtle hover:text-foreground"
+  "border-border bg-background text-muted-foreground font-medium hover:border-border hover:bg-secondary hover:text-foreground"
 
 export const MOBILE_ACTION_CHIP_CLASS =
-  "inline-flex shrink-0 min-h-(--control-compact) px-3 items-center gap-2 rounded-full bg-surface-subtle text-compact font-medium leading-none text-foreground tap-transparent motion-safe:transition-all motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+  "inline-flex shrink-0 px-3.5 py-1.5 items-center gap-2 rounded-full bg-secondary text-sm font-medium leading-none text-foreground tap-transparent transition-all hover:bg-accent active:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 
 export const MOBILE_SEGMENTED_CONTAINER_CLASS =
   "grid grid-cols-2 rounded-full border border-border-subtle bg-surface-subtle p-0.5"

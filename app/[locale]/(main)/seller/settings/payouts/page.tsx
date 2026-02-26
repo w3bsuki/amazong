@@ -1,13 +1,31 @@
-import { getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { redirect } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import { SellerPayoutSetup } from "./_components/seller-payout-setup"
 
-export async function generateMetadata() {
-  const t = await getTranslations("seller.payouts")
-  return {
-    title: t("title"),
-  }
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = localeParam === "bg" ? "bg" : "en"
+  setRequestLocale(locale)
+  const t = await getTranslations({ locale, namespace: "seller.payouts" })
+
+  const title = t("title")
+  return createPageMetadata({
+    locale,
+    path: "/seller/settings/payouts",
+    title,
+    description: title,
+    robots: {
+      index: false,
+      follow: true,
+    },
+  })
 }
 
 export default async function PayoutsPage({

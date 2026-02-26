@@ -30,10 +30,10 @@ export function MobileHomeFeed({
 }: MobileHomeFeedProps) {
   return (
     <>
-      <section data-testid="home-v4-feed" className="pt-2">
+      <section data-testid="home-v4-feed" className="px-4 pb-6 pt-1">
         {products.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 gap-(--spacing-home-card-gap) px-inset pb-1">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-4 pb-1">
               {products.map((product, index) => (
                 <MobileHomeProductCard key={`${product.id}-${index}`} product={product} index={index} />
               ))}
@@ -41,7 +41,7 @@ export function MobileHomeFeed({
             <div ref={loadMoreRef} data-testid="home-v4-load-more" className="h-10" />
           </>
         ) : (
-          <div className="px-inset py-6">
+          <div className="py-6">
             <EmptyStateCTA variant="no-listings" showCTA={false} className="px-0 py-10" />
             <button
               type="button"
@@ -55,19 +55,19 @@ export function MobileHomeFeed({
       </section>
 
       {isLoading && (
-        <div className="px-inset pb-2">
-          <ProductGridSkeleton count={2} density="compact" preset="mobile-feed" />
+        <div className="px-4 pb-2">
+          <ProductGridSkeleton count={2} density="compact" />
         </div>
       )}
 
       {error && (
-        <div className="px-inset pb-2">
-          <div className="flex items-center justify-between gap-2 rounded-xl border border-border-subtle bg-surface-subtle px-3 py-2">
+        <div className="px-4 pb-2">
+          <div className="flex items-center justify-between gap-2 rounded-xl border border-border bg-secondary px-3 py-2">
             <p className="text-xs text-muted-foreground">{tMobile("feed.error")}</p>
             <button
               type="button"
               onClick={onRetry}
-              className="inline-flex min-h-(--control-default) items-center rounded-full border border-border-subtle bg-background px-3 text-xs font-semibold text-foreground transition-colors hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-accent active:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               {tMobile("feed.retry")}
             </button>

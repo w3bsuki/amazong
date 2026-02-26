@@ -4,6 +4,12 @@ import { z } from "zod"
 import { revalidateTag } from "next/cache"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
+import {
+  blockUserRpc,
+  getBlockedUsersRpc,
+  isBlockedBidirectionalRpc,
+  unblockUserRpc,
+} from "@/lib/data/blocked-users"
 
 import { logger } from "@/lib/logger"
 export interface BlockedUser {
@@ -57,17 +63,22 @@ export async function blockUser(userId: string, reason?: string): Promise<BlockU
     return errorEnvelope({ error: "Cannot block yourself" })
   }
 
-  const { data, error } = await supabase.rpc("block_user", {
-    p_user_to_block: parsedUserId.data,
-    ...(reason ? { p_reason: reason } : {}),
+  const result = await blockUserRpc({
+    supabase,
+    userToBlock: parsedUserId.data,
+    ...(reason ? { reason } : {}),
   })
 
-  if (error) {
-    logger.error("Error blocking user:", error)
-    return errorEnvelope({ error: error.message })
+  if (!result.ok) {
+    logger.error("Error blocking user:", result.error)
+    const message =
+      typeof result.error === "object" && result.error !== null && "message" in result.error
+        ? String((result.error as { message?: unknown }).message ?? "")
+        : "Failed to block user"
+    return errorEnvelope({ error: message })
   }
 
-  if (data !== true) {
+  if (!result.success) {
     return errorEnvelope({ error: "Failed to block user" })
   }
 
@@ -90,16 +101,18 @@ export async function unblockUser(userId: string): Promise<BlockUserResult> {
 
   const { supabase } = auth
 
-  const { data, error } = await supabase.rpc("unblock_user", {
-    p_user_to_unblock: parsedUserId.data,
-  })
+  const result = await unblockUserRpc({ supabase, userToUnblock: parsedUserId.data })
 
-  if (error) {
-    logger.error("Error unblocking user:", error)
-    return errorEnvelope({ error: error.message })
+  if (!result.ok) {
+    logger.error("Error unblocking user:", result.error)
+    const message =
+      typeof result.error === "object" && result.error !== null && "message" in result.error
+        ? String((result.error as { message?: unknown }).message ?? "")
+        : "Failed to unblock user"
+    return errorEnvelope({ error: message })
   }
 
-  if (data !== true) {
+  if (!result.success) {
     return errorEnvelope({ error: "Failed to unblock user" })
   }
 
@@ -119,14 +132,18 @@ export async function getBlockedUsers(): Promise<BlockedUsersResult> {
 
   const { supabase } = auth
 
-  const { data, error } = await supabase.rpc("get_blocked_users")
+  const result = await getBlockedUsersRpc({ supabase })
 
-  if (error) {
-    logger.error("Error getting blocked users:", error)
-    return errorEnvelope({ data: null, error: error.message })
+  if (!result.ok) {
+    logger.error("Error getting blocked users:", result.error)
+    const message =
+      typeof result.error === "object" && result.error !== null && "message" in result.error
+        ? String((result.error as { message?: unknown }).message ?? "")
+        : "Failed to load blocked users"
+    return errorEnvelope({ data: null, error: message })
   }
 
-  const parsedBlockedUsers = BlockedUsersSchema.safeParse(data ?? [])
+  const parsedBlockedUsers = BlockedUsersSchema.safeParse(result.data ?? [])
   if (!parsedBlockedUsers.success) {
     logger.error("Invalid blocked users payload:", parsedBlockedUsers.error)
     return errorEnvelope({ data: null, error: "Invalid blocked users response" })
@@ -147,15 +164,16 @@ export async function isUserBlocked(userId: string): Promise<IsUserBlockedResult
 
   const { supabase, user } = auth
 
-  const { data, error } = await supabase.rpc("is_blocked_bidirectional", {
-    p_user_a: user.id,
-    p_user_b: parsedUserId.data,
+  const result = await isBlockedBidirectionalRpc({
+    supabase,
+    userA: user.id,
+    userB: parsedUserId.data,
   })
 
-  if (error) {
-    logger.error("Error checking block status:", error)
+  if (!result.ok) {
+    logger.error("Error checking block status:", result.error)
     return errorEnvelope({ blocked: false, error: "Failed to check block status" })
   }
 
-  return successEnvelope({ blocked: data === true, error: null })
+  return successEnvelope({ blocked: result.blocked, error: null })
 }

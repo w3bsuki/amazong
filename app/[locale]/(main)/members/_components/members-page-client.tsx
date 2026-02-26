@@ -215,7 +215,7 @@ export default function MembersPageClient({
   }
 
   return (
-    <PageShell variant="muted" className="pb-20 sm:pb-8">
+    <PageShell variant="muted">
       <div className="bg-primary text-primary-foreground py-6 sm:py-10">
         <div className="container">
           <div className="[&_nav]:border-border-subtle [&_nav]:mb-2 [&_a]:text-foreground [&_a:hover]:text-primary-foreground [&_span[aria-current]]:text-primary-foreground [&_svg]:text-muted-foreground">

@@ -11,7 +11,7 @@ export async function AboutPageContent() {
   const tBreadcrumbs = await getTranslations("Breadcrumbs")
 
   return (
-      <PageShell className="pb-20 sm:pb-12">
+    <PageShell>
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground relative">
         {/* Overlay for better text contrast */}

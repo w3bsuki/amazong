@@ -3,7 +3,7 @@ import { PageShell } from "./_components/page-shell"
 
 export default function Loading() {
   return (
-    <PageShell variant="muted" className="pb-20">
+    <PageShell variant="muted" className="pb-tabbar-safe md:pb-0">
       {/* Mobile skeleton */}
       <div className="w-full md:hidden space-y-3">
         <div className="px-3 pt-2">
@@ -49,7 +49,7 @@ export default function Loading() {
           <Skeleton className="w-full h-28 rounded-md" />
         </div>
 
-        <div className="container px-4 lg:px-6 space-y-8 pb-20">
+        <div className="container px-4 lg:px-6 space-y-8">
           <Skeleton className="w-full h-44 rounded-md" />
 
           <div className="bg-card border border-border rounded-md p-5">

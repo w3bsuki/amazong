@@ -3,7 +3,7 @@ import { PageShell } from "../../../_components/page-shell"
 
 export default function GiftCardsLoadingSkeleton() {
   return (
-    <PageShell variant="muted" className="pb-20 sm:pb-12">
+    <PageShell variant="muted">
       <div className="bg-surface-subtle py-8 sm:py-12">
         <div className="container">
           <div className="flex gap-2 items-center mb-4">

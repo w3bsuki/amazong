@@ -1,6 +1,7 @@
 "use server"
 
 import type { OrderItemStatus } from "@/lib/order-status"
+import { errorEnvelope } from "@/lib/api/envelope"
 import {
   getBuyerOrderDetailsImpl,
   getBuyerOrdersImpl,
@@ -9,6 +10,7 @@ import { getOrderConversationImpl } from "./orders-reads-conversation"
 import { getSellerOrderStatsImpl, getSellerOrdersImpl } from "./orders-reads-seller"
 import {
   SELLER_ORDERS_DEFAULT_PAGE_SIZE,
+  OrderIdSchema,
   type BuyerOrderDetailsResult,
   type OrderConversationResult,
   type OrdersReadResult,
@@ -35,11 +37,21 @@ export async function getBuyerOrders(): Promise<OrdersReadResult> {
 export async function getOrderConversation(
   orderId: string
 ): Promise<OrderConversationResult> {
-  return getOrderConversationImpl(orderId)
+  const parsedOrderId = OrderIdSchema.safeParse(orderId)
+  if (!parsedOrderId.success) {
+    return errorEnvelope({ conversationId: null, error: "Invalid orderId" })
+  }
+
+  return getOrderConversationImpl(parsedOrderId.data)
 }
 
 export async function getBuyerOrderDetails(
   orderId: string
 ): Promise<BuyerOrderDetailsResult> {
-  return getBuyerOrderDetailsImpl(orderId)
+  const parsedOrderId = OrderIdSchema.safeParse(orderId)
+  if (!parsedOrderId.success) {
+    return errorEnvelope({ order: null, error: "Invalid orderId" })
+  }
+
+  return getBuyerOrderDetailsImpl(parsedOrderId.data)
 }

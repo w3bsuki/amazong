@@ -3,7 +3,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { Controller } from "react-hook-form";
-import { ChevronRight as CaretRight, DollarSign as CurrencyDollar, Gavel, Handshake, Tag } from "lucide-react";
+import { DollarSign as CurrencyDollar, Gavel, Handshake, Tag } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 import { formatOptions } from "@/lib/sell/schema";
 import { clampModesToPolicy, toCategoryPolicy } from "@/lib/sell/category-policy";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
-import { SelectDrawer } from "../ui/select-drawer";
 import { useTranslations } from "next-intl";
 import { findCategoryById } from "./category-helpers";
 import { PriceSuggestionCard } from "./pricing/price-suggestion-card";
@@ -44,10 +43,9 @@ interface PricingFieldProps {
 
 export function PricingField({ className, categoryId, idPrefix = "sell-form", compact = false }: PricingFieldProps) {
   const { control, setValue, watch, formState: { errors } } = useSellForm();
-  const { locale, categories } = useSellFormContext();
+  const { categories } = useSellFormContext();
   const tSell = useTranslations("Sell")
 
-  const [isCurrencyDrawerOpen, setIsCurrencyDrawerOpen] = useState(false);
 
   // Watch form values
   const selectedCategoryId = watch("categoryId");
@@ -151,26 +149,20 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
         })}
       </div>
 
-      {/* Price Input - Premium card design */}
+      {/* Price Input */}
       <Controller
         name="price"
         control={control}
         render={({ field, fieldState }) => (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <label htmlFor={priceInputId} className="text-sm font-bold text-foreground">
-                {tSell("steps.pricing.yourPriceLabel")} <span className="text-destructive">*</span>
-              </label>
-            </div>
-            
-            <div className={cn(
-              "rounded-xl border bg-card overflow-hidden transition-colors",
-              "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring",
-              fieldState.invalid ? "border-destructive/50 bg-destructive-subtle" : "border-border"
-            )}>
-              <div className="flex items-center h-16 px-4">
-                <span className="text-2xl font-bold text-muted-foreground mr-2">
-                  {CURRENCY_SYMBOLS[currency] || currency}
+          <div className="space-y-2">
+            <label htmlFor={priceInputId} className="block text-xs font-semibold text-foreground mb-1.5">
+              {tSell("steps.pricing.yourPriceLabel")} <span className="text-destructive">*</span>
+            </label>
+
+            {compact ? (
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-semibold">
+                  €
                 </span>
                 <Input
                   {...field}
@@ -178,30 +170,27 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  className="border-none bg-transparent h-full text-3xl font-bold p-0 focus-visible:ring-0 flex-1"
+                  className="bg-surface-subtle border-border-subtle pl-7"
                 />
-                {compact ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => setIsCurrencyDrawerOpen(true)}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-subtle hover:bg-hover active:bg-active transition-colors"
-                    >
-                      <span className="text-sm font-bold">{currency}</span>
-                      <CaretRight className="size-3.5 text-muted-foreground rotate-90" />
-                    </button>
-                    <SelectDrawer
-                      isOpen={isCurrencyDrawerOpen}
-                      onClose={() => setIsCurrencyDrawerOpen(false)}
-                      title={tSell("steps.pricing.selectCurrencyTitle")}
-                      options={CURRENCIES.map(c => c.value)}
-                      optionsBg={CURRENCIES.map(c => c.label)}
-                      value={currency}
-                      onChange={(val) => setValue("currency", val as "EUR")}
-                      locale={locale}
-                    />
-                  </>
-                ) : (
+              </div>
+            ) : (
+              <div className={cn(
+                "rounded-xl border bg-card overflow-hidden transition-colors",
+                "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring",
+                fieldState.invalid ? "bg-destructive-subtle border-destructive" : "border-border"
+              )}>
+                <div className="flex items-center h-16 px-4">
+                  <span className="text-2xl font-bold text-muted-foreground mr-2">
+                    {CURRENCY_SYMBOLS[currency] || currency}
+                  </span>
+                  <Input
+                    {...field}
+                    id={priceInputId}
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    className="border-none bg-transparent h-full text-3xl font-bold p-0 focus-visible:ring-0 flex-1"
+                  />
                   <Select
                     value={currency}
                     onValueChange={(val) => setValue("currency", val as "EUR")}
@@ -220,9 +209,9 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                       ))}
                     </SelectContent>
                   </Select>
-                )}
+                </div>
               </div>
-            </div>
+            )}
             {fieldState.invalid && (
               <FieldError>
                 {fieldState.error?.message ? tSell(fieldState.error.message as never) : null}
@@ -242,17 +231,17 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
       {/* Compare at Price (Optional) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <label htmlFor={comparePriceInputId} className="text-sm font-bold text-foreground flex items-center gap-2">
+          <label htmlFor={comparePriceInputId} className="text-xs font-semibold text-foreground flex items-center gap-2">
             {tSell("steps.pricing.compareAtLabel")}
             <span className="text-xs font-medium text-muted-foreground">{tSell("common.optionalParenthetical")}</span>
           </label>
         </div>
         <div className={cn(
-          "flex items-center h-14 px-4 rounded-xl border bg-card transition-colors",
+          "flex items-center h-14 px-4 rounded-xl border bg-surface-subtle border-border-subtle transition-colors",
           "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring"
         )}>
-          <span className="text-base font-bold text-muted-foreground mr-2">
-            {CURRENCY_SYMBOLS[currency] || currency}
+          <span className="text-sm font-semibold text-muted-foreground mr-2">
+            €
           </span>
           <Input
             id={comparePriceInputId}
@@ -268,7 +257,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
 
       {/* Quantity */}
       <div className="space-y-2">
-        <Label className="text-sm font-bold px-1">
+        <Label className="text-xs font-semibold px-1">
           {tSell("steps.pricing.quantityLabel")}
         </Label>
         <QuantityStepper
@@ -285,10 +274,10 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setValue("acceptOffers", !acceptOffers, { shouldDirty: true }); } }}
         className={cn(
           "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-colors cursor-pointer",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
           acceptOffers 
             ? "border-selected-border bg-selected" 
-            : "border-border bg-card hover:bg-hover"
+            : "border-border-subtle bg-surface-subtle hover:bg-hover"
         )}
       >
         <div className={cn(
@@ -355,5 +344,3 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
     </Field>
   );
 }
-
-

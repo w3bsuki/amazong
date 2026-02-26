@@ -4,7 +4,13 @@ import { z } from "zod"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidateTag } from "next/cache"
 import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
-import type { Database } from "@/lib/supabase/database.types"
+import {
+  fetchOrderItemForBuyerFeedback,
+  fetchSellerProfileForBuyerFeedback,
+  hasExistingBuyerFeedback,
+  insertBuyerFeedback,
+  type BuyerFeedbackRow,
+} from "@/lib/data/buyer-feedback"
 
 import { logger } from "@/lib/logger"
 // =====================================================
@@ -42,20 +48,6 @@ export interface BuyerFeedback {
     display_name: string | null
     username: string | null
   } | null
-}
-
-type BuyerFeedbackRow = Database["public"]["Tables"]["buyer_feedback"]["Row"]
-
-type OrderItemForBuyerFeedback = {
-  id: string
-  order_id: string
-  seller_id: string
-  status: string | null
-  order: {
-    id: string
-    user_id: string
-    status: string | null
-  }
 }
 
 const BuyerFeedbackInputSchema = z.object({
@@ -112,41 +104,27 @@ export async function submitBuyerFeedback(
     const { user, supabase } = auth
 
     // Verify user is a seller (has is_seller flag)
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("id, username, is_seller")
-      .eq("id", user.id)
-      .single()
-
-    if (profileError || !profile) {
+    const profileResult = await fetchSellerProfileForBuyerFeedback({ supabase, sellerId: user.id })
+    if (!profileResult.ok) {
       return errorEnvelope({ error: "Profile not found" })
     }
 
-    if (!profile.is_seller) {
+    if (!profileResult.profile.is_seller) {
       return errorEnvelope({ error: "Only sellers can rate buyers" })
     }
 
     // Verify the order exists and belongs to this seller
-    const { data: orderItem, error: orderError } = await supabase
-      .from("order_items")
-      .select(`
-        id,
-        order_id,
-        seller_id,
-        status,
-        order:orders!inner(
-          id,
-          user_id,
-          status
-        )
-      `)
-      .eq("order_id", safeInput.order_id)
-      .eq("seller_id", user.id)
-      .single<OrderItemForBuyerFeedback>()
+    const orderItemResult = await fetchOrderItemForBuyerFeedback({
+      supabase,
+      orderId: safeInput.order_id,
+      sellerId: user.id,
+    })
 
-    if (orderError || !orderItem) {
+    if (!orderItemResult.ok) {
       return errorEnvelope({ error: "Order not found or you are not the seller" })
     }
+
+    const orderItem = orderItemResult.orderItem
 
     // Verify order is in a rateable state (delivered or completed)
     if (!["delivered", "completed", "shipped"].includes(orderItem.status || "")) {
@@ -159,42 +137,38 @@ export async function submitBuyerFeedback(
     }
 
     // Check if feedback already exists
-    const { data: existing } = await supabase
-      .from("buyer_feedback")
-      .select("id")
-      .eq("seller_id", user.id)
-      .eq("order_id", safeInput.order_id)
-      .maybeSingle()
+    const existingResult = await hasExistingBuyerFeedback({
+      supabase,
+      sellerId: user.id,
+      orderId: safeInput.order_id,
+    })
 
-    if (existing) {
+    if (existingResult.ok && existingResult.exists) {
       return errorEnvelope({ error: "You have already rated this buyer for this order" })
     }
 
     // Insert feedback
-    const { data, error } = await supabase
-      .from("buyer_feedback")
-      .insert({
-        seller_id: user.id,
-        buyer_id: safeInput.buyer_id,
-        order_id: safeInput.order_id,
-        rating: safeInput.rating,
-        comment: safeInput.comment || null,
-        payment_promptness: safeInput.payment_promptness ?? true,
-        communication: safeInput.communication ?? true,
-        reasonable_expectations: safeInput.reasonable_expectations ?? true,
-      })
-      .select("id, seller_id, buyer_id, order_id, rating, comment, payment_promptness, communication, reasonable_expectations, seller_response, seller_response_at, created_at, updated_at")
-      .single<BuyerFeedbackRow>()
+    const insertResult = await insertBuyerFeedback({
+      supabase,
+      sellerId: user.id,
+      buyerId: safeInput.buyer_id,
+      orderId: safeInput.order_id,
+      rating: safeInput.rating,
+      comment: safeInput.comment || null,
+      paymentPromptness: safeInput.payment_promptness ?? true,
+      communication: safeInput.communication ?? true,
+      reasonableExpectations: safeInput.reasonable_expectations ?? true,
+    })
 
-    if (error) {
-      logger.error("Error submitting buyer feedback:", error)
+    if (!insertResult.ok) {
+      logger.error("Error submitting buyer feedback:", insertResult.error)
       return errorEnvelope({ error: "Failed to submit feedback" })
     }
 
     revalidateTag("buyer-stats", "max")
     revalidateTag("orders", "max")
 
-    return successEnvelope({ data: mapBuyerFeedbackRow(data) })
+    return successEnvelope({ data: mapBuyerFeedbackRow(insertResult.row) })
   } catch (error) {
     logger.error("submitBuyerFeedback error:", error)
     return errorEnvelope({ error: "An unexpected error occurred" })

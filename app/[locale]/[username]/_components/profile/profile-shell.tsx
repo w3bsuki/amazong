@@ -62,7 +62,7 @@ export function ProfileShell({
     <div className={cn("bg-background", className)}>
       {hasBanner ? (
         <div className="relative h-24 sm:h-36 bg-muted">
-          <Image src={bannerUrl as string} alt="" fill className="object-cover" priority />
+          <Image src={bannerUrl as string} alt="" fill sizes="100vw" className="object-cover" priority />
         </div>
       ) : null}
 

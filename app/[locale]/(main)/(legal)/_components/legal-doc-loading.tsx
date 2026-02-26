@@ -21,7 +21,7 @@ export function LegalDocLoading({
   sectionLine5WidthClassName,
 }: LegalDocLoadingProps) {
   return (
-    <PageShell className="pb-20 sm:pb-12">
+    <PageShell>
       {/* Hero */}
       <div className="bg-muted py-8 sm:py-12">
         <div className="container">

@@ -194,7 +194,7 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
   };
 
   return (
-    <PageShell variant="muted" className="pb-20 md:pb-28 lg:hidden">
+    <PageShell variant="muted" className="md:pb-28 lg:hidden">
       {/* JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"

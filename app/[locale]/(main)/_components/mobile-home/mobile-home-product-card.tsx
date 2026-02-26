@@ -18,6 +18,7 @@ export function MobileHomeProductCard({ product, index }: MobileHomeProductCardP
       image={product.image}
       rating={product.rating}
       reviews={product.reviews}
+      showWishlist={false}
       {...(product.freeShipping === true ? { freeShipping: true } : {})}
       {...(product.isBoosted ? { isBoosted: true } : {})}
       {...(product.boostExpiresAt ? { boostExpiresAt: product.boostExpiresAt } : {})}
@@ -34,7 +35,7 @@ export function MobileHomeProductCard({ product, index }: MobileHomeProductCardP
       {...(product.condition ? { condition: product.condition } : {})}
       {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
       {...(product.location ? { location: product.location } : {})}
-      titleLines={1}
+      titleLines={2}
       layout="feed"
     />
   )

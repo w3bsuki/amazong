@@ -65,6 +65,12 @@ const nextConfig: NextConfig = {
       revalidate: 3600, // 1 hour - background revalidate
       expire: 86400,    // 1 day - hard expiry
     },
+    // Explicit hourly revalidation profile (e.g. sitemap)
+    revalidate_1h: {
+      stale: 300,       // 5 minutes - serve stale briefly
+      revalidate: 3600, // 1 hour - background revalidate
+      expire: 86400,    // 1 day - hard expiry
+    },
   },
 
   // Image optimization configuration

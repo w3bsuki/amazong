@@ -110,12 +110,12 @@ export function ErrorBoundaryUI({
             Try again
           </Button>
 
-          <Link href={ctaHref}>
-            <Button variant="cta" className="gap-2 w-full sm:w-auto">
+          <Button asChild variant="cta" className="gap-2 w-full sm:w-auto">
+            <Link href={ctaHref}>
               <CtaIcon className="size-4" />
               {ctaLabel}
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

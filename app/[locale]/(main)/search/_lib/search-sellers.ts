@@ -2,6 +2,7 @@ import { z } from "zod"
 import type { createStaticClient } from "@/lib/supabase/server"
 import type { SellerResultCard, SellerSearchFilters } from "./types"
 import { buildTokenizedIlikeOrFilter, normalizeSearchQuery } from "@/lib/filters/search-query"
+import { applyPublicProductVisibilityFilter } from "@/lib/supabase/filters/visibility"
 
 import { logger } from "@/lib/logger"
 const SellerFilterInputSchema = z.object({
@@ -121,13 +122,12 @@ export async function searchSellers(
 
   const sellerIds = sellerProfiles.map((seller) => seller.id)
 
-  let productsQuery = supabase
-    .from("products")
-    .select("seller_id, rating")
-    .in("seller_id", sellerIds)
-    // Public browsing surfaces must not show non-active listings.
-    // Temporary legacy allowance: status can be NULL for older rows.
-    .or("status.eq.active,status.is.null")
+  let productsQuery = applyPublicProductVisibilityFilter(
+    supabase
+      .from("products")
+      .select("seller_id, rating")
+      .in("seller_id", sellerIds)
+  )
 
   if (categoryId) {
     productsQuery = productsQuery.filter("category_ancestors", "cs", `{${categoryId}}`)

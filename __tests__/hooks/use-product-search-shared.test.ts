@@ -4,11 +4,11 @@ import {
   MAX_RECENT_PRODUCTS,
   MAX_RECENT_SEARCHES,
   MIN_SEARCH_LENGTH,
-  ProductSearchResponseSchema,
-  RecentProductsSchema,
-  RecentSearchesSchema,
   SEARCH_DEBOUNCE_MS,
   isAbortError,
+  parseProductSearchResponse,
+  parseRecentProducts,
+  parseRecentSearches,
 } from "@/hooks/use-product-search.shared"
 
 describe("use-product-search.shared", () => {
@@ -28,7 +28,7 @@ describe("use-product-search.shared", () => {
   })
 
   it("parses valid product search responses", () => {
-    const parsed = ProductSearchResponseSchema.safeParse({
+    const products = parseProductSearchResponse({
       products: [
         {
           id: "p1",
@@ -40,28 +40,24 @@ describe("use-product-search.shared", () => {
         },
       ],
     })
-    expect(parsed.success).toBe(true)
+    expect(products).toHaveLength(1)
   })
 
   it("defaults products to empty array when missing", () => {
-    const parsed = ProductSearchResponseSchema.parse({})
-    expect(parsed.products).toEqual([])
+    expect(parseProductSearchResponse({})).toEqual([])
   })
 
   it("rejects malformed product rows", () => {
-    const parsed = ProductSearchResponseSchema.safeParse({
-      products: [{ id: 1 }],
-    })
-    expect(parsed.success).toBe(false)
+    expect(parseProductSearchResponse({ products: [{ id: 1 }] })).toEqual([])
   })
 
   it("accepts recent search string arrays only", () => {
-    expect(RecentSearchesSchema.safeParse(["a", "b"]).success).toBe(true)
-    expect(RecentSearchesSchema.safeParse(["a", 1]).success).toBe(false)
+    expect(parseRecentSearches(["a", "b"])).toEqual(["a", "b"])
+    expect(parseRecentSearches(["a", 1])).toBeNull()
   })
 
   it("accepts valid recent product rows", () => {
-    const parsed = RecentProductsSchema.safeParse([
+    const products = parseRecentProducts([
       {
         id: "p1",
         title: "Phone",
@@ -72,17 +68,18 @@ describe("use-product-search.shared", () => {
         searchedAt: Date.now(),
       },
     ])
-    expect(parsed.success).toBe(true)
+    expect(products).not.toBeNull()
+    expect(products).toHaveLength(1)
   })
 
   it("rejects invalid recent product rows", () => {
-    const parsed = RecentProductsSchema.safeParse([
+    const products = parseRecentProducts([
       {
         id: "p1",
         title: "Phone",
         price: "10",
       },
     ])
-    expect(parsed.success).toBe(false)
+    expect(products).toBeNull()
   })
 })

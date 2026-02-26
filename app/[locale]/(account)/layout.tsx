@@ -5,9 +5,10 @@ import { AccountLayoutContent } from "./_components/account-layout-content";
 import { headers } from "next/headers";
 import { createSubscriptionCheckoutSession } from "../../actions/subscriptions-reads";
 import { connection } from "next/server";
-import { CommerceProviders } from "../_providers/commerce-providers";
+import { CartProviders } from "../_providers/cart-providers";
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider";
 import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo/metadata";
 import { localeStaticParams } from "@/lib/next/static-params";
 
 // Generate static params for all supported locales
@@ -24,9 +25,17 @@ export async function generateMetadata({
     setRequestLocale(locale);
     const t = await getTranslations({ locale, namespace: "Account" });
 
-    return {
-        title: t("title"),
-    };
+    const title = t("title")
+    return createPageMetadata({
+        locale,
+        path: "/account",
+        title,
+        description: title,
+        robots: {
+            index: false,
+            follow: true,
+        },
+    })
 }
 
 async function AccountLayoutGate({
@@ -98,11 +107,11 @@ export default async function AccountLayout({
 
     return (
         <FullRouteIntlProvider locale={locale}>
-            <CommerceProviders>
+            <CartProviders>
                 <AccountLayoutGate modal={modal} locale={locale}>
                     {children}
                 </AccountLayoutGate>
-            </CommerceProviders>
+            </CartProviders>
         </FullRouteIntlProvider>
     );
 }

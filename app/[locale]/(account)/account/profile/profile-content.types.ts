@@ -1,4 +1,5 @@
 import type { PublicProfileEditorServerActions } from "./public-profile-editor"
+import type { Envelope } from "@/lib/api/envelope"
 
 type ProfileActionErrorCode =
   | "NOT_AUTHENTICATED"
@@ -21,20 +22,12 @@ type ProfileActionErrorCode =
   | "UNKNOWN_ERROR"
 
 export type ProfileContentServerActions = {
-  updateProfile: (formData: FormData) => Promise<{ success: boolean; errorCode?: ProfileActionErrorCode }>
-  uploadAvatar: (formData: FormData) => Promise<{
-    success: boolean
-    avatarUrl?: string
-    errorCode?: ProfileActionErrorCode
-  }>
-  deleteAvatar: () => Promise<{ success: boolean; avatarUrl?: string; errorCode?: ProfileActionErrorCode }>
-  setAvatarUrl: (formData: FormData) => Promise<{
-    success: boolean
-    avatarUrl?: string
-    errorCode?: ProfileActionErrorCode
-  }>
-  updateEmail: (formData: FormData) => Promise<{ success: boolean; errorCode?: ProfileActionErrorCode }>
-  updatePassword: (formData: FormData) => Promise<{ success: boolean; errorCode?: ProfileActionErrorCode }>
+  updateProfile: (formData: FormData) => Promise<Envelope<Record<string, never>, { errorCode: ProfileActionErrorCode }>>
+  uploadAvatar: (formData: FormData) => Promise<Envelope<{ avatarUrl: string }, { errorCode: ProfileActionErrorCode }>>
+  deleteAvatar: () => Promise<Envelope<{ avatarUrl: string }, { errorCode: ProfileActionErrorCode }>>
+  setAvatarUrl: (formData: FormData) => Promise<Envelope<{ avatarUrl: string }, { errorCode: ProfileActionErrorCode }>>
+  updateEmail: (formData: FormData) => Promise<Envelope<Record<string, never>, { errorCode: ProfileActionErrorCode }>>
+  updatePassword: (formData: FormData) => Promise<Envelope<Record<string, never>, { errorCode: ProfileActionErrorCode }>>
 }
 
 export interface ProfileContentProps {

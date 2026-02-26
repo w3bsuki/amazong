@@ -1,9 +1,19 @@
 "use server"
 
 import { revalidateTag } from "next/cache"
-import { createAdminClient, createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/server"
 import { requireAuth } from "@/lib/auth/require-auth"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { z } from "zod"
+import {
+  fetchSellerFeedbackStatsRows,
+  hasAnyDeliveredOrderItemForSeller,
+  hasDeliveredOrderItemForOrder,
+  hasExistingSellerFeedbackForOrder,
+  insertSellerFeedback,
+  insertSellerFeedbackNotification,
+  upsertSellerStats,
+} from "@/lib/data/seller-feedback"
 
 import { logger } from "@/lib/logger"
 // Types
@@ -65,11 +75,10 @@ const submitFeedbackSchema = z.object({
   communication: z.boolean().default(true),
 })
 
-interface ActionResult<T = void> {
-  success: boolean
-  data?: T
-  error?: string
-}
+type SubmitSellerFeedbackResult = Envelope<{ id: string }, { error: string }>
+
+type RequireAuthResult = Awaited<ReturnType<typeof requireAuth>>
+type AuthedSupabase = NonNullable<RequireAuthResult>["supabase"]
 
 /**
  * Submit seller feedback after a completed order
@@ -78,18 +87,18 @@ interface ActionResult<T = void> {
  */
 export async function submitSellerFeedback(
   input: z.infer<typeof submitFeedbackSchema>
-): Promise<ActionResult<{ id: string }>> {
+): Promise<SubmitSellerFeedbackResult> {
   try {
     // Validate input
     const validated = submitFeedbackSchema.safeParse(input)
     if (!validated.success) {
-      return { success: false, error: validated.error.issues[0]?.message || "Invalid input" }
+      return errorEnvelope({ error: validated.error.issues[0]?.message || "Invalid input" })
     }
 
     // Get current user
     const auth = await requireAuth()
     if (!auth) {
-      return { success: false, error: "You must be signed in to leave feedback" }
+      return errorEnvelope({ error: "You must be signed in to leave feedback" })
     }
 
     const { supabase, user } = auth
@@ -99,81 +108,64 @@ export async function submitSellerFeedback(
     // If orderId provided, verify user owns the order and it's delivered.
     // Delivery is tracked on order_items.status (buyerConfirmDelivery updates the item).
     if (data.orderId) {
-      const { data: deliveredItem, error: deliveredError } = await supabase
-        .from("order_items")
-        .select(
-          `
-          id,
-          status,
-          order:orders!inner(id, user_id)
-        `
-        )
-        .eq("order_id", data.orderId)
-        .eq("seller_id", data.sellerId)
-        .eq("orders.user_id", user.id)
-        .eq("status", "delivered")
-        .limit(1)
-        .single()
+      const deliveredResult = await hasDeliveredOrderItemForOrder({
+        supabase,
+        orderId: data.orderId,
+        sellerId: data.sellerId,
+        buyerId: user.id,
+      })
 
-      if (deliveredError || !deliveredItem) {
-        return { success: false, error: "You can only leave feedback after order delivery" }
+      if (!deliveredResult.ok || !deliveredResult.exists) {
+        return errorEnvelope({ error: "You can only leave feedback after order delivery" })
       }
 
       // Check if feedback already exists for this order
-      const { data: existingFeedback } = await supabase
-        .from("seller_feedback")
-        .select("id")
-        .eq("buyer_id", user.id)
-        .eq("order_id", data.orderId)
-        .single()
+      const existingResult = await hasExistingSellerFeedbackForOrder({
+        supabase,
+        buyerId: user.id,
+        orderId: data.orderId,
+      })
 
-      if (existingFeedback) {
-        return { success: false, error: "You have already left feedback for this order" }
+      if (existingResult.ok && existingResult.exists) {
+        return errorEnvelope({ error: "You have already left feedback for this order" })
       }
     } else {
       // Without orderId, check if user has ANY delivered order item from this seller
-      const { data: anyDeliveredItem } = await supabase
-        .from("order_items")
-        .select(
-          `
-          id,
-          status,
-          orders!inner(id, user_id)
-        `
-        )
-        .eq("seller_id", data.sellerId)
-        .eq("orders.user_id", user.id)
-        .eq("status", "delivered")
-        .limit(1)
-        .single()
+      const purchaseResult = await hasAnyDeliveredOrderItemForSeller({
+        supabase,
+        sellerId: data.sellerId,
+        buyerId: user.id,
+      })
 
-      if (!anyDeliveredItem) {
-        return { success: false, error: "You can only leave feedback after purchasing from this seller" }
+      if (!purchaseResult.ok || !purchaseResult.exists) {
+        return errorEnvelope({ error: "You can only leave feedback after purchasing from this seller" })
       }
     }
 
     // Insert the feedback
-    const { data: feedback, error: insertError } = await supabase
-      .from("seller_feedback")
-      .insert({
-        buyer_id: user.id,
-        seller_id: data.sellerId,
-        order_id: data.orderId || null,
-        rating: data.rating,
-        comment: data.comment || null,
-        item_as_described: data.itemAsDescribed,
-        shipping_speed: data.shippingSpeed,
-        communication: data.communication,
-      })
-      .select("id")
-      .single()
+    const insertResult = await insertSellerFeedback({
+      supabase,
+      buyerId: user.id,
+      sellerId: data.sellerId,
+      orderId: data.orderId || null,
+      rating: data.rating,
+      comment: data.comment || null,
+      itemAsDescribed: data.itemAsDescribed,
+      shippingSpeed: data.shippingSpeed,
+      communication: data.communication,
+    })
 
-    if (insertError) {
-      logger.error("Error inserting seller feedback:", insertError)
-      if (insertError.code === "23505") {
-        return { success: false, error: "You have already left feedback for this order" }
+    if (!insertResult.ok) {
+      logger.error("Error inserting seller feedback:", insertResult.error)
+      if (
+        typeof insertResult.error === "object" &&
+        insertResult.error !== null &&
+        "code" in insertResult.error &&
+        (insertResult.error as { code?: unknown }).code === "23505"
+      ) {
+        return errorEnvelope({ error: "You have already left feedback for this order" })
       }
-      return { success: false, error: "Failed to submit feedback" }
+      return errorEnvelope({ error: "Failed to submit feedback" })
     }
 
     // Update seller stats (trigger should handle this, but we can also do it here)
@@ -182,18 +174,16 @@ export async function submitSellerFeedback(
     // Create notification for seller (service role insert; users must not be able to write notifications directly).
     try {
       const admin = createAdminClient()
-      const { error: notifError } = await admin.from("notifications").insert({
-        user_id: data.sellerId,
-        type: "review",
-        title: `New ${data.rating}-star feedback`,
-        body: data.comment
-          ? `A buyer left ${data.rating}-star feedback: "${data.comment.slice(0, 100)}${data.comment.length > 100 ? "..." : ""}"`
-          : `A buyer left ${data.rating}-star feedback`,
-        data: { rating: data.rating, feedback_id: feedback.id },
+      const notifResult = await insertSellerFeedbackNotification({
+        adminSupabase: admin,
+        sellerId: data.sellerId,
+        rating: data.rating,
+        comment: data.comment || null,
+        feedbackId: insertResult.feedbackId,
       })
 
-      if (notifError) {
-        logger.error("Error creating seller feedback notification:", notifError)
+      if (!notifResult.ok) {
+        logger.error("Error creating seller feedback notification:", notifResult.error)
       }
     } catch (err) {
       logger.error("Error creating seller feedback notification:", err)
@@ -201,10 +191,10 @@ export async function submitSellerFeedback(
 
     revalidateTag(`seller-${data.sellerId}`, "max")
 
-    return { success: true, data: { id: feedback.id } }
+    return successEnvelope({ id: insertResult.feedbackId })
   } catch (error) {
     logger.error("Error in submitSellerFeedback:", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return errorEnvelope({ error: "An unexpected error occurred" })
   }
 }
 
@@ -212,34 +202,27 @@ export async function submitSellerFeedback(
  * Get seller feedback statistics
  */
 async function getSellerFeedbackStats(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: AuthedSupabase,
   sellerId: string
 ): Promise<SellerFeedbackStats> {
-  if (!supabase) {
+  const rowsResult = await fetchSellerFeedbackStatsRows({ supabase, sellerId })
+
+  if (!rowsResult.ok || rowsResult.rows.length === 0) {
     return getEmptySellerFeedbackStats()
   }
 
-  const { data } = await supabase
-    .from("seller_feedback")
-    .select("rating, item_as_described, shipping_speed, communication")
-    .eq("seller_id", sellerId)
-
-  if (!data || data.length === 0) {
-    return getEmptySellerFeedbackStats()
-  }
-
-  const totalFeedback = data.length
-  const totalRating = data.reduce((sum, f) => sum + f.rating, 0)
+  const totalFeedback = rowsResult.rows.length
+  const totalRating = rowsResult.rows.reduce((sum, f) => sum + f.rating, 0)
   const averageRating = totalRating / totalFeedback
 
   // Positive = 4 or 5 stars
-  const positiveCount = data.filter(f => f.rating >= 4).length
+  const positiveCount = rowsResult.rows.filter(f => f.rating >= 4).length
   const positivePercentage = (positiveCount / totalFeedback) * 100
 
   // Category percentages
-  const itemDescribedCount = data.filter(f => f.item_as_described).length
-  const shippingSpeedCount = data.filter(f => f.shipping_speed).length
-  const communicationCount = data.filter(f => f.communication).length
+  const itemDescribedCount = rowsResult.rows.filter(f => f.item_as_described).length
+  const shippingSpeedCount = rowsResult.rows.filter(f => f.shipping_speed).length
+  const communicationCount = rowsResult.rows.filter(f => f.communication).length
 
   const itemAsDescribedPercentage = (itemDescribedCount / totalFeedback) * 100
   const shippingSpeedPercentage = (shippingSpeedCount / totalFeedback) * 100
@@ -247,7 +230,7 @@ async function getSellerFeedbackStats(
 
   // Rating distribution
   const ratingDistribution: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
-  data.forEach(f => {
+  rowsResult.rows.forEach(f => {
     ratingDistribution[f.rating] = (ratingDistribution[f.rating] || 0) + 1
   })
 
@@ -266,26 +249,21 @@ async function getSellerFeedbackStats(
  * Update seller_stats table from feedback data
  */
 async function updateSellerStatsFromFeedback(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: AuthedSupabase,
   sellerId: string
 ): Promise<void> {
-  if (!supabase) return
-
   const stats = await getSellerFeedbackStats(supabase, sellerId)
 
-  await supabase
-    .from("seller_stats")
-    .upsert({
-      seller_id: sellerId,
-      average_rating: stats.averageRating,
-      total_reviews: stats.totalFeedback,
-      positive_feedback_pct: stats.positivePercentage,
-      item_described_pct: stats.itemAsDescribedPercentage,
-      shipping_speed_pct: stats.shippingSpeedPercentage,
-      communication_pct: stats.communicationPercentage,
-      updated_at: new Date().toISOString(),
-    }, {
-      onConflict: "seller_id",
-    })
+  const updatedAt = new Date().toISOString()
+  await upsertSellerStats({
+    supabase,
+    sellerId,
+    averageRating: stats.averageRating,
+    totalReviews: stats.totalFeedback,
+    positiveFeedbackPct: stats.positivePercentage,
+    itemDescribedPct: stats.itemAsDescribedPercentage,
+    shippingSpeedPct: stats.shippingSpeedPercentage,
+    communicationPct: stats.communicationPercentage,
+    updatedAt,
+  })
 }
-

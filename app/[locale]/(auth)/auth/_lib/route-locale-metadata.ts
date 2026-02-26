@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { validateLocale } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 type LocaleParams = Promise<{ locale: string }>
 
@@ -16,14 +17,18 @@ export async function buildRouteMetadata(options: {
   namespace: string
   titleKey: string
   descriptionKey?: string
+  path: string
 }): Promise<Metadata> {
   const locale = await resolveRouteLocale(options.params)
   const t = await getTranslations({ locale, namespace: options.namespace })
 
-  return {
-    title: t(options.titleKey as never),
-    ...(options.descriptionKey
-      ? { description: t(options.descriptionKey as never) }
-      : {}),
-  }
+  const title = t(options.titleKey as never)
+  const description = options.descriptionKey ? t(options.descriptionKey as never) : title
+
+  return createPageMetadata({
+    locale,
+    path: options.path,
+    title,
+    description,
+  })
 }

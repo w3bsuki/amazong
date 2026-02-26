@@ -1,5 +1,7 @@
+import type { ReactNode } from "react"
 import { Check, ChevronRight as CaretRight, Folder as FolderSimple, Search as MagnifyingGlass } from "lucide-react"
 
+import { DrawerShell } from "@/components/shared/drawer-shell"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
@@ -185,6 +187,75 @@ export function toPathItem(cat: Category): CategoryPathItem {
     name_bg: cat.name_bg ?? null,
     slug: cat.slug,
   }
+}
+
+export function flattenCategories(categories: Category[], locale: string): FlatCategory[] {
+  const result: FlatCategory[] = []
+
+  for (const root of categories) {
+    const rootPath = [toPathItem(root)]
+    const leafNodes = root.children ?? []
+
+    if (leafNodes.length === 0) {
+      const fullPath = rootPath
+        .map((item) => (locale === "bg" && item.name_bg ? item.name_bg : item.name))
+        .join(" › ")
+
+      result.push({
+        ...root,
+        path: rootPath,
+        fullPath,
+        searchText: `${root.name} ${root.name_bg || ""} ${root.slug}`.toLowerCase(),
+      })
+      continue
+    }
+
+    for (const leaf of leafNodes) {
+      const path = [...rootPath, toPathItem(leaf)]
+      const fullPath = path
+        .map((item) => (locale === "bg" && item.name_bg ? item.name_bg : item.name))
+        .join(" › ")
+
+      result.push({
+        ...leaf,
+        path,
+        fullPath,
+        searchText: `${root.name} ${root.name_bg || ""} ${root.slug} ${leaf.name} ${leaf.name_bg || ""} ${leaf.slug}`.toLowerCase(),
+      })
+    }
+  }
+
+  return result
+}
+
+export function CategoryPickerDrawerShell({
+  open,
+  onOpenChange,
+  children,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  children: ReactNode
+}) {
+  const tSell = useTranslations("Sell")
+  const tCommon = useTranslations("Common")
+  const title = tSell("categoryModal.title")
+
+  return (
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title={title}
+      closeLabel={tCommon("close")}
+      contentAriaLabel={title}
+      description={tSell("categoryModal.description")}
+      descriptionClassName="sr-only"
+      contentClassName="h-full max-h-full rounded-none"
+      drawerProps={{ snapPoints: [1] }}
+    >
+      {children}
+    </DrawerShell>
+  )
 }
 
 export { CaretRight, FolderSimple }

@@ -1,7 +1,13 @@
 "use server"
 
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
+import {
+  updateProfileAndPrivateProfile,
+  updateUserEmail,
+  updateUserPasswordWithVerification,
+} from "@/lib/data/profile-mutations"
 import {
   emailSchema,
   passwordSchema,
@@ -34,9 +40,22 @@ export type ProfileActionErrorCode = ProfileMutationErrorCode | ProfileAvatarMut
 type RequireAuthResult = Awaited<ReturnType<typeof requireAuth>>
 type AuthedContext = NonNullable<RequireAuthResult>
 
-type ProfileMutationResult = {
-  success: boolean
-  errorCode?: ProfileMutationErrorCode
+type ProfileMutationResult = Envelope<
+  Record<string, never>,
+  { errorCode: ProfileMutationErrorCode }
+>
+
+type ProfileAvatarMutationResult = Envelope<
+  { avatarUrl: string },
+  { errorCode: ProfileAvatarMutationErrorCode }
+>
+
+function ok(): ProfileMutationResult {
+  return successEnvelope<Record<string, never>>()
+}
+
+function fail(errorCode: ProfileMutationErrorCode): ProfileMutationResult {
+  return errorEnvelope({ errorCode })
 }
 
 async function getProfileMutationContext(): Promise<
@@ -45,21 +64,21 @@ async function getProfileMutationContext(): Promise<
 > {
   const auth = await requireAuth()
   if (!auth) {
-    return { ok: false, result: { success: false, errorCode: "NOT_AUTHENTICATED" } }
+    return { ok: false, result: fail("NOT_AUTHENTICATED") }
   }
 
   return { ok: true, user: auth.user, supabase: auth.supabase }
 }
 
-export async function uploadAvatar(formData: FormData) {
+export async function uploadAvatar(formData: FormData): Promise<ProfileAvatarMutationResult> {
   return uploadAvatarInner(formData)
 }
 
-export async function setAvatarUrl(formData: FormData) {
+export async function setAvatarUrl(formData: FormData): Promise<ProfileAvatarMutationResult> {
   return setAvatarUrlInner(formData)
 }
 
-export async function deleteAvatar() {
+export async function deleteAvatar(): Promise<ProfileAvatarMutationResult> {
   return deleteAvatarInner()
 }
 
@@ -71,10 +90,7 @@ export async function deleteAvatar() {
 // =====================================================
 // UPDATE PROFILE
 // =====================================================
-export async function updateProfile(formData: FormData): Promise<{
-  success: boolean
-  errorCode?: ProfileMutationErrorCode
-}> {
+export async function updateProfile(formData: FormData): Promise<ProfileMutationResult> {
   try {
     const ctx = await getProfileMutationContext()
     if (!ctx.ok) return ctx.result
@@ -89,7 +105,7 @@ export async function updateProfile(formData: FormData): Promise<{
 
     const validationResult = profileSchema.safeParse(rawData)
     if (!validationResult.success) {
-      return { success: false, errorCode: "INVALID_INPUT" }
+      return fail("INVALID_INPUT")
     }
 
     const { data: validatedData } = validationResult
@@ -108,39 +124,30 @@ export async function updateProfile(formData: FormData): Promise<{
         ? { phone: validatedData.phone, updated_at: updatedAt }
         : null
 
-    // Update public profile surface + private phone field
-    const [{ error: updateError }, { error: privateError }] = await Promise.all([
-      ctx.supabase
-        .from("profiles")
-        .update(profileUpdatePayload)
-        .eq("id", ctx.user.id),
-      privateUpdatePayload
-        ? ctx.supabase
-            .from("private_profiles")
-            .upsert({ id: ctx.user.id, ...privateUpdatePayload }, { onConflict: "id" })
-        : Promise.resolve({ error: null }),
-    ])
+    const result = await updateProfileAndPrivateProfile({
+      supabase: ctx.supabase,
+      userId: ctx.user.id,
+      profileUpdatePayload,
+      privateProfilePayload: privateUpdatePayload,
+    })
 
-    if (updateError || privateError) {
-      logger.error("[profile] update_profile_failed", updateError ?? privateError, { userId: ctx.user.id })
-      return { success: false, errorCode: "PROFILE_UPDATE_FAILED" }
+    if (!result.ok) {
+      logger.error("[profile] update_profile_failed", result.error, { userId: ctx.user.id })
+      return fail("PROFILE_UPDATE_FAILED")
     }
 
     await revalidatePublicProfileTagsForUser(ctx.supabase, ctx.user.id, "max")
-    return { success: true }
+    return ok()
   } catch (error) {
     logger.error("[profile] update_profile_unexpected", error)
-    return { success: false, errorCode: "UNKNOWN_ERROR" }
+    return fail("UNKNOWN_ERROR")
   }
 }
 
 // =====================================================
 // UPDATE EMAIL
 // =====================================================
-export async function updateEmail(formData: FormData): Promise<{
-  success: boolean
-  errorCode?: ProfileMutationErrorCode
-}> {
+export async function updateEmail(formData: FormData): Promise<ProfileMutationResult> {
   try {
     const ctx = await getProfileMutationContext()
     if (!ctx.ok) return ctx.result
@@ -149,43 +156,41 @@ export async function updateEmail(formData: FormData): Promise<{
     const validationResult = emailSchema.safeParse({ email: newEmail })
 
     if (!validationResult.success) {
-      return { success: false, errorCode: "INVALID_EMAIL" }
+      return fail("INVALID_EMAIL")
     }
 
     // Check if email is already in use
     if (newEmail === ctx.user.email) {
-      return { success: false, errorCode: "EMAIL_UNCHANGED" }
+      return fail("EMAIL_UNCHANGED")
     }
 
-    // Update email - Supabase will send a confirmation email
-    const { error: updateError } = await ctx.supabase.auth.updateUser({
-      email: newEmail,
-    })
+    const result = await updateUserEmail({ supabase: ctx.supabase, email: newEmail })
 
-    if (updateError) {
-      if (updateError.message.includes("already registered")) {
-        return { success: false, errorCode: "EMAIL_ALREADY_REGISTERED" }
+    if (!result.ok) {
+      const message =
+        typeof result.error === "object" && result.error !== null && "message" in result.error
+          ? String((result.error as { message?: unknown }).message ?? "")
+          : ""
+
+      if (message.includes("already registered")) {
+        return fail("EMAIL_ALREADY_REGISTERED")
       }
-      logger.error("[profile] update_email_failed", updateError, { userId: ctx.user.id })
-      return { success: false, errorCode: "EMAIL_UPDATE_FAILED" }
+
+      logger.error("[profile] update_email_failed", result.error, { userId: ctx.user.id })
+      return fail("EMAIL_UPDATE_FAILED")
     }
 
-    return {
-      success: true,
-    }
+    return ok()
   } catch (error) {
     logger.error("[profile] update_email_unexpected", error)
-    return { success: false, errorCode: "UNKNOWN_ERROR" }
+    return fail("UNKNOWN_ERROR")
   }
 }
 
 // =====================================================
 // UPDATE PASSWORD
 // =====================================================
-export async function updatePassword(formData: FormData): Promise<{
-  success: boolean
-  errorCode?: ProfileMutationErrorCode
-}> {
+export async function updatePassword(formData: FormData): Promise<ProfileMutationResult> {
   try {
     const ctx = await getProfileMutationContext()
     if (!ctx.ok) return ctx.result
@@ -198,36 +203,33 @@ export async function updatePassword(formData: FormData): Promise<{
 
     const validationResult = passwordSchema.safeParse(rawData)
     if (!validationResult.success) {
-      return { success: false, errorCode: "INVALID_INPUT" }
+      return fail("INVALID_INPUT")
     }
 
     // Verify current password by attempting to sign in
     if (!ctx.user.email) {
-      return { success: false, errorCode: "PASSWORD_UPDATE_UNAVAILABLE" }
+      return fail("PASSWORD_UPDATE_UNAVAILABLE")
     }
 
-    const { error: signInError } = await ctx.supabase.auth.signInWithPassword({
+    const result = await updateUserPasswordWithVerification({
+      supabase: ctx.supabase,
       email: ctx.user.email,
-      password: rawData.currentPassword,
+      currentPassword: rawData.currentPassword,
+      newPassword: rawData.newPassword,
     })
 
-    if (signInError) {
-      return { success: false, errorCode: "CURRENT_PASSWORD_INCORRECT" }
+    if (!result.ok) {
+      if (result.reason === "CURRENT_PASSWORD_INCORRECT") {
+        return fail("CURRENT_PASSWORD_INCORRECT")
+      }
+
+      logger.error("[profile] update_password_failed", result.error, { userId: ctx.user.id })
+      return fail("PASSWORD_UPDATE_FAILED")
     }
 
-    // Update password
-    const { error: updateError } = await ctx.supabase.auth.updateUser({
-      password: rawData.newPassword,
-    })
-
-    if (updateError) {
-      logger.error("[profile] update_password_failed", updateError, { userId: ctx.user.id })
-      return { success: false, errorCode: "PASSWORD_UPDATE_FAILED" }
-    }
-
-    return { success: true }
+    return ok()
   } catch (error) {
     logger.error("[profile] update_password_unexpected", error)
-    return { success: false, errorCode: "UNKNOWN_ERROR" }
+    return fail("UNKNOWN_ERROR")
   }
 }

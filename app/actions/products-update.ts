@@ -5,8 +5,10 @@ import {
   type ActionResult,
   type ProductFeedType,
   type ProductInput,
+  fail,
   isLeafCategoryError,
   listingTitleSchema,
+  ok,
   normalizeProductAttributes,
   revalidateProductCaches,
   requireProductAuth,
@@ -14,6 +16,14 @@ import {
 import { resolveLeafCategoryForListing } from "@/lib/sell/resolve-leaf-category"
 import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
 import type { Database } from "@/lib/supabase/database.types"
+import {
+  deleteProductAttributes,
+  deleteProductById,
+  fetchExistingProductForUpdate,
+  insertProductAttributes,
+  updateProduct as updateProductRow,
+  upsertProductPrivate,
+} from "@/lib/data/products/mutations"
 import type { SupabaseClient } from "@supabase/supabase-js"
 
 import { logger } from "@/lib/logger"
@@ -25,6 +35,41 @@ type ExistingProductForUpdate = {
   category_id: string | null
   title: string
   status: string | null
+}
+
+type AuthedExistingProductResult =
+  | {
+      ok: true
+      user: { id: string }
+      supabase: ProductSupabaseClient
+      existingProduct: ExistingProductForUpdate
+    }
+  | { ok: false; result: ActionResult }
+
+async function requireAuthedExistingProduct(params: {
+  productId: string
+  authMessage: string
+  permissionError: string
+}): Promise<AuthedExistingProductResult> {
+  const { productId, authMessage, permissionError } = params
+
+  const auth = await requireProductAuth(authMessage)
+  if ("error" in auth) {
+    return { ok: false, result: fail(auth.error) }
+  }
+  const { user, supabase } = auth
+
+  const existingProductResult = await fetchExistingProductForUpdate({ supabase, productId })
+  if (!existingProductResult.ok || !existingProductResult.product) {
+    return { ok: false, result: fail("Product not found") }
+  }
+
+  const existingProduct = existingProductResult.product
+  if (existingProduct.seller_id !== user.id) {
+    return { ok: false, result: fail(permissionError) }
+  }
+
+  return { ok: true, user, supabase, existingProduct }
 }
 
 async function validateProductActivation(args: {
@@ -57,10 +102,10 @@ async function validateProductActivation(args: {
 }
 
 function buildProductUpdateData(input: Partial<ProductInput>): {
-  updateData: Record<string, unknown>
+  updateData: Database["public"]["Tables"]["products"]["Update"]
   error: string | null
 } {
-  const updateData: Record<string, unknown> = {
+  const updateData: Database["public"]["Tables"]["products"]["Update"] = {
     updated_at: new Date().toISOString(),
   }
 
@@ -100,20 +145,11 @@ function buildPrivateUpdatePayload(
   productId: string,
   sellerId: string,
   input: Partial<ProductInput>
-): {
-  product_id: string
-  seller_id: string
-  cost_price?: number | null
-  sku?: string | null
-  barcode?: string | null
-} {
-  const privateUpdate: {
-    product_id: string
-    seller_id: string
-    cost_price?: number | null
-    sku?: string | null
-    barcode?: string | null
-  } = { product_id: productId, seller_id: sellerId }
+): Database["public"]["Tables"]["product_private"]["Insert"] {
+  const privateUpdate: Database["public"]["Tables"]["product_private"]["Insert"] = {
+    product_id: productId,
+    seller_id: sellerId,
+  }
 
   if (input.costPrice !== undefined) privateUpdate.cost_price = input.costPrice
   if (input.sku !== undefined) privateUpdate.sku = input.sku
@@ -131,49 +167,42 @@ async function savePrivateProductFields(args: {
     sku?: string | null
     barcode?: string | null
   }
-}): Promise<{ success: true } | { success: false; error: string }> {
+}): Promise<ActionResult> {
   const { supabase, privateUpdate } = args
   if (Object.keys(privateUpdate).length <= 2) {
-    return { success: true }
+    return ok()
   }
 
-  const { error: privateError } = await supabase
-    .from("product_private")
-    .upsert(privateUpdate, { onConflict: "product_id" })
-
-  if (privateError) {
-    logger.error("[updateProduct] Product private upsert error", privateError)
-    return { success: false, error: "Failed to save seller-only product fields" }
+  const result = await upsertProductPrivate({ supabase, upsert: privateUpdate })
+  if (!result.ok) {
+    logger.error("[updateProduct] Product private upsert error", result.error)
+    return fail("Failed to save seller-only product fields")
   }
 
-  return { success: true }
+  return ok()
 }
 
 async function syncProductAttributes(args: {
   supabase: ProductSupabaseClient
   productId: string
   input: Partial<ProductInput>
-}): Promise<{ success: true } | { success: false; error: string }> {
+}): Promise<ActionResult> {
   const { supabase, productId, input } = args
   const shouldUpdateAttributes = Object.prototype.hasOwnProperty.call(input, "attributes")
   if (!shouldUpdateAttributes) {
-    return { success: true }
+    return ok()
   }
 
   const attributes = normalizeProductAttributes((input as ProductInput).attributes)
 
-  const { error: deleteError } = await supabase
-    .from("product_attributes")
-    .delete()
-    .eq("product_id", productId)
-
-  if (deleteError) {
-    logger.error("[updateProduct] Product attributes delete error", deleteError)
-    return { success: false, error: "Failed to update product" }
+  const deleteResult = await deleteProductAttributes({ supabase, productId })
+  if (!deleteResult.ok) {
+    logger.error("[updateProduct] Product attributes delete error", deleteResult.error)
+    return fail("Failed to update product")
   }
 
   if (attributes.length === 0) {
-    return { success: true }
+    return ok()
   }
 
   const attributeRows = attributes.map((attribute) => ({
@@ -184,14 +213,13 @@ async function syncProductAttributes(args: {
     is_custom: attribute.isCustom ?? false,
   }))
 
-  const { error: insertError } = await supabase.from("product_attributes").insert(attributeRows)
-
-  if (insertError) {
-    logger.error("[updateProduct] Product attributes insert error", insertError)
-    return { success: false, error: "Failed to update product" }
+  const insertResult = await insertProductAttributes({ supabase, rows: attributeRows })
+  if (!insertResult.ok) {
+    logger.error("[updateProduct] Product attributes insert error", insertResult.error)
+    return fail("Failed to update product")
   }
 
-  return { success: true }
+  return ok()
 }
 
 function resolveInvalidateTypes(input: Partial<ProductInput>): ProductFeedType[] {
@@ -210,25 +238,14 @@ export async function updateProduct(
   input: Partial<ProductInput>
 ): Promise<ActionResult> {
   try {
-    const auth = await requireProductAuth("You must be logged in to update a product")
-    if ("error" in auth) {
-      return { success: false, error: auth.error }
-    }
-    const { user, supabase } = auth
+    const ctx = await requireAuthedExistingProduct({
+      productId,
+      authMessage: "You must be logged in to update a product",
+      permissionError: "You don't have permission to edit this product",
+    })
+    if (!ctx.ok) return ctx.result
 
-    const { data: existingProduct, error: fetchError } = await supabase
-      .from("products")
-      .select("id, seller_id, category_id, title, status")
-      .eq("id", productId)
-      .single()
-
-    if (fetchError || !existingProduct) {
-      return { success: false, error: "Product not found" }
-    }
-
-    if (existingProduct.seller_id !== user.id) {
-      return { success: false, error: "You don't have permission to edit this product" }
-    }
+    const { user, supabase, existingProduct } = ctx
 
     const resolvedInput: Partial<ProductInput> = { ...input }
     if (Object.prototype.hasOwnProperty.call(input, "categoryId") && input.categoryId) {
@@ -246,7 +263,7 @@ export async function updateProduct(
       })
 
       if (!categoryResolution.ok) {
-        return { success: false, error: categoryResolution.message }
+        return fail(categoryResolution.message)
       }
 
       resolvedInput.categoryId = categoryResolution.categoryId
@@ -255,27 +272,26 @@ export async function updateProduct(
     const activationError = await validateProductActivation({
       supabase,
       userId: user.id,
-      existingProduct: existingProduct as ExistingProductForUpdate,
+      existingProduct,
       input: resolvedInput,
     })
     if (activationError) {
-      return { success: false, error: activationError }
+      return fail(activationError)
     }
 
     const { updateData, error: updateDataError } = buildProductUpdateData(resolvedInput)
     if (updateDataError) {
-      return { success: false, error: updateDataError }
+      return fail(updateDataError)
     }
 
-    const { error: updateError } = await supabase.from("products").update(updateData).eq("id", productId)
-
-    if (updateError) {
-      const mappedError = getUpdateProductErrorMessage(updateError)
+    const updateResult = await updateProductRow({ supabase, productId, update: updateData })
+    if (!updateResult.ok) {
+      const mappedError = getUpdateProductErrorMessage(updateResult.error)
       if (mappedError) {
-        return { success: false, error: mappedError }
+        return fail(mappedError)
       }
-      logger.error("[updateProduct] Update error", updateError)
-      return { success: false, error: "Failed to update product" }
+      logger.error("[updateProduct] Update error", updateResult.error)
+      return fail("Failed to update product")
     }
 
     const privateUpdate = buildPrivateUpdatePayload(productId, user.id, resolvedInput)
@@ -284,12 +300,12 @@ export async function updateProduct(
       privateUpdate,
     })
     if (!privateUpdateResult.success) {
-      return { success: false, error: privateUpdateResult.error }
+      return fail(privateUpdateResult.error)
     }
 
     const attributesResult = await syncProductAttributes({ supabase, productId, input: resolvedInput })
     if (!attributesResult.success) {
-      return { success: false, error: attributesResult.error }
+      return fail(attributesResult.error)
     }
 
     const categoryIdsToInvalidate: Array<string | null | undefined> = [existingProduct.category_id]
@@ -305,10 +321,10 @@ export async function updateProduct(
       invalidateTypes,
     })
 
-    return { success: true }
+    return ok()
   } catch (error) {
     logger.error("[updateProduct] Error", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return fail("An unexpected error occurred")
   }
 }
 
@@ -317,31 +333,19 @@ export async function updateProduct(
  */
 export async function deleteProduct(productId: string): Promise<ActionResult> {
   try {
-    const auth = await requireProductAuth("You must be logged in to delete a product")
-    if ("error" in auth) {
-      return { success: false, error: auth.error }
-    }
-    const { user, supabase } = auth
+    const ctx = await requireAuthedExistingProduct({
+      productId,
+      authMessage: "You must be logged in to delete a product",
+      permissionError: "You don't have permission to delete this product",
+    })
+    if (!ctx.ok) return ctx.result
 
-    const { data: existingProduct, error: fetchError } = await supabase
-      .from("products")
-      .select("id, seller_id, category_id")
-      .eq("id", productId)
-      .single()
+    const { user, supabase, existingProduct } = ctx
 
-    if (fetchError || !existingProduct) {
-      return { success: false, error: "Product not found" }
-    }
-
-    if (existingProduct.seller_id !== user.id) {
-      return { success: false, error: "You don't have permission to delete this product" }
-    }
-
-    const { error: deleteError } = await supabase.from("products").delete().eq("id", productId)
-
-    if (deleteError) {
-      logger.error("[deleteProduct] Delete error", deleteError)
-      return { success: false, error: "Failed to delete product" }
+    const deleteResult = await deleteProductById({ supabase, productId })
+    if (!deleteResult.ok) {
+      logger.error("[deleteProduct] Delete error", deleteResult.error)
+      return fail("Failed to delete product")
     }
 
     await revalidateProductCaches({
@@ -352,9 +356,9 @@ export async function deleteProduct(productId: string): Promise<ActionResult> {
       invalidateTypes: ["newest", "promo", "deals", "featured", "bestsellers"],
     })
 
-    return { success: true }
+    return ok()
   } catch (error) {
     logger.error("[deleteProduct] Error", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return fail("An unexpected error occurred")
   }
 }

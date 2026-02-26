@@ -3,6 +3,7 @@
 import { useOptimistic, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Heart, LoaderCircle as SpinnerGap, UserPlus } from "lucide-react";
+import type { Envelope } from "@/lib/api/envelope"
 
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -10,7 +11,7 @@ import { useTranslations } from "next-intl"
 /**
  * Action result type for follow/unfollow operations
  */
-export type FollowActionResult = { success: boolean; error?: string }
+export type FollowActionResult = Envelope<Record<string, never>, { error: string }>
 
 /**
  * Handler types for follow/unfollow actions - passed from app/ layer

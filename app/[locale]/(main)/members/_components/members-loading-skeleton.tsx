@@ -6,7 +6,7 @@ export default async function MembersLoadingSkeleton() {
   const t = await getTranslations("MembersPage")
 
   return (
-    <PageShell variant="muted" className="pb-20 sm:pb-12" role="status" aria-live="polite" aria-busy="true">
+    <PageShell variant="muted" role="status" aria-live="polite" aria-busy="true">
       <p className="sr-only">{t("loading")}</p>
       <div className="bg-surface-subtle py-10 sm:py-16">
         <div className="container">

@@ -30,7 +30,7 @@ vi.mock("@/components/shared/product/card/actions", () => ({
 }))
 
 describe("MobileProductCard", () => {
-  test("renders seller-only row and dedicated price meta row with freshness + price badge", () => {
+  test("renders price → title → seller order with plain text price (design v3)", () => {
     render(
       <MobileProductCard
         id="p-2"
@@ -50,23 +50,29 @@ describe("MobileProductCard", () => {
       />
     )
 
+    // Promoted badge still visible
     expect(screen.getByTestId("product-card-ad-badge")).toBeInTheDocument()
-    const categoryLabel = screen.getByText("Electronics")
-    expect(categoryLabel.closest('[data-slot="category"]')).toBeInTheDocument()
 
+    // Category badge is NOT rendered (design: no category overlay)
+    expect(screen.queryByText("Electronics")).not.toBeInTheDocument()
+
+    // Price row — plain text, not a badge
+    const priceRow = screen.getByTestId("product-card-price-row")
+    expect(priceRow).toBeInTheDocument()
+    expect(priceRow).toHaveTextContent(/67/)
+    // No badge wrapper on price
+    expect(priceRow.querySelector('[data-slot="badge"]')).toBeNull()
+
+    // Seller row present
     const sellerRow = screen.getByTestId("product-card-seller-row")
     expect(sellerRow).toBeInTheDocument()
     expect(sellerRow).toHaveTextContent("Treido")
-    expect(sellerRow).not.toHaveTextContent("justNow")
-    expect(Boolean(categoryLabel.compareDocumentPosition(sellerRow) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true)
 
-    const priceRow = screen.getByTestId("product-card-price-row")
-    expect(priceRow).toBeInTheDocument()
-    expect(priceRow).toHaveTextContent("justNow")
-    const rowChildren = priceRow.querySelectorAll(":scope > *")
-    expect(rowChildren.item(0)?.querySelector('[data-slot="badge"]')).not.toBeNull()
-    expect(rowChildren.item(0)).toHaveTextContent(/67/)
-    expect(rowChildren.item(rowChildren.length - 1)).toHaveTextContent("justNow")
+    // Seller row includes freshness indicator
+    expect(sellerRow).toHaveTextContent("justNow")
+
+    // Order: price row before seller row in DOM (price → title → seller)
+    expect(Boolean(priceRow.compareDocumentPosition(sellerRow) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true)
 
     expect(screen.getByTestId("product-card-actions")).toBeInTheDocument()
 

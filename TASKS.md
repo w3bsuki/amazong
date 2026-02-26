@@ -152,7 +152,7 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 
 #### D. Sell Form — Visual Polish (keep 5-step wizard)
 
-- [ ] **PH0-UX-009:** Flatten sell form input surfaces
+- [x] **PH0-UX-009:** Flatten sell form input surfaces
   - Inputs: `bg-surface-subtle rounded-xl` (consistent), no nested card containers
   - Labels: `text-xs font-semibold text-foreground mb-1.5`
   - Consistent field spacing: `space-y-5` between field groups
@@ -160,14 +160,14 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
   - Textarea: matching bg/radius, `resize-none`, with character count
   - Done: sell form inputs match the flat, consistent feel
 
-- [ ] **PH0-UX-010:** Standardize chip selectors across sell form steps
+- [x] **PH0-UX-010:** Standardize chip selectors across sell form steps
   - Category and condition chips: same component/style system
   - Chip: `px-3 py-1.5 rounded-full text-xs font-medium`
   - Active: `bg-foreground text-background`
   - Inactive: `bg-surface-subtle text-muted-foreground hover:text-foreground`
   - Done: all chip selectors in sell form look and behave identically
 
-- [ ] **PH0-UX-011:** Polish photo upload step thumbnail row
+- [x] **PH0-UX-011:** Polish photo upload step thumbnail row
   - Add button: `w-20 h-20 rounded-xl border-2 border-dashed border-border`
   - Thumbnails: `w-20 h-20 rounded-xl` with remove X button + "Cover" badge on first
   - Horizontal scroll with hidden scrollbar

@@ -3,6 +3,8 @@ import { revalidateTag } from "next/cache"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/lib/supabase/database.types"
 import { z } from "zod"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
+import { fetchCategorySlugsByIds } from "@/lib/data/products/category-slugs"
 
 function isProbablyJunkTitle(title: string): boolean {
   const trimmed = title.trim()
@@ -59,10 +61,21 @@ export type ProductInput = z.infer<typeof productSchema> & {
   attributes?: ProductAttributeInput[]
 }
 
-export interface ActionResult<T = void> {
-  success: boolean
-  data?: T
-  error?: string
+export type ActionResult<T = void> = Envelope<
+  { data?: T },
+  { error: string }
+>
+
+export function ok<T>(data?: T): ActionResult<T> {
+  if (data === undefined) {
+    return successEnvelope<{ data?: T }>()
+  }
+
+  return successEnvelope({ data })
+}
+
+export function fail<T = void>(error: string): ActionResult<T> {
+  return errorEnvelope({ error })
 }
 
 export const setDiscountSchema = z.object({
@@ -129,41 +142,6 @@ export function normalizeProductAttributes(input: unknown): ProductAttributeInpu
   return output
 }
 
-export async function getCategorySlugsByIds(
-  supabase: SupabaseClient<Database>,
-  categoryIds: Array<string | null | undefined>
-): Promise<string[]> {
-  const ids = [...new Set(categoryIds.filter((id): id is string => typeof id === "string" && id.length > 0))]
-  if (ids.length === 0) return []
-
-  const { data } = await supabase.from("categories").select("id, slug").in("id", ids)
-
-  const slugs = (data ?? [])
-    .map((row) => row?.slug)
-    .filter((slug): slug is string => typeof slug === "string" && slug.length > 0)
-
-  return [...new Set(slugs)]
-}
-
-export async function getCategorySlugsForProducts(
-  supabase: SupabaseClient<Database>,
-  productIds: string[]
-): Promise<string[]> {
-  const ids = [...new Set(productIds.filter((id) => typeof id === "string" && id.length > 0))]
-  if (ids.length === 0) return []
-
-  const { data: products } = await supabase
-    .from("products")
-    .select("id, category_id")
-    .in("id", ids)
-
-  const categoryIds = (products ?? [])
-    .map((product) => product?.category_id)
-    .filter((id): id is string => typeof id === "string" && id.length > 0)
-
-  return getCategorySlugsByIds(supabase, categoryIds)
-}
-
 export async function revalidateProductCaches(params: {
   supabase: SupabaseClient<Database>
   sellerId: string
@@ -184,7 +162,7 @@ export async function revalidateProductCaches(params: {
     tags.push(`seller-products-${sellerId}`, `seller-${sellerId}`)
   }
 
-  const slugs = await getCategorySlugsByIds(supabase, categoryIds ?? [])
+  const slugs = await fetchCategorySlugsByIds(supabase, categoryIds ?? [])
   for (const slug of slugs) {
     tags.push(`products:category:${slug}`)
   }

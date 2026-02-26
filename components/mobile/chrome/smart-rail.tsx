@@ -52,7 +52,7 @@ function getActionClass(action: SmartRailAction): string {
   const variant = action.variant ?? "chip"
 
   if (variant === "pill") {
-    return getMobileQuickPillClass(Boolean(action.active), "min-h-(--control-compact)")
+    return getMobileQuickPillClass(Boolean(action.active))
   }
 
   return cn(
@@ -100,15 +100,15 @@ export function SmartRail({
     <nav
       aria-label={ariaLabel}
       className={cn(
-        "bg-background border-b border-border-subtle py-1",
+        "bg-background border-b border-border py-2",
         sticky && "sticky z-30",
         className,
       )}
       style={sticky ? { top: stickyTop } : undefined}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className="overflow-x-auto no-scrollbar">
-        <div className="flex w-max min-w-full items-center gap-2 px-inset">
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="flex w-max min-w-full items-center gap-2 px-4">
           {leadingAction && (
             <>
               {leadingAction.href ? (
@@ -145,7 +145,7 @@ export function SmartRail({
           )}
 
           {pills.map((pill) => {
-            const pillClass = getMobileQuickPillClass(Boolean(pill.active), "min-h-(--control-compact)")
+            const pillClass = getMobileQuickPillClass(Boolean(pill.active))
 
             if (pill.href) {
               return (

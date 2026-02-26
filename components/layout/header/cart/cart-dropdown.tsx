@@ -106,6 +106,7 @@ export function CartDropdown() {
                           alt={item.title}
                           width={48}
                           height={48}
+                          sizes="48px"
                           className="size-full object-cover"
                         />
                       ) : (

@@ -114,6 +114,7 @@ export function SidebarMenuHeader({
                   alt=""
                   width={24}
                   height={16}
+                  sizes="24px"
                   className="w-6 h-4 rounded-sm object-cover"
                 />
               </IconButton>
@@ -131,6 +132,7 @@ export function SidebarMenuHeader({
                     alt=""
                     width={18}
                     height={12}
+                    sizes="18px"
                     className="h-3 w-auto rounded-sm object-cover"
                   />
                   <span className="text-sm font-medium">{tLocaleSwitcher("english")}</span>
@@ -149,6 +151,7 @@ export function SidebarMenuHeader({
                     alt=""
                     width={18}
                     height={12}
+                    sizes="18px"
                     className="h-3 w-auto rounded-sm object-cover"
                   />
                   <span className="text-sm font-medium">{tLocaleSwitcher("bulgarian")}</span>

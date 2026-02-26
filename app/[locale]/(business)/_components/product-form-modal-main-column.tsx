@@ -101,6 +101,7 @@ export function ProductFormMainColumn({
                 alt={`Product image ${index + 1}`}
                 fill
                 className="object-cover"
+                sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
               />
               {index === 0 && (
                 <Badge className="absolute top-1 left-1 text-2xs px-1.5 py-0" variant="secondary">

@@ -1,6 +1,7 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
+import { getUserUsernameAndLastChange, isUsernameTaken } from "@/lib/data/username"
 import {
   RESERVED_USERNAMES,
   normalizeUsername,
@@ -15,97 +16,104 @@ export type UsernameAvailabilityErrorCode =
   | "USERNAME_TAKEN"
   | "CHECK_FAILED"
 
+export type CheckUsernameAvailabilityResult = Envelope<
+  { available: boolean },
+  { available: boolean; errorCode: UsernameAvailabilityErrorCode }
+>
+
+function availableOk(): CheckUsernameAvailabilityResult {
+  return successEnvelope({ available: true })
+}
+
+function availableFail(errorCode: UsernameAvailabilityErrorCode): CheckUsernameAvailabilityResult {
+  return errorEnvelope({ available: false, errorCode })
+}
+
 /**
  * Check whether a username can be used.
  */
-export async function checkUsernameAvailability(username: string): Promise<{
-  available: boolean
-  errorCode?: UsernameAvailabilityErrorCode
-}> {
+export async function checkUsernameAvailability(
+  username: string
+): Promise<CheckUsernameAvailabilityResult> {
   try {
     const normalizedUsername = normalizeUsername(username)
 
     const validation = usernameSchema.safeParse(normalizedUsername)
     if (!validation.success) {
-      return { available: false, errorCode: "INVALID_USERNAME" }
+      return availableFail("INVALID_USERNAME")
     }
 
     if (RESERVED_USERNAMES.includes(normalizedUsername)) {
-      return { available: false, errorCode: "USERNAME_RESERVED" }
+      return availableFail("USERNAME_RESERVED")
     }
 
-    const supabase = await createClient()
-
-    const { data: existing } = await supabase
-      .from("profiles")
-      .select("id")
-      .ilike("username", normalizedUsername)
-      .maybeSingle()
-
-    if (existing) {
-      return { available: false, errorCode: "USERNAME_TAKEN" }
+    if (await isUsernameTaken(normalizedUsername)) {
+      return availableFail("USERNAME_TAKEN")
     }
 
-    return { available: true }
+    return availableOk()
   } catch (error) {
     logger.error("[username-availability] check_failed", error)
-    return { available: false, errorCode: "CHECK_FAILED" }
+    return availableFail("CHECK_FAILED")
   }
 }
+
+export type HasUsernameResult = Envelope<
+  { hasUsername: boolean },
+  { hasUsername: boolean; error: string }
+>
 
 /**
  * Check if the current user has a username.
  */
-export async function hasUsername(): Promise<boolean> {
+export async function hasUsername(): Promise<HasUsernameResult> {
   try {
     const auth = await requireUsernameAuth()
-    if ("error" in auth) return false
+    if ("error" in auth) {
+      return errorEnvelope({ hasUsername: false, error: auth.error })
+    }
     const { userId, supabase } = auth
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", userId)
-      .single()
+    const profile = await getUserUsernameAndLastChange({ supabase, userId })
 
-    return !!profile?.username
+    return successEnvelope({ hasUsername: Boolean(profile?.username ?? null) })
   } catch {
-    return false
+    return errorEnvelope({ hasUsername: false, error: "Failed to check username" })
   }
 }
+
+export type UsernameChangeCooldownResult = Envelope<
+  { canChange: boolean; daysRemaining?: number },
+  { canChange: boolean; error: string }
+>
 
 /**
  * Return username change cooldown details for current user.
  */
-export async function getUsernameChangeCooldown(): Promise<{
-  canChange: boolean
-  daysRemaining?: number
-}> {
+export async function getUsernameChangeCooldown(): Promise<UsernameChangeCooldownResult> {
   try {
     const auth = await requireUsernameAuth()
-    if ("error" in auth) return { canChange: false }
+    if ("error" in auth) {
+      return errorEnvelope({ canChange: false, error: auth.error })
+    }
     const { userId, supabase } = auth
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("last_username_change")
-      .eq("id", userId)
-      .single()
+    const profile = await getUserUsernameAndLastChange({ supabase, userId })
 
-    if (!profile?.last_username_change) {
-      return { canChange: true }
+    if (!profile?.lastUsernameChange) {
+      return successEnvelope({ canChange: true })
     }
 
-    const lastChange = new Date(profile.last_username_change)
+    const lastChange = new Date(profile.lastUsernameChange)
     const cooldownEnd = new Date(lastChange.getTime() + 14 * 24 * 60 * 60 * 1000)
 
     if (new Date() >= cooldownEnd) {
-      return { canChange: true }
+      return successEnvelope({ canChange: true })
     }
 
     const daysRemaining = Math.ceil((cooldownEnd.getTime() - Date.now()) / (24 * 60 * 60 * 1000))
-    return { canChange: false, daysRemaining }
+    return successEnvelope({ canChange: false, daysRemaining })
   } catch {
-    return { canChange: false }
+    return errorEnvelope({ canChange: false, error: "Failed to compute cooldown" })
   }
 }

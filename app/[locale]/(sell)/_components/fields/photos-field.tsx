@@ -8,6 +8,7 @@ import { Camera, LoaderCircle as SpinnerGap, CircleAlert as WarningCircle } from
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 import type { ProductImage } from "@/lib/sell/schema";
@@ -73,6 +74,8 @@ interface PhotosFieldProps {
   onUploadEnd?: () => void;
   /** Use compact layout (no card wrapper/header). Useful when parent section already provides a card. */
   compact?: boolean;
+  /** Thumbnail layout: grid (default) or horizontal row */
+  thumbnailLayout?: "grid" | "row";
 }
 
 export function PhotosField({
@@ -80,6 +83,7 @@ export function PhotosField({
   onUploadStart,
   onUploadEnd,
   compact = false,
+  thumbnailLayout = "grid",
 }: PhotosFieldProps) {
   // Use context instead of prop drilling
   const { watch, setValue, formState: { errors } } = useSellForm();
@@ -292,15 +296,32 @@ export function PhotosField({
 
   const sharedContent = (
     <>
-      {/* Photo Grid */}
-      {hasImages && (
-        <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-4">
+      {thumbnailLayout === "row" ? (
+        <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-1">
+          {images.length < maxPhotos && (
+            <div
+              {...getRootProps()}
+              className={cn(
+                "w-20 h-20 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 shrink-0 transition-colors cursor-pointer",
+                "hover:bg-hover active:bg-active",
+                isDragActive && "border-selected-border bg-selected",
+                isUploading && "pointer-events-none opacity-70"
+              )}
+              aria-label={tSell("photos.add")}
+            >
+              <input {...getInputProps()} />
+              <Camera className="size-5 text-muted-foreground" />
+              <span className="text-2xs text-muted-foreground">{tSell("photos.add")}</span>
+            </div>
+          )}
+
           {images.map((image, index) => (
             <PhotoThumbnail
               key={`${image.url}-${index}`}
               image={image}
               index={index}
               isCover={index === 0 || !!image.isPrimary}
+              variant="row"
               onRemove={() => handleRemove(index)}
               onSetCover={() => handleSetCover(index)}
               onPreview={() => setPreviewImage(image)}
@@ -311,18 +332,41 @@ export function PhotosField({
             />
           ))}
         </div>
-      )}
+      ) : (
+        <>
+          {/* Photo Grid */}
+          {hasImages && (
+            <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-4">
+              {images.map((image, index) => (
+                <PhotoThumbnail
+                  key={`${image.url}-${index}`}
+                  image={image}
+                  index={index}
+                  isCover={index === 0 || !!image.isPrimary}
+                  onRemove={() => handleRemove(index)}
+                  onSetCover={() => handleSetCover(index)}
+                  onPreview={() => setPreviewImage(image)}
+                  isDragging={draggingIndex === index}
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragEnd={handleDragEnd}
+                />
+              ))}
+            </div>
+          )}
 
-      {/* Upload Zone */}
-      {images.length < maxPhotos && (
-        <UploadZone
-          isUploading={isUploading}
-          isDragActive={isDragActive}
-          getRootProps={getRootProps}
-          getInputProps={getInputProps}
-          currentCount={images.length}
-          maxCount={maxPhotos}
-        />
+          {/* Upload Zone */}
+          {images.length < maxPhotos && (
+            <UploadZone
+              isUploading={isUploading}
+              isDragActive={isDragActive}
+              getRootProps={getRootProps}
+              getInputProps={getInputProps}
+              currentCount={images.length}
+              maxCount={maxPhotos}
+            />
+          )}
+        </>
       )}
 
       {/* Upload Progress */}
@@ -408,5 +452,4 @@ export function PhotosField({
     </>
   );
 }
-
 

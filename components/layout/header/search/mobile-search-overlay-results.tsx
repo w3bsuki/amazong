@@ -169,6 +169,7 @@ export function MobileSearchOverlayResults({
                           alt={product.title}
                           width={56}
                           height={56}
+                          sizes="56px"
                           className="h-full w-full object-cover"
                           loading="lazy"
                         />

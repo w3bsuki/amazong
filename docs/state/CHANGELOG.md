@@ -17,6 +17,27 @@
 
 ---
 
+### 2026-02-25 | REF-ALIGNMENT-001 | Phase 2 Alignment Completed (REF-ALIGNMENT-001..013)
+- Decision/Outcome: Completed REF-ALIGNMENT-001..013: split `globals.css` into modular `app/styles/*` imports, pruned legacy tokens + removed Tailwind-colliding utilities, eliminated all `pb-20` hacks via inherited tab bar safe padding, centralized Supabase selects + visibility filter + typed query helpers, moved cross-route chrome into `components/layout/*`, normalized categories API param to `[categoryId]`, and refactored mobile tab bar auth to use `AuthStateManager`. Server actions now follow the Envelope + boundary flow standard (Zod → `requireAuth()` → lib/data → revalidate → Envelope).
+- Why: Align the codebase to the refactor architecture contracts so future UX and performance work (REF-POLISH) is safe, consistent, and gate-enforced.
+- Impact: Full suite green (`typecheck`, `lint`, `styles:gate`, `test:unit`, `architecture:gate`); mobile chrome spacing is consistent across routes; fewer duplicated query fragments; route-private boundary rules stay enforceable.
+- Next Action: Return focus to launch blockers (MIG-001 + LAUNCH-001..004) or start Phase 3 (REF-POLISH) route-by-route UX/perf hardening.
+- Links: `refactor/production-push/MASTER-PLAN.md`, `app/globals.css`, `app/styles/tokens.css`, `lib/supabase/filters/visibility.ts`, `lib/supabase/selects/products.ts`, `components/layout/header/app-header.tsx`, `components/layout/bottom-nav/mobile-tab-bar.tsx`, `app/api/categories/[categoryId]/context/route.ts`
+
+### 2026-02-25 | PH0-UX-HOME-001 | Mobile Home Landing Refresh (Dream Weaver alignment)
+- Decision/Outcome: Refreshed the mobile homepage to better match the Dream Weaver browse pattern: 2-row home header (icon row + search bar), added a quick category icon strip with "See all", switched discovery chips to filled quick pills, and made mobile feed cards portrait with discount badges.
+- Why: Make the first impression feel like a modern 2026 marketplace app (content-first + scannable) while staying compliant with Treido’s semantic tokens and mobile chrome rules.
+- Impact: Home feels less “web toolbar” and more app-like; discount/deals scanning improves; quality gates remain green.
+- Next Action: Optional: tighten SmartRail behavior on root feed (reduce chrome rows) and decide whether `promoted` should be renamed to `trending` on the Home discovery scopes.
+- Links: `components/layout/header/mobile/homepage-header.tsx`, `app/[locale]/(main)/_components/mobile-home.tsx`, `app/[locale]/(main)/_components/mobile-home/mobile-home-product-card.tsx`, `components/mobile/chrome/discovery-rail.tsx`, `components/mobile/chrome/mobile-control-recipes.ts`, `components/shared/product/card/mobile.tsx`, `components/shared/product/product-grid.tsx`
+
+### 2026-02-25 | PH0-UX-SELL-001 | Sell Form Visual Polish (PH0-UX-009–011)
+- Decision/Outcome: Executed PH0-UX sell form visual polish tasks 009–011: flattened compact input surfaces (`bg-surface-subtle`, unified labels), standardized chip selectors (condition + root→leaf category chips with modal fallback), and switched the mobile photos step to a horizontal thumbnail row with an Add tile.
+- Why: Match the cleaner premium feel from `designs/ui-ux-dream-weaver` inspiration while staying compliant with Treido’s Tailwind v4 semantic tokens and existing sell flow constraints.
+- Impact: Faster category selection, less visual nesting, and a cleaner photos step; quality gates remain green.
+- Next Action: Apply the same category/filter rail patterns to browsing follow-ups (PH0-UX-001/007/012) when scheduled.
+- Links: `app/[locale]/(sell)/_components/fields/category-field.tsx`, `app/[locale]/(sell)/_components/fields/condition-field.tsx`, `app/[locale]/(sell)/_components/fields/photos-field.tsx`, `app/[locale]/(sell)/_components/ui/photo-thumbnail.tsx`, `app/[locale]/(sell)/_components/fields/pricing-field.tsx`
+
 ### 2026-02-25 | REF-CLEANUP-001 | Phase 1 Cleanup Completed (except 014)
 - Decision/Outcome: Executed REF-CLEANUP Phase 1 tasks 001–013 (skipping 014 blocked on MIG-001): logging standardization, unsafe cast reduction, `generateStaticParams` helpers + dupe reduction, scripts + tests hygiene. Updated `MASTER-PLAN.md` progress log and statuses.
 - Why: Reduce mechanical debt (casts/console/dupes/dead code) while keeping launch gates stable.

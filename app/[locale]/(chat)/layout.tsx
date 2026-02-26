@@ -1,6 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { validateLocale } from "@/i18n/routing";
-import { CommerceProviders } from "../_providers/commerce-providers";
+import { ChatProviders } from "../_providers/chat-providers";
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider";
 import { PageShell } from "../_components/page-shell";
 import { localeStaticParams } from "@/lib/next/static-params";
@@ -35,11 +35,11 @@ export default async function ChatLayout({
 
     return (
         <FullRouteIntlProvider locale={locale}>
-            <CommerceProviders>
+            <ChatProviders>
                 <PageShell variant="default" className="fixed inset-0 flex w-full overflow-hidden">
                     {children}
                 </PageShell>
-            </CommerceProviders>
+            </ChatProviders>
         </FullRouteIntlProvider>
     );
 }

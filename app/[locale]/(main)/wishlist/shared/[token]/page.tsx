@@ -138,6 +138,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
                     alt={item.product_title || tWishlist("unknownProduct")}
                     fill
                     className="object-contain p-4"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                 </div>
               </Link>

@@ -118,6 +118,7 @@ export function WishlistDrawer({ open, onOpenChange, className }: WishlistDrawer
                         alt={item.title}
                         width={56}
                         height={56}
+                        sizes="56px"
                         className="size-full object-cover"
                       />
                     </div>

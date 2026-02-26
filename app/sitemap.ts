@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+import { cacheLife, cacheTag } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 
 // =============================================================================
@@ -101,6 +102,10 @@ function appendProductEntries(
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  'use cache'
+  cacheTag('sitemap')
+  cacheLife('revalidate_1h')
+
   const supabase = createStaticClient()
   
   if (!supabase) {

@@ -30,6 +30,7 @@ import {
 import { ORDER_STATUS_CONFIG } from "../../../../_components/orders/order-status-config"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
+import type { Envelope } from "@/lib/api/envelope"
 
 export type OrderStatusActionsServerActions = {
   updateOrderItemStatus: (
@@ -37,7 +38,7 @@ export type OrderStatusActionsServerActions = {
     newStatus: OrderItemStatus,
     trackingNumber?: string,
     shippingCarrier?: ShippingCarrier
-  ) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<Envelope<{ sellerId?: string }, { error: string }>>
 }
 
 interface OrderStatusActionsProps {

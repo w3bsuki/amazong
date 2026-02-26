@@ -24,7 +24,7 @@ export function ProductCardWishlistOverlay({
   overlayDensity,
 }: ProductCardWishlistOverlayProps) {
   return (
-    <div className="absolute right-1.5 top-1.5 z-20">
+    <div className="absolute right-2 top-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
       <ProductCardActions
         id={id}
         title={title}

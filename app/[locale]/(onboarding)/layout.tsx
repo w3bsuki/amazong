@@ -2,11 +2,21 @@ import { headers } from "next/headers"
 import { connection } from "next/server"
 import { setRequestLocale } from "next-intl/server"
 import type { ReactNode } from "react"
+import type { Metadata } from "next"
 
 import { redirect } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { PageShell } from "../_components/page-shell"
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider"
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    robots: {
+      index: false,
+      follow: true,
+    },
+  }
+}
 
 export default async function OnboardingLayout({
   children,

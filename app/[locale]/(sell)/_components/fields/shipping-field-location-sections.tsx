@@ -166,10 +166,10 @@ export function ShippingCitySection({
             onClick={() => onDrawerOpenChange(true)}
             className={cn(
               "w-full flex items-center gap-3.5 min-h-16 px-4 py-3 rounded-xl border text-left transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
               sellerCity
                 ? "border-selected-border bg-selected"
-                : "border-border bg-card hover:bg-hover"
+                : "border-border-subtle bg-surface-subtle hover:bg-hover"
             )}
           >
             <div className={cn(

@@ -11,19 +11,7 @@ import {
 } from "./messages.helpers"
 
 import { logger } from "@/lib/logger"
-type UserConversationRpcRow = {
-  id: string
-  buyer_id: string
-  seller_id: string
-  product_id: string | null
-  order_id: string | null
-  subject: string | null
-  status: string | null
-  last_message_at: string | null
-  buyer_unread_count: number | null
-  seller_unread_count: number | null
-  created_at: string
-  updated_at: string
+type UserConversationRpcRow = Omit<RawConversationRow, "product"> & {
   product_title: string | null
   product_images: string[] | null
   last_message_content: string | null

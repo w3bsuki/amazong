@@ -1,18 +1,24 @@
 import type { OrderItemStatus } from "@/lib/order-status"
+import type { Envelope } from "@/lib/api/envelope"
 import type { IssueType } from "./buyer-order-actions.copy"
 
 export type BuyerOrderActionsServerActions = {
-  buyerConfirmDelivery: (orderItemId: string) => Promise<{ success: boolean; error?: string }>
-  canBuyerRateSeller: (orderItemId: string) => Promise<{ canRate: boolean; hasRated: boolean }>
+  buyerConfirmDelivery: (orderItemId: string) => Promise<Envelope<{ sellerId?: string }, { error: string }>>
+  canBuyerRateSeller: (orderItemId: string) => Promise<
+    Envelope<
+      { canRate: boolean; hasRated: boolean; sellerId?: string },
+      { canRate: boolean; hasRated: boolean; sellerId?: string; error: string }
+    >
+  >
   requestOrderCancellation: (
     orderItemId: string,
     reason?: string,
-  ) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<Envelope<{ conversationId?: string }, { error: string }>>
   reportOrderIssue: (
     orderItemId: string,
     issueType: IssueType,
     description: string,
-  ) => Promise<{ success: boolean; error?: string; conversationId?: string }>
+  ) => Promise<Envelope<{ conversationId?: string }, { error: string }>>
   submitSellerFeedback: (input: {
     sellerId: string
     orderId: string
@@ -21,7 +27,7 @@ export type BuyerOrderActionsServerActions = {
     itemAsDescribed: boolean
     shippingSpeed: boolean
     communication: boolean
-  }) => Promise<{ success: boolean; error?: string }>
+  }) => Promise<Envelope<{ id: string }, { error: string }>>
 }
 
 export type BuyerOrderActionsProps = {

@@ -1,6 +1,12 @@
 import { revalidatePublicProfileTagsByUsername } from "@/lib/cache/revalidate-profile-tags"
-import type { Database } from "@/lib/supabase/database.types"
+import {
+  fetchProfileUsername,
+  insertListingBoost,
+  updateProductBoostStatus,
+  updateProfileBoostRemaining,
+} from "@/lib/data/boosts"
 import { createAdminClient } from "@/lib/supabase/server"
+import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
 import {
   getOwnedBoostActionContext,
   revalidateBoostCaches,
@@ -12,89 +18,85 @@ import { logger } from "@/lib/logger"
 export async function useSubscriptionBoostImpl(productId: string): Promise<BoostResult> {
   const context = await getOwnedBoostActionContext(productId)
   if (!context.success) {
-    return { success: false, error: context.error }
+    return errorEnvelope({ error: context.error })
   }
 
   const { productId: safeProductId, userId, supabase, product } = context
 
   if (product.is_boosted) {
-    return { success: false, error: "Product is already boosted" }
+    return errorEnvelope({ error: "Product is already boosted" })
   }
 
-  const boostData = await syncProfileBoostCredits(userId)
+  const boostData = await syncProfileBoostCredits({ supabase, userId })
   if (!boostData) {
-    return { success: false, error: "Profile not found" }
+    return errorEnvelope({ error: "Profile not found" })
   }
 
   const { boosts_remaining: boostsRemaining } = boostData
 
   if (boostsRemaining <= 0) {
-    return { success: false, error: "No boosts remaining. Purchase more or upgrade your plan." }
+    return errorEnvelope({ error: "No boosts remaining. Purchase more or upgrade your plan." })
   }
 
   const adminSupabase = createAdminClient()
 
-  const deductUpdate: Database["public"]["Tables"]["profiles"]["Update"] = {
-    boosts_remaining: boostsRemaining - 1,
-  }
-  const { error: deductError } = await adminSupabase
-    .from("profiles")
-    .update(deductUpdate)
-    .eq("id", userId)
+  const deductResult = await updateProfileBoostRemaining({
+    adminSupabase,
+    userId,
+    boostsRemaining: boostsRemaining - 1,
+  })
 
-  if (deductError) {
-    logger.error("Failed to deduct boost:", deductError)
-    return { success: false, error: "Failed to use boost. Please try again." }
+  if (!deductResult.ok) {
+    logger.error("Failed to deduct boost:", deductResult.error)
+    return errorEnvelope({ error: "Failed to use boost. Please try again." })
   }
 
   const boostDuration = 7
   const expiresAt = new Date()
   expiresAt.setDate(expiresAt.getDate() + boostDuration)
 
-  const { error: boostError } = await adminSupabase
-    .from("products")
-    .update({
-      is_boosted: true,
-      boost_expires_at: expiresAt.toISOString(),
-      listing_type: "boosted",
+  const boostUpdateResult = await updateProductBoostStatus({
+    adminSupabase,
+    productId: safeProductId,
+    isBoosted: true,
+    boostExpiresAt: expiresAt.toISOString(),
+    listingType: "boosted",
+  })
+
+  if (!boostUpdateResult.ok) {
+    await updateProfileBoostRemaining({
+      adminSupabase,
+      userId,
+      boostsRemaining,
     })
-    .eq("id", safeProductId)
 
-  if (boostError) {
-    const rollbackUpdate: Database["public"]["Tables"]["profiles"]["Update"] = {
-      boosts_remaining: boostsRemaining,
-    }
-    await adminSupabase
-      .from("profiles")
-      .update(rollbackUpdate)
-      .eq("id", userId)
-
-    logger.error("Failed to boost product:", boostError)
-    return { success: false, error: "Failed to boost product. Please try again." }
+    logger.error("Failed to boost product:", boostUpdateResult.error)
+    return errorEnvelope({ error: "Failed to boost product. Please try again." })
   }
 
-  await adminSupabase
-    .from("listing_boosts")
-    .insert({
-      product_id: safeProductId,
-      seller_id: userId,
-      price_paid: 0,
-      duration_days: boostDuration,
-      expires_at: expiresAt.toISOString(),
-      is_active: true,
-      currency: "EUR",
+  const listingBoostResult = await insertListingBoost({
+    adminSupabase,
+    productId: safeProductId,
+    sellerId: userId,
+    pricePaid: 0,
+    durationDays: boostDuration,
+    expiresAt: expiresAt.toISOString(),
+    currency: "EUR",
+  })
+
+  if (!listingBoostResult.ok) {
+    logger.error("Failed to insert listing boost record", listingBoostResult.error, {
+      productId: safeProductId,
+      userId,
     })
+  }
 
   revalidateBoostCaches(safeProductId, userId)
-  const { data: sellerProfile } = await supabase
-    .from("profiles")
-    .select("username")
-    .eq("id", userId)
-    .maybeSingle()
-  revalidatePublicProfileTagsByUsername(sellerProfile?.username, "user")
 
-  return {
-    success: true,
-    boostsRemaining: boostsRemaining - 1,
+  const usernameResult = await fetchProfileUsername({ supabase, userId })
+  if (usernameResult.ok) {
+    revalidatePublicProfileTagsByUsername(usernameResult.username, "user")
   }
+
+  return successEnvelope({ boostsRemaining: boostsRemaining - 1 })
 }

@@ -1,22 +1,18 @@
 "use server"
 
 import { getOrderActionContext, OrderActionItemIdSchema } from "./order-action-context"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
+import { fetchRatingOrderItem, hasBuyerFeedback, hasSellerFeedback } from "@/lib/data/orders/rating"
 
-const ORDER_ITEM_RATING_SELECT = `
-        id,
-        status,
-        seller_id,
-        order_id,
-        order:orders!inner(user_id)
-      `
+export type BuyerSellerRatingStatusResult = Envelope<
+  { canRate: boolean; hasRated: boolean; sellerId?: string },
+  { canRate: boolean; hasRated: boolean; sellerId?: string; error: string }
+>
 
-type RatingOrderItemRow = {
-  id: string
-  status: string | null
-  seller_id: string
-  order_id: string
-  order: { user_id: string }
-}
+export type SellerBuyerRatingStatusResult = Envelope<
+  { canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string },
+  { canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string; error: string }
+>
 
 async function getAuthedOrderRatingContext(orderItemId: string) {
   const parsedOrderItemId = OrderActionItemIdSchema.safeParse(orderItemId)
@@ -33,46 +29,46 @@ async function getAuthedOrderRatingContext(orderItemId: string) {
  */
 export async function canBuyerRateSeller(
   orderItemId: string
-): Promise<{ canRate: boolean; hasRated: boolean; sellerId?: string }> {
+): Promise<BuyerSellerRatingStatusResult> {
   const context = await getAuthedOrderRatingContext(orderItemId)
-  if (!context) return { canRate: false, hasRated: false }
+  if (!context) {
+    return errorEnvelope({ canRate: false, hasRated: false, error: "Not authenticated" })
+  }
 
   try {
     const { orderItemId: parsedOrderItemId, userId, supabase } = context
 
-    const { data: orderItem } = await supabase
-      .from("order_items")
-      .select(ORDER_ITEM_RATING_SELECT)
-      .eq("id", parsedOrderItemId)
-      .single<RatingOrderItemRow>()
+    const orderItemResult = await fetchRatingOrderItem({ supabase, orderItemId: parsedOrderItemId })
+    const orderItem = orderItemResult.ok ? orderItemResult.item : null
 
     if (!orderItem) {
-      return { canRate: false, hasRated: false }
+      return successEnvelope({ canRate: false, hasRated: false })
     }
 
     if (orderItem.order.user_id !== userId) {
-      return { canRate: false, hasRated: false }
+      return successEnvelope({ canRate: false, hasRated: false })
     }
 
     if (orderItem.status !== "delivered") {
-      return { canRate: false, hasRated: false, sellerId: orderItem.seller_id }
+      return successEnvelope({ canRate: false, hasRated: false, sellerId: orderItem.seller_id })
     }
 
-    const { data: existingFeedback } = await supabase
-      .from("seller_feedback")
-      .select("id")
-      .eq("buyer_id", userId)
-      .eq("seller_id", orderItem.seller_id)
-      .eq("order_id", orderItem.order_id)
-      .single()
-
-    return {
-      canRate: !existingFeedback,
-      hasRated: !!existingFeedback,
+    const feedbackResult = await hasSellerFeedback({
+      supabase,
+      buyerId: userId,
       sellerId: orderItem.seller_id,
-    }
+      orderId: orderItem.order_id,
+    })
+
+    const hasRated = feedbackResult.ok ? feedbackResult.exists : false
+
+    return successEnvelope({
+      canRate: !hasRated,
+      hasRated,
+      sellerId: orderItem.seller_id,
+    })
   } catch {
-    return { canRate: false, hasRated: false }
+    return errorEnvelope({ canRate: false, hasRated: false, error: "An unexpected error occurred" })
   }
 }
 
@@ -81,45 +77,48 @@ export async function canBuyerRateSeller(
  */
 export async function canSellerRateBuyer(
   orderItemId: string
-): Promise<{ canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string }> {
+): Promise<SellerBuyerRatingStatusResult> {
   const context = await getAuthedOrderRatingContext(orderItemId)
-  if (!context) return { canRate: false, hasRated: false }
+  if (!context) {
+    return errorEnvelope({ canRate: false, hasRated: false, error: "Not authenticated" })
+  }
 
   try {
     const { orderItemId: parsedOrderItemId, userId, supabase } = context
 
-    const { data: orderItem } = await supabase
-      .from("order_items")
-      .select(ORDER_ITEM_RATING_SELECT)
-      .eq("id", parsedOrderItemId)
-      .eq("seller_id", userId)
-      .single<RatingOrderItemRow>()
+    const orderItemResult = await fetchRatingOrderItem({
+      supabase,
+      orderItemId: parsedOrderItemId,
+      sellerId: userId,
+    })
+    const orderItem = orderItemResult.ok ? orderItemResult.item : null
 
     if (!orderItem) {
-      return { canRate: false, hasRated: false }
+      return successEnvelope({ canRate: false, hasRated: false })
     }
 
     const buyerId = orderItem.order.user_id
 
     if (orderItem.status !== "delivered") {
-      return { canRate: false, hasRated: false, buyerId, orderId: orderItem.order_id }
+      return successEnvelope({ canRate: false, hasRated: false, buyerId, orderId: orderItem.order_id })
     }
 
-    const { data: existingFeedback } = await supabase
-      .from("buyer_feedback")
-      .select("id")
-      .eq("seller_id", userId)
-      .eq("buyer_id", buyerId)
-      .eq("order_id", orderItem.order_id)
-      .single()
-
-    return {
-      canRate: !existingFeedback,
-      hasRated: !!existingFeedback,
+    const feedbackResult = await hasBuyerFeedback({
+      supabase,
+      sellerId: userId,
       buyerId,
       orderId: orderItem.order_id,
-    }
+    })
+
+    const hasRated = feedbackResult.ok ? feedbackResult.exists : false
+
+    return successEnvelope({
+      canRate: !hasRated,
+      hasRated,
+      buyerId,
+      orderId: orderItem.order_id,
+    })
   } catch {
-    return { canRate: false, hasRated: false }
+    return errorEnvelope({ canRate: false, hasRated: false, error: "An unexpected error occurred" })
   }
 }

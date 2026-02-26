@@ -40,6 +40,7 @@ function CartDrawerItemImage({
       alt={alt}
       width={56}
       height={56}
+      sizes="56px"
       className="size-full object-cover"
       priority={priority}
       loading={priority ? "eager" : "lazy"}

@@ -1,6 +1,10 @@
 import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
+import { fetchBoostPrice } from "@/lib/data/boosts"
+import {
+  fetchPrivateProfileStripeCustomerId,
+  upsertPrivateProfileStripeCustomerId,
+} from "@/lib/data/subscriptions"
 import { stripe } from "@/lib/stripe"
-import { STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
 import {
   CreateBoostCheckoutInputSchema,
   getBoostActionContext,
@@ -42,25 +46,21 @@ export async function createBoostCheckoutSessionImpl(
     return errorEnvelope({ error: "Product is already boosted" })
   }
 
-  const { data: boostPrice, error: priceError } = await supabase
-    .from("boost_prices")
-    .select("price")
-    .eq("duration_days", durationDays)
-    .eq("is_active", true)
-    .single()
-
-  if (priceError || !boostPrice) {
+  const boostPriceResult = await fetchBoostPrice({ supabase, durationDays })
+  if (!boostPriceResult.ok || boostPriceResult.price == null) {
     return errorEnvelope({ error: "Boost price not found" })
   }
 
   try {
-    const { data: privateProfile } = await supabase
-      .from("private_profiles")
-      .select(STRIPE_CUSTOMER_ID_SELECT)
-      .eq("id", userId)
-      .single()
+    const stripeCustomerResult = await fetchPrivateProfileStripeCustomerId({
+      supabase,
+      userId,
+    })
+    if (!stripeCustomerResult.ok) {
+      return errorEnvelope({ error: "Failed to load profile" })
+    }
 
-    let customerId = privateProfile?.stripe_customer_id
+    let customerId = stripeCustomerResult.stripeCustomerId
 
     if (!customerId) {
       const customer = await stripe.customers.create({
@@ -71,9 +71,14 @@ export async function createBoostCheckoutSessionImpl(
       })
       customerId = customer.id
 
-      await supabase
-        .from("private_profiles")
-        .upsert({ id: userId, stripe_customer_id: customerId }, { onConflict: "id" })
+      const upsertResult = await upsertPrivateProfileStripeCustomerId({
+        supabase,
+        userId,
+        stripeCustomerId: customerId,
+      })
+      if (!upsertResult.ok) {
+        return errorEnvelope({ error: "Failed to persist customer" })
+      }
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
@@ -91,7 +96,7 @@ export async function createBoostCheckoutSessionImpl(
               name: `${durationDays}-Day Boost`,
               description: `Boost for "${product.title}"`,
             },
-            unit_amount: Math.round(Number(boostPrice.price) * 100),
+            unit_amount: Math.round(boostPriceResult.price * 100),
           },
           quantity: 1,
         },

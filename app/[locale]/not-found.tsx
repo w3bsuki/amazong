@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Link } from '@/i18n/routing'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { validateLocale } from '@/i18n/routing'
+import { createPageMetadata } from '@/lib/seo/metadata'
 
 export async function generateMetadata({
   params,
@@ -13,9 +14,16 @@ export async function generateMetadata({
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: 'NotFound' })
 
-  return {
+  return createPageMetadata({
+    locale,
+    path: "",
     title: t('metaTitle'),
-  }
+    description: t('description'),
+    robots: {
+      index: false,
+      follow: true,
+    },
+  })
 }
 
 export default async function NotFound({

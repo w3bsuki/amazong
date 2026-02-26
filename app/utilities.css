@@ -222,10 +222,6 @@
 }
 
 /* ===== SIZE UTILITIES ===== */
-@utility w-20 {
-  width: 5rem;
-}
-
 @utility h-22 {
   height: 5.5rem;
 }
@@ -238,18 +234,6 @@
 
 .tap-transparent {
   -webkit-tap-highlight-color: transparent;
-}
-
-@utility touch-pan-x {
-  touch-action: pan-x;
-}
-
-@utility touch-pan-y {
-  touch-action: pan-y;
-}
-
-@utility touch-manipulation {
-  touch-action: manipulation;
 }
 
 @utility control-compact {
@@ -320,10 +304,6 @@
 /* ===== MISC UTILITIES ===== */
 .rounded-inherit {
   border-radius: inherit;
-}
-
-@utility z-60 {
-  z-index: 60;
 }
 
 .z-skip-link {

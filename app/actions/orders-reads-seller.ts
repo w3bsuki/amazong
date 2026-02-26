@@ -1,9 +1,11 @@
 import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
 import type { OrderItemStatus } from "@/lib/order-status"
 import {
-  ORDER_ITEM_LIST_SELECT,
-  type OrderItem,
-} from "./orders-shared"
+  fetchProfilesByIds,
+  fetchSellerOrderItemsPage,
+  fetchSellerOrderItemStatuses,
+} from "@/lib/data/orders/reads"
+import type { OrderItem } from "@/lib/types/order-item"
 import {
   NOT_AUTHENTICATED_ERROR,
   PositiveIntegerSchema,
@@ -77,23 +79,16 @@ export async function getSellerOrdersImpl(
     const offset = (parsedPage.data - 1) * parsedPageSize.data
     const to = offset + parsedPageSize.data - 1
 
-    let query = supabase
-      .from("order_items")
-      .select(ORDER_ITEM_LIST_SELECT, { count: "exact" })
-      .eq("seller_id", userId)
-      .order("created_at", { ascending: false, foreignTable: "orders" })
-      .range(offset, to)
+    const orderItemsResult = await fetchSellerOrderItemsPage({
+      supabase,
+      sellerId: userId,
+      statusFilter: parsedStatusFilter.data,
+      offset,
+      to,
+    })
 
-    if (parsedStatusFilter.data === "active") {
-      query = query.in("status", ["pending", "received", "processing", "shipped"])
-    } else if (parsedStatusFilter.data && parsedStatusFilter.data !== "all") {
-      query = query.eq("status", parsedStatusFilter.data)
-    }
-
-    const { data: orderItems, error: fetchError, count } = await query
-
-    if (fetchError) {
-      logger.error("[orders-reads] get_seller_orders_fetch_failed", fetchError, {
+    if (!orderItemsResult.ok) {
+      logger.error("[orders-reads] get_seller_orders_fetch_failed", orderItemsResult.error, {
         sellerId: userId,
       })
       return errorEnvelope({
@@ -107,48 +102,71 @@ export async function getSellerOrdersImpl(
     }
 
     const buyerIds = [
-      ...new Set((orderItems ?? []).map((item) => item.order?.user_id).filter(Boolean)),
+      ...new Set(
+        orderItemsResult.items
+          .map((item) => {
+            const order = item.order
+            if (typeof order !== "object" || order === null || Array.isArray(order)) return null
+            const userIdValue = (order as { user_id?: unknown }).user_id
+            return typeof userIdValue === "string" ? userIdValue : null
+          })
+          .filter((buyerId): buyerId is string => buyerId !== null)
+      ),
     ]
 
     const buyersMap = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>()
 
     if (buyerIds.length > 0) {
-      const { data: buyers } = await supabase
-        .from("profiles")
-        .select("id, full_name, avatar_url")
-        .in("id", buyerIds)
-
-      buyers?.forEach((buyer) => {
-        buyersMap.set(buyer.id, buyer)
-      })
+      const buyersResult = await fetchProfilesByIds({ supabase, userIds: buyerIds })
+      if (buyersResult.ok) {
+        buyersResult.profiles.forEach((buyer) => {
+          buyersMap.set(buyer.id, buyer)
+        })
+      }
     }
 
-    const ordersWithBuyers = (orderItems ?? []).map((item) => ({
-      ...item,
-      created_at: item.order?.created_at ?? new Date().toISOString(),
-      buyer: (() => {
-        if (!item.order?.user_id) return
+    const ordersWithBuyers = orderItemsResult.items.map((item) => {
+      const orderValue = item.order
+      const order =
+        typeof orderValue === "object" && orderValue !== null && !Array.isArray(orderValue)
+          ? (orderValue as Record<string, unknown>)
+          : null
 
-        const base = buyersMap.get(item.order.user_id)
-        const shippingAddress = item.order?.shipping_address
-        const email =
-          shippingAddress &&
-          typeof shippingAddress === "object" &&
-          !Array.isArray(shippingAddress) &&
-          typeof (shippingAddress as { email?: unknown }).email === "string"
-            ? (shippingAddress as { email: string }).email
-            : null
+      const createdAtValue = order?.created_at
+      const createdAt = typeof createdAtValue === "string" ? createdAtValue : new Date().toISOString()
 
-        return {
-          id: item.order.user_id,
-          full_name: base?.full_name ?? null,
-          email,
-          avatar_url: base?.avatar_url ?? null,
-        }
-      })(),
-    }))
+      const buyerIdValue = order?.user_id
+      const buyerId = typeof buyerIdValue === "string" ? buyerIdValue : null
 
-    const totalItems = count ?? 0
+      const shippingAddressValue = order?.shipping_address
+      const shippingAddress =
+        typeof shippingAddressValue === "object" &&
+        shippingAddressValue !== null &&
+        !Array.isArray(shippingAddressValue)
+          ? (shippingAddressValue as Record<string, unknown>)
+          : null
+
+      const emailValue = shippingAddress?.email
+      const email = typeof emailValue === "string" ? emailValue : null
+
+      const base = buyerId ? buyersMap.get(buyerId) : undefined
+
+      return {
+        ...item,
+        created_at: createdAt,
+        buyer:
+          buyerId === null
+            ? undefined
+            : {
+                id: buyerId,
+                full_name: base?.full_name ?? null,
+                email,
+                avatar_url: base?.avatar_url ?? null,
+              },
+      }
+    })
+
+    const totalItems = orderItemsResult.count
     const totalPages = Math.max(1, Math.ceil(totalItems / parsedPageSize.data))
     const currentPage = Math.min(parsedPage.data, totalPages)
 
@@ -192,12 +210,10 @@ export async function getSellerOrderStatsImpl(): Promise<SellerOrderStatsResult>
     }
     const { userId, supabase } = authResult
 
-    const { data: orderItems } = await supabase
-      .from("order_items")
-      .select("status")
-      .eq("seller_id", userId)
+    const statusesResult = await fetchSellerOrderItemStatuses({ supabase, sellerId: userId })
+    if (!statusesResult.ok) return successEnvelope(defaultStats)
 
-    if (!orderItems) return successEnvelope(defaultStats)
+    const orderItems = statusesResult.statuses
 
     const stats = { ...defaultStats }
     orderItems.forEach((item) => {

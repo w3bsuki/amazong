@@ -43,6 +43,7 @@ export function SellerOrderCard({
                 alt={item.product?.title || copy.item.productImageAlt}
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 100vw, 96px"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">

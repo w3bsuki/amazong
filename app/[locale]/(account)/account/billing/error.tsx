@@ -4,8 +4,9 @@ import { useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { RefreshCw as ArrowClockwise, CircleAlert as WarningCircle } from "lucide-react";
+import { RefreshCw as ArrowClockwise, CircleAlert as WarningCircle, House } from "lucide-react";
 
+import { Link } from "@/i18n/routing"
 
 import { logger } from "@/lib/logger"
 export default function BillingError({
@@ -16,6 +17,7 @@ export default function BillingError({
   reset: () => void
 }) {
   const t = useTranslations("Account.billingError")
+  const tErrors = useTranslations("Errors")
 
   useEffect(() => {
     logger.error("[account-billing] route_error_boundary", error)
@@ -35,10 +37,18 @@ export default function BillingError({
             <p className="text-muted-foreground text-sm max-w-md mb-4">
               {t("description")}
             </p>
-            <Button onClick={reset} variant="outline" className="gap-1.5">
-              <ArrowClockwise className="size-4" />
-              {t("retry")}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={reset} variant="outline" className="gap-1.5">
+                <ArrowClockwise className="size-4" />
+                {t("retry")}
+              </Button>
+              <Button asChild variant="cta" className="gap-1.5 w-full sm:w-auto">
+                <Link href="/">
+                  <House className="size-4" />
+                  {tErrors("common.goToHomepage")}
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

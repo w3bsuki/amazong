@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { createAdminClient } from "@/lib/supabase/server"
+import { errorEnvelope, successEnvelope, type Envelope, type ErrorEnvelope } from "@/lib/api/envelope"
 import { getOrderActionContext, OrderActionItemIdSchema } from "./order-action-context"
 
 export const IssueTypeSchema = z.enum([
@@ -28,37 +28,44 @@ export type OrdersSupportErrorCode =
   | "update_failed"
   | "unexpected"
 
-export type OrdersSupportFailure = {
-  success: false
+export type OrdersSupportResult = Envelope<
+  { conversationId?: string },
+  { error: string; code: OrdersSupportErrorCode }
+>
+
+export type OrdersSupportFailure = ErrorEnvelope<{
   error: string
   code: OrdersSupportErrorCode
+}>
+
+type OrdersSupportContext = Envelope<
+  {
+    orderItemId: string
+    userId: string
+    supabase: Awaited<ReturnType<typeof getOrderActionContext>> extends infer Context
+      ? Context extends { success: true; supabase: infer Client }
+        ? Client
+        : never
+      : never
+  },
+  { error: string; code: OrdersSupportErrorCode }
+>
+
+export function supportFailure(code: OrdersSupportErrorCode, error: string): OrdersSupportFailure {
+  return errorEnvelope({ code, error })
 }
 
-type OrdersSupportSuccess = {
-  success: true
-  conversationId?: string
-}
+export function supportSuccess(conversationId?: string): OrdersSupportResult {
+  if (conversationId) {
+    return successEnvelope({ conversationId })
+  }
 
-export type OrdersSupportResult = OrdersSupportSuccess | OrdersSupportFailure
-
-export function supportFailure(
-  code: OrdersSupportErrorCode,
-  error: string
-): OrdersSupportFailure {
-  return { success: false, error, code }
+  return successEnvelope<{ conversationId?: string }>()
 }
 
 export async function requireSupportContext(
   orderItemId: string
-): Promise<
-  | {
-      success: true
-      orderItemId: string
-      userId: string
-      supabase: Awaited<ReturnType<typeof createAdminClient>>
-    }
-  | OrdersSupportFailure
-> {
+): Promise<OrdersSupportContext> {
   const context = await getOrderActionContext(orderItemId)
   if (!context.success) {
     return context.error === "invalid_order_item_id"
@@ -66,10 +73,9 @@ export async function requireSupportContext(
       : supportFailure("not_authenticated", "Not authenticated")
   }
 
-  return {
-    success: true,
+  return successEnvelope({
     orderItemId: context.orderItemId,
     userId: context.userId,
     supabase: context.supabase,
-  }
+  })
 }

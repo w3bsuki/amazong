@@ -96,6 +96,7 @@ function SystemOrderBanner({
                 alt={conversation.product?.title || ""}
                 fill
                 className="object-cover"
+                sizes="64px"
               />
             </div>
           </Link>
@@ -315,6 +316,7 @@ export function ChatMessagesPane({
                     alt={t("imageAttachmentAlt")}
                     width={240}
                     height={240}
+                    sizes="240px"
                     className="h-auto max-w-60 w-auto cursor-pointer rounded-xl object-cover transition-opacity hover:opacity-95"
                     unoptimized
                   />

@@ -7,6 +7,9 @@
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
 
+  /* === Z-INDEX SCALE (extend Tailwind defaults) === */
+  --z-index-60: 60;
+
   /* === FONTS === */
   --font-sans: "Inter", var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
@@ -124,7 +127,7 @@
   /* 28px - large/bold */
 
   /* === CATEGORY NAVIGATION === */
-  --spacing-category-circle: 3.5rem;
+  --spacing-category-circle: 3.25rem;
   /* 56px - tighter mobile circles */
   --spacing-category-circle-desktop: 3.75rem;
   /* 60px on desktop */
@@ -191,6 +194,63 @@
   --width-modal-sm: 25rem;
   --width-modal: 35rem;
   --width-modal-lg: 56.25rem;
+
+  /* === DROPDOWN/MODAL WIDTH ALIASES (legacy, referenced via var() sizing) === */
+  --container-dropdown: var(--width-dropdown);
+  --container-modal-sm: var(--width-modal-sm);
+  --container-modal: var(--width-modal);
+  --container-modal-lg: var(--width-modal-lg);
+
+  /* === DIALOG HEIGHT ALIASES (legacy, referenced via var() sizing) === */
+  --dialog-h-85vh: 85vh;
+  --dialog-h-50vh: 50vh;
+
+  /* === SCROLL AREA HEIGHTS (legacy, used by Command/Popover bodies) === */
+  --spacing-scroll-sm: 11.25rem;
+  --spacing-scroll-md: 18.75rem;
+  --spacing-scroll-lg: 25rem;
+  --spacing-scroll-xl: 31.25rem;
+
+  /* === PAGE SECTIONS (legacy) === */
+  --page-section-min-h: 60vh;
+  --page-section-min-h-lg: 80vh;
+
+  /* === PRODUCT QUICK VIEW / FORMS (legacy) === */
+  --product-form-modal-h: min(92dvh, 720px);
+  --product-form-modal-w: min(94vw, 1100px);
+  --write-review-dialog-max-w: 26.5625rem;
+
+  /* === CHAT (legacy) === */
+  --support-chat-message-max-w: 80%;
+  --chat-message-max-w: 80%;
+
+  /* === PLANS (legacy) === */
+  --plans-skeleton-card-w: calc(100vw - 3rem);
+  --plans-table-head-w: 13.75rem;
+
+  /* === DESKTOP LAYOUT (legacy sizing tokens referenced in TSX) === */
+  --header-h: 4rem;
+  --header-h-mobile: 3.5rem;
+
+  --sidebar-width: var(--layout-sidebar-w);
+  --sidebar-width-mobile: 18rem;
+  --sidebar-item-h: 2.5rem;
+  --sticky-top: calc(var(--header-h) + 0.5rem);
+  --sidebar-max-h: calc(100dvh - var(--header-h) - 1.5rem);
+
+  /* === SKELETONS (legacy) === */
+  --home-category-skeleton-size: 4.5rem;
+  --home-horizontal-card-skeleton-w: 16.25rem;
+  --header-skeleton-h: 3.25rem;
+  --header-skeleton-h-md: 6.25rem;
+
+  /* === UI SIZES (legacy) === */
+  --switch-h: 1.15rem;
+  --textarea-min-h: 9.375rem;
+  --chart-h-sm: 15.625rem;
+  --badge-count-size: 1.125rem;
+  --members-sort-w-sm: 11.25rem;
+  --business-notifications-scroll-h: 22.5rem;
 
   /* === SHADOWS (Professional depth) === */
   --shadow-2xs: 0 1px 1px -1px oklch(var(--shadow-ink-subtle));

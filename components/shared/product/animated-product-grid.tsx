@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
 
 import {
   ProductGrid,
@@ -47,13 +46,34 @@ export function AnimatedProductGrid({
   batchKey,
 }: AnimatedProductGridProps) {
   const [isHydrated, setIsHydrated] = useState(false)
+  const [framerMotion, setFramerMotion] = useState<{
+    MotionConfig: (typeof import("framer-motion"))["MotionConfig"]
+    motion: (typeof import("framer-motion"))["motion"]
+  } | null>(null)
 
   useEffect(() => {
     setIsHydrated(true)
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+
+    import("framer-motion")
+      .then((mod) => {
+        if (cancelled) return
+        setFramerMotion({ MotionConfig: mod.MotionConfig, motion: mod.motion })
+      })
+      .catch(() => {
+        // Best-effort: fall back to static grid.
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   if (isLoading) {
-    return <ProductGridSkeleton viewMode={viewMode} density={density} preset={preset} />
+    return <ProductGridSkeleton viewMode={viewMode} density={density} />
   }
 
   if (products.length === 0) {
@@ -61,7 +81,7 @@ export function AnimatedProductGrid({
   }
 
   // Never animate first SSR paint; only animate after hydration/interaction.
-  if (!isHydrated) {
+  if (!isHydrated || !framerMotion) {
     return (
       <ProductGrid
         products={products}
@@ -73,6 +93,8 @@ export function AnimatedProductGrid({
     )
   }
 
+  const { MotionConfig, motion } = framerMotion
+
   return (
     <div
       id="product-grid"
@@ -82,29 +104,31 @@ export function AnimatedProductGrid({
       aria-live="polite"
       tabIndex={-1}
     >
-      <motion.div
-        key={batchKey}
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className={getProductGridItemsClassName({ viewMode, density, className })}
-      >
-        {products.map((product, index) => (
-          <motion.div
-            key={product.id}
-            variants={itemVariants}
-            role="listitem"
-            className="motion-safe:[&_[data-slot=badge]]:animate-badge-pop"
-          >
-            <ProductGridItem
-              product={product}
-              index={index}
-              viewMode={viewMode}
-              preset={preset}
-            />
-          </motion.div>
-        ))}
-      </motion.div>
+      <MotionConfig reducedMotion="user">
+        <motion.div
+          key={batchKey}
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className={getProductGridItemsClassName({ viewMode, density, className })}
+        >
+          {products.map((product, index) => (
+            <motion.div
+              key={product.id}
+              variants={itemVariants}
+              role="listitem"
+              className="motion-safe:[&_[data-slot=badge]]:animate-badge-pop"
+            >
+              <ProductGridItem
+                product={product}
+                index={index}
+                viewMode={viewMode}
+                preset={preset}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+      </MotionConfig>
     </div>
   )
 }

@@ -10,12 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DrawerShell } from "@/components/shared/drawer-shell";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { useTranslations } from "next-intl";
 import { CategoryModalContent } from "./category-selector-modal-content";
-import { toPathItem } from "./category-selector-shared";
+import { CategoryPickerDrawerShell, flattenCategories } from "./category-selector-shared";
 import type { CategorySelectorProps, FlatCategory } from "./category-selector.types";
 
 export function CategorySelector({
@@ -29,45 +28,9 @@ export function CategorySelector({
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
   const tSell = useTranslations("Sell");
-  const tCommon = useTranslations("Common");
 
   const flatCategories = useMemo(() => {
-    const result: FlatCategory[] = [];
-
-    for (const root of categories) {
-      const rootPath = [toPathItem(root)];
-      const leafNodes = root.children ?? [];
-
-      if (leafNodes.length === 0) {
-        const fullPath = rootPath
-          .map((item) => (locale === "bg" && item.name_bg ? item.name_bg : item.name))
-          .join(" › ");
-
-        result.push({
-          ...root,
-          path: rootPath,
-          fullPath,
-          searchText: `${root.name} ${root.name_bg || ""} ${root.slug}`.toLowerCase(),
-        });
-        continue;
-      }
-
-      for (const leaf of leafNodes) {
-        const path = [...rootPath, toPathItem(leaf)];
-        const fullPath = path
-          .map((item) => (locale === "bg" && item.name_bg ? item.name_bg : item.name))
-          .join(" › ");
-
-        result.push({
-          ...leaf,
-          path,
-          fullPath,
-          searchText: `${root.name} ${root.name_bg || ""} ${root.slug} ${leaf.name} ${leaf.name_bg || ""} ${leaf.slug}`.toLowerCase(),
-        });
-      }
-    }
-
-    return result;
+    return flattenCategories(categories, locale);
   }, [categories, locale]);
 
   const selectedCategory = useMemo(() => {
@@ -149,17 +112,7 @@ export function CategorySelector({
     return (
       <>
         {triggerButton}
-        <DrawerShell
-          open={isOpen}
-          onOpenChange={setIsOpen}
-          title={tSell("categoryModal.title")}
-          closeLabel={tCommon("close")}
-          contentAriaLabel={tSell("categoryModal.title")}
-          description={tSell("categoryModal.description")}
-          descriptionClassName="sr-only"
-          contentClassName="h-full max-h-full rounded-none"
-          drawerProps={{ snapPoints: [1] }}
-        >
+        <CategoryPickerDrawerShell open={isOpen} onOpenChange={setIsOpen}>
           <CategoryModalContent
             categories={categories}
             flatCategories={flatCategories}
@@ -168,7 +121,7 @@ export function CategorySelector({
             locale={locale}
             isMobile
           />
-        </DrawerShell>
+        </CategoryPickerDrawerShell>
       </>
     );
   }

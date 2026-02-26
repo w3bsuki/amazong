@@ -17,8 +17,6 @@ interface ProductCardPriceProps {
   compact?: boolean
   /** Slightly stronger hierarchy for home feed cards */
   homeEmphasis?: boolean
-  /** Price hierarchy preset */
-  priceEmphasis?: "default" | "strong"
   /** Controls compare-at strike-through rendering */
   showOriginalPrice?: boolean
   /** Optional compact trailing label in the main price row (e.g. "-25%") */
@@ -44,7 +42,6 @@ function ProductCardPrice({
   buyerProtectionLabel,
   compact = false,
   homeEmphasis = false,
-  priceEmphasis = "default",
   showOriginalPrice = true,
   trailingLabel,
   discountAsBadge = false,
@@ -90,8 +87,7 @@ function ProductCardPrice({
       {hasDiscount && formattedOriginalPrice && (
         <span
           className={cn(
-            "line-through tabular-nums text-muted-foreground",
-            compact && !homeEmphasis ? "text-2xs" : "text-compact"
+            "line-through tabular-nums text-muted-foreground text-2xs"
           )}
         >
           {formattedOriginalPrice}
@@ -116,9 +112,7 @@ function ProductCardPrice({
       {/* Primary price */}
       <span
         className={cn(
-          "tabular-nums whitespace-nowrap tracking-tight text-foreground",
-          compact && priceEmphasis !== "strong" ? "text-sm" : "text-price",
-          priceEmphasis === "strong" ? "font-bold" : "font-semibold"
+          "tabular-nums whitespace-nowrap tracking-tight text-foreground text-sm font-bold"
         )}
       >
         {formattedPrice}

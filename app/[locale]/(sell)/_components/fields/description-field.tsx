@@ -5,6 +5,7 @@ import { Controller } from "react-hook-form";
 import { AlignLeft as TextAlignLeft } from "lucide-react";
 
 import { Field, FieldError, FieldContent } from "@/components/shared/field";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
@@ -58,11 +59,11 @@ export function DescriptionField({
           <FieldContent className={cn(!compact && "p-5")}>
             <div className="space-y-1.5">
               {compact && (
-                <label htmlFor={textareaId} className="text-sm font-semibold text-foreground">
+                <label htmlFor={textareaId} className="block text-xs font-semibold text-foreground mb-1.5">
                   {tSell("fields.description.label")} <span className="text-destructive">*</span>
                 </label>
               )}
-              <textarea
+              <Textarea
                 {...field}
                 id={textareaId}
                 aria-invalid={fieldState.invalid}
@@ -70,10 +71,7 @@ export function DescriptionField({
                 maxLength={maxLength}
                 rows={minRows}
                 className={cn(
-                  "block w-full resize-none rounded-lg bg-secondary px-3 py-2.5 text-sm text-foreground leading-relaxed",
-                  "placeholder:text-muted-foreground",
-                  "focus:ring-1 focus:ring-ring focus:outline-none",
-                  fieldState.invalid && "ring-1 ring-destructive"
+                  "bg-surface-subtle border-border-subtle resize-none leading-relaxed"
                 )}
               />
               <div className="flex justify-end">
@@ -102,4 +100,3 @@ export function DescriptionField({
     />
   );
 }
-

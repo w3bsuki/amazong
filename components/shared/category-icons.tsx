@@ -233,6 +233,7 @@ export type IconSize = 14 | 16 | 18 | 20 | 24 | 26 | 28 | 32 | 36 | 40
 interface CategoryIconOptions {
   size?: IconSize
   className?: string
+  strokeWidth?: number
   weight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone"
 }
 
@@ -243,7 +244,13 @@ export function getCategoryIcon(
   slug: string,
   options: CategoryIconOptions = {},
 ): React.ReactNode {
-  const { size = 20, className = "" } = options
+  const { size = 20, className = "", strokeWidth } = options
   const Icon = getCategoryIconForSlug(slug)
-  return <Icon size={size} className={className} />
+  return (
+    <Icon
+      size={size}
+      className={className}
+      strokeWidth={strokeWidth}
+    />
+  )
 }

@@ -1,4 +1,5 @@
 import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
+import { fetchOrderConversationId } from "@/lib/data/orders/reads"
 import {
   NOT_AUTHENTICATED_ERROR,
   OrderIdSchema,
@@ -25,26 +26,17 @@ export async function getOrderConversationImpl(
     }
     const { userId, supabase } = authResult
 
-    const { data: conversation, error } = await supabase
-      .from("conversations")
-      .select("id")
-      .eq("order_id", parsedOrderId.data)
-      .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-      .single()
+    const result = await fetchOrderConversationId({ supabase, orderId: parsedOrderId.data, userId })
 
-    if (error) {
-      if (error.code === "PGRST116") {
-        return successEnvelope({ conversationId: null })
-      }
-
-      logger.error("[orders-reads] get_order_conversation_failed", error, {
+    if (!result.ok) {
+      logger.error("[orders-reads] get_order_conversation_failed", result.error, {
         orderId: parsedOrderId.data,
         userId,
       })
       return errorEnvelope({ conversationId: null, error: "Failed to fetch conversation" })
     }
 
-    return successEnvelope({ conversationId: conversation?.id || null })
+    return successEnvelope({ conversationId: result.conversationId })
   } catch {
     return errorEnvelope({ conversationId: null, error: UNEXPECTED_ERROR })
   }

@@ -89,6 +89,7 @@ function DesktopSearchProductStrip({
                     alt={product.title}
                     width={96}
                     height={96}
+                    sizes="96px"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -186,6 +187,7 @@ export function DesktopSearchPopoverPanel({
                         alt={product.title}
                         width={48}
                         height={48}
+                        sizes="48px"
                         className="w-full h-full object-cover"
                       />
                     ) : (

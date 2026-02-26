@@ -1,12 +1,27 @@
 import { AdminSidebar } from "../_components/admin-sidebar"
 import { DashboardHeader } from "../_components/dashboard-header"
 import { setRequestLocale } from "next-intl/server"
+import type { Metadata } from "next"
 import { requireAdmin } from "@/lib/auth/admin"
 import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/layout/sidebar/sidebar"
 import { FullRouteIntlProvider } from "../../_providers/route-intl-provider"
+import { createPrivatePageMetadata } from "@/lib/seo/metadata"
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  return createPrivatePageMetadata({
+    locale,
+    path: "/admin",
+    title: { en: "Admin", bg: "Админ" },
+    description: {
+      en: "Administrative dashboard for managing Treido.",
+      bg: "Административен панел за управление на Treido.",
+    },
+  })
+}
 
 export default async function AdminLayout({
   children,

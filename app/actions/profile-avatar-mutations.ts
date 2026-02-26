@@ -1,7 +1,14 @@
 "use server"
 
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
+import {
+  getProfileAvatarAndUsername,
+  removeAvatarFiles,
+  updateProfileAvatarUrl,
+  uploadFileToAvatarsBucket,
+} from "@/lib/data/profile-avatar"
 import {
   avatarUrlSchema,
   buildGeneratedAvatar,
@@ -24,10 +31,17 @@ export type ProfileAvatarMutationErrorCode =
 type RequireAuthResult = Awaited<ReturnType<typeof requireAuth>>
 type AuthedContext = NonNullable<RequireAuthResult>
 
-type ProfileAvatarMutationResult = {
-  success: boolean
-  avatarUrl?: string
-  errorCode?: ProfileAvatarMutationErrorCode
+type ProfileAvatarMutationResult = Envelope<
+  { avatarUrl: string },
+  { errorCode: ProfileAvatarMutationErrorCode }
+>
+
+function ok(avatarUrl: string): ProfileAvatarMutationResult {
+  return successEnvelope({ avatarUrl })
+}
+
+function fail(errorCode: ProfileAvatarMutationErrorCode): ProfileAvatarMutationResult {
+  return errorEnvelope({ errorCode })
 }
 
 async function getProfileAvatarMutationContext(): Promise<
@@ -36,7 +50,7 @@ async function getProfileAvatarMutationContext(): Promise<
 > {
   const auth = await requireAuth()
   if (!auth) {
-    return { ok: false, result: { success: false, errorCode: "NOT_AUTHENTICATED" } }
+    return { ok: false, result: fail("NOT_AUTHENTICATED") }
   }
 
   return { ok: true, user: auth.user, supabase: auth.supabase }
@@ -49,11 +63,7 @@ async function revalidateAvatarTags(supabase: AuthedContext["supabase"], userId:
 // =====================================================
 // UPLOAD AVATAR
 // =====================================================
-export async function uploadAvatar(formData: FormData): Promise<{
-  success: boolean
-  avatarUrl?: string
-  errorCode?: ProfileAvatarMutationErrorCode
-}> {
+export async function uploadAvatar(formData: FormData): Promise<ProfileAvatarMutationResult> {
   try {
     const ctx = await getProfileAvatarMutationContext()
     if (!ctx.ok) return ctx.result
@@ -62,18 +72,18 @@ export async function uploadAvatar(formData: FormData): Promise<{
 
     const file = formData.get("avatar") as File | null
     if (!file || file.size === 0) {
-      return { success: false, errorCode: "NO_FILE" }
+      return fail("NO_FILE")
     }
 
     // Validate file
     const maxSize = 5 * 1024 * 1024 // 5MB
     if (file.size > maxSize) {
-      return { success: false, errorCode: "FILE_TOO_LARGE" }
+      return fail("FILE_TOO_LARGE")
     }
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"]
     if (!allowedTypes.includes(file.type)) {
-      return { success: false, errorCode: "INVALID_FILE_TYPE" }
+      return fail("INVALID_FILE_TYPE")
     }
 
     // Get file extension from MIME type
@@ -85,55 +95,44 @@ export async function uploadAvatar(formData: FormData): Promise<{
     const arrayBuffer = await file.arrayBuffer()
     const fileBuffer = new Uint8Array(arrayBuffer)
 
-    // Upload to storage
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, fileBuffer, {
-        contentType: file.type,
-        cacheControl: "3600",
-        upsert: true,
-      })
+    const uploadResult = await uploadFileToAvatarsBucket({
+      supabase,
+      filePath,
+      file: fileBuffer,
+      options: { contentType: file.type, cacheControl: "3600", upsert: true },
+    })
 
-    if (uploadError) {
-      logger.error("[profile-avatar] upload_avatar_storage_failed", uploadError, { userId: user.id })
-      return { success: false, errorCode: "AVATAR_UPLOAD_FAILED" }
+    if (!uploadResult.ok) {
+      logger.error("[profile-avatar] upload_avatar_storage_failed", uploadResult.error, { userId: user.id })
+      return fail("AVATAR_UPLOAD_FAILED")
     }
 
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(filePath)
+    const updatedAt = new Date().toISOString()
 
-    // Update profile with new avatar URL
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({
-        avatar_url: publicUrl,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id)
+    const updateResult = await updateProfileAvatarUrl({
+      supabase,
+      userId: user.id,
+      avatarUrl: uploadResult.publicUrl,
+      updatedAt,
+    })
 
-    if (updateError) {
-      logger.error("[profile-avatar] upload_avatar_profile_update_failed", updateError, { userId: user.id })
-      return { success: false, errorCode: "AVATAR_PROFILE_UPDATE_FAILED" }
+    if (!updateResult.ok) {
+      logger.error("[profile-avatar] upload_avatar_profile_update_failed", updateResult.error, { userId: user.id })
+      return fail("AVATAR_PROFILE_UPDATE_FAILED")
     }
 
     await revalidateAvatarTags(supabase, user.id)
-    return { success: true, avatarUrl: publicUrl }
+    return ok(uploadResult.publicUrl)
   } catch (error) {
     logger.error("[profile-avatar] upload_avatar_unexpected", error)
-    return { success: false, errorCode: "UNKNOWN_ERROR" }
+    return fail("UNKNOWN_ERROR")
   }
 }
 
 // =====================================================
 // SET AVATAR URL (Preset avatars)
 // =====================================================
-export async function setAvatarUrl(formData: FormData): Promise<{
-  success: boolean
-  avatarUrl?: string
-  errorCode?: ProfileAvatarMutationErrorCode
-}> {
+export async function setAvatarUrl(formData: FormData): Promise<ProfileAvatarMutationResult> {
   try {
     const ctx = await getProfileAvatarMutationContext()
     if (!ctx.ok) return ctx.result
@@ -146,40 +145,36 @@ export async function setAvatarUrl(formData: FormData): Promise<{
 
     const validationResult = avatarUrlSchema.safeParse(rawData)
     if (!validationResult.success) {
-      return { success: false, errorCode: "INVALID_INPUT" }
+      return fail("INVALID_INPUT")
     }
 
     const avatarUrl = validationResult.data.avatar_url
 
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({
-        avatar_url: avatarUrl,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id)
+    const updatedAt = new Date().toISOString()
+    const updateResult = await updateProfileAvatarUrl({
+      supabase,
+      userId: user.id,
+      avatarUrl,
+      updatedAt,
+    })
 
-    if (updateError) {
-      logger.error("[profile-avatar] set_avatar_url_update_failed", updateError, { userId: user.id })
-      return { success: false, errorCode: "AVATAR_UPDATE_FAILED" }
+    if (!updateResult.ok) {
+      logger.error("[profile-avatar] set_avatar_url_update_failed", updateResult.error, { userId: user.id })
+      return fail("AVATAR_UPDATE_FAILED")
     }
 
     await revalidateAvatarTags(supabase, user.id)
-    return { success: true, avatarUrl }
+    return ok(avatarUrl)
   } catch (error) {
     logger.error("[profile-avatar] set_avatar_url_unexpected", error)
-    return { success: false, errorCode: "UNKNOWN_ERROR" }
+    return fail("UNKNOWN_ERROR")
   }
 }
 
 // =====================================================
 // DELETE AVATAR
 // =====================================================
-export async function deleteAvatar(): Promise<{
-  success: boolean
-  avatarUrl?: string
-  errorCode?: ProfileAvatarMutationErrorCode
-}> {
+export async function deleteAvatar(): Promise<ProfileAvatarMutationResult> {
   try {
     const ctx = await getProfileAvatarMutationContext()
     if (!ctx.ok) return ctx.result
@@ -187,13 +182,9 @@ export async function deleteAvatar(): Promise<{
     const { user, supabase } = ctx
 
     // Get current avatar URL + username (used for deterministic generated fallback)
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("avatar_url, username")
-      .eq("id", user.id)
-      .single()
+    const profile = await getProfileAvatarAndUsername({ supabase, userId: user.id })
 
-    const currentAvatar = profile?.avatar_url
+    const currentAvatar = profile?.avatarUrl ?? null
     const usernameSeed = profile?.username ?? user.email?.split("@")[0] ?? user.id
     const generatedAvatar = buildGeneratedAvatar(usernameSeed)
 
@@ -205,7 +196,7 @@ export async function deleteAvatar(): Promise<{
         if (pathParts.length > 1) {
           const filePath = pathParts[1]
           if (filePath) {
-            await supabase.storage.from("avatars").remove([filePath])
+            await removeAvatarFiles({ supabase, filePaths: [filePath] })
           }
         }
       } catch {
@@ -214,22 +205,22 @@ export async function deleteAvatar(): Promise<{
     }
 
     // Lock-down rule: never leave avatar_url empty in production.
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({
-        avatar_url: generatedAvatar,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id)
+    const updatedAt = new Date().toISOString()
+    const updateResult = await updateProfileAvatarUrl({
+      supabase,
+      userId: user.id,
+      avatarUrl: generatedAvatar,
+      updatedAt,
+    })
 
-    if (updateError) {
-      return { success: false, errorCode: "AVATAR_RESET_FAILED" }
+    if (!updateResult.ok) {
+      return fail("AVATAR_RESET_FAILED")
     }
 
     await revalidateAvatarTags(supabase, user.id)
-    return { success: true, avatarUrl: generatedAvatar }
+    return ok(generatedAvatar)
   } catch (error) {
     logger.error("[profile-avatar] delete_avatar_unexpected", error)
-    return { success: false, errorCode: "UNKNOWN_ERROR" }
+    return fail("UNKNOWN_ERROR")
   }
 }

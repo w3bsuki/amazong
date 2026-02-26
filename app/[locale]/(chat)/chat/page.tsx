@@ -5,6 +5,7 @@ import { MessagesPageClient } from "../_components/messages-page-client"
 import { blockUser } from "../../../actions/blocked-users"
 import { reportConversation } from "../_actions/report-conversation"
 import { AuthGateCard } from "../../_components/auth/auth-gate-card"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 export async function generateMetadata({
   params
@@ -14,10 +15,16 @@ export async function generateMetadata({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: "Messages" })
 
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/chat",
     title: t("pageTitle"),
-    description: t("pageDescription")
-  }
+    description: t("pageDescription"),
+    robots: {
+      index: false,
+      follow: false,
+    },
+  })
 }
 
 export default async function MessagesPage({

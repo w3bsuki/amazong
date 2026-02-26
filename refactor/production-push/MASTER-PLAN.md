@@ -36,6 +36,7 @@
 | 2026-02-25 | REF-CLEANUP-011 | Tooling dedupe: reviewed scan scripts (distinct, shared utils); removed orphan `scripts/audit-set-request-locale.py` | GREEN (typecheck, lint, styles:gate, test:unit) |
 | 2026-02-25 | REF-CLEANUP-012 | Test hygiene: extracted shared Next mocks into `test/mocks/*`; reduced duplicated mock setup | GREEN (typecheck, lint, styles:gate, test:unit) |
 | 2026-02-25 | Phase 1 (REF-CLEANUP) | Before/after: casts 46→15 (prod 34→3); console 111→0; knip warnings 6→0; dupes clones 53→50 lines 628→587 | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate) |
+| 2026-02-25 | Phase 2 (REF-ALIGNMENT) | Completed REF-ALIGNMENT-001..013: modular CSS split + token pruning, Tailwind v4 utility cleanup, unified mobile tab bar spacing (0 `pb-20` hacks), Supabase selects/filters helpers, route chrome moved to `components/layout`, API param normalization, AuthStateManager-driven tab bar, and full server actions Envelope/boundary flow standardization; architecture gate restored to baseline. | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate) |
 
 ---
 
@@ -100,19 +101,19 @@
 
 | ID | Task | Scope | Depends | Status |
 |----|------|-------|---------|--------|
-| REF-ALIGNMENT-001 | Split `globals.css` into modular imports | medium | — | ⬜ |
-| REF-ALIGNMENT-002 | Prune/normalize legacy CSS tokens | large | 001 | ⬜ |
-| REF-ALIGNMENT-003 | Remove Tailwind-colliding custom utilities | large | 001 | ⬜ |
-| REF-ALIGNMENT-004 | Server actions → Envelope standard (ALL actions) | large | CLEANUP-007 | ⬜ |
-| REF-ALIGNMENT-005 | Standardize boundary flow (Zod→auth→domain→Envelope) | large | 004 | ⬜ |
-| REF-ALIGNMENT-006 | Typed Supabase query helpers | medium | — | ⬜ |
-| REF-ALIGNMENT-007 | Centralize repeated query fragments | medium | 006 | ⬜ |
-| REF-ALIGNMENT-008 | Move cross-route chrome to components/layout | large | — | ⬜ |
-| REF-ALIGNMENT-009 | shadcn/ui primitives contract enforcement | medium | 008 | ⬜ |
-| REF-ALIGNMENT-010 | Brand composites → components/shared | medium | 009 | ⬜ |
-| REF-ALIGNMENT-011 | Mobile chrome spacing: eliminate `pb-20` hacks | large | 001 | ⬜ |
-| REF-ALIGNMENT-012 | API naming normalization (slug vs id) | medium | — | ⬜ |
-| REF-ALIGNMENT-013 | Tab bar state from AuthStateManager | medium | — | ⬜ |
+| REF-ALIGNMENT-001 | Split `globals.css` into modular imports | medium | — | ✅ |
+| REF-ALIGNMENT-002 | Prune/normalize legacy CSS tokens | large | 001 | ✅ |
+| REF-ALIGNMENT-003 | Remove Tailwind-colliding custom utilities | large | 001 | ✅ |
+| REF-ALIGNMENT-004 | Server actions → Envelope standard (ALL actions) | large | CLEANUP-007 | ✅ |
+| REF-ALIGNMENT-005 | Standardize boundary flow (Zod→auth→domain→Envelope) | large | 004 | ✅ |
+| REF-ALIGNMENT-006 | Typed Supabase query helpers | medium | — | ✅ |
+| REF-ALIGNMENT-007 | Centralize repeated query fragments | medium | 006 | ✅ |
+| REF-ALIGNMENT-008 | Move cross-route chrome to components/layout | large | — | ✅ |
+| REF-ALIGNMENT-009 | shadcn/ui primitives contract enforcement | medium | 008 | ✅ |
+| REF-ALIGNMENT-010 | Brand composites → components/shared | medium | 009 | ✅ |
+| REF-ALIGNMENT-011 | Mobile chrome spacing: eliminate `pb-20` hacks | large | 001 | ✅ |
+| REF-ALIGNMENT-012 | API naming normalization (slug vs id) | medium | — | ✅ |
+| REF-ALIGNMENT-013 | Tab bar state from AuthStateManager | medium | — | ✅ |
 
 ---
 

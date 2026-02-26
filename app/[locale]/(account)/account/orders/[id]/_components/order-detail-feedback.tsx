@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import type { Envelope } from "@/lib/api/envelope"
 import {
   Card,
   CardContent,
@@ -45,7 +46,7 @@ interface OrderDetailFeedbackProps {
     itemAsDescribed: boolean
     shippingSpeed: boolean
     communication: boolean
-  }) => Promise<{ success: boolean; error?: string }>
+  }) => Promise<Envelope<{ id: string }, { error: string }>>
 }
 
 export function OrderDetailFeedback({

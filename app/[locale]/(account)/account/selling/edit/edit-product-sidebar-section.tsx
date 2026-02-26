@@ -52,7 +52,7 @@ export function EditProductSidebarSection({
         <CardContent>
           <div className="relative aspect-square rounded-lg overflow-hidden bg-muted mb-4">
             {product?.images?.[0] ? (
-              <Image src={product.images[0]} alt={title} fill className="object-cover" />
+              <Image src={product.images[0]} alt={title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 320px" />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <Package className="size-12 text-muted-foreground" />

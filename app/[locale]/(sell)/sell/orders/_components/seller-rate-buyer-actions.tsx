@@ -7,6 +7,7 @@ import { type OrderItemStatus } from "@/lib/order-status"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
 import { StarRatingDialogShell } from "../../../../_components/orders/star-rating-dialog-shell"
+import type { Envelope } from "@/lib/api/envelope"
 
 type SubmitBuyerFeedbackInput = {
   buyer_id: string
@@ -21,10 +22,15 @@ type SubmitBuyerFeedbackInput = {
 export type SellerRateBuyerActionsServerActions = {
   canSellerRateBuyer: (
     orderItemId: string
-  ) => Promise<{ canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string }>
+  ) => Promise<
+    Envelope<
+      { canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string },
+      { canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string; error: string }
+    >
+  >
   submitBuyerFeedback: (
     input: SubmitBuyerFeedbackInput
-  ) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<Envelope<{ data: unknown }, { error: string }>>
 }
 
 interface SellerRateBuyerActionsProps {

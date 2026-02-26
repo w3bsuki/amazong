@@ -11,9 +11,7 @@ import {
 import { getCategoryHierarchy } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/types/products"
 import { buildForYouPool } from "@/lib/home-pools"
-import { 
-  DesktopHome 
-} from "./_components/desktop-home"
+import { DesktopHomeSlot } from "./_components/desktop-home-slot"
 
 const HOME_CATEGORY_POOL_LIMIT = 6
 const HOME_POOL_SIZE = 24
@@ -100,7 +98,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           - Category sidebar + filters + product grid
           ================================================================ */}
       <div className="hidden md:block w-full">
-        <DesktopHome
+        <DesktopHomeSlot
           locale={locale}
           categories={rootCategories}
           initialProducts={initialProducts}

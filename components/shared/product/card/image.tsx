@@ -40,7 +40,7 @@ function ProductCardImage({
   index,
   inStock,
   outOfStockLabel,
-  ratio = 1,
+  ratio = 3 / 4,
 }: ProductCardImageProps) {
   const loadingStrategy = getImageLoadingStrategy(index, 4)
   const imageSrc = React.useMemo(() => getProductCardImageSrc(src), [src])

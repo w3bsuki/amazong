@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { ArrowLeft, ChevronRight, LayoutGrid, SlidersHorizontal as FiltersIcon } from "lucide-react"
 import { Link } from "@/i18n/routing"
+import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import type { UIProduct } from "@/lib/types/products"
@@ -18,10 +19,7 @@ import {
   type SmartRailPill,
 } from "@/components/mobile/chrome/smart-rail"
 import { DiscoveryRail } from "@/components/mobile/chrome/discovery-rail"
-import { MobileSearchOverlay } from "@/components/layout/header/search/mobile-search-overlay"
-import { HomeCityPickerSheet } from "./mobile/home-city-picker-sheet"
 import { PageShell } from "../../_components/page-shell"
-import { FilterHub } from "./filters/filter-hub"
 import { useHomeDiscoveryFeed, type HomeDiscoveryScope } from "./mobile-home/use-home-discovery-feed"
 import { MobileHomeFeed } from "./mobile-home/mobile-home-feed"
 import { useMobileHomeCategoryNav } from "./mobile-home/use-mobile-home-category-nav"
@@ -33,6 +31,23 @@ interface MobileHomeProps {
   forYouProducts: UIProduct[]
   categoryProducts?: Record<string, UIProduct[]>
 }
+
+const MobileSearchOverlay = dynamic(
+  () =>
+    import("@/components/layout/header/search/mobile-search-overlay").then(
+      (mod) => mod.MobileSearchOverlay
+    ),
+  { ssr: false }
+)
+
+const FilterHub = dynamic(() => import("./filters/filter-hub").then((mod) => mod.FilterHub), {
+  ssr: false,
+})
+
+const HomeCityPickerSheet = dynamic(
+  () => import("./mobile/home-city-picker-sheet").then((mod) => mod.HomeCityPickerSheet),
+  { ssr: false }
+)
 
 export function MobileHome({
   locale,
@@ -247,44 +262,52 @@ export function MobileHome({
 
   return (
     <PageShell variant="default" className="pb-4">
-      <MobileSearchOverlay
-        hideDefaultTrigger
-        externalOpen={searchOpen}
-        onOpenChange={setSearchOpen}
-      />
+      {searchOpen ? (
+        <MobileSearchOverlay
+          hideDefaultTrigger
+          externalOpen={searchOpen}
+          onOpenChange={setSearchOpen}
+        />
+      ) : null}
 
-      <div className="mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe">
-        {/* Option B: Icon-only category circles (no text) + DiscoveryRail */}
+      <div className="mx-auto w-full max-w-screen-md pb-tabbar-safe">
+        {/* Category circles — homepage browse section */}
         {!activeCategorySlug && rootCategoryChips.length > 0 && (
-          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar border-b border-border-subtle px-4 py-2.5" data-testid="home-v4-categories-row">
-            {categoryDrawer && (
-              <button
-                type="button"
-                onClick={() => categoryDrawer.openRoot()}
-                className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground/80 tap-transparent transition-colors hover:bg-accent active:bg-active"
-                aria-label={tCategories("title")}
-                data-testid="home-v4-category-drawer-btn"
-              >
-                <LayoutGrid size={20} aria-hidden="true" />
-              </button>
-            )}
-            {rootCategoryChips.slice(0, 8).map((category) => {
-              const label = getCategoryLabel(category)
-              return (
+          <section className="border-b border-border-subtle pt-3" data-testid="home-v4-categories-section">
+            {/* Circles */}
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide px-4 py-1 pb-4" data-testid="home-v4-categories-row">
+              {categoryDrawer && (
                 <button
-                  key={category.slug}
                   type="button"
-                  onClick={() => handlePrimaryTab(category.slug)}
-                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground/70 tap-transparent transition-colors hover:bg-accent active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label={label}
-                  title={label}
-                  data-testid={`home-v4-category-icon-${category.slug}`}
+                  onClick={() => categoryDrawer.openRoot()}
+                  className="flex shrink-0 group tap-transparent outline-none"
+                  aria-label={tCategories("title")}
+                  data-testid="home-v4-category-drawer-btn"
                 >
-                  {getCategoryIcon(category.slug, { size: 20 })}
+                  <span className="flex size-12 items-center justify-center rounded-full bg-secondary group-hover:bg-accent transition-all ring-1 ring-offset-2 ring-offset-background ring-border group-hover:ring-foreground">
+                    <LayoutGrid size={20} className="text-foreground" strokeWidth={1.5} aria-hidden="true" />
+                  </span>
                 </button>
-              )
-            })}
-          </div>
+              )}
+              {rootCategoryChips.map((category) => {
+                const label = getCategoryLabel(category)
+                return (
+                  <button
+                    key={category.slug}
+                    type="button"
+                    onClick={() => handlePrimaryTab(category.slug)}
+                    className="flex shrink-0 group tap-transparent outline-none"
+                    aria-label={label}
+                    data-testid={`home-v4-category-icon-${category.slug}`}
+                  >
+                    <span className="flex size-12 items-center justify-center rounded-full bg-secondary group-hover:bg-accent transition-all ring-1 ring-offset-2 ring-offset-background ring-border group-hover:ring-foreground">
+                      {getCategoryIcon(category.slug, { size: 20, className: "text-foreground", strokeWidth: 1.5 })}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </section>
         )}
 
         {/* SmartRail — visible when drilling into a category */}
@@ -310,15 +333,15 @@ export function MobileHome({
 
         {/* Section header — visible when a category is active */}
         {activeCategorySlug && activeCategory && (
-          <div className="flex items-center justify-between px-inset pt-2.5 pb-1">
-            <h2 className="min-w-0 truncate text-sm font-semibold text-foreground">
+          <div className="flex items-center justify-between px-4 pt-3 pb-2">
+            <h2 className="min-w-0 truncate text-sm font-bold text-foreground">
               {getCategoryLabel(activeSubcategory ?? activeCategory)}
             </h2>
             <Link
               href={activeSubcategory
                 ? `/categories/${activeCategory.slug}/${activeSubcategory.slug}`
                 : `/categories/${activeCategory.slug}`}
-              className="inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-muted-foreground tap-transparent transition-colors duration-fast ease-smooth hover:text-foreground active:text-foreground"
+              className="inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-muted-foreground tap-transparent transition-colors hover:text-foreground active:text-foreground"
             >
               {tV4("actions.seeAll")}
               <ChevronRight size={14} aria-hidden="true" />
@@ -340,26 +363,30 @@ export function MobileHome({
         </div>
       </div>
 
-      <FilterHub
-        open={filterOpen}
-        onOpenChange={setFilterOpen}
-        locale={locale}
-        resultsCount={products.length}
-        attributes={[]}
-        subcategories={[]}
-        appliedSearchParams={filters}
-        onApply={handleApplyFilters}
-        mode="full"
-        initialSection={null}
-      />
+      {filterOpen ? (
+        <FilterHub
+          open={filterOpen}
+          onOpenChange={setFilterOpen}
+          locale={locale}
+          resultsCount={products.length}
+          attributes={[]}
+          subcategories={[]}
+          appliedSearchParams={filters}
+          onApply={handleApplyFilters}
+          mode="full"
+          initialSection={null}
+        />
+      ) : null}
 
-      <HomeCityPickerSheet
-        open={cityPickerOpen}
-        locale={locale}
-        selectedCity={city}
-        onOpenChange={setCityPickerOpen}
-        onSelectCity={handleCitySelect}
-      />
+      {cityPickerOpen ? (
+        <HomeCityPickerSheet
+          open={cityPickerOpen}
+          locale={locale}
+          selectedCity={city}
+          onOpenChange={setCityPickerOpen}
+          onSelectCity={handleCitySelect}
+        />
+      ) : null}
     </PageShell>
   )
 }

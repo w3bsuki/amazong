@@ -3,10 +3,20 @@ import { validateLocale } from '@/i18n/routing'
 import { PageShell } from "../_components/page-shell"
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider"
 import { localeStaticParams } from "@/lib/next/static-params"
+import type { Metadata } from "next"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
   return localeStaticParams()
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    robots: {
+      index: false,
+      follow: true,
+    },
+  }
 }
 
 export default async function AuthLayout({

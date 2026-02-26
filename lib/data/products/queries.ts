@@ -5,6 +5,7 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { getShippingFilter, type ShippingRegion } from "@/lib/shipping"
 import type { Product } from "./types"
 import { mapRowToProduct } from "./normalize"
+import { applyPublicProductVisibilityFilter } from "@/lib/supabase/filters/visibility"
 
 import { logger } from "@/lib/logger"
 const CATEGORY_WITH_PARENT_CHAIN_SELECT =
@@ -31,17 +32,6 @@ const PRODUCT_LIST_BY_CATEGORY_SLUG_SELECT =
   `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug,
    seller:profiles!seller_id(id,username,avatar_url,tier,account_type,is_verified_business,user_verification(email_verified,phone_verified,id_verified)),
    categories!inner(${CATEGORY_WITH_PARENT_CHAIN_SELECT})` as const
-
-/**
- * Public browsing surfaces must not show non-active listings.
- *
- * Temporary legacy allowance:
- * - Some older rows may have `status = NULL`; treat them as "active" until a cleanup pass
- *   normalizes them. (PROD-DATA-002)
- */
-function applyPublicProductVisibilityFilter<Q extends { or: (filters: string) => Q }>(q: Q): Q {
-  return q.or("status.eq.active,status.is.null")
-}
 
 type QueryType = "deals" | "newest" | "bestsellers" | "featured" | "promo"
 

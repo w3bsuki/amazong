@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/routing"
+import type { Envelope } from "@/lib/api/envelope"
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,15 +35,23 @@ function stripLocalePrefix(pathname: string, locale?: string): string {
 }
 
 // Type for the review submission result
-export interface ReviewResult {
-  success: boolean;
-  error?: string;
-}
+export type ReviewResult = Envelope<
+  {
+    review: {
+      id: string
+      rating: number
+      comment: string | null
+      created_at: string
+    }
+  },
+  { error: string }
+>
 
 // Type for the submit function (allows dependency injection)
 export type SubmitReviewFn = (input: {
   productId: string;
   rating: number;
+  title?: string;
   comment?: string;
 }) => Promise<ReviewResult>;
 
@@ -98,7 +107,7 @@ export function WriteReviewDialog({
           setComment("");
           onReviewSubmitted?.();
         } else {
-          if (result.error?.includes("logged in")) {
+          if (result.error.includes("logged in")) {
             const next = stripLocalePrefix(pathname, locale)
             toast.error(tReviews("signInRequired"), {
               action: {

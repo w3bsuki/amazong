@@ -136,6 +136,7 @@ export default async function BusinessInventoryPage() {
                             alt={product.title}
                             fill
                             className="object-cover"
+                            sizes="48px"
                           />
                         ) : (
                           <div className="flex size-full items-center justify-center text-xs font-medium text-muted-foreground">

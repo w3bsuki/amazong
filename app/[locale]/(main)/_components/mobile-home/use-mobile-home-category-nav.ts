@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
 
-const MAX_ROOT_CHIPS = 8
+const MAX_ROOT_CHIPS = 12
 const MAX_POPULAR_LEAF_CHIPS = 8
 
 interface CategoryChildrenResponse {

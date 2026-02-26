@@ -96,7 +96,7 @@ export function LegalPageLayout({
     : "text-info"
 
   return (
-    <PageShell className="pb-20 sm:pb-12 overflow-x-hidden">
+    <PageShell className="overflow-x-hidden">
       <StaticPageHeaderSync title={title} backHref="/" />
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground">

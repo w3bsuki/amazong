@@ -59,7 +59,12 @@ export function AttributeFieldInput({
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-hover-border transition-colors text-left shadow-xs"
+            className={cn(
+              "relative w-full flex items-center h-12 px-4 rounded-xl border text-left transition-colors",
+              "bg-surface-subtle border-border-subtle",
+              "hover:bg-hover hover:border-border",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+            )}
           >
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
@@ -106,8 +111,9 @@ export function AttributeFieldInput({
 
   return (
     <div className={cn(
-      "relative flex items-center h-12 px-4 rounded-md border transition-colors",
-      "bg-background border-border shadow-xs focus-within:border-ring focus-within:ring-2 focus-within:ring-ring"
+      "relative flex items-center h-12 px-4 rounded-xl border transition-colors",
+      "bg-surface-subtle border-border-subtle",
+      "focus-within:border-ring focus-within:ring-2 focus-within:ring-focus-ring"
     )}>
       <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
         {label}:

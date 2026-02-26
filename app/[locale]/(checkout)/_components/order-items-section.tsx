@@ -33,6 +33,7 @@ function OrderItemThumb({
       alt={alt}
       width={size}
       height={size}
+      sizes={`${size}px`}
       className="size-full object-contain"
       onError={() => {
         if (resolvedSrc !== PLACEHOLDER_IMAGE_PATH) {
@@ -104,4 +105,3 @@ export function OrderItemsSectionDesktop({ items, formatPrice }: OrderItemsSecti
 }
 
 export type { OrderItemsSectionProps };
-

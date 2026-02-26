@@ -9,14 +9,14 @@ capability_map_doc: "docs/strategy/CAPABILITY-MAP.md"
 launch_status: "11/15 checklist sections audited and pass"
 p0_p1_status: "11/11 sections audited and pass after iteration"
 p2_status: "Not started (Sections 12-15)"
-gates_status: "Green (typecheck, lint, styles:gate, test:unit, architecture:gate); 456/456 unit tests passing; architecture metrics: client=269/1150, over300=66, over500=3, missingLoading=0, missingMetadata=0, duplicates=587 (clones=50)"
+gates_status: "Green (typecheck, lint, styles:gate, test:unit, architecture:gate); 456/456 unit tests passing; architecture metrics: client=269/1182, over300=66, over500=3, missingLoading=0, missingMetadata=0, duplicates=655 (clones=53)"
 top_blockers:
   - "MIG-001: Finalize v2 migration Step 5 (`deal_products` view/`is_prime` drop sequencing)"
   - "LAUNCH-001: Verify Stripe webhook idempotency (replay no-op guarantee)"
   - "LAUNCH-002: Test refund/dispute flow end-to-end"
   - "LAUNCH-003: Verify Stripe prod/dev environment separation (keys + webhook secrets)"
   - "LAUNCH-004: Enable leaked password protection + rerun advisor (currently blocked by Supabase plan requirement)"
-current_focus: "Stabilize live v2 category migration (complete Step 5 safely) while closing launch blockers"
+current_focus: "Resume MIG-001 Step 5 safely while closing the four launch blockers; schedule PH0-FIX-002 sell flow redesign next"
 active_workstreams:
   - "Launch blocker closure with human approval for sensitive ops"
   - "Production-readiness refactor batches (file splits, route completeness, duplicate reduction)"
@@ -43,9 +43,9 @@ Remaining launch risk is concentrated in four sensitive blockers (payments/compl
 
 ## Recent Changes (Last 3)
 
-- 2026-02-25: Completed REF-CLEANUP Phase 1 tasks 001–013 (excluding 014): logging standardization, unsafe cast reduction, `generateStaticParams` helpers, script/test hygiene; gates remain green.
-- 2026-02-25: Reduced `as unknown as` from 46 → 15 total occurrences (prod 34 → 3) and console statements in production code from 111 → 0.
-- 2026-02-25: Duplicate scan improved (`jscpd` clones 53 → 50; duplicated lines 628 → 587) and `pnpm -s knip` is clean.
+- 2026-02-25: Completed REF-ALIGNMENT Phase 2 tasks 001–013: modular CSS split, action boundary standardization (Envelope + Zod→auth→domain), Supabase select/filter helpers, layout chrome move to `components/layout`, API param normalization, and removal of all `pb-20` hacks; full gates remain green (including architecture:gate).
+- 2026-02-25: Refreshed mobile Home landing to match the Dream Weaver browse pattern: 2-row header (icons + search bar), categories icon strip, stronger filled discovery chips, portrait feed cards with discount badges; gates remain green.
+- 2026-02-25: Completed PH0-UX sell form visual polish tasks 009–011: flat input surfaces, standardized chip selectors (category + condition), and mobile photo thumbnail row; gates remain green.
 
 ## Open Decisions (Max 3)
 

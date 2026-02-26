@@ -3,7 +3,7 @@ import { PageShell } from "../../../_components/page-shell"
 
 export default function SellersLoadingSkeleton() {
   return (
-    <PageShell variant="muted" className="pb-20 sm:pb-12">
+    <PageShell variant="muted">
       <div className="bg-muted py-6 sm:py-10">
         <div className="container">
           <div className="flex gap-2 items-center mb-4">

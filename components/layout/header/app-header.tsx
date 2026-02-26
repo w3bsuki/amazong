@@ -18,7 +18,6 @@
 import {
   DesktopStandardHeader,
 } from "@/components/layout/header/desktop/standard-header"
-import { MobileSearchOverlay } from "./search/mobile-search-overlay"
 import { detectRouteConfig } from "./app-header-route-config"
 import { AppHeaderMobileVariants } from "./app-header-mobile-variants"
 import type { AppHeaderProps } from "./app-header.types"
@@ -28,10 +27,16 @@ import { cn } from "@/lib/utils"
 import { useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
+import dynamic from "next/dynamic"
 
 // Re-export types
 export type { AppHeaderProps } from "./app-header.types"
 export type { HeaderVariant } from "@/components/layout/header/types"
+
+const MobileSearchOverlay = dynamic(
+  () => import("./search/mobile-search-overlay").then((mod) => mod.MobileSearchOverlay),
+  { ssr: false },
+)
 
 // =============================================================================
 // Main Component
@@ -162,6 +167,7 @@ export function AppHeader({
     } else if (onSearchOpen) {
       onSearchOpen()
     } else {
+      void import("./search/mobile-search-overlay")
       setIsMobileSearchOpen(true)
     }
   }
@@ -277,7 +283,8 @@ export function AppHeader({
       </header>
 
       {/* Search Overlay - for variants that use internal search state */}
-      {(variant === "default" || (!effectiveHomepageSearchOpen && !onSearchOpen)) && (
+      {(variant === "default" || (!effectiveHomepageSearchOpen && !onSearchOpen)) &&
+        isMobileSearchOpen && (
         <MobileSearchOverlay
           hideDefaultTrigger
           externalOpen={isMobileSearchOpen}

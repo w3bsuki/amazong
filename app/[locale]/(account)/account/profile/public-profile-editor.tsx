@@ -65,8 +65,13 @@ export function PublicProfileEditor({ locale, profile, actions }: PublicProfileE
   useEffect(() => {
     async function checkCooldown() {
       const result = await actions.getUsernameChangeCooldown()
-      setCanChangeUsername(result.canChange)
-      setDaysUntilChange(result.daysRemaining)
+      if (result.success) {
+        setCanChangeUsername(result.canChange)
+        setDaysUntilChange(result.daysRemaining)
+      } else {
+        setCanChangeUsername(false)
+        setDaysUntilChange(undefined)
+      }
     }
 
     void checkCooldown()
@@ -153,7 +158,9 @@ export function PublicProfileEditor({ locale, profile, actions }: PublicProfileE
     setIsCheckingUsername(true)
     const result = await actions.checkUsernameAvailability(username)
     setUsernameAvailable(result.available)
-    setUsernameStatusMessage(result.available ? null : getUsernameAvailabilityErrorMessage(result.errorCode))
+    setUsernameStatusMessage(
+      result.success ? null : getUsernameAvailabilityErrorMessage(result.errorCode)
+    )
     setIsCheckingUsername(false)
   }
 
@@ -206,7 +213,7 @@ export function PublicProfileEditor({ locale, profile, actions }: PublicProfileE
     setIsUploadingBanner(false)
 
     if (result.success) {
-      setBannerPreview(result.bannerUrl || null)
+      setBannerPreview(result.bannerUrl)
       toast.success(t("toasts.bannerUploaded"))
     } else {
       setBannerPreview(profile.banner_url)

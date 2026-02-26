@@ -242,6 +242,7 @@ export function BillingHistoryTabs({
                                   alt=""
                                   width={40}
                                   height={40}
+                                  sizes="40px"
                                   className="size-10 rounded object-cover"
                                 />
                               )}

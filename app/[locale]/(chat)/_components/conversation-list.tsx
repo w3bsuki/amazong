@@ -264,6 +264,7 @@ function ConversationItem({
               alt=""
               width={20}
               height={20}
+              sizes="20px"
               className="size-full object-cover"
             />
           </div>

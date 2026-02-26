@@ -1,8 +1,14 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { revalidateTag } from "next/cache"
 import {
+  cancelOrderItem,
+  fetchOrderItemForCancellation,
+  insertCancellationNotification,
+} from "@/lib/data/orders/support"
+import {
   requireSupportContext,
   supportFailure,
+  supportSuccess,
   type OrdersSupportResult,
 } from "./orders-support-shared"
 
@@ -17,27 +23,16 @@ export async function requestOrderCancellationImpl(
   try {
     const { userId, supabase, orderItemId: parsedOrderItemId } = context
 
-    const { data: orderItem, error: fetchError } = await supabase
-      .from("order_items")
-      .select(`
-        id,
-        status,
-        seller_id,
-        product:products(title),
-        order:orders!inner(id, user_id, status)
-      `)
-      .eq("id", parsedOrderItemId)
-      .single<{
-        id: string
-        status: string | null
-        seller_id: string
-        product: { title: string } | null
-        order: { id: string; user_id: string; status: string }
-      }>()
+    const orderItemResult = await fetchOrderItemForCancellation({
+      supabase,
+      orderItemId: parsedOrderItemId,
+    })
 
-    if (fetchError || !orderItem) {
+    if (!orderItemResult.ok) {
       return supportFailure("not_found", "Order item not found")
     }
+
+    const orderItem = orderItemResult.item
 
     if (orderItem.order.user_id !== userId) {
       return supportFailure("not_authorized", "Not authorized to cancel this order")
@@ -46,29 +41,22 @@ export async function requestOrderCancellationImpl(
     const nonCancellableStatuses = ["shipped", "delivered"]
     const currentStatus = orderItem.status || "pending"
     if (nonCancellableStatuses.includes(currentStatus)) {
-      return {
-        success: false,
-        code: "invalid_status",
-        error:
-          currentStatus === "shipped"
-            ? "Cannot cancel - item has already been shipped"
-            : "Cannot cancel - item has already been delivered",
-      }
+      return supportFailure(
+        "invalid_status",
+        currentStatus === "shipped"
+          ? "Cannot cancel - item has already been shipped"
+          : "Cannot cancel - item has already been delivered"
+      )
     }
 
     if (currentStatus === "cancelled") {
       return supportFailure("already_exists", "This item has already been cancelled")
     }
 
-    const { error: updateError } = await supabase
-      .from("order_items")
-      .update({
-        status: "cancelled",
-      })
-      .eq("id", parsedOrderItemId)
+    const cancelResult = await cancelOrderItem({ supabase, orderItemId: parsedOrderItemId })
 
-    if (updateError) {
-      logger.error("[orders-support] order_cancellation_update_failed", updateError, {
+    if (!cancelResult.ok) {
+      logger.error("[orders-support] order_cancellation_update_failed", cancelResult.error, {
         orderItemId: parsedOrderItemId,
         buyerId: userId,
       })
@@ -77,24 +65,16 @@ export async function requestOrderCancellationImpl(
 
     try {
       const admin = createAdminClient()
-      const cancellationBody = reason
-        ? `A buyer has cancelled their order: ${reason}`
-        : "A buyer has cancelled their order"
-      const { error: notifyError } = await admin.from("notifications").insert({
-        user_id: orderItem.seller_id,
-        type: "order_status",
-        title: "Order Cancellation Request",
-        body: cancellationBody,
-        data: {
-          order_item_id: parsedOrderItemId,
-          order_id: orderItem.order.id,
-          reason,
-        },
-        order_id: orderItem.order.id,
+      const notifyResult = await insertCancellationNotification({
+        adminSupabase: admin,
+        sellerId: orderItem.seller_id,
+        orderId: orderItem.order.id,
+        orderItemId: parsedOrderItemId,
+        ...(reason ? { reason } : {}),
       })
 
-      if (notifyError) {
-        logger.error("[orders-support] cancellation_notification_failed", notifyError, {
+      if (!notifyResult.ok) {
+        logger.error("[orders-support] cancellation_notification_failed", notifyResult.error, {
           orderItemId: parsedOrderItemId,
           orderId: orderItem.order.id,
         })
@@ -108,7 +88,7 @@ export async function requestOrderCancellationImpl(
 
     revalidateTag("orders", "max")
 
-    return { success: true }
+    return supportSuccess()
   } catch (error) {
     logger.error("[orders-support] request_order_cancellation_unexpected", error, {
       orderItemId,

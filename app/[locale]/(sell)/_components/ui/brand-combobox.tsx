@@ -219,7 +219,7 @@ export function BrandCombobox({
               />
               {/* Brand logo */}
               {brand.logo_url ? (
-                <Image src={brand.logo_url} alt="" width={20} height={20} className="size-5 object-contain" />
+                <Image src={brand.logo_url} alt="" width={20} height={20} sizes="20px" className="size-5 object-contain" />
               ) : (
                 <div className="size-5 rounded bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                   {brand.name[0]}
@@ -257,10 +257,9 @@ export function BrandCombobox({
       onClick={isMobile ? () => setOpen(true) : undefined}
       disabled={disabled}
       className={cn(
-        "relative w-full flex flex-col justify-center h-14 px-4 rounded-md border text-left",
-        "bg-background border border-border shadow-xs",
-        "hover:border-hover-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
-        "transition-colors",
+        "relative w-full flex flex-col justify-center min-h-14 px-4 py-3 rounded-xl border text-left transition-colors",
+        "bg-surface-subtle border-border-subtle",
+        "hover:bg-hover hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
         disabled && "opacity-50 cursor-not-allowed",
         className
       )}
@@ -269,10 +268,10 @@ export function BrandCombobox({
         {t("brandCombobox.label")}
       </span>
       <div className="flex items-center justify-between w-full">
-          <span className="flex items-center gap-2.5 truncate pr-12">
+          <span className="flex items-center gap-2.5 truncate pr-16">
             {/* Brand logo if available */}
           {selectedBrand?.logo_url && (
-            <Image src={selectedBrand.logo_url} alt="" width={20} height={20} className="size-5 object-contain" />
+            <Image src={selectedBrand.logo_url} alt="" width={20} height={20} sizes="20px" className="size-5 object-contain" />
           )}
           <span className={cn(
             "text-sm font-semibold truncate",
@@ -301,7 +300,7 @@ export function BrandCombobox({
               e.stopPropagation();
               handleClear(e);
             }}
-            className="size-6 flex items-center justify-center rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+            className="control-compact flex items-center justify-center rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
             aria-label={t("brandCombobox.clear")}
           >
             <X className="size-3.5 text-muted-foreground" />

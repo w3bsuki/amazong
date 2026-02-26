@@ -3,10 +3,11 @@ import { CheckoutFooter } from "./_components/checkout-footer"
 import { CheckoutStepProvider } from "./_components/checkout-step-context"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { PageShell } from "../_components/page-shell"
-import { CommerceProviders } from "../_providers/commerce-providers"
+import { CartProviders } from "../_providers/cart-providers"
 import { FullRouteIntlProvider } from "../_providers/route-intl-provider"
 import type { Metadata } from "next"
 import { localeStaticParams } from "@/lib/next/static-params"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -22,9 +23,17 @@ export async function generateMetadata({
   setRequestLocale(locale)
   const t = await getTranslations({ locale, namespace: "CheckoutPage" })
 
-  return {
-    title: t("title"),
-  }
+  const title = t("title")
+  return createPageMetadata({
+    locale,
+    path: "/checkout",
+    title,
+    description: title,
+    robots: {
+      index: false,
+      follow: true,
+    },
+  })
 }
 
 /**
@@ -52,7 +61,7 @@ export default async function CheckoutLayout({
 
   return (
     <FullRouteIntlProvider locale={locale}>
-      <CommerceProviders>
+      <CartProviders>
         <PageShell variant="muted" className="flex flex-col">
           <CheckoutStepProvider>
             <CheckoutHeader />
@@ -60,7 +69,7 @@ export default async function CheckoutLayout({
           </CheckoutStepProvider>
           <CheckoutFooter />
         </PageShell>
-      </CommerceProviders>
+      </CartProviders>
     </FullRouteIntlProvider>
   )
 }

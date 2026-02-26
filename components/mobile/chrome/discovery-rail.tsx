@@ -24,12 +24,12 @@ export function DiscoveryRail({
       role="tablist"
       aria-label={t("aria.discoveryScopes")}
       className={cn(
-        "overflow-x-auto no-scrollbar",
+        "overflow-x-auto scrollbar-hide",
         className,
       )}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className="flex w-max min-w-full items-center gap-1.5 px-4 py-2">
+      <div className="flex w-max min-w-full items-center gap-2 px-4 py-1.5">
         {DISCOVERY_SCOPES.map((scope) => {
           const isActive = activeScope === scope
           return (
@@ -40,10 +40,10 @@ export function DiscoveryRail({
               aria-selected={isActive}
               onClick={() => onScopeChange(scope)}
               className={cn(
-                "rounded-full px-4 py-1.5 text-body font-medium whitespace-nowrap transition-all",
+                "rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-all",
                 isActive
-                  ? "bg-foreground text-background shadow-sm"
-                  : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-accent"
+                  ? "bg-foreground text-background"
+                  : "bg-secondary text-foreground hover:bg-accent"
               )}
               data-testid={testId ? `${testId}-${scope}` : undefined}
             >

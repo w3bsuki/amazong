@@ -6,6 +6,7 @@ import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { CircleCheck as CheckCircle, HeartCrack as HeartBreak, Package, LoaderCircle as SpinnerGap, Star, Store as Storefront, Users } from "lucide-react";
+import type { Envelope } from "@/lib/api/envelope"
 
 import { toast } from "sonner"
 import { UserAvatar } from "@/components/shared/user-avatar"
@@ -36,7 +37,7 @@ interface FollowedSeller {
 export type FollowingContentServerActions = {
   unfollowSeller: (
     sellerId: string
-  ) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<Envelope<Record<string, never>, { error: string }>>
 }
 
 interface FollowingContentProps {

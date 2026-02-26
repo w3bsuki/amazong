@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { redirect } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 import CheckoutPageClient from "../_components/checkout-page-client"
 import { createCheckoutSession, getCheckoutFeeQuote } from "../_actions/checkout"
@@ -16,10 +17,16 @@ export async function generateMetadata({ params }: CheckoutPageProps): Promise<M
   const locale = localeParam === "bg" ? "bg" : "en"
   const t = await getTranslations({ locale, namespace: "CheckoutPage" })
 
-  return {
+  return createPageMetadata({
+    locale,
+    path: "/checkout",
     title: t("title"),
     description: t("securePayment"),
-  }
+    robots: {
+      index: false,
+      follow: true,
+    },
+  })
 }
 
 export default async function Page({ params }: CheckoutPageProps) {

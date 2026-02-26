@@ -27,10 +27,6 @@ const buttonVariants = cva(
         // Marketplace CTA alias (kept for semantic readability)
         cta: "bg-primary text-primary-foreground hover:bg-interactive-hover",
         deal: "bg-destructive text-destructive-foreground hover:bg-destructive",
-        // Legacy variants (aliased to token-safe styles)
-        black: "bg-primary text-primary-foreground hover:bg-interactive-hover",
-        // Legacy alias (maps to primary)
-        brand: "bg-primary text-primary-foreground hover:bg-interactive-hover",
       },
       size: {
         xs: "h-8 px-2 text-xs gap-1 [&_svg]:size-3",

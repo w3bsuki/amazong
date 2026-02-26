@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
+import { fetchProductsCount } from "@/lib/data/products/api-count"
 import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
-import { normalizeAttributeKey } from "@/lib/attributes/normalize-attribute-key"
 import { logError } from "@/lib/logger"
 import { z } from "zod"
 
@@ -16,25 +16,6 @@ interface CountResponse {
   count: number
   timestamp: string
 }
-
-interface CountQueryBuilder {
-  or(filter: string): CountQueryBuilder
-  filter(column: string, operator: string, value: string): CountQueryBuilder
-  gte(column: string, value: number): CountQueryBuilder
-  lte(column: string, value: number): CountQueryBuilder
-  gt(column: string, value: number): CountQueryBuilder
-  eq(column: string, value: boolean): CountQueryBuilder
-  ilike(column: string, value: string): CountQueryBuilder
-  contains(column: string, value: Record<string, string>): CountQueryBuilder
-  in(column: string, values: string[]): CountQueryBuilder
-  abortSignal(signal: AbortSignal): Promise<{ count: number | null; error: unknown }>
-  then<TResult1 = { count: number | null; error: unknown }, TResult2 = never>(
-    onfulfilled?: ((value: { count: number | null; error: unknown }) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-    onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | undefined | null
-  ): Promise<TResult1 | TResult2>
-}
-
-type CountFilters = z.infer<typeof CountRequestSchema>["filters"]
 
 const CountRequestSchema = z
   .object({
@@ -69,10 +50,9 @@ function getAbortErrorMessage(err: unknown): string | null {
   return null
 }
 
-function mergeAbortSignals(a: AbortSignal | undefined, b: AbortSignal | undefined): AbortSignal | undefined {
-  if (a?.aborted || b?.aborted) return AbortSignal.abort()
+function mergeAbortSignals(a: AbortSignal | undefined, b: AbortSignal): AbortSignal {
+  if (a?.aborted || b.aborted) return AbortSignal.abort()
   if (!a) return b
-  if (!b) return a
 
   const controller = new AbortController()
   const abort = () => controller.abort()
@@ -81,162 +61,13 @@ function mergeAbortSignals(a: AbortSignal | undefined, b: AbortSignal | undefine
   return controller.signal
 }
 
-function createQuerySignal(timeoutMs: number, requestSignal?: AbortSignal): { signal: AbortSignal | undefined; clear: () => void } {
+function createQuerySignal(timeoutMs: number, requestSignal?: AbortSignal): { signal: AbortSignal; clear: () => void } {
   const timeoutController = new AbortController()
   const timeoutId = setTimeout(() => timeoutController.abort(), timeoutMs)
 
   return {
     signal: mergeAbortSignals(requestSignal, timeoutController.signal),
     clear: () => clearTimeout(timeoutId),
-  }
-}
-
-function buildBaseCountQuery(
-  supabase: ReturnType<typeof createStaticClient>,
-  verifiedOnly: boolean
-): CountQueryBuilder {
-  let countQuery = supabase
-    .from("products")
-    .select(
-      verifiedOnly
-        ? "id, profiles!products_seller_id_fkey(is_verified_business)"
-        : "id",
-      { count: "planned", head: true }
-    ) as any as CountQueryBuilder
-
-  // Public browsing surfaces must not show non-active listings.
-  // Temporary legacy allowance: status can be NULL for older rows.
-  countQuery = countQuery.or("status.eq.active,status.is.null")
-  return countQuery
-}
-
-function applyCategorySearchAndShippingFilters(params: {
-  countQuery: CountQueryBuilder
-  categoryId: string | null | undefined
-  query: string | null | undefined
-  shippingFilter: string | null
-}): CountQueryBuilder {
-  let { countQuery } = params
-  const { categoryId, query, shippingFilter } = params
-
-  // Category filter via category_ancestors (GIN index)
-  if (categoryId) {
-    countQuery = countQuery.filter("category_ancestors", "cs", `{${categoryId}}`)
-  }
-
-  // Search query filter
-  if (query && query.trim()) {
-    const searchTerm = `%${query.trim()}%`
-    countQuery = countQuery.or(`title.ilike.${searchTerm},description.ilike.${searchTerm}`)
-  }
-
-  if (shippingFilter) {
-    countQuery = countQuery.or(shippingFilter)
-  }
-
-  return countQuery
-}
-
-function applyNumericAndToggleFilters(
-  countQuery: CountQueryBuilder,
-  filters: CountFilters,
-  verifiedOnly: boolean
-): CountQueryBuilder {
-  let query = countQuery
-
-  // Price filters
-  if (filters?.minPrice != null) {
-    query = query.gte("price", filters.minPrice)
-  }
-  if (filters?.maxPrice != null) {
-    query = query.lte("price", filters.maxPrice)
-  }
-
-  // Rating filter
-  if (filters?.minRating != null) {
-    query = query.gte("rating", filters.minRating)
-  }
-
-  // Availability filter
-  if (filters?.availability === "instock") {
-    query = query.gt("stock", 0)
-  }
-
-  // Deals filter (match canonical deal_products semantics: compare-at OR explicit sale)
-  if (filters?.deals) {
-    query = query.or("and(is_on_sale.eq.true,sale_percent.gt.0),list_price.not.is.null")
-  }
-
-  // Verified sellers (business verification)
-  if (verifiedOnly) {
-    query = query.eq("profiles.is_verified_business", true)
-  }
-
-  return query
-}
-
-function resolveNormalizedCity(city: string | null | undefined): string | null {
-  const normalizedCity = city?.trim().toLowerCase()
-  if (!normalizedCity || normalizedCity === "undefined" || normalizedCity === "null") {
-    return null
-  }
-  return normalizedCity
-}
-
-function applyCityFilter(countQuery: CountQueryBuilder, filters: CountFilters): CountQueryBuilder {
-  let query = countQuery
-  const city = resolveNormalizedCity(filters?.city ?? null)
-
-  if (filters?.nearby === true) {
-    query = query.ilike("seller_city", city ?? "sofia")
-  } else if (city) {
-    query = query.ilike("seller_city", city)
-  }
-
-  return query
-}
-
-function applyAttributeFilters(countQuery: CountQueryBuilder, filters: CountFilters): CountQueryBuilder {
-  let query = countQuery
-  if (!filters?.attributes) return query
-
-  for (const [rawAttrName, attrValue] of Object.entries(filters.attributes).slice(0, 25)) {
-    if (!attrValue) continue
-
-    const attrName = normalizeAttributeKey(rawAttrName) || rawAttrName
-
-    if (Array.isArray(attrValue)) {
-      const values = attrValue.filter((v): v is string => typeof v === "string" && v.length > 0)
-      if (values.length === 1) {
-        const [firstValue] = values
-        if (firstValue !== undefined) {
-          query = query.contains("attributes", { [attrName]: firstValue })
-        }
-      } else if (values.length > 1) {
-        query = query.in(`attributes->>${attrName}`, values)
-      }
-    } else if (typeof attrValue === "string" && attrValue.length > 0) {
-      query = query.contains("attributes", { [attrName]: attrValue })
-    }
-  }
-
-  return query
-}
-
-async function executeCountQuery(params: {
-  countQuery: CountQueryBuilder
-  querySignal: AbortSignal | undefined
-  clearQueryTimeout: () => void
-}): Promise<{ count: number | null; error: unknown }> {
-  const { countQuery, querySignal, clearQueryTimeout } = params
-
-  try {
-    if (querySignal) {
-      return await countQuery.abortSignal(querySignal)
-    }
-    return await countQuery
-  } finally {
-    clearQueryTimeout()
   }
 }
 
@@ -266,7 +97,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
 
     const body = parseResult.data
     const { categoryId, query, filters = {} } = body
-    const verifiedOnly = filters.verified === true
 
     const supabase = createStaticClient()
     const { signal: querySignal, clear: clearQueryTimeout } = createQuerySignal(2500, request.signal)
@@ -274,29 +104,22 @@ export async function POST(request: NextRequest): Promise<NextResponse<CountResp
     // Shipping zone filter from cookie (shared helper; avoids invalid column names)
     const zone = parseShippingRegion(request.cookies.get("user-zone")?.value)
     const shippingFilter = getShippingFilter(zone)
-    let countQuery = buildBaseCountQuery(supabase, verifiedOnly)
-    countQuery = applyCategorySearchAndShippingFilters({
-      countQuery,
-      categoryId,
-      query,
-      shippingFilter,
-    })
-    countQuery = applyNumericAndToggleFilters(countQuery, filters, verifiedOnly)
-    countQuery = applyCityFilter(countQuery, filters)
-    countQuery = applyAttributeFilters(countQuery, filters)
 
-    const { count, error } = await executeCountQuery({
-      countQuery,
-      querySignal,
-      clearQueryTimeout,
-    })
+    const countResult = await fetchProductsCount({
+      supabase,
+      categoryId: categoryId ?? null,
+      query: query ?? null,
+      filters,
+      shippingFilter: shippingFilter ?? null,
+      signal: querySignal,
+    }).finally(clearQueryTimeout)
 
-    if (error) {
-      return buildCountQueryErrorResponse(error, request.signal)
+    if (!countResult.ok) {
+      return buildCountQueryErrorResponse(countResult.error, request.signal)
     }
 
     return NextResponse.json({
-      count: count ?? 0,
+      count: countResult.count,
       timestamp: new Date().toISOString(),
     })
   } catch (err) {

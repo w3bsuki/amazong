@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
+import { createPageMetadata } from "@/lib/seo/metadata"
 import { BrowseModeSchema } from "./search-page-helpers"
 import type { BrowseMode } from "./types"
 
@@ -46,5 +47,10 @@ export async function generateSearchPageMetadata({
     description = `${t("searchResults")} · ${categoryLabel}.`
   }
 
-  return { title, description }
+  return createPageMetadata({
+    locale,
+    path: "/search",
+    title,
+    description,
+  })
 }

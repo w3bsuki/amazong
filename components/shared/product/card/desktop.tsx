@@ -195,7 +195,6 @@ export function DesktopProductCard({
           price={price}
           originalPrice={originalPrice}
           locale={locale}
-          priceEmphasis="strong"
           presentation="price-badge"
           showOriginalPrice
         />

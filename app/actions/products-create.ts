@@ -4,12 +4,24 @@ import {
   LEAF_CATEGORY_ERROR_MESSAGE,
   type ActionResult,
   type ProductInput,
+  fail,
   isLeafCategoryError,
+  ok,
   normalizeProductAttributes,
   productSchema,
   revalidateProductCaches,
   requireProductAuth,
 } from "./products-shared"
+import type { Database } from "@/lib/supabase/database.types"
+import {
+  deleteProductById,
+  fetchProductForDuplicate,
+  fetchProductPrivateForDuplicate,
+  fetchSellerProfileUsername,
+  insertProductAttributes,
+  insertProductPrivate,
+  insertProductReturningId,
+} from "@/lib/data/products/mutations"
 import { resolveLeafCategoryForListing } from "@/lib/sell/resolve-leaf-category"
 import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
 
@@ -21,13 +33,13 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
   try {
     const auth = await requireProductAuth("You must be logged in to create a product")
     if ("error" in auth) {
-      return { success: false, error: auth.error }
+      return fail(auth.error)
     }
     const { user, supabase } = auth
 
     const validated = productSchema.safeParse(input)
     if (!validated.success) {
-      return { success: false, error: validated.error.issues[0]?.message || "Invalid input" }
+      return fail(validated.error.issues[0]?.message || "Invalid input")
     }
 
     const data = validated.data
@@ -49,37 +61,31 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       })
 
       if (!categoryResolution.ok) {
-        return { success: false, error: categoryResolution.message }
+        return fail(categoryResolution.message)
       }
 
       resolvedCategoryId = categoryResolution.categoryId
     }
 
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("id, username")
-      .eq("id", user.id)
-      .single()
-
-    if (profileError || !profile) {
-      return { success: false, error: "Profile not found" }
+    const profileResult = await fetchSellerProfileUsername({ supabase, userId: user.id })
+    if (!profileResult.ok || !profileResult.profile) {
+      return fail("Profile not found")
     }
 
-    if (!profile.username) {
-      return { success: false, error: "You must set a username before listing products" }
+    if (!profileResult.profile.username) {
+      return fail("You must set a username before listing products")
     }
 
     if (data.status === "active") {
       const listingLimits = await getSellerListingLimitSnapshot(supabase, user.id)
       if (!listingLimits) {
-        return { success: false, error: "Failed to verify listing limits" }
+        return fail("Failed to verify listing limits")
       }
 
       if (listingLimits.needsUpgrade) {
-        return {
-          success: false,
-          error: `You have reached your listing limit (${listingLimits.currentListings} of ${listingLimits.maxListings}). Please upgrade your plan to add more listings.`,
-        }
+        return fail(
+          `You have reached your listing limit (${listingLimits.currentListings} of ${listingLimits.maxListings}). Please upgrade your plan to add more listings.`
+        )
       }
     }
 
@@ -89,88 +95,86 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       .replaceAll(/^-|-$/g, "")
     const slug = `${baseSlug}-${Date.now().toString(36)}`
 
-    const { data: product, error: insertError } = await supabase
-      .from("products")
-      .insert({
-        seller_id: user.id,
-        title: data.title,
-        description: data.description || null,
-        price: data.price,
-        list_price: data.compareAtPrice || null,
-        stock: data.stock,
-        track_inventory: data.trackInventory,
-        category_id: resolvedCategoryId,
-        status: data.status,
-        weight: data.weight || null,
-        weight_unit: data.weightUnit,
-        condition: data.condition,
-        images: data.images,
-        slug,
-      })
-      .select("id")
-      .single()
-
-    if (insertError) {
-      if (
-        insertError.code === "P0001" ||
-        insertError.message?.toLowerCase().includes("listing limit reached")
-      ) {
-        return {
-          success: false,
-          error: "You have reached your listing limit. Please upgrade your plan to add more listings.",
-        }
-      }
-      if (isLeafCategoryError(insertError)) {
-        return { success: false, error: LEAF_CATEGORY_ERROR_MESSAGE }
-      }
-      logger.error("[createProduct] Insert error", insertError)
-      return { success: false, error: insertError.message || "Failed to create product" }
+    const productInsert: Database["public"]["Tables"]["products"]["Insert"] = {
+      seller_id: user.id,
+      title: data.title,
+      description: data.description || null,
+      price: data.price,
+      list_price: data.compareAtPrice || null,
+      stock: data.stock,
+      track_inventory: data.trackInventory,
+      category_id: resolvedCategoryId,
+      status: data.status,
+      weight: data.weight || null,
+      weight_unit: data.weightUnit,
+      condition: data.condition,
+      images: data.images,
+      slug,
     }
 
-    const { error: privateError } = await supabase.from("product_private").insert({
-      product_id: product.id,
+    const productInsertResult = await insertProductReturningId({ supabase, insert: productInsert })
+
+    if (!productInsertResult.ok) {
+      const insertError = productInsertResult.error
+      if (insertError.code === "P0001" || insertError.message?.toLowerCase().includes("listing limit reached")) {
+        return fail("You have reached your listing limit. Please upgrade your plan to add more listings.")
+      }
+      if (isLeafCategoryError(insertError)) {
+        return fail(LEAF_CATEGORY_ERROR_MESSAGE)
+      }
+      logger.error("[createProduct] Insert error", insertError)
+      return fail(insertError.message || "Failed to create product")
+    }
+
+    const productId = productInsertResult.id
+
+    const privateInsert: Database["public"]["Tables"]["product_private"]["Insert"] = {
+      product_id: productId,
       seller_id: user.id,
       cost_price: data.costPrice ?? null,
       sku: data.sku ?? null,
       barcode: data.barcode ?? null,
-    })
+    }
 
-    if (privateError) {
-      logger.error("[createProduct] Product private insert error", privateError)
-      await supabase.from("products").delete().eq("id", product.id)
-      return { success: false, error: privateError.message || "Failed to save seller-only product fields" }
+    const privateInsertResult = await insertProductPrivate({ supabase, insert: privateInsert })
+
+    if (!privateInsertResult.ok) {
+      logger.error("[createProduct] Product private insert error", privateInsertResult.error)
+      await deleteProductById({ supabase, productId })
+      return fail(privateInsertResult.error.message || "Failed to save seller-only product fields")
     }
 
     if (attributes.length > 0) {
-      const attributeRows = attributes.map((attribute) => ({
-        product_id: product.id,
+      const attributeRows: Array<Database["public"]["Tables"]["product_attributes"]["Insert"]> = attributes.map(
+        (attribute) => ({
+          product_id: productId,
         attribute_id: attribute.attributeId ?? null,
         name: attribute.name,
         value: attribute.value,
         is_custom: attribute.isCustom ?? false,
       }))
 
-      const { error: attributeError } = await supabase.from("product_attributes").insert(attributeRows)
+      const attributeInsertResult = await insertProductAttributes({ supabase, rows: attributeRows })
 
-      if (attributeError) {
-        logger.error("[createProduct] Product attributes insert error", attributeError)
-        await supabase.from("products").delete().eq("id", product.id)
-        return { success: false, error: attributeError.message || "Failed to create product" }
+      if (!attributeInsertResult.ok) {
+        logger.error("[createProduct] Product attributes insert error", attributeInsertResult.error)
+        await deleteProductById({ supabase, productId })
+        return fail(attributeInsertResult.error.message || "Failed to create product")
       }
     }
 
     await revalidateProductCaches({
       supabase,
       sellerId: user.id,
-      productIds: [product.id],
+      productIds: [productId],
       categoryIds: [resolvedCategoryId],
       invalidateTypes: ["newest"],
     })
 
-    return { success: true, data: { id: product.id } }
+    return ok({ id: productId })
   } catch (error) {
     logger.error("[createProduct] Error", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return fail("An unexpected error occurred")
   }
 }
 
@@ -181,30 +185,28 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
   try {
     const auth = await requireProductAuth("You must be logged in to duplicate a product")
     if ("error" in auth) {
-      return { success: false, error: auth.error }
+      return fail(auth.error)
     }
     const { user, supabase } = auth
 
-    const duplicateSelect =
-      "title,description,price,list_price,stock,track_inventory,category_id,weight,weight_unit,condition,images" as const
-
-    const { data: original, error: fetchError } = await supabase
-      .from("products")
-      .select(duplicateSelect)
-      .eq("id", productId)
-      .eq("seller_id", user.id)
-      .single()
-
-    if (fetchError || !original) {
-      return { success: false, error: "Product not found" }
+    const originalResult = await fetchProductForDuplicate({
+      supabase,
+      productId,
+      sellerId: user.id,
+    })
+    if (!originalResult.ok || !originalResult.product) {
+      return fail("Product not found")
     }
 
-    const { data: originalPrivate } = await supabase
-      .from("product_private")
-      .select("cost_price, sku")
-      .eq("product_id", productId)
-      .eq("seller_id", user.id)
-      .maybeSingle()
+    const original = originalResult.product
+
+    const originalPrivateResult = await fetchProductPrivateForDuplicate({
+      supabase,
+      productId,
+      sellerId: user.id,
+    })
+
+    const originalPrivate = originalPrivateResult.ok ? originalPrivateResult.private : null
 
     const baseSlug = `${original.title}-copy`
       .toLowerCase()
@@ -212,85 +214,65 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
       .replaceAll(/^-|-$/g, "")
     const newSlug = `${baseSlug}-${Date.now().toString(36)}`
 
-    const duplicateInsert = await supabase
-      .from("products")
-      .insert({
-        seller_id: user.id,
-        title: `${original.title} (Copy)`,
-        description: original.description,
-        price: original.price,
-        list_price: original.list_price,
-        stock: original.stock,
-        track_inventory: original.track_inventory,
-        category_id: original.category_id,
-        status: "draft",
-        weight: original.weight,
-        weight_unit: original.weight_unit,
-        condition: original.condition,
-        images: original.images,
-        slug: newSlug,
+    const duplicateInsert: Database["public"]["Tables"]["products"]["Insert"] = {
+      seller_id: user.id,
+      title: `${original.title} (Copy)`,
+      description: original.description,
+      price: original.price,
+      list_price: original.list_price,
+      stock: original.stock,
+      track_inventory: original.track_inventory,
+      category_id: original.category_id,
+      status: "draft",
+      weight: original.weight,
+      weight_unit: original.weight_unit,
+      condition: original.condition,
+      images: original.images,
+      slug: newSlug,
+    }
+
+    let duplicateResult = await insertProductReturningId({ supabase, insert: duplicateInsert })
+
+    if (!duplicateResult.ok && isLeafCategoryError(duplicateResult.error)) {
+      duplicateResult = await insertProductReturningId({
+        supabase,
+        insert: { ...duplicateInsert, category_id: null },
       })
-      .select("id")
-      .single()
-
-    let duplicate = duplicateInsert.data
-    let insertError = duplicateInsert.error
-
-    if (insertError && isLeafCategoryError(insertError)) {
-      const fallbackInsert = await supabase
-        .from("products")
-        .insert({
-          seller_id: user.id,
-          title: `${original.title} (Copy)`,
-          description: original.description,
-          price: original.price,
-          list_price: original.list_price,
-          stock: original.stock,
-          track_inventory: original.track_inventory,
-          category_id: null,
-          status: "draft",
-          weight: original.weight,
-          weight_unit: original.weight_unit,
-          condition: original.condition,
-          images: original.images,
-          slug: newSlug,
-        })
-        .select("id")
-        .single()
-
-      duplicate = fallbackInsert.data
-      insertError = fallbackInsert.error
     }
 
-    if (insertError || !duplicate) {
-      logger.error("[duplicateProduct] Insert error", insertError)
-      return { success: false, error: "Failed to duplicate product" }
+    if (!duplicateResult.ok) {
+      logger.error("[duplicateProduct] Insert error", duplicateResult.error)
+      return fail("Failed to duplicate product")
     }
 
-    const { error: privateError } = await supabase.from("product_private").insert({
-      product_id: duplicate.id,
+    const duplicateId = duplicateResult.id
+
+    const privateInsert: Database["public"]["Tables"]["product_private"]["Insert"] = {
+      product_id: duplicateId,
       seller_id: user.id,
       cost_price: originalPrivate?.cost_price ?? null,
       sku: originalPrivate?.sku ? `${originalPrivate.sku}-COPY` : null,
       barcode: null,
-    })
+    }
 
-    if (privateError) {
-      logger.error("[duplicateProduct] Product private insert error", privateError)
-      await supabase.from("products").delete().eq("id", duplicate.id)
-      return { success: false, error: "Failed to duplicate seller-only product fields" }
+    const privateResult = await insertProductPrivate({ supabase, insert: privateInsert })
+
+    if (!privateResult.ok) {
+      logger.error("[duplicateProduct] Product private insert error", privateResult.error)
+      await deleteProductById({ supabase, productId: duplicateId })
+      return fail("Failed to duplicate seller-only product fields")
     }
 
     await revalidateProductCaches({
       supabase,
       sellerId: user.id,
-      productIds: [duplicate.id],
+      productIds: [duplicateId],
       categoryIds: [original.category_id],
     })
 
-    return { success: true, data: { id: duplicate.id } }
+    return ok({ id: duplicateId })
   } catch (error) {
     logger.error("[duplicateProduct] Error", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return fail("An unexpected error occurred")
   }
 }

@@ -70,6 +70,7 @@ export function ProductsTableRow({
                 alt={product.title}
                 fill
                 className="object-cover"
+                sizes="40px"
               />
             ) : (
               <div className="flex size-full items-center justify-center">

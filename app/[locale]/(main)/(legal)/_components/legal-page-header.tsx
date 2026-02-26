@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { LucideIcon } from "lucide-react"
 
 import { validateLocale } from "@/i18n/routing"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 import type { BreadcrumbItemData } from "../../../_components/navigation/app-breadcrumb"
 import { getLegalDocLayoutProps } from "../_lib/legal-doc-layout-props"
@@ -18,6 +19,7 @@ export async function resolveLegalRouteLocale(params: Promise<{ locale: string }
 interface BuildLegalRouteMetadataArgs {
   params: Promise<{ locale: string }>
   namespace: string
+  path: string
   titleKey?: string
   descriptionKey?: string
 }
@@ -25,16 +27,19 @@ interface BuildLegalRouteMetadataArgs {
 export async function buildLegalRouteMetadata({
   params,
   namespace,
+  path,
   titleKey = "metaTitle",
   descriptionKey = "metaDescription",
 }: BuildLegalRouteMetadataArgs): Promise<Metadata> {
   const locale = await resolveLegalRouteLocale(params)
   const t = await getTranslations({ locale, namespace })
 
-  return {
+  return createPageMetadata({
+    locale,
+    path,
     title: t(titleKey),
     description: t(descriptionKey),
-  }
+  })
 }
 
 interface RenderLegalDocPageArgs {
@@ -66,4 +71,3 @@ export function renderLegalDocPage({
     <LegalPageLayout heroIcon={heroIcon} title={title} breadcrumbItems={breadcrumbItems} {...layoutProps} />
   )
 }
-

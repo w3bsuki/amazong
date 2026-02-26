@@ -1,4 +1,4 @@
-import { ProductSearchResponseSchema, type SearchProduct } from "./use-product-search.shared"
+import { parseProductSearchResponse, type SearchProduct } from "./use-product-search.shared"
 
 export async function fetchSearchProducts(
   normalizedQuery: string,
@@ -21,6 +21,5 @@ export async function fetchSearchProducts(
     data = null
   }
 
-  const validated = ProductSearchResponseSchema.safeParse(data)
-  return validated.success ? validated.data.products : []
+  return parseProductSearchResponse(data)
 }

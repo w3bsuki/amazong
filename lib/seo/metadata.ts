@@ -85,3 +85,29 @@ export function createPageMetadata(options: CreatePageMetadataOptions): Metadata
   }
 }
 
+type LocalizedCopy = {
+  en: string
+  bg: string
+}
+
+type CreatePrivatePageMetadataOptions = Omit<CreatePageMetadataOptions, 'title' | 'description' | 'robots'> & {
+  title: LocalizedCopy
+  description: LocalizedCopy
+}
+
+export function createPrivatePageMetadata(options: CreatePrivatePageMetadataOptions): Metadata {
+  const locale = validateLocale(options.locale)
+  const title = locale === 'bg' ? options.title.bg : options.title.en
+  const description = locale === 'bg' ? options.description.bg : options.description.en
+
+  return createPageMetadata({
+    ...options,
+    locale,
+    title,
+    description,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  })
+}

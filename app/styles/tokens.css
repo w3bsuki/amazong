@@ -121,13 +121,13 @@
   --shadow-ink-subtle: 0 0 0 / 10%;
   --shadow-ink-strong: 0 0 0 / 15%;
 
-  /* Legacy semantic aliases (keep visuals within blue/red system) */
-  --success: var(--primary);
-  --success-foreground: var(--primary-foreground);
-  --warning: var(--primary);
-  --warning-foreground: var(--primary-foreground);
-  --info: var(--primary);
-  --info-foreground: var(--primary-foreground);
+  /* Semantic status colors (distinct from brand primary). */
+  --success: 0.62 0.20 145;
+  --success-foreground: 1 0 0;
+  --warning: 0.63 0.17 86;
+  --warning-foreground: 1 0 0;
+  --info: 0.62 0.20 255;
+  --info-foreground: 1 0 0;
   --error: var(--destructive);
   --error-foreground: var(--destructive-foreground);
 
@@ -208,7 +208,7 @@
   --checked: var(--primary);
   --checked-foreground: var(--primary-foreground);
   --switch-unchecked-bg: var(--input);
-  --success-subtle: var(--primary-subtle);
+  --success-subtle: 0.97 0.02 145;
 
   /* Consistent radii */
   --radius: 0.5rem;
@@ -277,18 +277,18 @@
   --shadow-ink-subtle: 0 0 0 / 40%;
   --shadow-ink-strong: 0 0 0 / 55%;
 
-  --success: var(--primary);
-  --success-foreground: var(--primary-foreground);
-  --warning: var(--primary);
-  --warning-foreground: var(--primary-foreground);
-  --info: var(--primary);
-  --info-foreground: var(--primary-foreground);
+  --success: 0.70 0.18 145;
+  --success-foreground: 0.12 0.02 255;
+  --warning: 0.76 0.16 86;
+  --warning-foreground: 0.12 0.02 255;
+  --info: 0.72 0.18 255;
+  --info-foreground: 0.12 0.02 255;
   --error: var(--destructive);
   --error-foreground: var(--destructive-foreground);
 
   --primary-subtle: 0.25 0.04 255;
   --destructive-subtle: 0.28 0.04 30;
-  --success-subtle: var(--primary-subtle);
+  --success-subtle: 0.25 0.04 145;
 
   /* Text aliases (used in a few legacy components) */
   --text-strong: var(--foreground);
@@ -314,26 +314,6 @@
   --surface-gallery: 0.08 0 0;
   --surface-overlay: 0 0 0 / 70%;
   --surface-floating: var(--card);
-  --home-promoted-surface: var(--surface-subtle);
-  --home-promoted-border: var(--border-subtle);
-  --home-promoted-text: var(--foreground);
-  --home-promoted-cta-surface: var(--surface-card);
-  --home-promoted-cta-border: var(--border);
-  --home-promoted-cta-text: var(--foreground);
-  --home-promoted-cta-eyebrow: var(--muted-foreground);
-  --home-promoted-cta-subtitle: var(--muted-foreground);
-  --home-promoted-cta-button-surface: var(--primary);
-  --home-promoted-cta-button-text: var(--primary-foreground);
-  --home-promoted-cta-button-border: var(--primary);
-  --home-sell-cta-surface: var(--card);
-  --home-sell-cta-border: var(--border-subtle);
-  --home-sell-cta-text: var(--foreground);
-  --home-sell-cta-action: var(--primary);
-  --home-sell-cta-icon-surface: var(--primary);
-  --home-sell-cta-icon-text: var(--primary-foreground);
-  --home-sell-cta-icon-border: var(--primary);
-  --home-section-title: var(--foreground);
-  --home-section-action: var(--muted-foreground);
 
   --overlay-text: 1 0 0;
   --overlay-text-muted: 0.85 0 0;

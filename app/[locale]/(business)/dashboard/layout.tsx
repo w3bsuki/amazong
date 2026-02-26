@@ -1,6 +1,7 @@
 import { BusinessSidebar } from "../_components/business-sidebar"
 import { BusinessHeader } from "../_components/business-header"
 import { setRequestLocale } from "next-intl/server"
+import type { Metadata } from "next"
 import { 
   requireBusinessSeller, 
   getPendingTasksCount, 
@@ -13,6 +14,20 @@ import {
 } from "@/components/layout/sidebar/sidebar"
 import { connection } from "next/server"
 import { FullRouteIntlProvider } from "../../_providers/route-intl-provider"
+import { createPrivatePageMetadata } from "@/lib/seo/metadata"
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  return createPrivatePageMetadata({
+    locale,
+    path: "/dashboard",
+    title: { en: "Dashboard", bg: "Табло" },
+    description: {
+      en: "Manage your store, orders, and analytics on Treido.",
+      bg: "Управлявайте магазина си, поръчки и статистики в Treido.",
+    },
+  })
+}
 
 export default async function BusinessDashboardLayout({
   children,

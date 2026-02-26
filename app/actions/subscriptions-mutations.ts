@@ -3,6 +3,11 @@
 import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
+import {
+  fetchActiveSubscriptionForManage,
+  updateProfileTier,
+  updateSubscriptionAutoRenew,
+} from "@/lib/data/subscriptions"
 import { createAdminClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { revalidateTag } from "next/cache"
@@ -28,13 +33,16 @@ export async function downgradeToFreeTier(): Promise<DowngradeResult> {
     const adminSupabase = createAdminClient()
     const userId = auth.user.id
 
-    const { error } = await adminSupabase
-      .from("profiles")
-      .update({ tier: "free" })
-      .eq("id", userId)
+    const updateResult = await updateProfileTier({
+      adminSupabase,
+      userId,
+      tier: "free",
+    })
 
-    if (error) {
-      return errorEnvelope({ error: error.message })
+    if (!updateResult.ok) {
+      return errorEnvelope({
+        error: updateResult.error instanceof Error ? updateResult.error.message : "Failed to change tier",
+      })
     }
 
     return successEnvelope({ tier: "free" as const })
@@ -60,16 +68,15 @@ export async function cancelSubscription(): Promise<ActionResult> {
     const { user, supabase } = auth
 
     // Get the active subscription
-    const { data: subscription, error: fetchError } = await supabase
-      .from("subscriptions")
-      .select("id,status,auto_renew,expires_at,stripe_subscription_id")
-      .eq("seller_id", user.id)
-      .eq("status", "active")
-      .single()
-
-    if (fetchError || !subscription) {
+    const subscriptionResult = await fetchActiveSubscriptionForManage({
+      supabase,
+      sellerId: user.id,
+    })
+    if (!subscriptionResult.ok || !subscriptionResult.subscription) {
       return errorEnvelope({ error: "No active subscription found" })
     }
+
+    const subscription = subscriptionResult.subscription
 
     // If we have a Stripe subscription, cancel it at period end
     if (subscription.stripe_subscription_id) {
@@ -86,16 +93,15 @@ export async function cancelSubscription(): Promise<ActionResult> {
     // Update our database to reflect cancellation scheduled
     // Status stays 'active' until period actually ends (webhook handles that)
     // We just mark auto_renew = false
-    const { error: updateError } = await supabase
-      .from("subscriptions")
-      .update({
-        auto_renew: false,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", subscription.id)
+    const updateResult = await updateSubscriptionAutoRenew({
+      supabase,
+      subscriptionId: subscription.id,
+      autoRenew: false,
+      updatedAt: new Date().toISOString(),
+    })
 
-    if (updateError) {
-      logger.error("Database update error:", updateError)
+    if (!updateResult.ok) {
+      logger.error("Database update error:", updateResult.error)
       return errorEnvelope({ error: "Failed to update subscription" })
     }
 
@@ -123,17 +129,16 @@ export async function reactivateSubscription(): Promise<ActionResult> {
     const { user, supabase } = auth
 
     // Get subscription that's active but set to cancel
-    const { data: subscription, error: fetchError } = await supabase
-      .from("subscriptions")
-      .select("id,status,auto_renew,expires_at,stripe_subscription_id")
-      .eq("seller_id", user.id)
-      .eq("status", "active")
-      .eq("auto_renew", false)
-      .single()
-
-    if (fetchError || !subscription) {
+    const subscriptionResult = await fetchActiveSubscriptionForManage({
+      supabase,
+      sellerId: user.id,
+      autoRenew: false,
+    })
+    if (!subscriptionResult.ok || !subscriptionResult.subscription) {
       return errorEnvelope({ error: "No cancellation to revert" })
     }
+
+    const subscription = subscriptionResult.subscription
 
     // Reactivate in Stripe
     if (subscription.stripe_subscription_id) {
@@ -148,16 +153,15 @@ export async function reactivateSubscription(): Promise<ActionResult> {
     }
 
     // Update database
-    const { error: updateError } = await supabase
-      .from("subscriptions")
-      .update({
-        auto_renew: true,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", subscription.id)
+    const updateResult = await updateSubscriptionAutoRenew({
+      supabase,
+      subscriptionId: subscription.id,
+      autoRenew: true,
+      updatedAt: new Date().toISOString(),
+    })
 
-    if (updateError) {
-      logger.error("Database update error:", updateError)
+    if (!updateResult.ok) {
+      logger.error("Database update error:", updateResult.error)
       return errorEnvelope({ error: "Failed to update subscription" })
     }
 

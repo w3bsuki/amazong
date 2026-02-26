@@ -6,7 +6,7 @@ import { useRouter } from "@/i18n/routing"
 import { LoaderCircle as SpinnerGap } from "lucide-react";
 import { useTranslations } from "next-intl"
 
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence, MotionConfig } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { type AvatarVariant } from "@/lib/avatar-palettes"
 import { Button } from "@/components/ui/button"
@@ -263,58 +263,60 @@ export function WelcomeClient({ locale }: { locale: string }) {
           ))}
         </div>
 
-        <AnimatePresence mode="wait">
-          {(() => {
-            switch (step) {
-              case 1:
-                return <WelcomeIntroStep name={name} isPending={isPending} onStart={() => setStep(2)} onSkip={handleSkip} />
+        <MotionConfig reducedMotion="user">
+          <AnimatePresence mode="wait">
+            {(() => {
+              switch (step) {
+                case 1:
+                  return <WelcomeIntroStep name={name} isPending={isPending} onStart={() => setStep(2)} onSkip={handleSkip} />
 
-              case 2:
-                return (
-                  <WelcomeAvatarStep
-                    profileUsername={profile?.username}
-                    useCustomAvatar={useCustomAvatar}
-                    avatarPreview={avatarPreview}
-                    selectedVariant={selectedVariant}
-                    selectedPalette={selectedPalette}
-                    isPending={isPending}
-                    onBack={() => setStep(1)}
-                    onContinue={handleSaveAndContinue}
-                    onFileChange={handleFileChange}
-                    onSelectVariant={(variant) => {
-                      setSelectedVariant(variant)
-                      setUseCustomAvatar(false)
-                    }}
-                    onSelectPalette={(idx) => setSelectedPalette(idx)}
-                  />
-                )
+                case 2:
+                  return (
+                    <WelcomeAvatarStep
+                      profileUsername={profile?.username}
+                      useCustomAvatar={useCustomAvatar}
+                      avatarPreview={avatarPreview}
+                      selectedVariant={selectedVariant}
+                      selectedPalette={selectedPalette}
+                      isPending={isPending}
+                      onBack={() => setStep(1)}
+                      onContinue={handleSaveAndContinue}
+                      onFileChange={handleFileChange}
+                      onSelectVariant={(variant) => {
+                        setSelectedVariant(variant)
+                        setUseCustomAvatar(false)
+                      }}
+                      onSelectPalette={(idx) => setSelectedPalette(idx)}
+                    />
+                  )
 
-              case 3:
-                return (
-                  <WelcomeProfileStep
-                    profileUsername={profile?.username}
-                    useCustomAvatar={useCustomAvatar}
-                    avatarPreview={avatarPreview}
-                    selectedVariant={selectedVariant}
-                    selectedPalette={selectedPalette}
-                    displayName={displayName}
-                    bio={bio}
-                    isPending={isPending}
-                    onBack={() => setStep(2)}
-                    onContinue={handleSaveAndContinue}
-                    onDisplayNameChange={(value) => setDisplayName(value)}
-                    onBioChange={(value) => setBio(value)}
-                  />
-                )
+                case 3:
+                  return (
+                    <WelcomeProfileStep
+                      profileUsername={profile?.username}
+                      useCustomAvatar={useCustomAvatar}
+                      avatarPreview={avatarPreview}
+                      selectedVariant={selectedVariant}
+                      selectedPalette={selectedPalette}
+                      displayName={displayName}
+                      bio={bio}
+                      isPending={isPending}
+                      onBack={() => setStep(2)}
+                      onContinue={handleSaveAndContinue}
+                      onDisplayNameChange={(value) => setDisplayName(value)}
+                      onBioChange={(value) => setBio(value)}
+                    />
+                  )
 
-              case 4:
-                return <WelcomeCompleteStep username={profile?.username} />
+                case 4:
+                  return <WelcomeCompleteStep username={profile?.username} />
 
-              default:
-                return null
-            }
-          })()}
-        </AnimatePresence>
+                default:
+                  return null
+              }
+            })()}
+          </AnimatePresence>
+        </MotionConfig>
       </div>
     </div>
   )

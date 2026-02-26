@@ -1,9 +1,10 @@
 import { errorEnvelope, successEnvelope } from "@/lib/api/envelope"
 import {
-  ORDER_ITEM_DETAIL_SELECT,
-  ORDER_ITEM_LIST_SELECT,
-  type OrderItem,
-} from "./orders-shared"
+  fetchBuyerOrderDetails,
+  fetchBuyerOrderIds,
+  fetchOrderItemsForOrderIds,
+} from "@/lib/data/orders/reads"
+import type { OrderItem } from "@/lib/types/order-item"
 import {
   NOT_AUTHENTICATED_ERROR,
   OrderIdSchema,
@@ -24,35 +25,39 @@ export async function getBuyerOrdersImpl(): Promise<OrdersReadResult> {
     }
     const { userId, supabase } = authResult
 
-    const { data: orders, error: ordersError } = await supabase
-      .from("orders")
-      .select("id")
-      .eq("user_id", userId)
-
-    if (ordersError) {
+    const orderIdsResult = await fetchBuyerOrderIds({ supabase, userId })
+    if (!orderIdsResult.ok) {
       return errorEnvelope({ orders: [], error: "Failed to fetch orders" })
     }
 
-    const orderIds = orders?.map((order) => order.id) || []
-    if (orderIds.length === 0) {
+    if (orderIdsResult.orderIds.length === 0) {
       return successEnvelope({ orders: [] })
     }
 
-    const { data: orderItems, error: itemsError } = await supabase
-      .from("order_items")
-      .select(ORDER_ITEM_LIST_SELECT)
-      .in("order_id", orderIds)
-      .order("created_at", { ascending: false, foreignTable: "orders" })
-      .limit(200)
-
-    if (itemsError) {
+    const orderItemsResult = await fetchOrderItemsForOrderIds({
+      supabase,
+      orderIds: orderIdsResult.orderIds,
+      limit: 200,
+    })
+    if (!orderItemsResult.ok) {
       return errorEnvelope({ orders: [], error: "Failed to fetch order items" })
     }
 
-    const itemsWithCreatedAt = (orderItems ?? []).map((item) => ({
-      ...item,
-      created_at: item.order?.created_at ?? new Date().toISOString(),
-    }))
+    const itemsWithCreatedAt = orderItemsResult.items.map((item) => {
+      const order = item.order
+      const createdAt =
+        typeof order === "object" &&
+        order !== null &&
+        "created_at" in order &&
+        typeof (order as { created_at?: unknown }).created_at === "string"
+          ? (order as { created_at: string }).created_at
+          : new Date().toISOString()
+
+      return {
+        ...item,
+        created_at: createdAt,
+      }
+    })
 
     return successEnvelope({ orders: itemsWithCreatedAt as OrderItem[] })
   } catch (error) {
@@ -78,32 +83,17 @@ export async function getBuyerOrderDetailsImpl(
     }
     const { userId, supabase } = authResult
 
-    const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .select(`
-        id,
-        status,
-        total_amount,
-        shipping_address,
-        created_at,
-        order_items (
-          ${ORDER_ITEM_DETAIL_SELECT}
-        )
-      `)
-      .eq("id", parsedOrderId.data)
-      .eq("user_id", userId)
-      .single<{
-        id: string
-        status: string | null
-        total_amount: number
-        shipping_address: Record<string, unknown> | null
-        created_at: string
-        order_items: OrderItem[]
-      }>()
+    const orderResult = await fetchBuyerOrderDetails({
+      supabase,
+      userId,
+      orderId: parsedOrderId.data,
+    })
 
-    if (orderError || !order) {
+    if (!orderResult.ok) {
       return errorEnvelope({ order: null, error: "Order not found" })
     }
+
+    const order = orderResult.order
 
     return successEnvelope({
       order: {

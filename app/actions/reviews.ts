@@ -1,8 +1,11 @@
 "use server"
 
 import { z } from "zod"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { requireAuth } from "@/lib/auth/require-auth"
 import { revalidatePublicProfileTagsByUsername } from "@/lib/cache/revalidate-profile-tags"
+import { fetchUsernameByUserId } from "@/lib/data/profile"
+import { fetchProductForReview, hasExistingReview, hasVerifiedPurchase, insertReview } from "@/lib/data/reviews"
 import { revalidateTag } from "next/cache"
 
 import { logger } from "@/lib/logger"
@@ -17,16 +20,17 @@ interface SubmitReviewInput {
   comment?: string
 }
 
-interface ReviewResult {
-  success: boolean
-  error?: string
-  review?: {
-    id: string
-    rating: number
-    comment: string | null
-    created_at: string
-  }
-}
+type SubmitReviewResult = Envelope<
+  {
+    review: {
+      id: string
+      rating: number
+      comment: string | null
+      created_at: string
+    }
+  },
+  { error: string }
+>
 
 const SubmitReviewInputSchema = z.object({
   productId: z.string().min(1),
@@ -39,10 +43,10 @@ const SubmitReviewInputSchema = z.object({
 // SUBMIT REVIEW
 // ============================================================================
 
-export async function submitReview(input: SubmitReviewInput): Promise<ReviewResult> {
+export async function submitReview(input: SubmitReviewInput): Promise<SubmitReviewResult> {
   const parsedInput = SubmitReviewInputSchema.safeParse(input)
   if (!parsedInput.success) {
-    return { success: false, error: "Invalid input" }
+    return errorEnvelope({ error: "Invalid input" })
   }
 
   const safeInput = parsedInput.data
@@ -50,87 +54,79 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
   // 1. Verify user is authenticated
   const auth = await requireAuth()
   if (!auth) {
-    return { success: false, error: "You must be logged in to leave a review" }
+    return errorEnvelope({ error: "You must be logged in to leave a review" })
   }
 
   const { supabase, user } = auth
 
   // 2. Validate rating
   if (!safeInput.rating || safeInput.rating < 1 || safeInput.rating > 5) {
-    return { success: false, error: "Rating must be between 1 and 5" }
+    return errorEnvelope({ error: "Rating must be between 1 and 5" })
   }
 
   // 3. Validate productId
   if (!safeInput.productId) {
-    return { success: false, error: "Product ID is required" }
+    return errorEnvelope({ error: "Product ID is required" })
   }
 
   // 4. Verify product exists
-  const { data: product, error: productError } = await supabase
-    .from("products")
-    .select("id, title, seller_id")
-    .eq("id", safeInput.productId)
-    .single()
-
-  if (productError || !product) {
-    return { success: false, error: "Product not found" }
+  const productResult = await fetchProductForReview({ supabase, productId: safeInput.productId })
+  if (!productResult.ok) {
+    return errorEnvelope({ error: "Product not found" })
   }
+
+  const product = productResult.product
 
   // 5. Prevent self-review (seller can't review their own product)
   if (product.seller_id === user.id) {
-    return { success: false, error: "You cannot review your own product" }
+    return errorEnvelope({ error: "You cannot review your own product" })
   }
 
   // 6. Check if user already reviewed this product
-  const { data: existingReview } = await supabase
-    .from("reviews")
-    .select("id")
-    .eq("product_id", safeInput.productId)
-    .eq("user_id", user.id)
-    .maybeSingle()
+  const existingReviewResult = await hasExistingReview({
+    supabase,
+    productId: safeInput.productId,
+    userId: user.id,
+  })
 
-  if (existingReview) {
-    return { success: false, error: "You have already reviewed this product" }
+  if (existingReviewResult.ok && existingReviewResult.exists) {
+    return errorEnvelope({ error: "You have already reviewed this product" })
   }
 
   // 7. Optional: Check if user purchased the product (for verified purchase badge)
-  const { data: purchase } = await supabase
-    .from("order_items")
-    .select(`
-      id,
-      order:orders!inner(user_id, status)
-    `)
-    .eq("product_id", safeInput.productId)
-    .eq("orders.user_id", user.id)
-    .in("orders.status", ["paid", "processing", "shipped", "delivered"])
-    .limit(1)
-    .maybeSingle()
+  const verifiedPurchaseResult = await hasVerifiedPurchase({
+    supabase,
+    productId: safeInput.productId,
+    userId: user.id,
+  })
 
-  const isVerifiedPurchase = !!purchase
+  const isVerifiedPurchase = verifiedPurchaseResult.ok ? verifiedPurchaseResult.verified : false
 
   // 8. Insert the review
-  const { data: review, error: insertError } = await supabase
-    .from("reviews")
-    .insert({
-      product_id: safeInput.productId,
-      user_id: user.id,
-      rating: safeInput.rating,
-      title: safeInput.title?.trim() || null,
-      comment: safeInput.comment?.trim() || null,
-      verified_purchase: isVerifiedPurchase,
-    })
-    .select("id, rating, comment, created_at")
-    .single()
+  const insertResult = await insertReview({
+    supabase,
+    productId: safeInput.productId,
+    userId: user.id,
+    rating: safeInput.rating,
+    title: safeInput.title?.trim() || null,
+    comment: safeInput.comment?.trim() || null,
+    verifiedPurchase: isVerifiedPurchase,
+  })
 
-  if (insertError) {
-    logger.error("Error inserting review:", insertError)
+  if (!insertResult.ok) {
+    logger.error("Error inserting review:", insertResult.error)
     
     // Handle unique constraint violation
-    if (insertError.code === "23505") {
-      return { success: false, error: "You have already reviewed this product" }
+    if (
+      typeof insertResult.error === "object" &&
+      insertResult.error !== null &&
+      "code" in insertResult.error &&
+      (insertResult.error as { code?: unknown }).code === "23505"
+    ) {
+      return errorEnvelope({ error: "You have already reviewed this product" })
     }
     
-    return { success: false, error: "Failed to submit review. Please try again." }
+    return errorEnvelope({ error: "Failed to submit review. Please try again." })
   }
 
   // 9. Revalidate cached product/review data
@@ -140,16 +136,8 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
   revalidateTag(`seller-products-${product.seller_id}`, "products")
   
   // Also revalidate the seller's store page
-  const { data: sellerProfile } = await supabase
-    .from("profiles")
-    .select("username")
-    .eq("id", product.seller_id)
-    .single()
-  
-  revalidatePublicProfileTagsByUsername(sellerProfile?.username, "user")
+  const sellerUsername = await fetchUsernameByUserId({ supabase, userId: product.seller_id })
+  revalidatePublicProfileTagsByUsername(sellerUsername, "user")
 
-  return { 
-    success: true, 
-    review: review 
-  }
+  return successEnvelope({ review: insertResult.review })
 }

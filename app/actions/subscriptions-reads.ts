@@ -3,8 +3,13 @@
 import { z } from "zod"
 import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { requireAuth } from "@/lib/auth/require-auth"
+import {
+  fetchActiveSubscriptionPlanForCheckout,
+  fetchActiveSubscriptionStripeCustomerId,
+  fetchPrivateProfileStripeCustomerId,
+  upsertPrivateProfileStripeCustomerId,
+} from "@/lib/data/subscriptions"
 import { stripe } from "@/lib/stripe"
-import { ID_AND_STRIPE_CUSTOMER_ID_SELECT, STRIPE_CUSTOMER_ID_SELECT } from "@/lib/supabase/selects/billing"
 import type Stripe from "stripe"
 
 import { logger } from "@/lib/logger"
@@ -31,9 +36,6 @@ type BillingPortalSessionResult = Envelope<
   { url: string },
   { error: string }
 >
-
-const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
-  "id,name,tier,is_active,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,final_value_fee,commission_rate" as const
 
 type CheckoutSessionCreateParams = Stripe.Checkout.SessionCreateParams
 type CheckoutLineItem = Stripe.Checkout.SessionCreateParams.LineItem
@@ -89,23 +91,12 @@ export async function createSubscriptionCheckoutSession(args: {
 
     const { user, supabase } = auth
 
-    const { data: profile } = await supabase
-      .from("private_profiles")
-      .select(ID_AND_STRIPE_CUSTOMER_ID_SELECT)
-      .eq("id", user.id)
-      .single()
-
-    if (!profile) {
-      return errorEnvelope({ error: "Profile not found" })
+    const planResult = await fetchActiveSubscriptionPlanForCheckout({ supabase, planId })
+    if (!planResult.ok) {
+      return errorEnvelope({ error: "Failed to load plan" })
     }
 
-    const { data: plan } = await supabase
-      .from("subscription_plans")
-      .select(SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT)
-      .eq("id", planId)
-      .eq("is_active", true)
-      .single()
-
+    const plan = planResult.plan
     if (!plan) {
       return errorEnvelope({ error: "Plan not found" })
     }
@@ -116,22 +107,32 @@ export async function createSubscriptionCheckoutSession(args: {
 
     const price = billingPeriod === "yearly" ? plan.price_yearly : plan.price_monthly
 
-    let customerId: string | null | undefined = profile.stripe_customer_id
+    const customerIdResult = await fetchPrivateProfileStripeCustomerId({ supabase, userId: user.id })
+    if (!customerIdResult.ok) {
+      return errorEnvelope({ error: "Failed to load profile" })
+    }
+
+    let customerId: string | null = customerIdResult.stripeCustomerId
 
     if (!customerId) {
       const customer = await stripe.customers.create({
         ...(user.email ? { email: user.email } : {}),
         metadata: {
-          profile_id: profile.id,
+          profile_id: user.id,
           supabase_user_id: user.id,
         },
       })
 
       customerId = customer.id
 
-      await supabase
-        .from("private_profiles")
-        .upsert({ id: profile.id, stripe_customer_id: customerId }, { onConflict: "id" })
+      const upsertResult = await upsertPrivateProfileStripeCustomerId({
+        supabase,
+        userId: user.id,
+        stripeCustomerId: customerId,
+      })
+      if (!upsertResult.ok) {
+        return errorEnvelope({ error: "Failed to persist customer" })
+      }
     }
 
     const stripePriceId =
@@ -164,7 +165,7 @@ export async function createSubscriptionCheckoutSession(args: {
       mode: "subscription" as const,
       payment_method_types: ["card"],
       metadata: {
-        profile_id: profile.id,
+        profile_id: user.id,
         plan_id: planId,
         plan_tier: plan.tier,
         billing_period: billingPeriod,
@@ -209,31 +210,34 @@ export async function createBillingPortalSession(
 
     const { user, supabase } = auth
 
-    const { data: activeSubscription } = await supabase
-      .from("subscriptions")
-      .select(STRIPE_CUSTOMER_ID_SELECT)
-      .eq("seller_id", user.id)
-      .eq("status", "active")
-      .single()
+    const stripeCustomerIdResult = await fetchActiveSubscriptionStripeCustomerId({
+      supabase,
+      sellerId: user.id,
+    })
+    if (!stripeCustomerIdResult.ok) {
+      return errorEnvelope({ error: "Failed to load subscription" })
+    }
 
-    const stripeCustomerIdFromSubscription = activeSubscription?.stripe_customer_id
-
-    const stripeCustomerId = stripeCustomerIdFromSubscription || null
+    let stripeCustomerId: string | null = stripeCustomerIdResult.stripeCustomerId || null
 
     if (!stripeCustomerId) {
       // Fallback: profile might have a customer id even if subscription row isn't present
-      const { data: profile } = await supabase
-        .from("private_profiles")
-        .select(STRIPE_CUSTOMER_ID_SELECT)
-        .eq("id", user.id)
-        .single()
+      const profileCustomerIdResult = await fetchPrivateProfileStripeCustomerId({
+        supabase,
+        userId: user.id,
+      })
+      if (!profileCustomerIdResult.ok) {
+        return errorEnvelope({ error: "Failed to load profile" })
+      }
 
-      if (!profile?.stripe_customer_id) {
+      stripeCustomerId = profileCustomerIdResult.stripeCustomerId
+
+      if (!stripeCustomerId) {
         return errorEnvelope({ error: "No active subscription found" })
       }
 
       const portalSession = await stripe.billingPortal.sessions.create({
-        customer: profile.stripe_customer_id,
+        customer: stripeCustomerId,
         return_url: accountPlansUrl,
       })
 
@@ -247,8 +251,7 @@ export async function createBillingPortalSession(
 
     return successEnvelope({ url: portalSession.url })
   } catch (error) {
-    logger.error("Portal session error:", error)
+    logger.error("Portal session error", error)
     return errorEnvelope({ error: "Failed to create portal session" })
   }
 }
-

@@ -4,11 +4,18 @@ import { revalidateTag } from "next/cache"
 import { z } from "zod"
 import {
   type ActionResult,
-  getCategorySlugsForProducts,
+  fail,
   listingTitleSchema,
+  ok,
   revalidateProductCaches,
   requireProductAuth,
 } from "./products-shared"
+import { fetchCategorySlugsForProducts } from "@/lib/data/products/category-slugs"
+import {
+  bulkDeleteProducts as bulkDeleteProductsRows,
+  bulkUpdateProductStatus as bulkUpdateProductStatusRows,
+  fetchProductsForBulkTitleValidation,
+} from "@/lib/data/products/mutations"
 import { getSellerListingLimitSnapshot } from "@/lib/subscriptions/listing-limits"
 
 import { logger } from "@/lib/logger"
@@ -29,7 +36,7 @@ export async function bulkUpdateProductStatus(
 ): Promise<ActionResult<{ updated: number }>> {
   const parsedInput = BulkUpdateProductStatusSchema.safeParse({ productIds, status })
   if (!parsedInput.success) {
-    return { success: false, error: "Invalid input data" }
+    return fail("Invalid input data")
   }
 
   const {
@@ -40,20 +47,22 @@ export async function bulkUpdateProductStatus(
   try {
     const auth = await requireProductAuth("You must be logged in to update products")
     if ("error" in auth) {
-      return { success: false, error: auth.error }
+      return fail(auth.error)
     }
     const { user, supabase } = auth
 
     if (validatedStatus === "active") {
-      const { data: titles, error: titleError } = await supabase
-        .from("products")
-        .select("id,title,status")
-        .eq("seller_id", user.id)
-        .in("id", validatedProductIds)
+      const titlesResult = await fetchProductsForBulkTitleValidation({
+        supabase,
+        sellerId: user.id,
+        productIds: validatedProductIds,
+      })
 
-      if (titleError) {
-        return { success: false, error: "Failed to validate listing titles" }
+      if (!titlesResult.ok) {
+        return fail("Failed to validate listing titles")
       }
+
+      const titles = titlesResult.rows
 
       const invalidCount = (titles ?? []).filter((row) => {
         const title = typeof row?.title === "string" ? row.title : ""
@@ -61,60 +70,49 @@ export async function bulkUpdateProductStatus(
       }).length
 
       if (invalidCount > 0) {
-        return {
-          success: false,
-          error: "Some listings have invalid titles. Fix titles before publishing.",
-        }
+        return fail("Some listings have invalid titles. Fix titles before publishing.")
       }
 
       const toActivateCount = (titles ?? []).filter((row) => row?.status !== "active").length
       if (toActivateCount > 0) {
         const listingLimits = await getSellerListingLimitSnapshot(supabase, user.id)
         if (!listingLimits) {
-          return { success: false, error: "Failed to verify listing limits" }
+          return fail("Failed to verify listing limits")
         }
 
         if (
           !listingLimits.isUnlimited &&
           listingLimits.currentListings + toActivateCount > (listingLimits.maxListings ?? 0)
         ) {
-          return {
-            success: false,
-            error: `Publishing ${toActivateCount} listing(s) would exceed your active listing limit (${listingLimits.currentListings} of ${listingLimits.maxListings}). Please upgrade your plan.`,
-          }
+          return fail(
+            `Publishing ${toActivateCount} listing(s) would exceed your active listing limit (${listingLimits.currentListings} of ${listingLimits.maxListings}). Please upgrade your plan.`
+          )
         }
       }
     }
 
-    const { data, error: updateError } = await supabase
-      .from("products")
-      .update({
-        status: validatedStatus,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("seller_id", user.id)
-      .in("id", validatedProductIds)
-      .select("id")
+    const updateResult = await bulkUpdateProductStatusRows({
+      supabase,
+      sellerId: user.id,
+      productIds: validatedProductIds,
+      status: validatedStatus,
+      updatedAt: new Date().toISOString(),
+    })
 
-    if (updateError) {
+    if (!updateResult.ok) {
       if (
-        updateError.code === "P0001" ||
-        updateError.message?.toLowerCase().includes("listing limit reached")
+        updateResult.error.code === "P0001" ||
+        updateResult.error.message?.toLowerCase().includes("listing limit reached")
       ) {
-        return {
-          success: false,
-          error: "You have reached your listing limit. Please upgrade your plan to publish more listings.",
-        }
+        return fail("You have reached your listing limit. Please upgrade your plan to publish more listings.")
       }
-      logger.error("[bulkUpdateProductStatus] Update error", updateError)
-      return { success: false, error: "Failed to update products" }
+      logger.error("[bulkUpdateProductStatus] Update error", updateResult.error)
+      return fail("Failed to update products")
     }
 
-    const updatedIds = (data ?? [])
-      .map((row) => row?.id)
-      .filter((id): id is string => typeof id === "string" && id.length > 0)
+    const updatedIds = updateResult.updatedIds
 
-    const categorySlugs = await getCategorySlugsForProducts(supabase, updatedIds)
+    const categorySlugs = await fetchCategorySlugsForProducts(supabase, updatedIds)
     await revalidateProductCaches({
       supabase,
       sellerId: user.id,
@@ -126,10 +124,10 @@ export async function bulkUpdateProductStatus(
       revalidateTag(`products:category:${slug}`, "max")
     }
 
-    return { success: true, data: { updated: data?.length || 0 } }
+    return ok({ updated: updatedIds.length })
   } catch (error) {
     logger.error("[bulkUpdateProductStatus] Error", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return fail("An unexpected error occurred")
   }
 }
 
@@ -141,7 +139,7 @@ export async function bulkDeleteProducts(
 ): Promise<ActionResult<{ deleted: number }>> {
   const parsedProductIds = ProductIdsSchema.safeParse(productIds)
   if (!parsedProductIds.success) {
-    return { success: false, error: "Invalid input data" }
+    return fail("Invalid input data")
   }
 
   const validatedProductIds = parsedProductIds.data
@@ -149,27 +147,24 @@ export async function bulkDeleteProducts(
   try {
     const auth = await requireProductAuth("You must be logged in to delete products")
     if ("error" in auth) {
-      return { success: false, error: auth.error }
+      return fail(auth.error)
     }
     const { user, supabase } = auth
 
-    const { data, error: deleteError } = await supabase
-      .from("products")
-      .delete()
-      .eq("seller_id", user.id)
-      .in("id", validatedProductIds)
-      .select("id")
+    const deleteResult = await bulkDeleteProductsRows({
+      supabase,
+      sellerId: user.id,
+      productIds: validatedProductIds,
+    })
 
-    if (deleteError) {
-      logger.error("[bulkDeleteProducts] Delete error", deleteError)
-      return { success: false, error: "Failed to delete products" }
+    if (!deleteResult.ok) {
+      logger.error("[bulkDeleteProducts] Delete error", deleteResult.error)
+      return fail("Failed to delete products")
     }
 
-    const deletedIds = (data ?? [])
-      .map((row) => row?.id)
-      .filter((id): id is string => typeof id === "string" && id.length > 0)
+    const deletedIds = deleteResult.deletedIds
 
-    const categorySlugs = await getCategorySlugsForProducts(supabase, deletedIds)
+    const categorySlugs = await fetchCategorySlugsForProducts(supabase, deletedIds)
     await revalidateProductCaches({
       supabase,
       sellerId: user.id,
@@ -181,9 +176,9 @@ export async function bulkDeleteProducts(
       revalidateTag(`products:category:${slug}`, "max")
     }
 
-    return { success: true, data: { deleted: data?.length || 0 } }
+    return ok({ deleted: deletedIds.length })
   } catch (error) {
     logger.error("[bulkDeleteProducts] Error", error)
-    return { success: false, error: "An unexpected error occurred" }
+    return fail("An unexpected error occurred")
   }
 }

@@ -166,10 +166,10 @@ export function ShippingPriceSection({
         }}
         className={cn(
           "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-colors cursor-pointer",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
           freeShipping
             ? "border-selected-border bg-selected"
-            : "border-border bg-card hover:bg-hover"
+            : "border-border-subtle bg-surface-subtle hover:bg-hover"
         )}
       >
         <div className={cn(
@@ -190,13 +190,13 @@ export function ShippingPriceSection({
       {!freeShipping && (
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
-            <label className="text-sm font-bold text-foreground">{tSell("shipping.shippingPriceLabel")}</label>
+            <label className="text-xs font-semibold text-foreground">{tSell("shipping.shippingPriceLabel")}</label>
           </div>
           <div className={cn(
-            "flex items-center h-14 px-4 rounded-xl border bg-card transition-colors",
-            "focus-within:ring-2 focus-within:ring-ring focus-within:border-ring"
+            "flex items-center h-14 px-4 rounded-xl border bg-surface-subtle border-border-subtle transition-colors",
+            "focus-within:ring-2 focus-within:ring-focus-ring focus-within:border-ring"
           )}>
-            <span className="text-base font-bold text-muted-foreground mr-2">лв</span>
+            <span className="text-sm font-semibold text-muted-foreground mr-2">лв</span>
             <Input
               type="text"
               inputMode="decimal"

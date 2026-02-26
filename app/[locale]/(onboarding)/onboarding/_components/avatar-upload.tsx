@@ -33,6 +33,7 @@ export function AvatarUpload({
             alt={previewAlt}
             width={64}
             height={64}
+            sizes="64px"
             className="object-cover w-full h-full"
           />
         ) : (

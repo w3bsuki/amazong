@@ -1,9 +1,13 @@
 "use server"
 
 import { z } from "zod"
+import { errorEnvelope, successEnvelope, type Envelope } from "@/lib/api/envelope"
 import { requireAuth } from "@/lib/auth/require-auth"
-import { createClient } from "@/lib/supabase/server"
 import { revalidatePublicProfileTagsForUser } from "@/lib/cache/revalidate-profile-tags"
+import { getOnboardingProfileSnapshot, getUsernameForUser, updateOnboardingProfile } from "@/lib/data/onboarding"
+import { uploadFileToAvatarsBucket } from "@/lib/data/profile-avatar"
+import type { Database } from "@/lib/supabase/database.types"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
 import { logger } from "@/lib/logger"
 export interface OnboardingData {
@@ -34,6 +38,30 @@ const onboardingSchema = z.object({
   avatarPalette: z.number().optional(),
 })
 
+type CompletePostSignupOnboardingResult = Envelope<
+  Record<string, never>,
+  { error: string }
+>
+
+type OnboardingStatusResult = Envelope<
+  {
+    needsOnboarding: boolean
+    profile: {
+      username: string | null
+      displayName: string | null
+      onboardingCompleted: boolean
+    } | null
+  }
+>
+
+function ok(): CompletePostSignupOnboardingResult {
+  return successEnvelope<Record<string, never>>()
+}
+
+function fail(error: string): CompletePostSignupOnboardingResult {
+  return errorEnvelope({ error })
+}
+
 function getPaletteIndexFromSeed(seed: string): number {
   let hash = 0
   for (let i = 0; i < seed.length; i += 1) {
@@ -48,21 +76,10 @@ function buildGeneratedAvatar(seed: string, palette?: number): string {
   return `boring-avatar:marble:${paletteIndex}:${safeSeed}`
 }
 
-type AvatarStorageClient = {
-  storage: {
-    from(bucket: string): {
-      upload(
-        path: string,
-        file: File,
-        options: { upsert: boolean }
-      ): Promise<{ error: unknown; data: unknown }>
-      getPublicUrl(path: string): { data: { publicUrl: string } }
-    }
-  }
-}
+type DbClient = SupabaseClient<Database>
 
 async function uploadAvatarAsset(
-  supabase: AvatarStorageClient,
+  supabase: DbClient,
   userId: string,
   file: File,
   suffix: "avatar" | "banner"
@@ -71,16 +88,18 @@ async function uploadAvatarAsset(
   const fileName = `${userId}-${suffix}-${Date.now()}.${fileExt}`
   const filePath = `${userId}/${fileName}`
 
-  const { error: uploadError, data: uploadData } = await supabase.storage
-    .from("avatars")
-    .upload(filePath, file, { upsert: true })
+  const result = await uploadFileToAvatarsBucket({
+    supabase,
+    filePath,
+    file,
+    options: { upsert: true, contentType: file.type },
+  })
 
-  if (uploadError || !uploadData) {
+  if (!result.ok) {
     return null
   }
 
-  const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath)
-  return publicUrl
+  return result.publicUrl
 }
 
 function buildProfileUpdateData(params: {
@@ -133,12 +152,12 @@ export async function completePostSignupOnboarding(
   data: OnboardingData,
   avatarFile: File | null,
   coverFile: File | null
-): Promise<{ success: boolean; error?: string }> {
+): Promise<CompletePostSignupOnboardingResult> {
   const parsed = onboardingSchema.safeParse(data)
 
   if (!parsed.success) {
     logger.error("[onboarding] validation_failed", parsed.error)
-    return { success: false, error: "Invalid data provided" }
+    return fail("Invalid data provided")
   }
 
   const {
@@ -157,23 +176,17 @@ export async function completePostSignupOnboarding(
   // Verify the user is authenticated and matches
   const auth = await requireAuth()
   if (!auth) {
-    return { success: false, error: "Unauthorized" }
+    return fail("Unauthorized")
   }
 
   const { supabase, user } = auth
 
   if (user.id !== userId) {
-    return { success: false, error: "Forbidden" }
+    return fail("Forbidden")
   }
 
   // Get current profile for username (needed for avatar generation)
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("username")
-    .eq("id", userId)
-    .single()
-
-  const username = profile?.username || "user"
+  const username = (await getUsernameForUser({ supabase, userId })) || "user"
 
   // Upload avatar if custom
   let avatarUrl: string | null = null
@@ -206,51 +219,37 @@ export async function completePostSignupOnboarding(
     bannerUrl,
   })
 
-  // Update profile with authed client (RLS enforces ownership)
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update(updateData)
-    .eq("id", userId)
+  const updateResult = await updateOnboardingProfile({ supabase, userId, updateData })
 
-  if (updateError) {
-    logger.error("[onboarding] profile_update_failed", updateError, { userId })
-    return { success: false, error: "Failed to update profile" }
+  if (!updateResult.ok) {
+    logger.error("[onboarding] profile_update_failed", updateResult.error, { userId })
+    return fail("Failed to update profile")
   }
 
   await revalidatePublicProfileTagsForUser(supabase, userId, "max")
 
-  return { success: true }
+  return ok()
 }
 
 /**
  * Check if a user needs to complete onboarding
  */
-export async function checkOnboardingStatus(userId: string): Promise<{
-  needsOnboarding: boolean
-  profile: {
-    username: string | null
-    displayName: string | null
-    onboardingCompleted: boolean
-  } | null
-}> {
-  const supabase = await createClient()
+export async function checkOnboardingStatus(userId: string): Promise<OnboardingStatusResult> {
+  const rawProfile = await getOnboardingProfileSnapshot(userId)
 
-  const { data: rawProfile, error } = await supabase
-    .from("profiles")
-    .select("username, display_name, onboarding_completed")
-    .eq("id", userId)
-    .single()
-
-  if (error || !rawProfile) {
-    return { needsOnboarding: false, profile: null }
+  if (!rawProfile) {
+    return successEnvelope({
+      needsOnboarding: false,
+      profile: null,
+    })
   }
 
-  return {
-    needsOnboarding: !rawProfile.onboarding_completed,
+  return successEnvelope({
+    needsOnboarding: !rawProfile.onboardingCompleted,
     profile: {
-      username: rawProfile.username ?? null,
-      displayName: rawProfile.display_name ?? null,
-      onboardingCompleted: rawProfile.onboarding_completed ?? false,
+      username: rawProfile.username,
+      displayName: rawProfile.displayName,
+      onboardingCompleted: rawProfile.onboardingCompleted,
     },
-  }
+  })
 }

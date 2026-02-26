@@ -3,6 +3,7 @@ import { ITEMS_PER_PAGE, type Product, type SearchProductFilters } from "./types
 import { isBoostActiveNow } from "@/lib/boost/boost-status"
 import { applySharedProductFilters, applySharedProductSort } from "@/lib/data/search-products"
 import { buildTokenizedIlikeOrFilter } from "@/lib/filters/search-query"
+import { applyPublicProductVisibilityFilter } from "@/lib/supabase/filters/visibility"
 
 type SearchQueryResult = {
   data?: unknown[] | null
@@ -58,9 +59,7 @@ export async function searchProducts(
   const applyFilters = (q: SearchQuery) => {
     let next = q
 
-    // Public browsing surfaces must not show non-active listings.
-    // Temporary legacy allowance: status can be NULL for older rows.
-    next = next.or("status.eq.active,status.is.null")
+    next = applyPublicProductVisibilityFilter(next)
 
     if (shippingFilter) next = next.or(shippingFilter)
 

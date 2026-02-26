@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { formatDistanceToNow, format } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 import { useTranslations } from "next-intl"
+import type { Envelope } from "@/lib/api/envelope"
 
 import { getOrderStatusFromItems } from "@/lib/order-status"
 import { Badge } from "@/components/ui/badge"
@@ -29,7 +30,7 @@ export type OrderDetailContentServerActions = BuyerOrderActionsServerActions & {
   requestReturn: (
     orderItemId: string,
     reason: string
-  ) => Promise<{ success: boolean; error?: string }>
+  ) => Promise<Envelope<{ conversationId?: string }, { error: string }>>
 }
 
 interface OrderDetailContentProps {

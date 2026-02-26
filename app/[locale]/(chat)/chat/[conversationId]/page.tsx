@@ -6,6 +6,7 @@ import { blockUser } from "../../../../actions/blocked-users"
 import { reportConversation } from "../../_actions/report-conversation"
 import { AuthGateCard } from "../../../_components/auth/auth-gate-card"
 import { BUILD_VALIDATION_UUID, localeStaticParamsWith } from "@/lib/next/static-params"
+import { createPageMetadata } from "@/lib/seo/metadata"
 
 // Generate static params for build validation (required by cacheComponents)
 // Actual pages are rendered server-side for authenticated users
@@ -25,22 +26,35 @@ export async function generateMetadata({
   const { locale, conversationId } = await params
   const t = await getTranslations({ locale, namespace: "Messages" })
   const supabase = await createClient()
+  const path = `/chat/${conversationId}`
 
   if (!supabase) {
-    return {
+    return createPageMetadata({
+      locale,
+      path,
       title: t("pageTitle"),
       description: t("pageDescription"),
-    }
+      robots: {
+        index: false,
+        follow: false,
+      },
+    })
   }
 
   // Fetch conversation details for metadata
   const { data: { user } } = await supabase.auth.getUser()
   
   if (!user) {
-    return {
+    return createPageMetadata({
+      locale,
+      path,
       title: t("pageTitle"),
       description: t("pageDescription"),
-    }
+      robots: {
+        index: false,
+        follow: false,
+      },
+    })
   }
 
   // Get conversation with product info
@@ -56,10 +70,16 @@ export async function generateMetadata({
     .single()
 
   if (!conversation) {
-    return {
+    return createPageMetadata({
+      locale,
+      path,
       title: t("pageTitle"),
       description: t("pageDescription"),
-    }
+      robots: {
+        index: false,
+        follow: false,
+      },
+    })
   }
 
   // Get the other party's profile
@@ -76,16 +96,20 @@ export async function generateMetadata({
   const otherName = profile?.business_name || profile?.display_name || profile?.full_name || t("unknownUser")
   const productTitle = conversation.product?.title
 
-  return {
-    title: productTitle 
-      ? t("conversationWithProductTitle", { name: otherName, product: productTitle })
-      : t("conversationTitle", { name: otherName }),
+  const title = productTitle 
+    ? t("conversationWithProductTitle", { name: otherName, product: productTitle })
+    : t("conversationTitle", { name: otherName })
+
+  return createPageMetadata({
+    locale,
+    path,
+    title,
     description: t("conversationDescription", { name: otherName }),
     robots: {
       index: false, // Private conversations shouldn't be indexed
       follow: false,
     },
-  }
+  })
 }
 
 /**

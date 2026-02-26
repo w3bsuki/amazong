@@ -1,7 +1,9 @@
 import { revalidateTag } from "next/cache"
+import { createReturnRequest, fetchOrderItemForReturn, hasActiveReturnRequest } from "@/lib/data/orders/support"
 import {
   requireSupportContext,
   supportFailure,
+  supportSuccess,
   type OrdersSupportResult,
 } from "./orders-support-shared"
 
@@ -21,25 +23,13 @@ export async function requestReturnImpl(
       return supportFailure("validation_failed", "Please provide a reason")
     }
 
-    const { data: orderItem, error: fetchError } = await supabase
-      .from("order_items")
-      .select(`
-          id,
-          status,
-          seller_id,
-          order:orders!inner(id, user_id)
-        `)
-      .eq("id", parsedOrderItemId)
-      .single<{
-        id: string
-        status: string | null
-        seller_id: string
-        order: { id: string; user_id: string }
-      }>()
+    const orderItemResult = await fetchOrderItemForReturn({ supabase, orderItemId: parsedOrderItemId })
 
-    if (fetchError || !orderItem) {
+    if (!orderItemResult.ok) {
       return supportFailure("not_found", "Order item not found")
     }
+
+    const orderItem = orderItemResult.item
 
     if (orderItem.order.user_id !== userId) {
       return supportFailure("not_authorized", "Not authorized to request a return for this order")
@@ -49,39 +39,35 @@ export async function requestReturnImpl(
       return supportFailure("invalid_status", "Return requests are available after delivery")
     }
 
-    const { data: existingRequests, error: existingError } = await supabase
-      .from("return_requests")
-      .select("id,status")
-      .eq("order_item_id", parsedOrderItemId)
-      .eq("buyer_id", userId)
-      .neq("status", "cancelled")
-      .limit(1)
+    const existingResult = await hasActiveReturnRequest({
+      supabase,
+      orderItemId: parsedOrderItemId,
+      buyerId: userId,
+    })
 
-    const existingRequest = existingRequests?.[0] ?? null
-
-    if (existingError) {
-      logger.error("[orders-support] return_request_lookup_failed", existingError, {
+    if (!existingResult.ok) {
+      logger.error("[orders-support] return_request_lookup_failed", existingResult.error, {
         orderItemId: parsedOrderItemId,
         buyerId: userId,
       })
       return supportFailure("create_failed", "Failed to submit return request")
     }
 
-    if (existingRequest?.id) {
+    if (existingResult.exists) {
       return supportFailure("already_exists", "Return request already submitted")
     }
 
-    const { error: insertError } = await supabase.from("return_requests").insert({
-      order_item_id: parsedOrderItemId,
-      order_id: orderItem.order.id,
-      buyer_id: userId,
-      seller_id: orderItem.seller_id,
+    const createResult = await createReturnRequest({
+      supabase,
+      orderItemId: parsedOrderItemId,
+      orderId: orderItem.order.id,
+      buyerId: userId,
+      sellerId: orderItem.seller_id,
       reason: normalizedReason,
-      status: "requested",
     })
 
-    if (insertError) {
-      logger.error("[orders-support] return_request_create_failed", insertError, {
+    if (!createResult.ok) {
+      logger.error("[orders-support] return_request_create_failed", createResult.error, {
         orderItemId: parsedOrderItemId,
         buyerId: userId,
       })
@@ -92,7 +78,7 @@ export async function requestReturnImpl(
     revalidateTag("messages", "max")
     revalidateTag("conversations", "max")
 
-    return { success: true }
+    return supportSuccess()
   } catch (error) {
     logger.error("[orders-support] request_return_unexpected", error, {
       orderItemId,

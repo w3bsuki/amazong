@@ -2,7 +2,7 @@ import { z } from "zod"
 import type { Envelope } from "@/lib/api/envelope"
 import { requireAuth } from "@/lib/auth/require-auth"
 import type { OrderItemStatus } from "@/lib/order-status"
-import type { OrderItem } from "./orders-shared"
+import type { OrderItem } from "@/lib/types/order-item"
 
 export const OrderItemStatusSchema = z.enum([
   "pending",

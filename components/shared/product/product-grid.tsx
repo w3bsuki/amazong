@@ -185,7 +185,7 @@ export function ProductGrid({
   isLoading = false,
 }: ProductGridProps) {
   if (isLoading) {
-    return <ProductGridSkeleton viewMode={viewMode} density={density} preset={preset} />
+    return <ProductGridSkeleton viewMode={viewMode} density={density} />
   }
 
   if (products.length === 0) {
@@ -223,14 +223,12 @@ export function ProductGridSkeleton({
   viewMode = "grid",
   density = "normal",
   count = 12,
-  preset = "desktop",
 }: {
   viewMode?: ViewMode
   density?: "normal" | "compact"
   count?: number
-  preset?: ProductGridPreset
 }) {
-  const ratio = preset === "desktop" ? 1 : 4 / 3
+  const ratio = 3 / 4
 
   return (
     <div data-slot="product-grid-skeleton" className="@container">
@@ -252,12 +250,13 @@ export function ProductGridSkeleton({
               </div>
             </div>
           ) : (
-            <div key={i} className="space-y-2">
-              <div className="relative overflow-hidden rounded-xl bg-muted">
+            <div key={i} className="space-y-1">
+              <div className="relative overflow-hidden rounded-lg bg-secondary mb-2">
                 <AspectRatio ratio={ratio} />
               </div>
-              <div className="h-4 w-full animate-pulse motion-reduce:animate-none rounded-full bg-muted" />
-              <div className="h-4 w-2/3 animate-pulse motion-reduce:animate-none rounded-full bg-muted" />
+              <div className="h-4 w-1/3 animate-pulse motion-reduce:animate-none rounded bg-secondary" />
+              <div className="h-3 w-full animate-pulse motion-reduce:animate-none rounded bg-secondary" />
+              <div className="h-3 w-2/3 animate-pulse motion-reduce:animate-none rounded bg-secondary" />
             </div>
           )
         )}

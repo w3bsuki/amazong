@@ -10,6 +10,7 @@ import { conditionOptions } from "@/lib/sell/schema";
 import { useSellForm } from "../sell-form-provider";
 import { useTranslations } from "next-intl";
 import { SellFieldSectionHeader } from "./_shared/sell-field-section-header";
+import { SellChip } from "../ui/sell-chip";
 
 // ============================================================================
 // CONDITION FIELD - Item condition selector
@@ -48,8 +49,8 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
             <FieldContent>
               {compact ? (
                 /* Mobile: Inline chip pills — flat, fast, no drawer */
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-foreground">
+                <div>
+                  <label className="block text-xs font-semibold text-foreground mb-1.5">
                     {tSell("steps.details.conditionLabel")} <span className="text-destructive">*</span>
                   </label>
                   <div className="flex flex-wrap gap-1.5">
@@ -58,21 +59,13 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                       const label = tSell(option.labelKey as never);
 
                       return (
-                        <button
+                        <SellChip
                           key={option.value}
-                          type="button"
                           onClick={() => field.onChange(option.value)}
-                          className={cn(
-                            "px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
-                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                            "touch-manipulation",
-                            isSelected
-                              ? "bg-foreground text-background"
-                              : "bg-secondary text-muted-foreground hover:text-foreground"
-                          )}
+                          selected={isSelected}
                         >
                           {label}
-                        </button>
+                        </SellChip>
                       );
                     })}
                   </div>
@@ -120,4 +113,3 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
     />
   );
 }
-

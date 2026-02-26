@@ -1,5 +1,3 @@
-import { z } from "zod"
-
 export interface SearchProduct {
   id: string
   title: string
@@ -30,32 +28,89 @@ export const MAX_RECENT_PRODUCTS = 6
 export const RECENT_SEARCHES_KEY = "recentSearches"
 export const RECENT_PRODUCTS_KEY = "recentSearchedProducts"
 
-const SearchProductSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  price: z.number(),
-  images: z.array(z.string()),
-  slug: z.string(),
-  storeSlug: z.string().nullable().optional().default(null),
-})
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
 
-export const ProductSearchResponseSchema = z.object({
-  products: z.array(SearchProductSchema).default([]),
-})
+function parseString(value: unknown): string | null {
+  return typeof value === "string" ? value : null
+}
 
-export const RecentSearchesSchema = z.array(z.string())
+function parseNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null
+}
 
-const RecentSearchedProductSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  price: z.number(),
-  image: z.string().nullable(),
-  slug: z.string(),
-  storeSlug: z.string().nullable().optional().default(null),
-  searchedAt: z.number(),
-})
+function parseStringArray(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null
+  const items = value.filter((item): item is string => typeof item === "string")
+  return items.length === value.length ? items : null
+}
 
-export const RecentProductsSchema = z.array(RecentSearchedProductSchema)
+function parseSearchProduct(value: unknown): SearchProduct | null {
+  if (!isRecord(value)) return null
+
+  const id = parseString(value.id)
+  const title = parseString(value.title)
+  const price = parseNumber(value.price)
+  const images = parseStringArray(value.images) ?? []
+  const slug = parseString(value.slug)
+  const storeSlugValue = value.storeSlug
+  const storeSlug = storeSlugValue === null ? null : parseString(storeSlugValue)
+
+  if (!id || !title || price === null || !slug) return null
+
+  return {
+    id,
+    title,
+    price,
+    images,
+    slug,
+    storeSlug: storeSlug ?? null,
+  }
+}
+
+export function parseProductSearchResponse(value: unknown): SearchProduct[] {
+  if (!isRecord(value)) return []
+  const products = Array.isArray(value.products) ? value.products : []
+  return products.map(parseSearchProduct).filter((item): item is SearchProduct => Boolean(item))
+}
+
+function parseRecentSearchedProduct(value: unknown): RecentSearchedProduct | null {
+  if (!isRecord(value)) return null
+
+  const id = parseString(value.id)
+  const title = parseString(value.title)
+  const price = parseNumber(value.price)
+  const imageValue = value.image
+  const image = imageValue === null ? null : parseString(imageValue)
+  const slug = parseString(value.slug)
+  const storeSlugValue = value.storeSlug
+  const storeSlug = storeSlugValue === null ? null : parseString(storeSlugValue)
+  const searchedAt = parseNumber(value.searchedAt)
+
+  if (!id || !title || price === null || !slug || searchedAt === null) return null
+
+  return {
+    id,
+    title,
+    price,
+    image: image ?? null,
+    slug,
+    storeSlug: storeSlug ?? null,
+    searchedAt,
+  }
+}
+
+export function parseRecentSearches(value: unknown): string[] | null {
+  return parseStringArray(value)
+}
+
+export function parseRecentProducts(value: unknown): RecentSearchedProduct[] | null {
+  if (!Array.isArray(value)) return null
+  const parsed = value.map(parseRecentSearchedProduct)
+  if (parsed.some((item) => !item)) return null
+  return parsed.filter((item): item is RecentSearchedProduct => Boolean(item))
+}
 
 export function isAbortError(error: unknown): boolean {
   return error instanceof Error && error.name === "AbortError"

@@ -2,7 +2,7 @@
 
 
 import { type ReactNode, useRef, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { ArrowRight, ChevronLeft as CaretLeft, Rocket, LoaderCircle as SpinnerGap, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -195,19 +195,21 @@ export function StepperWrapper({
           {prefersReducedMotion ? (
             children
           ) : (
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={currentStep}
-                custom={direction}
-                variants={pageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={pageTransition}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
+            <MotionConfig reducedMotion="user">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={currentStep}
+                  custom={direction}
+                  variants={pageVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={pageTransition}
+                >
+                  {children}
+                </motion.div>
+              </AnimatePresence>
+            </MotionConfig>
           )}
         </div>
       </main>

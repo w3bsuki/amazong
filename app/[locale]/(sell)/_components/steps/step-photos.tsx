@@ -15,8 +15,7 @@ export function StepPhotos() {
       description={tSell("steps.photos.description")}
       contentClassName="space-y-5"
     >
-      <PhotosField compact maxPhotos={12} />
+      <PhotosField compact maxPhotos={12} thumbnailLayout="row" />
     </StepLayout>
   )
 }
-

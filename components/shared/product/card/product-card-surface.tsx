@@ -41,7 +41,7 @@ export function ProductCardSurface({
     <Card
       data-slot="surface"
       className={cn(
-        "tap-highlight tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-xl border-border-subtle shadow-none",
+        "tap-highlight tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-xl border-0 shadow-none bg-transparent",
         className
       )}
     >
@@ -56,7 +56,7 @@ export function ProductCardSurface({
         <span className="sr-only">{title}</span>
       </Link>
 
-      <div className="relative overflow-hidden rounded-t-xl bg-surface-subtle">
+      <div className="relative overflow-hidden rounded-xl bg-secondary">
         <ProductCardImage
           src={imageSrc}
           alt={imageAlt}

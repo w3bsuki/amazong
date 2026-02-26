@@ -120,7 +120,7 @@ export function ProductFeed({
               {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
             />
           ) : isLoading && products.length === 0 ? (
-            <ProductGridSkeleton count={6} density="compact" preset="mobile-feed" />
+            <ProductGridSkeleton count={6} density="compact" />
           ) : (
             <>
               <AnimatedProductGrid
@@ -133,7 +133,7 @@ export function ProductFeed({
               />
 
               {showInlineRefreshSkeleton && (
-                <ProductGridSkeleton count={2} density="compact" preset="mobile-feed" />
+                <ProductGridSkeleton count={2} density="compact" />
               )}
             </>
           )}
@@ -142,7 +142,7 @@ export function ProductFeed({
 
       <div ref={loadMoreRef} className="py-3">
         {isLoading && products.length > 0 && (
-          <ProductGridSkeleton count={4} density="compact" preset="mobile-feed" />
+          <ProductGridSkeleton count={4} density="compact" />
         )}
         {!hasMore && products.length > 0 && (
           <EndOfResults label={tFeed("endOfResults", { count: products.length })} />

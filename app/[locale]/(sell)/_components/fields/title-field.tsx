@@ -62,7 +62,7 @@ export function TitleField({
             <div className="space-y-1.5">
               {compact && (
                 <div className="flex items-center justify-between">
-                  <label htmlFor={inputId} className="text-sm font-semibold text-foreground">
+                  <label htmlFor={inputId} className="text-xs font-semibold text-foreground">
                     {tSell("fields.title.label")} <span className="text-destructive">*</span>
                   </label>
                   <span className={cn(
@@ -80,9 +80,7 @@ export function TitleField({
                 placeholder={tSell("fields.title.placeholder")}
                 maxLength={maxLength}
                 className={cn(
-                  "h-10 rounded-lg border-none bg-secondary px-3 text-sm text-foreground placeholder:text-muted-foreground",
-                  "focus-visible:ring-1 focus-visible:ring-ring",
-                  fieldState.invalid && "ring-1 ring-destructive"
+                  "bg-surface-subtle border-border-subtle"
                 )}
               />
             </div>

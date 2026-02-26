@@ -1,3 +1,5 @@
+import type { Envelope } from "@/lib/api/envelope"
+
 export type UsernameAvailabilityErrorCode =
   | "INVALID_USERNAME"
   | "USERNAME_RESERVED"
@@ -29,27 +31,44 @@ export type UsernameProfileErrorCode =
   | "PROFILE_NOT_FOUND"
   | "UNKNOWN_ERROR"
 
+export type CheckUsernameAvailabilityResult = Envelope<
+  { available: boolean },
+  { available: boolean; errorCode: UsernameAvailabilityErrorCode }
+>
+
+export type UsernameAccountResult = Envelope<
+  Record<string, never>,
+  { errorCode: UsernameAccountErrorCode; daysRemaining?: number }
+>
+
+export type UpdatePublicProfileResult = Envelope<
+  Record<string, never>,
+  { errorCode: UsernameProfileErrorCode }
+>
+
+export type UploadBannerResult = Envelope<
+  { bannerUrl: string },
+  { errorCode: UsernameProfileErrorCode }
+>
+
+export type UsernameChangeCooldownResult = Envelope<
+  { canChange: boolean; daysRemaining?: number },
+  { canChange: boolean; error: string }
+>
+
 export type PublicProfileEditorServerActions = {
   checkUsernameAvailability: (
     username: string
-  ) => Promise<{ available: boolean; errorCode?: UsernameAvailabilityErrorCode }>
-  setUsername: (username: string) => Promise<{
-    success: boolean
-    errorCode?: UsernameAccountErrorCode
-    daysRemaining?: number
-  }>
+  ) => Promise<CheckUsernameAvailabilityResult>
+  setUsername: (username: string) => Promise<UsernameAccountResult>
   updatePublicProfile: (data: {
     display_name?: string | null
     bio?: string | null
     location?: string | null
     website_url?: string | null
     social_links?: Record<string, string | null | undefined> | null
-  }) => Promise<{ success: boolean; errorCode?: UsernameProfileErrorCode }>
-  uploadBanner: (formData: FormData) => Promise<{
-    success: boolean
-    bannerUrl?: string
-    errorCode?: UsernameProfileErrorCode
-  }>
+  }) => Promise<UpdatePublicProfileResult>
+  uploadBanner: (formData: FormData) => Promise<UploadBannerResult>
   upgradeToBusinessAccount: (data: {
     business_name: string
     vat_number?: string | null
@@ -57,19 +76,9 @@ export type PublicProfileEditorServerActions = {
     website_url?: string | null
     change_username?: boolean
     new_username?: string
-  }) => Promise<{
-    success: boolean
-    errorCode?: UsernameAccountErrorCode
-    daysRemaining?: number
-  }>
-  downgradeToPersonalAccount: () => Promise<{
-    success: boolean
-    errorCode?: UsernameAccountErrorCode
-  }>
-  getUsernameChangeCooldown: () => Promise<{
-    canChange: boolean
-    daysRemaining?: number
-  }>
+  }) => Promise<UsernameAccountResult>
+  downgradeToPersonalAccount: () => Promise<UsernameAccountResult>
+  getUsernameChangeCooldown: () => Promise<UsernameChangeCooldownResult>
 }
 
 export interface PublicProfileRecord {

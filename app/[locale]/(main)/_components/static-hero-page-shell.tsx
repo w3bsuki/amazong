@@ -26,7 +26,7 @@ export function StaticHeroPageShell({
   breadcrumbHomeLabel,
   hero,
   children,
-  pageShellClassName = "pb-20 sm:pb-12 overflow-x-hidden",
+  pageShellClassName = "overflow-x-hidden",
   heroContainerClassName = "container px-4 sm:px-6 py-10 md:py-16",
   bodyContainerClassName = "container px-4 sm:px-6 py-8",
 }: StaticHeroPageShellProps) {

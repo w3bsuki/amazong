@@ -1,5 +1,5 @@
 import { createStaticClient } from "@/lib/supabase/server"
-import { normalizeImageUrls } from "@/lib/normalize-image-url"
+import { fetchQuickSearchProducts } from "@/lib/data/products/api-search"
 import { cachedJsonResponse, dbUnavailableResponse, errorResponse } from "@/lib/api/response-helpers"
 import { z } from "zod"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
@@ -30,46 +30,13 @@ export async function GET(request: Request) {
       return dbUnavailableResponse({ products: [], hasMore: false })
     }
 
-    // Use ILIKE for flexible search (supports Cyrillic/Bulgarian)
-    const searchPattern = `%${query}%`
-    
-    const { data: products, error } = await supabase
-      .from("products")
-      .select(`
-        id,
-        title,
-        price,
-        images,
-        slug,
-        seller:profiles(username)
-      `)
-      // Public browsing surfaces must not show non-active listings.
-      // Temporary legacy allowance: status can be NULL for older rows.
-      .or("status.eq.active,status.is.null")
-      .or(`title.ilike.${searchPattern},description.ilike.${searchPattern}`)
-      .limit(safeLimit)
-      .order("created_at", { ascending: false })
-
-    if (error) {
-      logger.error("Search error:", error)
+    const result = await fetchQuickSearchProducts({ supabase, query, limit: safeLimit })
+    if (!result.ok) {
+      logger.error("Search error:", result.error)
       return errorResponse("Failed to search products", 500, { products: [], hasMore: false })
     }
 
-    // Transform to include storeSlug at top level for easier client consumption
-    const transformedProducts = (products || []).map((p) => {
-      const normalizedImages = Array.isArray(p.images) ? p.images : []
-
-      return {
-        id: p.id,
-        title: p.title,
-        price: p.price,
-        images: normalizeImageUrls(normalizedImages),
-        slug: p.slug,
-        storeSlug: p.seller?.username || null,
-      }
-    })
-
-    return cachedJsonResponse({ products: transformedProducts })
+    return cachedJsonResponse({ products: result.products })
   } catch (error) {
     if (isNextPrerenderInterrupted(error)) throw error
     logger.error("Search API Error:", error)

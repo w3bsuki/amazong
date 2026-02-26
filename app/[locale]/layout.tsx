@@ -92,12 +92,6 @@ export async function generateMetadata({
       description: copy.description,
       images: ['/og-image.svg'],
     },
-    alternates: {
-      languages: {
-        en: 'https://treido.eu/en',
-        bg: 'https://treido.eu/bg',
-      },
-    },
   }
 }
 
