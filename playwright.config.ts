@@ -82,7 +82,8 @@ if (shellReuseServer != null) {
 
 const isCI = !!process.env.CI
 const isProdTest = process.env.TEST_PROD === 'true'
-const outputDir = process.env.PW_OUTPUT_DIR || 'test-results'
+const outputRoot = process.env.PW_OUTPUT_ROOT || 'output/playwright'
+const outputDir = process.env.PW_OUTPUT_DIR || `${outputRoot}/test-results`
 const debugConfig =
   process.env.PW_DEBUG_CONFIG === 'true' || process.env.PW_DEBUG_CONFIG === '1'
 // E2E should be self-contained by default (start its own server) to avoid
@@ -191,7 +192,12 @@ const skipWebServer =
 
 const htmlReportFolder =
   process.env.PW_HTML_REPORT_DIR ||
-  (timestampedReport ? `playwright-report-${Date.now()}` : 'playwright-report')
+  (timestampedReport ? `${outputRoot}/report-${Date.now()}` : `${outputRoot}/report`)
+
+// Expose resolved output root to tests/fixtures so artifacts stay colocated.
+if (!process.env.PW_OUTPUT_ROOT) {
+  process.env.PW_OUTPUT_ROOT = outputRoot
+}
 
 function envWith(overrides: Record<string, string>): Record<string, string> {
   const env: Record<string, string> = {}
@@ -262,35 +268,26 @@ export default defineConfig({
     testIdAttribute: 'data-testid',
   },
 
-  // Test projects for different browsers/viewports
+  // Test projects for deterministic launch audits and desktop parity.
   projects: [
-    // Desktop browsers
     {
-      name: 'chromium',
+      name: 'm375',
       testIgnore: /accessibility\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 375, height: 812 },
+        deviceScaleFactor: 2,
+        hasTouch: true,
+        isMobile: true,
+      },
     },
     {
-      name: 'firefox',
+      name: 'desktop1280',
       testIgnore: /accessibility\.spec\.ts/,
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      testIgnore: /accessibility\.spec\.ts/,
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    // Mobile viewports
-    {
-      name: 'mobile-chrome',
-      testIgnore: /accessibility\.spec\.ts/,
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'mobile-safari',
-      testIgnore: /accessibility\.spec\.ts/,
-      use: { ...devices['iPhone 12'] },
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 1280, height: 812 },
+      },
     },
 
     // Accessibility-focused project (runs subset of tests)

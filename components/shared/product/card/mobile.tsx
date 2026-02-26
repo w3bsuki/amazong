@@ -5,8 +5,7 @@ import { Check, Megaphone as MegaphoneSimple } from "lucide-react"
 
 import { useLocale, useTranslations } from "next-intl"
 
-import { cn, safeAvatarSrc } from "@/lib/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { CardContent } from "@/components/ui/card"
 
@@ -90,7 +89,6 @@ export function MobileProductCard({
   const surfaceClassName = cn(className, "border-0 bg-transparent shadow-none")
 
   const showDiscountBadge = inStock && discountPercent >= 5
-  const avatarSrc = React.useMemo(() => safeAvatarSrc(sellerAvatarUrl), [sellerAvatarUrl])
 
   const conditionLabel = React.useMemo(() => {
     if (!condition) return null
@@ -198,12 +196,6 @@ export function MobileProductCard({
         </h3>
 
         <div className="flex min-w-0 items-center gap-1.5 text-2xs text-muted-foreground" data-testid="product-card-seller-row">
-          <Avatar className="size-4">
-            {avatarSrc ? <AvatarImage src={avatarSrc} alt={safeSellerName} /> : null}
-            <AvatarFallback className="text-2xs font-semibold text-foreground">
-              {(safeSellerName.trim()[0] ?? "?").toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
           <span className="min-w-0 truncate">{safeSellerName}</span>
           {isVerifiedBusinessSeller && (
             <span

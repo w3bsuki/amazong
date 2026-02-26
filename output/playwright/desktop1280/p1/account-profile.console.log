@@ -1,0 +1,12 @@
+project=desktop1280
+bucket=p1
+route_id=account-profile
+route_path=/en/account/profile
+expectation=redirect-login
+manifest_version=1
+manifest_updated_at=2026-02-26
+response_status=200
+final_url=http://127.0.0.1:3000/en/auth/login?next=%2Fen%2Faccount%2Fprofile
+
+[console.info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold (http://127.0.0.1:3000/_next/static/chunks/72e19_next_dist_01c8bd1e._.js:2297:27)
+[console.log] [HMR] connected (http://127.0.0.1:3000/_next/static/chunks/72e19_next_dist_01c8bd1e._.js:2297:27)

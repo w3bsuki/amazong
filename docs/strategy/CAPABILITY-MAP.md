@@ -25,17 +25,17 @@
 | Sell flow quality and completion | Scaffolded | 0 | form UX, media upload, validation | listing completion rate, time-to-publish |
 | Account/profile reliability | Scaffolded | 0 | auth + profile actions | settings success rate, mobile break rate |
 | Business dashboard baseline (non-AI) | Scaffolded | 1 | products/orders analytics views | dashboard DAU, feature usage depth |
-| Transactional email + trust communications | Not Started | 1 | checkout/order event triggers | email delivery rate, support contact deflection |
+| Transactional email + trust communications | Scaffolded | 1 | checkout/order event triggers | email delivery rate, support contact deflection |
 | Data sanity pipeline (listing quality guard) | Not Started | 1 | catalog rules, moderation checks | invalid listing rate, moderation time |
 | Commerce Graph canonical entities | MVP | 1 | listing/order/chat schemas | data contract pass rate |
 | Commerce event ledger | Not Started | 1 | event schema + append store | event completeness, replay reliability |
 | AI gateway (Vercel AI SDK multi-provider) | Scaffolded | 2 | provider adapters, routing policy | success rate, p95 latency, fallback rate |
-| Prompt registry + versioning | Not Started | 2 | storage + config contract | % requests with pinned prompt version |
+| Prompt registry + versioning | MVP | 2 | storage + config contract | % requests with pinned prompt version |
 | AI listing autofill (photo → draft) | Scaffolded | 2 | multimodal extraction + taxonomy | autofill acceptance rate, publish speed |
-| AI description/title generation | Not Started | 2 | prompt templates + schema checks | edit distance, policy violation rate |
+| AI description/title generation | MVP | 2 | prompt templates + schema checks | edit distance, policy violation rate |
 | AI pricing suggestion engine | Not Started | 2 | transaction comps, demand signals | suggestion adoption rate, sell-through uplift |
-| AI quality eval harness | Not Started | 2 | golden sets + scoring pipeline | offline pass rate, online quality drift |
-| AI safety/policy guardrails | Not Started | 2 | policy layer + moderation | blocked unsafe output %, incident count |
+| AI quality eval harness | Scaffolded | 2 | golden sets + scoring pipeline | offline pass rate, online quality drift |
+| AI safety/policy guardrails | MVP | 2 | policy layer + moderation | blocked unsafe output %, incident count |
 | AI business insights cards | Not Started | 3 | KPI pipelines + recommendation engine | recommendation CTR, outcome lift |
 | Inventory/demand forecasting | Not Started | 3 | event ledger + time-series features | forecast MAPE, stockout reduction |
 | Agentic business actions (approved execution) | Not Started | 3 | action policy matrix + audit log | action acceptance, rollback rate |
@@ -65,3 +65,4 @@
 *Owner: Orchestrator*
 *Update cadence: weekly*
 *Primary source links: TASKS.md, docs/launch/TRACKER.md, docs/state/NOW.md*
+*Last updated: 2026-02-26*

@@ -1,0 +1,48 @@
+{
+  "updated_at": "2026-02-26",
+  "documents": [
+    {
+      "path": "docs/state/NOW.md",
+      "owner": "Orchestrator",
+      "maxAgeDays": 3,
+      "dateSource": "frontmatter.updated_at"
+    },
+    {
+      "path": "TASKS.md",
+      "owner": "Orchestrator",
+      "maxAgeDays": 7,
+      "dateSource": "last-updated"
+    },
+    {
+      "path": "docs/strategy/NORTH-STAR.md",
+      "owner": "Orchestrator+Human",
+      "maxAgeDays": 30,
+      "dateSource": "last-updated"
+    },
+    {
+      "path": "docs/strategy/CAPABILITY-MAP.md",
+      "owner": "Orchestrator+Human",
+      "maxAgeDays": 30,
+      "dateSource": "last-updated"
+    },
+    {
+      "path": "docs/architecture/TARGET-PLATFORM.md",
+      "owner": "Engineering+Orchestrator",
+      "maxAgeDays": 30,
+      "dateSource": "last-updated"
+    },
+    {
+      "path": "docs/architecture/AI-PLATFORM.md",
+      "owner": "Engineering+Orchestrator",
+      "maxAgeDays": 30,
+      "dateSource": "last-updated"
+    },
+    {
+      "path": "docs/DECISIONS.md",
+      "owner": "Engineering+Orchestrator",
+      "maxAgeDays": 30,
+      "dateSource": "last-updated"
+    }
+  ]
+}
+

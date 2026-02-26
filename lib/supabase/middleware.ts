@@ -33,6 +33,12 @@ function isChatPath(pathname: string): boolean {
   return pathname === '/chat' || pathname.startsWith('/chat/')
 }
 
+function isCheckoutPath(pathname: string): boolean {
+  const locale = getLocaleFromPath(pathname)
+  if (locale) return pathname === `/${locale}/checkout` || pathname.startsWith(`/${locale}/checkout/`)
+  return pathname === '/checkout' || pathname.startsWith('/checkout/')
+}
+
 export async function updateSession(request: NextRequest, response?: NextResponse) {
   const pathname = request.nextUrl.pathname
   const locale = getLocaleFromPath(pathname)
@@ -43,7 +49,10 @@ export async function updateSession(request: NextRequest, response?: NextRespons
   if (!supabaseEnv) {
     // In E2E/local tests we still want account routes to be protected.
     // If Supabase isn't configured, treat user as unauthenticated.
-    if ((isAccountPath(pathname) || isSellerOrdersPath(pathname)) && !pathname.startsWith(authPrefix)) {
+    if (
+      (isAccountPath(pathname) || isSellerOrdersPath(pathname) || isCheckoutPath(pathname)) &&
+      !pathname.startsWith(authPrefix)
+    ) {
       const url = request.nextUrl.clone()
       url.pathname = loginPath
       url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
@@ -58,6 +67,7 @@ export async function updateSession(request: NextRequest, response?: NextRespons
   // Public pages don't need session validation in middleware.
   const needsAuthCheck = 
     isAccountPath(pathname) || 
+    isCheckoutPath(pathname) ||
     isSellPath(pathname) || 
     isChatPath(pathname) ||
     pathname.startsWith("/protected")
@@ -100,7 +110,11 @@ export async function updateSession(request: NextRequest, response?: NextRespons
   } = await supabase.auth.getUser()
 
   // Protect /[locale]/account/* (and legacy /account/*) routes.
-  if (!user && (isAccountPath(pathname) || isSellerOrdersPath(pathname)) && !pathname.startsWith(authPrefix)) {
+  if (
+    !user &&
+    (isAccountPath(pathname) || isSellerOrdersPath(pathname) || isCheckoutPath(pathname)) &&
+    !pathname.startsWith(authPrefix)
+  ) {
     const url = request.nextUrl.clone()
     url.pathname = loginPath
     url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)

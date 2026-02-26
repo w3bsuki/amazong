@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils"
 
 const MOBILE_QUICK_PILL_BASE_CLASS =
-  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3 py-1.5 min-h-(--control-compact) text-compact leading-none tap-transparent transition-colors duration-fast ease-smooth focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full min-h-(--control-compact) px-4 text-sm leading-none tap-transparent motion-safe:transition-all motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 const MOBILE_QUICK_PILL_ACTIVE_CLASS = "bg-foreground text-background font-semibold"
 const MOBILE_QUICK_PILL_INACTIVE_CLASS =
-  "bg-secondary text-muted-foreground font-medium hover:bg-accent hover:text-foreground"
+  "bg-surface-subtle text-foreground font-medium hover:bg-hover"
 
 const MOBILE_GHOST_PILL_ACTIVE_CLASS = "border-foreground bg-secondary text-foreground font-medium"
 const MOBILE_GHOST_PILL_INACTIVE_CLASS =

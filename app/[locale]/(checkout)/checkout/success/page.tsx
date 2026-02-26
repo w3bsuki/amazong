@@ -46,15 +46,13 @@ export default async function Page({ params, searchParams }: CheckoutSuccessPage
   } = await supabase.auth.getUser()
 
   if (authError || !user) {
-    redirect({
-      href: {
-        pathname: "/auth/login",
-        query: {
-          next: sessionId
-            ? `/checkout/success?session_id=${encodeURIComponent(sessionId)}`
-            : "/checkout",
-        },
-      },
+    const next = encodeURIComponent(
+      sessionId
+        ? `/checkout/success?session_id=${encodeURIComponent(sessionId)}`
+        : "/checkout/success"
+    )
+    return redirect({
+      href: `/auth/login?next=${next}`,
       locale,
     })
   }

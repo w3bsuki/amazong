@@ -2,3 +2,16 @@
 .pswp--treido .pswp__bg {
   background: var(--color-background) !important;
 }
+
+/* Hide Next.js dev indicator bubble in local dev so mobile UI audits are not polluted. */
+button[aria-label="Open Next.js Dev Tools"] {
+  display: none !important;
+}
+
+/* Next 16 devtools/error overlay is rendered inside a <nextjs-portal> host. */
+nextjs-portal,
+[data-nextjs-dev-overlay],
+[data-nextjs-dialog-overlay],
+[data-nextjs-toast] {
+  display: none !important;
+}

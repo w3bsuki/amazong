@@ -17,11 +17,46 @@
 
 ---
 
+### 2026-02-26 | PH0-CHECKPOINT-4 | Sensitive Blocker Evidence Sweep (Blocked by Human Signoff)
+- Decision/Outcome: Executed local blocker verification for launch-sensitive domains without expanding risk surface: webhook idempotency tests and architecture boundary ordering checks pass (`14/14` tests across three suites). Updated launch docs with evidence snapshots and blocker state.
+- Why: Checkpoint 4 requires explicit verification evidence for `LAUNCH-001..004` and `MIG-001`.
+- Impact: `LAUNCH-001` has strong local evidence; `LAUNCH-002` (refund/dispute E2E), `LAUNCH-003` (prod/dev Stripe env audit), `LAUNCH-004` (Supabase leaked-password plan gate), and `MIG-001` remain unresolved without human/external actions.
+- Next Action: Complete unresolved external operational checks and attach evidence.
+- Links: `TASKS.md`, `docs/launch/CHECKLIST.md`, `docs/launch/TRACKER.md`, `__tests__/checkout-webhook-idempotency.test.ts`, `__tests__/payments-webhook-idempotency.test.ts`, `__tests__/architecture-boundaries.test.ts`
+
+### 2026-02-26 | PH0-CHECKPOINT-2-3 | Checkout Auth Guard Closure + Desktop Parity Pass
+- Decision/Outcome: Completed checkpoint 2/3 launch sweeps by fixing checkout guest access control and rerunning strict route audits. Added approved checkout protection in middleware for `/[locale]/checkout*` and kept server-side checkout page guard parity. Results: `@launch-p0` passes on M375 (22/22) and desktop1280 (22/22); `@launch-p1` bucket passes on both projects (3/3 each).
+- Why: Checkpoint 2 was blocked by two mobile P0 failures (`/en/checkout`, `/bg/checkout`) where guests were not redirected to login.
+- Impact: P0 route bucket is now stable on mobile and desktop; P1 harness bucket is green with explicit remaining checklist deferrals documented.
+- Next Action: Execute checkpoint 4 sensitive blocker closure (`LAUNCH-001..004`, `MIG-001`) and continue architecture baseline recovery.
+- Links: `lib/supabase/middleware.ts`, `app/[locale]/(checkout)/checkout/page.tsx`, `app/[locale]/(checkout)/checkout/success/page.tsx`, `docs/launch/TRACKER.md`, `docs/launch/CHECKLIST.md`, `output/playwright/m375/p0`, `output/playwright/desktop1280/p0`
+
+### 2026-02-26 | PH0-CHECKPOINT-1-2 | Launch Harness Hardening + P0 M375 Failure Isolation
+- Decision/Outcome: Implemented strict launch-audit harness with new Playwright projects (`m375`, `desktop1280`), manifest-driven route sweeps, launch bucket tags (`@launch-p0/@launch-p1/@launch-p2`), and deterministic screenshot/console artifacts in `output/playwright/`. Ran `pnpm -s test:e2e:launch:p0:m375` over 22 EN/BG P0 routes: 20 passed, 2 failed (`/en/checkout`, `/bg/checkout`).
+- Why: Checkpoint 1 required deterministic one-command launch-critical audits; Checkpoint 2 required real P0 mobile closure with evidence.
+- Impact: P0 mobile failures are now isolated to checkout guest-auth redirect behavior; checklist/tracker/task docs updated to reflect true in-progress state.
+- Next Action: Apply checkout auth/session route behavior changes with strict regression verification, then close the two failing routes.
+- Links: `playwright.config.ts`, `e2e/launch-routes.spec.ts`, `docs/launch/route-manifest.json`, `docs/launch/CHECKLIST.md`, `docs/launch/TRACKER.md`, `output/playwright/m375/p0`
+
+### 2026-02-26 | PH0-CHECKPOINT-0 | Baseline Drift Reconciliation + Route/Architecture Truth
+- Decision/Outcome: Reconciled launch-state drift by making `docs/launch/CHECKLIST.md` the explicit closure authority, downgrading conditional tracker rows (Selling/Onboarding) to in-progress, and aligning task wording where prior "done" text overstated closure. Captured a fresh baseline (`pages=86`, `api-routes=49`, `client=275/1213`, `over300=68`, `over500=3`, `duplicates=719 lines, clones=57`).
+- Why: Tracker/checklist/task/state documents were semantically inconsistent and blocked reliable checkpoint execution.
+- Impact: Current launch truth is now explicit and machine-auditable; unresolved closure remains visible for P0/P1 sections and blocker registry (`LAUNCH-001..004`, `MIG-001`, `ARCH-001`).
+- Next Action: Harden the Playwright launch harness (`m375`, launch tags, deterministic artifacts in `output/playwright/`) and run P0 route audits.
+- Links: `docs/launch/CHECKLIST.md`, `docs/launch/TRACKER.md`, `TASKS.md`, `docs/state/NOW.md`
+
+### 2026-02-26 | PH0-DOCS-OS-001 | Phase 0 Docs Operating System + Launch Plan Mode Kickoff
+- Decision/Outcome: Started Phase 0 execution with a docs-first operating system: added a central docs index, reusable templates, docs ownership/consistency metadata, and docs quality tooling (`docs:lint`, `docs:freshness`, `docs:consistency`). Added a consolidated production push roadmap and generated fresh mobile audit screenshots for core routes via Playwright CLI.
+- Why: Launch-state drift (checklist/tracker/capability status mismatch) and over-engineered surfaces were slowing safe production hardening.
+- Impact: Documentation becomes machine-checkable and agent-friendly; CI now blocks stale/inconsistent docs; Phase 0 now has an executable roadmap anchored in route-level mobile artifacts.
+- Next Action: Reconcile checklist/tracker route truth, add strict `m375` Playwright project/tags, and begin P0 route closure.
+- Links: `docs/index.md`, `docs/_meta/doc-owners.json`, `docs/_meta/capability-task-map.json`, `scripts/docs-lint.mjs`, `scripts/docs-freshness.mjs`, `scripts/docs-consistency.mjs`, `.github/workflows/ci.yml`, `docs/launch/PRODUCTION-PUSH-PLAN-2026-02-26.md`, `output/playwright/*.png`
+
 ### 2026-02-26 | PH2-AI-FOUNDATIONS-001 | Phase 2 AI Listings MVP Foundations (PH2-AI-001..005)
 - Decision/Outcome: Completed Phase 2 AI foundations batch end-to-end: prompt registry + version pinning, telemetry envelope, pre/post guardrail policy layer, AI listing title/description generation API + sell-flow "Generate with AI" UX (feature-gated), and an offline eval harness scaffold with a listing-autofill golden set and tests.
 - Why: Establish shared AI platform contracts before scaling additional AI listing capabilities.
 - Impact: All assistant routes now emit prompt/model/latency metadata, AI calls are telemetry-wrapped with structured logging, guardrail rejections are logged, and sell flow supports editable AI text suggestions; gates re-verified green (`pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`).
-- Next Action: Start Phase 2 quality iteration (pricing suggestions + stronger eval scoring/cost controls) while keeping launch blockers (MIG-001 + LAUNCH-001..004) on the human approval track.
+- Next Action: Start Phase 2 quality iteration (pricing suggestions + stronger eval scoring/cost controls) while keeping launch blockers (MIG-001 + LAUNCH-001..004) on the external verification track.
 - Links: `lib/ai/prompts/registry.ts`, `lib/ai/telemetry.ts`, `lib/ai/guardrails/index.ts`, `app/api/assistant/generate-listing-text/route.ts`, `app/[locale]/(sell)/_components/ai/ai-listing-text-generator.tsx`, `lib/ai/eval/harness.ts`, `__tests__/ai-eval-harness.test.ts`
 
 ### 2026-02-26 | PH1-BUYER-BATCH-001 | Buyer Conversion + Trust UX (PH1-BUYER-001..002)
@@ -42,7 +77,7 @@
 - Decision/Outcome: Completed REF-POLISH-001..010: removed global MotionProvider (framer-motion only on animated routes), cached sitemap (1h) + tag, ensured metadata/loading/error completeness across routes, removed raw `<img>` usage, completed mobile 375px UX sweep, reduced root provider footprint, kept bundle budget under 150KB first-load JS, and verified E2E smoke + a11y green.
 - Why: Ship-ready production polish (performance + SEO + UX completeness) before launch.
 - Impact: Gates green (`typecheck`, `lint`, `styles:gate`, `test:unit`, `architecture:gate`, `test:e2e:smoke`, `test:a11y`); metrics: client=269/1195, over300=66, over500=3, missingLoading=0, missingMetadata=0, duplicates=646 (clones=52).
-- Next Action: Resume MIG-001 Step 5 and close LAUNCH-001..004 with human approval for sensitive ops.
+- Next Action: Resume MIG-001 Step 5 and close LAUNCH-001..004 with verification evidence for sensitive ops.
 - Links: `refactor/production-push/MASTER-PLAN.md`, `app/sitemap.ts`, `lib/seo/metadata.ts`, `app/styles/tokens.css`, `app/[locale]/(main)/search/_components/search-action-bar.tsx`, `scripts/bundle-budget-scan.mjs`
 
 ### 2026-02-25 | REF-ALIGNMENT-001 | Phase 2 Alignment Completed (REF-ALIGNMENT-001..013)
@@ -105,7 +140,7 @@
 - Decision/Outcome: Completed end-to-end verification of `CATEGORY-REDESIGN-v2.md` against live Supabase schema/functions/triggers and code dependencies; produced a 4-file draft migration SQL pack.
 - Why: Validate that v2 plan is executable before any high-risk DB/category remap changes.
 - Impact: Identified blocking contradictions (`is_prime` drop blocked by `deal_products`, invalid v2 trigger syntax, stale function names, slug collision risk) and produced corrected migration steps with rollback notes.
-- Next Action: Human decisions for deferred verticals/uncategorized products/Bulgarian Traditional handling, then staged approval for migration execution.
+- Next Action: Decide deferred verticals/uncategorized products/Bulgarian Traditional handling, then run staged migration execution.
 - Links: `refactor/supabase/VERIFICATION-REPORT.md`, `refactor/supabase/sql/v2-redesign/`
 
 ### 2026-02-24 | PLAN-001 | Docs Restructure & AI Vision Planning

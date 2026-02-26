@@ -1,0 +1,15 @@
+project=desktop1280
+bucket=p0
+route_id=home-bg
+route_path=/bg
+expectation=public-ok
+manifest_version=1
+manifest_updated_at=2026-02-26
+response_status=200
+final_url=http://127.0.0.1:3000/bg
+
+[console.info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold (http://127.0.0.1:3000/_next/static/chunks/72e19_next_dist_01c8bd1e._.js:2297:27)
+[console.log] [HMR] connected (http://127.0.0.1:3000/_next/static/chunks/72e19_next_dist_01c8bd1e._.js:2297:27)
+[console.warning] GoTrueClient@sb-dhtzybnkvpimmomzwrce-auth-token:1 (2.91.0) 2026-02-26T20:41:30.270Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key. (http://127.0.0.1:3000/_next/static/chunks/72e19_next_dist_01c8bd1e._.js:2297:27)
+[console.log] [Fast Refresh] rebuilding (http://127.0.0.1:3000/_next/static/chunks/72e19_next_dist_01c8bd1e._.js:2297:27)
+[console.log] [Fast Refresh] done in 112ms (http://127.0.0.1:3000/_next/static/chunks/72e19_next_dist_01c8bd1e._.js:2297:27)

@@ -1,29 +1,27 @@
 "use client"
 
-import { ChevronRight } from "lucide-react"
+import { LayoutGrid } from "lucide-react"
 
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { getCategoryIcon } from "@/components/shared/category-icons"
+import { getCategoryIcon } from "../category/category-icons"
 
 interface MobileHomeCategoryIconGridProps {
-  title: string
   seeAllLabel: string
   categories: CategoryTreeNode[]
   getCategoryLabel: (category: CategoryTreeNode) => string
   maxItems?: number
-  onSelectCategory?: ((slug: string) => void) | undefined
+  onSelectCategory?: ((slug: string | null) => void) | undefined
   className?: string
   testId?: string
 }
 
 export function MobileHomeCategoryIconGrid({
-  title,
   seeAllLabel,
   categories,
   getCategoryLabel,
-  maxItems = 8,
+  maxItems = 5,
   onSelectCategory,
   className,
   testId,
@@ -37,27 +35,37 @@ export function MobileHomeCategoryIconGrid({
       className={cn("w-full px-4 pt-2", className)}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className="flex items-center justify-between gap-3 hidden">
-        <h2 className="text-reading font-semibold text-foreground">{title}</h2>
-        <Link
-          href="/categories"
-          className="inline-flex shrink-0 items-center gap-0.5 text-xs font-medium text-muted-foreground tap-transparent transition-colors hover:text-foreground active:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-        >
-          {seeAllLabel}
-          <ChevronRight size={14} aria-hidden="true" />
-        </Link>
-      </div>
-
       <div className="overflow-x-auto scrollbar-hide">
-        <div className="flex w-max min-w-full items-start gap-2 pr-4">
+        <div className="flex w-max min-w-full items-center gap-2 pr-4">
+          {onSelectCategory ? (
+            <button
+              type="button"
+              onClick={() => onSelectCategory(null)}
+              aria-label={seeAllLabel}
+              className="group flex shrink-0 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+            >
+              <span className="inline-flex size-(--size-category-tile) items-center justify-center rounded-full ring-1 ring-border-subtle bg-surface-subtle text-foreground transition-colors group-hover:bg-accent group-active:bg-accent">
+                <LayoutGrid size={20} aria-hidden="true" />
+              </span>
+            </button>
+          ) : (
+            <Link
+              href="/categories"
+              aria-label={seeAllLabel}
+              className="group flex shrink-0 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+            >
+              <span className="inline-flex size-(--size-category-tile) items-center justify-center rounded-full ring-1 ring-border-subtle bg-surface-subtle text-foreground transition-colors group-hover:bg-accent group-active:bg-accent">
+                <LayoutGrid size={20} aria-hidden="true" />
+              </span>
+            </Link>
+          )}
+
           {items.map((category) => {
             const label = getCategoryLabel(category)
             const content = (
-              <>
-                <span className="inline-flex size-(--size-category-tile) items-center justify-center rounded-full ring-1 ring-border-subtle bg-background text-muted-foreground transition-colors group-hover:text-foreground group-active:text-foreground">
-                  {getCategoryIcon(category.slug, { size: 24 })}
-                </span>
-              </>
+              <span className="inline-flex size-(--size-category-tile) items-center justify-center rounded-full ring-1 ring-border-subtle bg-surface-subtle text-foreground transition-colors group-hover:bg-accent group-active:bg-accent">
+                {getCategoryIcon(category.slug, { size: 20 })}
+              </span>
             )
 
             if (onSelectCategory) {
@@ -67,7 +75,7 @@ export function MobileHomeCategoryIconGrid({
                   type="button"
                   onClick={() => onSelectCategory(category.slug)}
                   aria-label={label}
-                  className="group flex shrink-0 flex-col items-center gap-1 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+                  className="group flex shrink-0 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
                 >
                   {content}
                 </button>
@@ -79,7 +87,7 @@ export function MobileHomeCategoryIconGrid({
                 key={category.id}
                 href={`/categories/${category.slug}`}
                 aria-label={label}
-                className="group flex shrink-0 flex-col items-center gap-1 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+                className="group flex shrink-0 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
               >
                 {content}
               </Link>

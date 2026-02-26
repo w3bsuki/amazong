@@ -29,16 +29,19 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
   - Context: `docs/features/checkout-payments.md`
   - Capability: Webhook idempotency + replay safety
   - Done: replay same `checkout.session.completed` event twice → second is no-op, order count unchanged
+  - Note (2026-02-26): local verification passed (`__tests__/checkout-webhook-idempotency.test.ts`, `__tests__/payments-webhook-idempotency.test.ts`, `__tests__/architecture-boundaries.test.ts`); production Stripe dashboard replay verification still pending.
 
 - [ ] **PH0-LAUNCH-002:** Test refund/dispute flow end-to-end
   - Context: `docs/features/checkout-payments.md`
   - Capability: Refund/dispute operational flow
   - Done: trigger refund from Stripe dashboard → order status updates → buyer notified
+  - Note (2026-02-26): no automated E2E refund/dispute verification available in-repo; requires manual Stripe + ops runbook execution.
 
 - [ ] **PH0-LAUNCH-003:** Verify Stripe environment separation (prod keys + webhook secrets)
   - Context: `docs/features/checkout-payments.md`, `docs/STACK.md`
   - Capability: Environment separation (dev/prod payments)
   - Done: prod and dev use separate Stripe accounts, no test keys in prod env
+  - Note (2026-02-26): requires human audit of deployed environment variables/secrets; cannot be proven from repository code alone.
 
 - [ ] **PH0-LAUNCH-004:** Enable leaked password protection + re-run Supabase Security Advisor
   - Context: `docs/features/auth.md`
@@ -52,17 +55,25 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
   - Context: `docs/features/sell-flow.md`
   - Capability: Sell flow quality and completion
   - Done: seller can list a product end-to-end with clear UX, image upload works, form validation helpful
+  - Note (2026-02-26): UX redesign is complete; launch checklist still has open authenticated flow verification items under Section 3.
 
 - [x] **PH0-FIX-003:** Account settings broken on mobile, incomplete on desktop
   - Context: `docs/features/auth.md`, `docs/DESIGN.md`
   - Capability: Account/profile reliability
   - Done: all settings accessible on mobile (375px), no overflow, no broken interactions
+  - Note (2026-02-26): mobile settings hardening is complete; broader Profile & Account launch checklist closure remains open.
+
+- [x] **PH0-FIX-004:** Enforce checkout guest auth guard on page routes (`/checkout`, `/checkout/success`)
+  - Context: `docs/features/checkout-payments.md`, `docs/launch/CHECKLIST.md`
+  - Capability: Checkout access control consistency (EN/BG)
+  - Approval (2026-02-26): Human approved auth/session route changes for checkout.
+  - Done: unauthenticated users are redirected to localized login with `next` return URL for checkout routes.
 
 ### 0.3 Trust/Compliance Hardening
 
 - [ ] **PH0-REFACTOR-001:** Domain 6 — lib/, actions/, api/ refactoring (auth/payment sensitive)
   - Context: `refactor/domains/06-lib-actions-api.md`
-  - BLOCKED: Contains payment/auth action refactors. Needs human approval before execution.
+  - BLOCKED: Contains payment/auth action refactors. Requires expanded verification coverage before execution.
   - Note (2026-02-23): Completed safe `lib/` hardening pass. Full gate passes.
   - Done: domain refactored per plan, verification passes, no auth/payment regressions
 
@@ -77,6 +88,28 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 - [x] **PH0-TRUST-003:** Verify product data sanity — no test/dummy listings
   - Done: audit shows only real listings, categories make sense
   - Finding (2026-02-26): dummy/test listings found only in `supabase/seed.sql` (local seed); no other repo-held production data sources contain dummy listings.
+
+### 0.4 Docs OS + Planmode Foundations
+
+- [x] **PH0-DOCS-001:** Introduce docs quality gates + metadata ownership map
+  - Context: `docs/index.md`, `docs/_meta/doc-owners.json`, `docs/_meta/capability-task-map.json`
+  - Capability: Documentation freshness + consistency enforcement
+  - Done: added docs tooling (`docs:lint`, `docs:freshness`, `docs:consistency`) and metadata ownership mapping
+
+- [x] **PH0-DOCS-002:** Add AI-friendly docs index + templates
+  - Context: `docs/index.md`, `docs/templates/*`, `AGENTS.md`
+  - Capability: Agent onboarding speed and progressive disclosure
+  - Done: docs index + canonical templates added and routed from AGENTS
+
+- [x] **PH0-DOCS-003:** Sync strategy/state/decision docs with current execution truth
+  - Context: `docs/state/NOW.md`, `docs/state/CHANGELOG.md`, `docs/strategy/CAPABILITY-MAP.md`, `docs/DECISIONS.md`
+  - Capability: Single source of truth for launch planning
+  - Done: corrected Phase 2 status drift and added decision entry for docs gate enforcement
+
+- [x] **PH0-AUDIT-001:** Generate fresh M375 core-route artifacts for planmode baseline
+  - Context: `output/playwright/*.png`, `docs/launch/PRODUCTION-PUSH-PLAN-2026-02-26.md`
+  - Capability: Mobile-first audit grounding for launch refactor
+  - Done: captured mobile screenshots for `/en`, `/en/search?q=bmw`, `/en/categories`, `/en/sell`, `/en/checkout`
 
 ### 0.5 UI/UX Polish — Inspiration Audit (ref: `designs/ui-ux-dream-weaver/`)
 
@@ -205,7 +238,7 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 - [x] **PH1-BUYER-001:** Buyer confirmation email on checkout completion
   - Context: `docs/features/checkout-payments.md`
   - Capability: Transactional email + trust communications
-  - Done: email sent with order summary, delivery estimate, seller info
+  - Done: order-confirmation payload + webhook trigger wired; provider delivery remains stubbed until transactional email integration is configured
 
 - [x] **PH1-BUYER-002:** PDP mobile seller bio surface
   - Context: `docs/features/product-cards.md`, `docs/DESIGN.md`

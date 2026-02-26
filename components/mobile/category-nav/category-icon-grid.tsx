@@ -11,15 +11,15 @@ import { Input } from "@/components/ui/input"
 import { useTranslations } from "next-intl"
 
 const CATEGORY_CARD_CLASS =
-  "group flex flex-col items-center justify-center gap-2 rounded-xl border border-border-subtle bg-background p-4 text-center tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+  "group flex flex-col items-center justify-start gap-1.5 rounded-xl px-1 py-2 text-center tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 
 function CategoryIconTile({ slug }: { slug: string }) {
   return (
     <span
-      className="inline-flex size-12 items-center justify-center rounded-xl bg-accent text-primary"
+      className="inline-flex size-(--size-category-tile) items-center justify-center rounded-full ring-1 ring-border-subtle bg-surface-subtle text-muted-foreground transition-colors group-hover:text-foreground group-active:text-foreground"
       aria-hidden="true"
     >
-      {getCategoryIcon(slug, { size: 24 })}
+      {getCategoryIcon(slug, { size: 20 })}
     </span>
   )
 }
@@ -79,7 +79,7 @@ export function CategoryIconGrid({ locale, categories, className, testId }: Cate
             {normalizedQuery ? tDrawer("noMatches") : tDrawer("noCategories")}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <div className="grid grid-cols-3 gap-x-2 gap-y-3 sm:grid-cols-4">
             {filteredCategories.map((category) => {
               const label = tCategories("shortName", {
                 slug: getCategorySlugKey(category.slug),
@@ -94,7 +94,7 @@ export function CategoryIconGrid({ locale, categories, className, testId }: Cate
                   aria-label={label}
                 >
                   <CategoryIconTile slug={category.slug} />
-                  <span className="line-clamp-2 text-compact font-semibold leading-tight text-foreground">
+                  <span className="line-clamp-2 text-tiny font-medium leading-tight text-foreground">
                     {label}
                   </span>
                 </Link>

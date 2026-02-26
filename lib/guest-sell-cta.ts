@@ -13,13 +13,9 @@ export function stripLocalePrefix(pathname: string): string {
 }
 
 export function isGuestSellCtaRouteEligible(pathname: string): boolean {
-  const normalized = stripLocalePrefix(pathname)
-
-  if (normalized === "/") return true
-  if (normalized === "/search" || normalized.startsWith("/search/")) return true
-  if (normalized === "/categories" || normalized.startsWith("/categories/")) return true
-
-  return false
+  const pathOnly = pathname.split("?")[0] ?? pathname
+  const normalized = stripLocalePrefix(pathOnly)
+  return normalized === "/search" || normalized.startsWith("/search/")
 }
 
 export function parseDismissedAt(rawValue: string | null): number | null {

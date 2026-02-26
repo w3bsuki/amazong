@@ -1,0 +1,36 @@
+{
+  "updated_at": "2026-02-26",
+  "checks": [
+    {
+      "capability": "Transactional email + trust communications",
+      "tasks": ["PH1-BUYER-001"],
+      "minStatus": "Scaffolded"
+    },
+    {
+      "capability": "AI gateway (Vercel AI SDK multi-provider)",
+      "tasks": ["PH2-AI-002"],
+      "minStatus": "Scaffolded"
+    },
+    {
+      "capability": "Prompt registry + versioning",
+      "tasks": ["PH2-AI-001"],
+      "minStatus": "MVP"
+    },
+    {
+      "capability": "AI description/title generation",
+      "tasks": ["PH2-AI-004"],
+      "minStatus": "MVP"
+    },
+    {
+      "capability": "AI quality eval harness",
+      "tasks": ["PH2-AI-005"],
+      "minStatus": "Scaffolded"
+    },
+    {
+      "capability": "AI safety/policy guardrails",
+      "tasks": ["PH2-AI-003"],
+      "minStatus": "MVP"
+    }
+  ]
+}
+

@@ -7,6 +7,7 @@ import { Suspense, type ReactNode } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import LocaleProviders from './locale-providers';
 import { localeStaticParams } from "@/lib/next/static-params"
+import { DisableNextDevIndicator } from "./_components/disable-next-dev-indicator"
 
 // Generate static params for all supported locales
 // Required in Next.js 16+ for dynamic route segments
@@ -125,6 +126,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={inter.variable} suppressHydrationWarning>
       <body className="bg-background min-h-screen font-sans">
+        <DisableNextDevIndicator />
         <Suspense fallback={null}>
           <LocaleProviders locale={locale}>
             {children}

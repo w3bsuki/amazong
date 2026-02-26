@@ -1,6 +1,7 @@
 # Launch Audit Tracker
 
 > Orchestrator's tracking file. Updated after each Playwright audit.
+> This file records audit evidence. Launch closure status is owned by `docs/launch/CHECKLIST.md`.
 
 ## Status Summary
 
@@ -8,23 +9,76 @@
 |---|---------|----------|------------|-------|-------|-------|
 | 1 | Infrastructure & Gates | P0 | ✅ | ✅ | 10 | All 4 gates + build green |
 | 2 | Auth | P0 | ✅ | ✅ | 9 | All flows work, i18n complete, auth guards solid |
-| 3 | Selling | P0 | ✅ | ✅ | 7 | Auth guard + i18n solid; needs auth session to test form |
+| 3 | Selling | P0 | 🔄 | 🔄 | 7 | Conditional pass only; auth-session coverage + checklist items remain open |
 | 4 | Product Display (PDP) | P0 | ✅ | ✅ | 8 | Full data renders, i18n complete, share works; minor 404 body text |
 | 5 | Search & Browse | P0 | ✅ | ✅ | 9 | FIX-001 fixed, search works, i18n complete, pagination, empty states |
-| 6 | Checkout & Payments | P0 | ✅ | ✅ | 8 | Code excellent, auth guard + i18n work; cart error from seed data |
+| 6 | Checkout & Payments | P0 | 🔄 | 🔄 | 8 | Guest checkout redirect fixed on EN/BG in strict harness; payment success/refund/dispute flows still pending |
 | 7 | Orders | P0 | ✅ | ✅ | 9 | Auth guards, typed errors, buyer/seller pagination |
 | 8 | Profile & Account | P1 | ✅ | ✅ | 9 | Auth guard on settings, localized metadata, not-found body content |
 | 9 | Cart & Wishlist | P1 | ✅ | ✅ | 8 | Pages load, titles localized, wishlist heading translated, standard header |
-| 10 | Onboarding | P1 | ✅ | ✅ | 8 | Auth guard, localized metadata (no double suffix), 5-step wizard |
+| 10 | Onboarding | P1 | 🔄 | 🔄 | 8 | Conditional pass only; first-signup flow + checklist items remain open |
 | 11 | Navigation & Layout | P1 | ✅ | ✅ | 9 | i18n routing, tab bar localized, not-found body content, BG 404 translated |
 | 12 | Business Dashboard | P2 | ⬜ | ⬜ | — | |
 | 13 | Plans & Subscriptions | P2 | ⬜ | ⬜ | — | |
 | 14 | Chat & Messaging | P2 | ⬜ | ⬜ | — | |
 | 15 | Support & Legal | P2 | ⬜ | ⬜ | — | |
 
+Checklist closure snapshot (2026-02-26): P0 fully closed 3/7 (1,2,5), P1 fully closed 0/4.
+
+P1 stabilization decision (2026-02-26):
+- Resolved in harness scope: `/en|bg/auth/forgot-password`, `/en/account/profile` guest redirect, `/bg/search` route health (mobile + desktop parity pass).
+- Explicitly deferred: remaining checklist items in Sections 8-11 that require authenticated workflow execution, seeded user data variance, or non-launch-critical UX polish (desktop sidebar, theme toggle, loading-state completeness, full cart/wishlist mutations).
+
 ## Audit Log
 
 <!-- Append after each audit session. Format below. -->
+
+### Launch Harness P0 Mobile Sweep (M375) — 2026-02-26
+**Codex pass:** Added strict launch harness (`m375`, route manifest, `@launch-p0/@launch-p1/@launch-p2` tags, deterministic screenshot+console artifacts under `output/playwright/`).
+**Playwright audit:** Ran `pnpm -s test:e2e:launch:p0:m375` against 22 EN/BG P0 routes from manifest.
+- Result counts: 20 pass / 2 fail.
+- Failing routes: `/en/checkout`, `/bg/checkout`.
+- Failure mode: unauthenticated users remain on checkout (`200`) instead of redirecting to login.
+- Artifacts: `output/playwright/m375/p0/*.png` and `output/playwright/m375/p0/*.console.log`.
+**Result:** FAIL (P0 closure blocked by checkout auth guard behavior)
+**Action:** Keep Section 6 in progress; apply auth/session route fixes with strict regression verification.
+
+### Launch Harness P0 Mobile Re-run (M375) — 2026-02-26
+**Codex pass:** Applied approved auth/session hardening for checkout guest access and added middleware-level checkout protection for deterministic redirect behavior.
+**Playwright audit:** Re-ran `pnpm -s test:e2e:launch:p0:m375` on the same 22 EN/BG P0 routes.
+- Result counts: 22 pass / 0 fail.
+- Checkout parity: `/en/checkout` and `/bg/checkout` now redirect guests to localized login with `next` parameter.
+- Artifacts: refreshed under `output/playwright/m375/p0/`.
+**Result:** PASS
+**Action:** Move to desktop parity.
+
+### Launch Harness P0 Desktop Parity (1280) — 2026-02-26
+**Playwright audit:** Ran `node scripts/run-playwright.mjs test e2e/launch-routes.spec.ts --project=desktop1280 --grep @launch-p0`.
+- Result counts: 22 pass / 0 fail.
+- Artifacts: `output/playwright/desktop1280/p0/`.
+**Result:** PASS
+**Action:** P0 route bucket stable on desktop parity.
+
+### Launch Harness P1 Stabilization Sweep — 2026-02-26
+**Playwright audit:** Ran `@launch-p1` bucket on both `m375` and `desktop1280`.
+- M375: 3 pass / 0 fail.
+- Desktop1280: 3 pass / 0 fail.
+- Covered routes: forgot-password, account-profile guest redirect, BG search route.
+**Result:** PASS (bucket scope)
+**Action:** Remaining P1 checklist items explicitly deferred with rationale in tracker snapshot.
+
+### Sensitive Blocker Evidence Sweep — 2026-02-26
+**Verification run:**
+- `pnpm -s test:unit:node __tests__/checkout-webhook-idempotency.test.ts __tests__/payments-webhook-idempotency.test.ts` → 4/4 pass.
+- `pnpm -s test:unit:node __tests__/architecture-boundaries.test.ts` → 10/10 pass (includes webhook signature-before-admin-client ordering invariant).
+**Findings:**
+- `LAUNCH-001`: local replay/idempotency invariants are green in test coverage.
+- `LAUNCH-002`: refund/dispute E2E remains manual/external; no repo-native automated closure.
+- `LAUNCH-003`: prod/dev Stripe env separation requires deployed secret/account audit (human-only evidence).
+- `LAUNCH-004`: still blocked by Supabase plan restriction (`password_hibp_enabled`).
+- `MIG-001`: migration sequencing completion still pending approved DB execution.
+**Result:** BLOCKED (external/manual verification still required for unresolved blockers)
+**Action:** Complete unresolved external checks before release gate.
 
 ### Section 1: Infrastructure & Gates — 2026-02-24
 **Codex pass:** Fixed lint warnings in test mocks, removed stray console.error, fixed build prerender failures, widened category attribute typing, suppressed known schema mismatch logs.

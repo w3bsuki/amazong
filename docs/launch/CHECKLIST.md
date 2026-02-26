@@ -3,6 +3,8 @@
 > Single source of truth for launch readiness. Organized by user journey.
 > Status: ⬜ not started · 🔄 in progress · ✅ pass · ❌ fail (needs fix)
 > Priority: P0 = must launch · P1 = should launch · P2 = can soft-launch without
+> Readiness authority: checkbox state in this file. `docs/launch/TRACKER.md` is audit evidence, not closure status.
+> Snapshot (2026-02-26): P0 fully closed sections `3/7` (1, 2, 5). P1 fully closed sections `0/4`.
 
 ---
 
@@ -45,7 +47,7 @@
 
 **Scope:** `app/[locale]/(sell)/`, `app/[locale]/(sell)/_actions/`, `app/[locale]/(sell)/_components/`, `app/[locale]/(sell)/_lib/`, `app/[locale]/(account)/account/selling/`, `app/actions/products-*.ts`, `lib/sell/`, `app/api/upload-image/`
 
-### 4. Product Display (PDP) ✅
+### 4. Product Display (PDP) 🔄
 - [x] PDP loads — title, description, price, images, seller info
 - [ ] Image gallery — swipe on mobile, click on desktop, zoom
 - [x] Seller info section — name, avatar, rating, link to profile
@@ -82,9 +84,11 @@
 - [x] Redirect to login if unauthenticated
 - [ ] Mobile (375px) + Desktop (1280px) layouts clean
 
+Launch harness note (2026-02-26): strict route audit now passes checkout guest redirect parity on both locales (`/en/checkout`, `/bg/checkout`) in M375 + desktop buckets.
+
 **Scope:** `app/[locale]/(checkout)/`, `app/[locale]/(checkout)/_actions/`, `app/[locale]/(checkout)/_components/`, `app/api/checkout/`, `app/api/payments/`, `app/actions/payments.ts`, `lib/stripe.ts`, `lib/stripe-connect.ts`
 
-### 7. Orders ✅
+### 7. Orders 🔄
 - [x] Buyer order list — shows orders with status, pagination
 - [x] Seller order list (sales) — shows incoming orders
 - [x] Order detail page — full order info, items, status, tracking
@@ -99,7 +103,7 @@
 
 ## P1 — Should Work
 
-### 8. Profile & Account ✅
+### 8. Profile & Account 🔄
 - [ ] View own profile — page loads, shows user info, listings, reviews
 - [ ] Edit profile — name, bio, avatar upload
 - [ ] Account settings — accessible, all sections load
@@ -111,7 +115,7 @@
 
 **Scope:** `app/[locale]/(account)/`, `app/[locale]/(account)/_components/`, `app/[locale]/(account)/account/`, `app/[locale]/[username]/`, `app/actions/profile-*.ts`, `app/actions/username-*.ts`, `lib/avatar-palettes.ts`
 
-### 9. Cart & Wishlist ✅
+### 9. Cart & Wishlist 🔄
 - [ ] Add to cart — product added, badge count updates
 - [x] Cart page — shows items, quantities, total price
 - [ ] Remove from cart — item removed, totals update
@@ -135,7 +139,7 @@
 
 **Scope:** `app/[locale]/(onboarding)/`, `app/[locale]/(onboarding)/onboarding/`, `app/actions/onboarding.ts`
 
-### 11. Navigation & Layout ✅
+### 11. Navigation & Layout 🔄
 - [x] Mobile bottom tab bar — correct routes, active states, badge counts
 - [ ] Desktop sidebar — all links work, active states
 - [x] Header — search, user menu, cart icon, notifications
@@ -199,13 +203,22 @@
 
 ## Launch Blockers (from TASKS.md)
 
-> These require human approval. Tracked separately.
+> These require explicit verification evidence. Tracked separately.
 
 - [ ] **LAUNCH-001:** Stripe webhook idempotency
 - [ ] **LAUNCH-002:** Refund/dispute flow
 - [ ] **LAUNCH-003:** Stripe env separation (prod keys)
 - [ ] **LAUNCH-004:** Leaked password protection + Supabase Security Advisor
+- [ ] **MIG-001:** Finalize v2 migration Step 5 (`deal_products` view / `is_prime` drop sequencing)
+- [ ] **ARCH-001:** Return architecture metrics to baseline (`client-boundary`, `over300`, `duplicates`)
+
+Blocker evidence snapshot (2026-02-26):
+- `LAUNCH-001`: Local idempotency checks pass in unit coverage (`checkout-webhook-idempotency`, `payments-webhook-idempotency`, and architecture boundary ordering tests); production replay verification still required.
+- `LAUNCH-002`: Requires manual Stripe refund/dispute E2E verification (not fully automatable from repo-only context).
+- `LAUNCH-003`: Requires human verification of deployed dev/prod Stripe keys + webhook secret separation.
+- `LAUNCH-004`: Remains externally blocked by Supabase plan requirement for leaked password protection.
+- `MIG-001`: Remains blocked pending approved DB migration sequencing execution.
 
 ---
 
-*Last updated: 2026-02-24*
+*Last updated: 2026-02-26*

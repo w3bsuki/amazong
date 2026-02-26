@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { ArrowLeft, ChevronRight, SlidersHorizontal as FiltersIcon } from "lucide-react"
+import { ArrowLeft, ChevronRight, LayoutGrid, SlidersHorizontal as FiltersIcon } from "lucide-react"
 import { Link } from "@/i18n/routing"
 import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
@@ -11,6 +11,8 @@ import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 import { getCategoryName, getCategorySlugKey } from "@/lib/data/categories/display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useHeader } from "@/components/providers/header-context"
+import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
+import { getCategoryIcon } from "@/components/shared/category-icons"
 import {
   SmartRail,
   type SmartRailAction,
@@ -23,7 +25,6 @@ import { MobileHomeFeed } from "./mobile-home/mobile-home-feed"
 import { useMobileHomeCategoryNav } from "./mobile-home/use-mobile-home-category-nav"
 import { useHomeCityStorage } from "./mobile-home/use-home-city-storage"
 import { MobileHomeBrowseOptionsSheet } from "./mobile-home/mobile-home-browse-options-sheet"
-import { MobileHomeCategoryIconGrid } from "./mobile-home/mobile-home-category-icon-grid"
 import { useMobileHomeL2Options } from "./mobile-home/use-mobile-home-l2-options"
 
 interface MobileHomeProps {
@@ -109,6 +110,7 @@ export function MobileHome({
   })
   useHomeCityStorage(city, setCity)
 
+  const categoryDrawer = useCategoryDrawerOptional()
   const { setHeaderState } = useHeader()
 
   useEffect(() => {
@@ -198,6 +200,7 @@ export function MobileHome({
   }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug, setScope, setNearby, setFilters])
 
   const railAriaLabel = tV4("quickJump.label")
+  const homeDiscoveryScopes: HomeDiscoveryScope[] = ["forYou", "newest", "promoted", "deals"]
   const feedTransitionState = isLoading && products.length === 0 ? "loading" : products.length === 0 ? "empty" : "results"
   const feedTransitionKey = [
     scope,
@@ -316,29 +319,46 @@ export function MobileHome({
       <div className="mx-auto w-full max-w-screen-md pb-tabbar-safe">
         {!activeCategorySlug ? (
           <>
-            <MobileHomeCategoryIconGrid
-              title={tV4("categories.title")}
-              seeAllLabel={tV4("actions.seeAll")}
-              categories={categories}
-              getCategoryLabel={getCategoryLabel}
-              onSelectCategory={(slug) => handlePrimaryTab(slug)}
-              testId="home-v4-category-icon-grid"
-            />
+            <div
+              className="flex items-center gap-3 overflow-x-auto no-scrollbar border-b border-border-subtle px-4 py-2.5"
+              data-testid="home-v4-categories-row"
+            >
+              {categoryDrawer ? (
+                <button
+                  type="button"
+                  onClick={() => categoryDrawer.openRoot()}
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground ring-1 ring-border-subtle ring-offset-2 ring-offset-background tap-transparent transition-colors hover:bg-accent active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={tCategories("title")}
+                  data-testid="home-v4-category-drawer-btn"
+                >
+                  <LayoutGrid size={20} strokeWidth={1.5} aria-hidden="true" />
+                </button>
+              ) : null}
+              {rootCategoryChips.slice(0, 8).map((category) => {
+                const label = getCategoryLabel(category)
+                return (
+                  <button
+                    key={category.slug}
+                    type="button"
+                    onClick={() => handlePrimaryTab(category.slug)}
+                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground ring-1 ring-border-subtle ring-offset-2 ring-offset-background tap-transparent transition-colors hover:bg-accent active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={label}
+                    title={label}
+                    data-testid={`home-v4-category-icon-${category.slug}`}
+                  >
+                    {getCategoryIcon(category.slug, { size: 20, strokeWidth: 1.5 })}
+                  </button>
+                )
+              })}
+            </div>
 
             {/* Discovery scope tabs (with filter) */}
             <DiscoveryRail
               activeScope={scope}
               onScopeChange={handleScopeChange}
               t={tV4}
-              trailingAction={{
-                label: tV4("actions.filter"),
-                icon: <FiltersIcon size={18} aria-hidden="true" />,
-                active: hasActiveFilters,
-                badgeCount: activeFilterCount,
-                onSelect: () => setFilterOpen(true),
-                testId: "home-v4-filter-trigger",
-              }}
-              className="border-t border-border"
+              scopes={homeDiscoveryScopes}
+              className="border-t border-border-subtle"
               testId="home-v4-scope"
             />
           </>
@@ -362,6 +382,7 @@ export function MobileHome({
               activeScope={scope}
               onScopeChange={handleScopeChange}
               t={tV4}
+              scopes={homeDiscoveryScopes}
               testId="home-v4-scope"
             />
           </div>

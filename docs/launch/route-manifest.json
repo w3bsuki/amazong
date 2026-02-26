@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "updatedAt": "2026-02-26",
+  "description": "Launch route audit manifest grouped by priority bucket.",
+  "buckets": {
+    "p0": [
+      {
+        "id": "home",
+        "title": "Home",
+        "path": "/en",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "home-bg",
+        "title": "Home BG",
+        "path": "/bg",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "search",
+        "title": "Search",
+        "path": "/en/search?q=bmw",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "search-bg",
+        "title": "Search BG",
+        "path": "/bg/search?q=%D0%BA%D0%BE%D0%BB%D0%B0",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "categories",
+        "title": "Categories",
+        "path": "/en/categories",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "categories-bg",
+        "title": "Categories BG",
+        "path": "/bg/categories",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "auth-login",
+        "title": "Auth Login",
+        "path": "/en/auth/login",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "auth-login-bg",
+        "title": "Auth Login BG",
+        "path": "/bg/auth/login",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "auth-sign-up",
+        "title": "Auth Sign-Up",
+        "path": "/en/auth/sign-up",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "auth-sign-up-bg",
+        "title": "Auth Sign-Up BG",
+        "path": "/bg/auth/sign-up",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "sell",
+        "title": "Sell",
+        "path": "/en/sell",
+        "expectation": "sell-guest-safe"
+      },
+      {
+        "id": "sell-bg",
+        "title": "Sell BG",
+        "path": "/bg/sell",
+        "expectation": "sell-guest-safe"
+      },
+      {
+        "id": "cart",
+        "title": "Cart",
+        "path": "/en/cart",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "cart-bg",
+        "title": "Cart BG",
+        "path": "/bg/cart",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "checkout",
+        "title": "Checkout",
+        "path": "/en/checkout",
+        "expectation": "redirect-login"
+      },
+      {
+        "id": "checkout-bg",
+        "title": "Checkout BG",
+        "path": "/bg/checkout",
+        "expectation": "redirect-login"
+      },
+      {
+        "id": "account-orders",
+        "title": "Account Orders",
+        "path": "/en/account/orders",
+        "expectation": "redirect-login"
+      },
+      {
+        "id": "account-orders-bg",
+        "title": "Account Orders BG",
+        "path": "/bg/account/orders",
+        "expectation": "redirect-login"
+      },
+      {
+        "id": "account-sales",
+        "title": "Account Sales",
+        "path": "/en/account/sales",
+        "expectation": "redirect-login"
+      },
+      {
+        "id": "account-sales-bg",
+        "title": "Account Sales BG",
+        "path": "/bg/account/sales",
+        "expectation": "redirect-login"
+      },
+      {
+        "id": "pdp-sample",
+        "title": "PDP Sample",
+        "path": "/en/tech_haven/iphone-15-pro-max",
+        "expectation": "pdp-or-not-found"
+      },
+      {
+        "id": "pdp-sample-bg",
+        "title": "PDP Sample BG",
+        "path": "/bg/tech_haven/iphone-15-pro-max",
+        "expectation": "pdp-or-not-found"
+      }
+    ],
+    "p1": [
+      {
+        "id": "forgot-password",
+        "title": "Auth Forgot Password",
+        "path": "/en/auth/forgot-password",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "account-profile",
+        "title": "Account Profile",
+        "path": "/en/account/profile",
+        "expectation": "redirect-login"
+      },
+      {
+        "id": "bg-search",
+        "title": "Search BG",
+        "path": "/bg/search?q=%D0%BA%D0%BE%D0%BB%D0%B0",
+        "expectation": "public-ok"
+      }
+    ],
+    "p2": [
+      {
+        "id": "accessibility",
+        "title": "Accessibility",
+        "path": "/en/accessibility",
+        "expectation": "public-ok"
+      },
+      {
+        "id": "faq",
+        "title": "FAQ",
+        "path": "/en/faq",
+        "expectation": "public-ok"
+      }
+    ]
+  }
+}

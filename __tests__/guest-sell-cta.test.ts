@@ -23,14 +23,15 @@ describe("lib/guest-sell-cta", () => {
   })
 
   describe("isGuestSellCtaRouteEligible", () => {
-    it("allows discovery routes", () => {
-      expect(isGuestSellCtaRouteEligible("/")).toBe(true)
+    it("allows search routes", () => {
       expect(isGuestSellCtaRouteEligible("/search")).toBe(true)
-      expect(isGuestSellCtaRouteEligible("/categories/electronics")).toBe(true)
-      expect(isGuestSellCtaRouteEligible("/en/categories/fashion")).toBe(true)
+      expect(isGuestSellCtaRouteEligible("/en/search?q=laptop")).toBe(true)
     })
 
-    it("rejects non-discovery routes", () => {
+    it("rejects home/categories and non-discovery routes", () => {
+      expect(isGuestSellCtaRouteEligible("/")).toBe(false)
+      expect(isGuestSellCtaRouteEligible("/categories/electronics")).toBe(false)
+      expect(isGuestSellCtaRouteEligible("/en/categories/fashion")).toBe(false)
       expect(isGuestSellCtaRouteEligible("/auth/login")).toBe(false)
       expect(isGuestSellCtaRouteEligible("/sell")).toBe(false)
       expect(isGuestSellCtaRouteEligible("/account")).toBe(false)

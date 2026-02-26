@@ -1,5 +1,7 @@
 import type { Page } from './test'
 import { expect } from '@playwright/test'
+import fs from 'node:fs'
+import path from 'node:path'
 
 export type TestUserCredentials = {
   email: string
@@ -20,6 +22,14 @@ export function getTestUserCredentials(): TestUserCredentials | null {
 }
 
 const baseURL = process.env.BASE_URL || 'http://localhost:3000'
+const outputRoot = process.env.PW_OUTPUT_ROOT || 'output/playwright'
+const outputDir = process.env.PW_OUTPUT_DIR || `${outputRoot}/test-results`
+
+function getLoginDebugScreenshotPath() {
+  const authDir = path.join(outputDir, 'auth')
+  fs.mkdirSync(authDir, { recursive: true })
+  return path.join(authDir, 'login-debug.png')
+}
 
 function redactEmail(value: string) {
   const [user, domain] = value.split('@')
@@ -62,8 +72,9 @@ export async function loginWithPassword(page: Page, creds: TestUserCredentials) 
   } catch {
     const isDisabled = await submitButton.isDisabled()
     console.log(`[E2E Auth] Submit button disabled: ${isDisabled}`)
-    await page.screenshot({ path: 'test-results/login-debug.png' })
-    console.log('[E2E Auth] Screenshot saved to test-results/login-debug.png')
+    const screenshotPath = getLoginDebugScreenshotPath()
+    await page.screenshot({ path: screenshotPath })
+    console.log(`[E2E Auth] Screenshot saved to ${screenshotPath}`)
     throw new Error('Login form never became submittable')
   }
 

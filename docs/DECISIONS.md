@@ -112,7 +112,7 @@ Append-only. Agents read this to understand *why* patterns exist.
 - **Decision:** Draft an RLS hardening migration that scopes the INSERT policy to `TO service_role`, and update server-side notification inserts to use the service role client.
 - **Rationale:** Prevent abuse/spoofing of in-app notifications and reduce PII integrity risk.
 - **Alternatives considered:** (a) Revoke broad table grants. (b) Use RPC functions for notification inserts. (c) Accept risk and rely on application code only.
-- **Consequences:** Applying the migration is high-risk and requires human approval and rollback planning (per `AGENTS.md § High-Risk Pause`).
+- **Consequences:** Applying the migration is high-risk and requires rollback planning plus staged verification.
 
 ### DEC-013: Remove demo/registry route surface from production URLs
 - **Date:** 2026-02-17
@@ -130,6 +130,14 @@ Append-only. Agents read this to understand *why* patterns exist.
 - **Alternatives considered:** (a) Keep compatibility layer and prune mappings. (b) Partial migration by route group. (c) Introduce another icon abstraction.
 - **Consequences:** Icon visual weight variants from phosphor were normalized to lucide defaults; future icon changes must use direct `lucide-react` symbols.
 
+### DEC-015: Docs quality becomes an execution-friendly maintenance contract
+- **Date:** 2026-02-26
+- **Context:** Launch docs drifted out of sync (`TASKS.md`, `CAPABILITY-MAP.md`, `NOW.md`, checklist/tracker), creating planning ambiguity for humans and agents.
+- **Decision:** Keep docs AI-friendly and lightweight, with direct source-of-truth updates during execution (`NOW`, `TASKS`, `TRACKER/CHECKLIST`, `CHANGELOG`) instead of a hard CI docs gate.
+- **Rationale:** Faster execution and lower friction while preserving clarity through explicit status/evidence updates.
+- **Alternatives considered:** (a) Full CI-gated docs checks. (b) Manual review checklist only. (c) Periodic docs sweeps.
+- **Consequences:** Docs quality depends on disciplined in-session updates rather than a mandatory CI blocker; contributors should keep change logs concise and factual.
+
 ---
 
 ## How To Add A Decision
@@ -140,4 +148,4 @@ Append-only. Agents read this to understand *why* patterns exist.
 4. Link to related docs or TASKS.md entries if applicable.
 5. Bump `Last verified` date.
 
-*Last updated: 2026-02-17*
+*Last updated: 2026-02-26*

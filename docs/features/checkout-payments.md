@@ -34,7 +34,7 @@ Stripe Connect handles seller payouts with escrow/delayed release.
 **Secret rotation:** `STRIPE_WEBHOOK_SECRET` supports comma/newline-separated values for zero-downtime rotation.
 
 ## Conventions
-- HIGH-RISK: Changes need human approval
+- HIGH-RISK: Changes require strong verification and rollback-safe sequencing
 - Webhook handlers exit early for unrelated session modes
 - Checkout webhook ignores `subscription` and `setup` mode sessions
 - All fee calculations server-side only

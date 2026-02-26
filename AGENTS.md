@@ -22,7 +22,7 @@ Next.js 16 · React 19 · TypeScript · Tailwind v4 · shadcn/ui · Supabase · 
 3. Keep momentum: finish scoped tasks end-to-end when feasible.
 4. Mark completed task checkboxes in `TASKS.md`.
 5. If docs become stale while you work, update them in the same session.
-6. For risky areas (auth/payments/DB/RLS/webhooks/destructive ops), stop and flag for human approval.
+6. For risky areas (auth/payments/DB/RLS/webhooks/destructive ops), run extra verification and document assumptions/evidence inline.
 
 ---
 
@@ -32,6 +32,7 @@ Next.js 16 · React 19 · TypeScript · Tailwind v4 · shadcn/ui · Supabase · 
 |------------|------|
 | Current state, blockers, focus | `docs/state/NOW.md` |
 | Session history (short) | `docs/state/CHANGELOG.md` |
+| Documentation map + load order | `docs/index.md` |
 | Long-term direction | `docs/strategy/NORTH-STAR.md` |
 | Progress by capability/phase | `docs/strategy/CAPABILITY-MAP.md` |
 | End-state architecture | `docs/architecture/TARGET-PLATFORM.md` |
@@ -44,6 +45,7 @@ Next.js 16 · React 19 · TypeScript · Tailwind v4 · shadcn/ui · Supabase · 
 | Database/schema/query patterns | `docs/database.md` |
 | Testing conventions | `docs/testing.md` |
 | Why a pattern exists | `docs/DECISIONS.md` |
+| Docs ownership/freshness rules | `docs/_meta/doc-owners.json`, `docs/_meta/capability-task-map.json` |
 | Feature-specific implementation | `docs/features/<feature>.md` (auth, bottom-nav, checkout-payments, header, product-cards, search-filters, sell-flow) |
 | Business strategy/pricing/GTM | `docs/business/*.md` |
 | Public legal/help policy content | `docs/public/**` |
@@ -62,10 +64,13 @@ claude.md                        → Orchestrator identity/process (no mutable s
 
 docs/state/NOW.md               → Current truth snapshot (read first)
 docs/state/CHANGELOG.md         → Short session outcomes
+docs/index.md                   → Docs map + load order
 docs/strategy/NORTH-STAR.md     → Vision and strategic direction
 docs/strategy/CAPABILITY-MAP.md → Capability status by phase
 docs/architecture/TARGET-PLATFORM.md → Layered end-state architecture
 docs/architecture/AI-PLATFORM.md     → AI feature architecture contract
+docs/templates/*                → Canonical docs templates
+docs/_meta/*                    → Docs ownership + consistency metadata
 
 docs/PRD.md  docs/STACK.md  docs/DESIGN.md  docs/DECISIONS.md
 docs/database.md  docs/testing.md  docs/features/*  docs/business/*
@@ -87,7 +92,7 @@ These aren't arbitrary rules — they exist because violating them causes real p
 - **Performance:** no wide joins in list views. `createStaticClient()` for cached reads. Never cache user-specific data.
 - **AI features:** Schema-validated outputs, pinned prompt versions, guardrails, and telemetry are mandatory.
 
-**Stop and flag for approval:** DB schema/migrations/RLS, auth/session logic, payments/webhooks, destructive operations.
+**Handle with extra care:** DB schema/migrations/RLS, auth/session logic, payments/webhooks, destructive operations. Prefer additive changes, explicit evidence, and clear rollback paths.
 
 ---
 
@@ -125,4 +130,4 @@ pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit
 
 If you changed behavior, docs, or architecture assumptions, keep docs in sync in the same session.
 
-*Last updated: 2026-02-24*
+*Last updated: 2026-02-26*
