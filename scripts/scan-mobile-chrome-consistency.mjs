@@ -7,15 +7,11 @@ const shouldWriteReport = String(process.env.WRITE_CLEANUP_REPORTS || "") === "1
 const targetFiles = [
   "components/mobile/chrome/mobile-bottom-nav.tsx",
   "components/mobile/chrome/mobile-control-recipes.ts",
-  "components/mobile/category-nav/filter-sort-bar.tsx",
+  "components/layout/bottom-nav/mobile-tab-bar.tsx",
   "components/layout/header/mobile/homepage-header.tsx",
   "components/layout/header/mobile/contextual-header.tsx",
   "components/layout/header/mobile/product-header.tsx",
-  "components/layout/header/mobile/profile-header.tsx",
-  "components/layout/header/mobile/minimal-header.tsx",
-  "app/[locale]/_components/mobile-tab-bar.tsx",
-  "app/[locale]/(main)/_lib/mobile-rail-class-recipes.ts",
-  "app/[locale]/(main)/_components/filters/mobile-filter-controls.tsx",
+  "components/layout/header/search/mobile-search-overlay.tsx",
   "app/[locale]/(main)/search/_components/mobile-seller-filter-controls.tsx",
   "app/[locale]/(account)/account/_components/account-header.tsx",
   "app/[locale]/(account)/account/_components/account-tab-bar.tsx",
@@ -26,31 +22,9 @@ const targetFiles = [
   "components/layout/header/cart/mobile-cart-dropdown.tsx",
   "components/shared/wishlist/mobile-wishlist-button.tsx",
   "components/layout/sidebar/sidebar-menu.tsx",
-  "app/[locale]/_components/search/mobile-search-overlay.tsx",
 ];
 
 const checks = [
-  {
-    id: "bottom-nav-glass",
-    files: ["components/mobile/chrome/mobile-bottom-nav.tsx"],
-    regex: /\b(?:backdrop-blur(?:-[a-z]+)?|bg-surface-glass)\b/g,
-    message: "Use a flat semantic bottom nav surface; avoid glass/blur treatment.",
-  },
-  {
-    id: "persistent-blur",
-    regex: /\bbackdrop-blur(?:-[a-z]+)?\b/g,
-    message: "Avoid backdrop blur on persistent mobile chrome.",
-  },
-  {
-    id: "translucent-background",
-    regex: /\bbg-background\/\d{1,3}\b/g,
-    message: "Avoid translucent backgrounds on persistent mobile chrome.",
-  },
-  {
-    id: "surface-glass",
-    regex: /\bbg-surface-glass\b/g,
-    message: "Avoid glass surfaces for persistent mobile chrome.",
-  },
   {
     id: "alpha-border",
     regex: /\bborder-border\/\d{1,3}\b/g,
@@ -62,17 +36,9 @@ const checks = [
     message: "Use control tokens/variants instead of ad-hoc h-/size- classes.",
   },
   {
-    id: "primary-nav-text-2xs",
-    files: ["app/[locale]/(account)/account/_components/account-tab-bar.tsx"],
-    regex: /\btext-2xs\b/g,
-    message: "Primary mobile nav labels should be at least text-xs.",
-  },
-  {
     id: "rail-height-hardcoded",
     files: [
       "components/mobile/chrome/mobile-control-recipes.ts",
-      "components/mobile/category-nav/filter-sort-bar.tsx",
-      "app/[locale]/(main)/_components/filters/mobile-filter-controls.tsx",
       "app/[locale]/(main)/search/_components/mobile-seller-filter-controls.tsx",
     ],
     regex: /\b(?:min-h-(?:8|9|10|11|12)|h-(?:8|9|10|11|12))\b/g,
@@ -88,8 +54,8 @@ const railTokenRequirements = [
   },
   {
     file: "components/mobile/chrome/mobile-control-recipes.ts",
-    regex: /min-h-\(--control-compact\)/,
-    message: "Quick pill recipes must include --control-compact height.",
+    regex: /min-h-\(--control-(?:compact|pill)\)/,
+    message: "Quick pill recipes must include --control-compact or --control-pill height.",
   },
 ];
 

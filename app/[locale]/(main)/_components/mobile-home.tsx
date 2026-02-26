@@ -1,8 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { ArrowLeft, ChevronRight, LayoutGrid, SlidersHorizontal as FiltersIcon } from "lucide-react"
-import { Link } from "@/i18n/routing"
+import { ArrowLeft, ChevronRight, SlidersHorizontal as FiltersIcon } from "lucide-react"
+import { Link, useRouter } from "@/i18n/routing"
 import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
@@ -11,7 +11,6 @@ import { getActiveFilterCount } from "@/lib/filters/active-filter-count"
 import { getCategoryName, getCategorySlugKey } from "@/lib/data/categories/display"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useHeader } from "@/components/providers/header-context"
-import { useCategoryDrawerOptional } from "@/components/mobile/category-nav/category-drawer-context"
 import { getCategoryIcon } from "@/components/shared/category-icons"
 import {
   SmartRail,
@@ -57,6 +56,7 @@ export function MobileHome({
   forYouProducts,
   categoryProducts = {},
 }: MobileHomeProps) {
+  const router = useRouter()
   const tCategories = useTranslations("Categories")
   const tMobile = useTranslations("Home.mobile")
   const tV4 = useTranslations("Home.mobile.v4")
@@ -110,7 +110,6 @@ export function MobileHome({
   })
   useHomeCityStorage(city, setCity)
 
-  const categoryDrawer = useCategoryDrawerOptional()
   const { setHeaderState } = useHeader()
 
   useEffect(() => {
@@ -144,11 +143,23 @@ export function MobileHome({
     })
   }, [locale, tCategories])
 
+  const navigateToCategories = useCallback((slug: string | null, subslug: string | null = null) => {
+    if (slug && subslug) {
+      router.push(`/categories/${slug}/${subslug}`)
+      return
+    }
+
+    if (slug) {
+      router.push(`/categories/${slug}`)
+      return
+    }
+
+    router.push("/categories")
+  }, [router])
+
   const handlePrimaryTab = useCallback((slug: string | null) => {
-    setActiveCategorySlug(slug)
-    setActiveSubcategorySlug(null)
-    setActiveL2Slug(null)
-  }, [setActiveCategorySlug, setActiveSubcategorySlug, setActiveL2Slug])
+    navigateToCategories(slug)
+  }, [navigateToCategories])
 
   const handleHeaderCategorySelect = useCallback((slug: string) => {
     handlePrimaryTab(slug === "all" ? null : slug)
@@ -167,9 +178,18 @@ export function MobileHome({
   }, [activeCategorySlug, categories, handleHeaderCategorySelect, setHeaderState])
 
   const handleSubcategoryPill = useCallback((slug: string | null) => {
-    setActiveSubcategorySlug((previous) => (previous === slug ? null : slug))
-    setActiveL2Slug(null)
-  }, [setActiveSubcategorySlug, setActiveL2Slug])
+    if (!activeCategorySlug) {
+      navigateToCategories(null)
+      return
+    }
+
+    if (slug === null) {
+      navigateToCategories(activeCategorySlug)
+      return
+    }
+
+    navigateToCategories(activeCategorySlug, slug)
+  }, [activeCategorySlug, navigateToCategories])
 
   const handleScopeChange = useCallback((nextScope: HomeDiscoveryScope) => {
     setScope(nextScope)
@@ -318,22 +338,11 @@ export function MobileHome({
 
       <div className="mx-auto w-full max-w-screen-md pb-tabbar-safe">
         {!activeCategorySlug ? (
-          <>
+          <div className="px-4 pt-4 pb-3">
             <div
-              className="flex items-center gap-3 overflow-x-auto no-scrollbar border-b border-border-subtle px-4 py-2.5"
+              className="flex gap-4 overflow-x-auto no-scrollbar pb-1"
               data-testid="home-v4-categories-row"
             >
-              {categoryDrawer ? (
-                <button
-                  type="button"
-                  onClick={() => categoryDrawer.openRoot()}
-                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground ring-1 ring-border-subtle ring-offset-2 ring-offset-background tap-transparent transition-colors hover:bg-accent active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label={tCategories("title")}
-                  data-testid="home-v4-category-drawer-btn"
-                >
-                  <LayoutGrid size={20} strokeWidth={1.5} aria-hidden="true" />
-                </button>
-              ) : null}
               {rootCategoryChips.slice(0, 8).map((category) => {
                 const label = getCategoryLabel(category)
                 return (
@@ -341,27 +350,17 @@ export function MobileHome({
                     key={category.slug}
                     type="button"
                     onClick={() => handlePrimaryTab(category.slug)}
-                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground ring-1 ring-border-subtle ring-offset-2 ring-offset-background tap-transparent transition-colors hover:bg-accent active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="flex size-(--size-category-tile) shrink-0 items-center justify-center rounded-xl bg-secondary tap-transparent transition-colors hover:bg-accent active:bg-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     aria-label={label}
                     title={label}
                     data-testid={`home-v4-category-icon-${category.slug}`}
                   >
-                    {getCategoryIcon(category.slug, { size: 20, strokeWidth: 1.5 })}
+                    {getCategoryIcon(category.slug, { size: 20, strokeWidth: 1.5, className: "text-foreground/70" })}
                   </button>
                 )
               })}
             </div>
-
-            {/* Discovery scope tabs (with filter) */}
-            <DiscoveryRail
-              activeScope={scope}
-              onScopeChange={handleScopeChange}
-              t={tV4}
-              scopes={homeDiscoveryScopes}
-              className="border-t border-border-subtle"
-              testId="home-v4-scope"
-            />
-          </>
+          </div>
         ) : (
           <div className="space-y-1">
             {/* Smart rail: categories/subcategories + actions */}
@@ -375,15 +374,6 @@ export function MobileHome({
               stickyTop="var(--offset-mobile-primary-rail)"
               className="border-b-0 py-0"
               testId="home-v4-secondary-rail"
-            />
-
-            {/* Discovery scope tabs */}
-            <DiscoveryRail
-              activeScope={scope}
-              onScopeChange={handleScopeChange}
-              t={tV4}
-              scopes={homeDiscoveryScopes}
-              testId="home-v4-scope"
             />
           </div>
         )}
@@ -405,6 +395,16 @@ export function MobileHome({
             </Link>
           </div>
         )}
+
+        {/* Discovery scope pills — inline with feed */}
+        <DiscoveryRail
+          activeScope={scope}
+          onScopeChange={handleScopeChange}
+          t={tV4}
+          scopes={homeDiscoveryScopes}
+          className="border-t border-border"
+          testId="home-v4-scope"
+        />
 
         <div key={feedTransitionKey} className="motion-safe:animate-content-fade-in">
           <MobileHomeFeed

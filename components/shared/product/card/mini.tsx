@@ -51,7 +51,7 @@ function MiniCardBody({
   return (
     <Card
       className={cn(
-        "group relative overflow-hidden rounded-xl border-border-subtle shadow-none",
+        "group relative overflow-hidden rounded-lg border-border-subtle shadow-none",
         className
       )}
     >

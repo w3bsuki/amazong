@@ -46,8 +46,8 @@
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
-  --spacing-bottom-nav: 4rem;
-  /* 64px - mobile bottom navigation dock (icon + label) */
+  --spacing-bottom-nav: 3.5rem;
+  /* 56px - mobile bottom navigation dock (icon + label) */
   --spacing-button: 2.75rem;
   --spacing-button-sm: 2.25rem;
   --spacing-button-lg: 3rem;
@@ -64,6 +64,8 @@
   --product-grid-gap: 0.625rem;
 
   /* === TOUCH TARGETS (mobile contract) === */
+  --control-pill: 1.875rem;
+  /* 30px - compact pills / chips */
   --control-compact: 2.25rem;
   /* 36px - dense icon overlays only */
   --control-default: 2.75rem;
@@ -92,12 +94,12 @@
   --spacing-touch-lg: var(--control-primary);
 
   /* === PAGE INSETS (responsive edge padding) === */
-  --spacing-inset: 0.5rem;
-  /* 8px - mobile */
-  --spacing-inset-md: 0.75rem;
-  /* 12px - tablet */
-  --spacing-inset-lg: 1rem;
-  /* 16px - desktop */
+  --spacing-inset: 1rem;
+  /* 16px - mobile */
+  --spacing-inset-md: 1rem;
+  /* 16px - tablet */
+  --spacing-inset-lg: 1.5rem;
+  /* 24px - desktop */
 
   /* === DIALOG/DRAWER SIZING === */
   --height-dialog: 90dvh;
@@ -146,23 +148,23 @@
   --spacing-nav-row: 3rem;
 
   /* === MEDIA ASPECT CONTRACT === */
-  --ratio-product-card-mobile: 4 / 5;
+  --ratio-product-card-mobile: 3 / 4;
   --ratio-product-strip: 4 / 3;
   --ratio-quick-view-hero: 1 / 1;
 
   /* === HOMEPAGE SECTION SPACING === */
-  --spacing-section-top: 0.5rem;
-  /* 8px - balanced top */
-  --spacing-section-bottom: 0.5rem;
-  /* 8px - consistent breathing room */
-  --spacing-section-gap: 0.75rem;
-  /* 12px - section rhythm */
-  --spacing-home-inset: 0.75rem;
-  /* 12px - landing content inset */
-  --spacing-home-section-gap: 1rem;
-  /* 16px - landing section rhythm */
-  --spacing-home-card-gap: 0.625rem;
-  /* 10px - tighter, denser landing rhythm */
+  --spacing-section-top: 0.75rem;
+  /* 12px - balanced top */
+  --spacing-section-bottom: 0.75rem;
+  /* 12px - consistent breathing room */
+  --spacing-section-gap: 1rem;
+  /* 16px - section rhythm */
+  --spacing-home-inset: 1rem;
+  /* 16px - landing content inset */
+  --spacing-home-section-gap: 1.25rem;
+  /* 20px - landing section rhythm */
+  --spacing-home-card-gap: 0.75rem;
+  /* 12px - breathable landing rhythm */
   --spacing-home-cta-tile-min-h: 11.5rem;
   /* 184px - home merchandising CTA tile height */
   --spacing-home-card-column-w: calc((100vw - (var(--spacing-home-inset) * 2) - var(--spacing-home-card-gap)) / 2);

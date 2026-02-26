@@ -41,7 +41,7 @@ export function ProductCardSurface({
     <Card
       data-slot="surface"
       className={cn(
-        "tap-highlight tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-xl border-0 shadow-none bg-transparent",
+        "tap-highlight tap-transparent group relative flex h-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-lg border-0 shadow-none bg-transparent",
         className
       )}
     >
@@ -49,14 +49,14 @@ export function ProductCardSurface({
         href={href}
         prefetch={false}
         data-slot="product-card-link"
-        className="absolute inset-0 z-10 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        className="absolute inset-0 z-10 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={ariaLabel}
         onClick={onLinkClick}
       >
         <span className="sr-only">{title}</span>
       </Link>
 
-      <div className="relative overflow-hidden rounded-xl bg-secondary">
+      <div className="relative overflow-hidden rounded-lg bg-secondary">
         <ProductCardImage
           src={imageSrc}
           alt={imageAlt}

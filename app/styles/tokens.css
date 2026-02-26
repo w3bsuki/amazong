@@ -14,8 +14,8 @@
   --popover: 1 0 0;
   --popover-foreground: 0.18 0.02 255;
 
-  /* Brand blue (primary) */
-  --primary: 0.54 0.20 255;
+  /* Primary: near-black (monochrome marketplace) */
+  --primary: 0.18 0.02 255;
   --primary-foreground: 1 0 0;
 
   /* Secondary surfaces */
@@ -35,7 +35,7 @@
   --border: 0.92 0.01 255;
   --border-subtle: 0.96 0.005 255;
   --input: 0.92 0.01 255;
-  --ring: 0.54 0.20 255;
+  --ring: 0.18 0.02 255;
   --ring-subtle: var(--border-subtle);
   --category-ring: 0.18 0.02 255;
 
@@ -48,7 +48,7 @@
   --active: 0.96 0.01 255;
   --selected: 0.96 0.01 255;
   --selected-foreground: 0.18 0.02 255;
-  --selected-border: 0.54 0.20 255;
+  --selected-border: 0.18 0.02 255;
   --hover-border: 0.92 0.01 255;
   --nav-active: var(--foreground);
   --nav-inactive: 0.42 0.01 255;
@@ -58,19 +58,19 @@
   --notification: 0.50 0.22 30;
   /* vivid red-orange */
 
-  /* Brand/CTA accents (raw components; mapped to `--color-*` tokens in @theme) */
-  --cta-primary-hover: 0.55 0.19 243;
+  /* Brand/CTA accents (monochrome) */
+  --cta-primary-hover: 0.25 0.02 255;
   --cta-secondary-hover: 0.94 0 0;
-  --brand-dark: 0.50 0.19 243;
-  --brand-light: 0.80 0.10 243;
+  --brand-dark: 0.18 0.02 255;
+  --brand-light: 0.60 0.02 255;
 
   /* High-priority merchandising/trust tones */
   --promoted: 0.20 0.01 255;
   --promoted-foreground: 0.98 0 0;
   --promoted-muted: 0.94 0.01 255;
-  --verified-business: 0.54 0.16 255;
+  --verified-business: 0.36 0.02 255;
   --verified-business-foreground: 0.98 0 0;
-  --verified-personal: 0.36 0.10 255;
+  --verified-personal: 0.36 0.02 255;
   --verified-personal-foreground: 0.98 0 0;
   --top-rated: 0.78 0.15 86;
   --top-rated-foreground: 0.22 0.05 86;
@@ -126,12 +126,12 @@
   --success-foreground: 1 0 0;
   --warning: 0.63 0.17 86;
   --warning-foreground: 1 0 0;
-  --info: 0.62 0.20 255;
+  --info: 0.52 0.02 255;
   --info-foreground: 1 0 0;
   --error: var(--destructive);
   --error-foreground: var(--destructive-foreground);
 
-  --primary-subtle: 0.97 0.02 255;
+  --primary-subtle: 0.96 0.005 255;
   --destructive-subtle: 0.96 0.02 30;
 
   /* Sidebar */
@@ -204,7 +204,7 @@
   --text-subtle: var(--muted-foreground);
 
   /* Focus/checked helpers */
-  --focus-ring: 0.62 0.20 255 / 30%;
+  --focus-ring: 0.18 0.02 255 / 30%;
   --checked: var(--primary);
   --checked-foreground: var(--primary-foreground);
   --switch-unchecked-bg: var(--input);
@@ -230,10 +230,10 @@
   --border: 0.26 0.02 255;
   --border-subtle: 0.22 0.02 255;
   --input: 0.26 0.02 255;
-  --ring: 0.72 0.18 255;
+  --ring: 0.72 0.02 255;
   --ring-subtle: var(--border-subtle);
 
-  --primary: 0.72 0.18 255;
+  --primary: 0.92 0.02 255;
   --primary-foreground: 0.12 0.02 255;
 
   --secondary: 0.22 0.02 255;
@@ -251,7 +251,7 @@
   --active: 0.22 0.02 255;
   --selected: 0.22 0.02 255;
   --selected-foreground: 0.98 0 0;
-  --selected-border: 0.72 0.18 255;
+  --selected-border: 0.92 0.02 255;
   --hover-border: 0.26 0.02 255;
   --nav-active: var(--foreground);
   --nav-inactive: 0.68 0.01 255;
@@ -261,10 +261,10 @@
   --notification: 0.68 0.22 30;
 
   /* Brand/CTA accents */
-  --cta-primary-hover: 0.66 0.18 255;
+  --cta-primary-hover: 0.86 0.02 255;
   --cta-secondary-hover: 0.26 0.02 255;
-  --brand-dark: 0.66 0.18 255;
-  --brand-light: 0.80 0.10 255;
+  --brand-dark: 0.92 0.02 255;
+  --brand-light: 0.80 0.02 255;
 
   /* Social / activity */
   --social-instagram: 0.60 0.22 350;
@@ -281,12 +281,12 @@
   --success-foreground: 0.12 0.02 255;
   --warning: 0.76 0.16 86;
   --warning-foreground: 0.12 0.02 255;
-  --info: 0.72 0.18 255;
+  --info: 0.72 0.02 255;
   --info-foreground: 0.12 0.02 255;
   --error: var(--destructive);
   --error-foreground: var(--destructive-foreground);
 
-  --primary-subtle: 0.25 0.04 255;
+  --primary-subtle: 0.22 0.02 255;
   --destructive-subtle: 0.28 0.04 30;
   --success-subtle: 0.25 0.04 145;
 
@@ -297,7 +297,7 @@
   --text-subtle: var(--muted-foreground);
 
   /* Focus/checked helpers */
-  --focus-ring: 0.72 0.18 255 / 40%;
+  --focus-ring: 0.72 0.02 255 / 40%;
   --checked: var(--primary);
   --checked-foreground: var(--primary-foreground);
   --switch-unchecked-bg: var(--input);

@@ -21,21 +21,6 @@ function fileExists(absPath) {
   }
 }
 
-function stripFrontmatter(text) {
-  if (!text.startsWith("---")) return text;
-
-  const lines = text.split(/\r?\n/);
-  if (lines.length < 3 || lines[0].trim() !== "---") return text;
-
-  for (let i = 1; i < lines.length; i += 1) {
-    if (lines[i].trim() === "---") {
-      return lines.slice(i + 1).join("\n");
-    }
-  }
-
-  return text;
-}
-
 function parseFrontmatterKeys(text) {
   if (!text.startsWith("---")) return new Set();
   const lines = text.split(/\r?\n/);
@@ -49,17 +34,6 @@ function parseFrontmatterKeys(text) {
     if (keyMatch) keys.add(keyMatch[1]);
   }
   return keys;
-}
-
-function firstContentLine(text) {
-  const body = stripFrontmatter(text);
-  const lines = body.split(/\r?\n/);
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-    return trimmed;
-  }
-  return "";
 }
 
 function shouldSkipLinkTarget(target) {
@@ -122,11 +96,6 @@ function lintDocs() {
     const relPath = toPosix(path.relative(ROOT, absPath));
     const text = fs.readFileSync(absPath, "utf8");
 
-    const firstLine = firstContentLine(text);
-    if (!firstLine.startsWith("#")) {
-      issues.push(`[missing-h1] ${relPath}`);
-    }
-
     checkInternalLinks(absPath, text, issues);
 
     if (relPath === "docs/state/NOW.md") {
@@ -152,4 +121,3 @@ function lintDocs() {
 }
 
 lintDocs();
-

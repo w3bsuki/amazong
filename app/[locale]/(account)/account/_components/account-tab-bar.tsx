@@ -126,7 +126,7 @@ export function AccountTabBar() {
   return (
     <>
       <nav 
-        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border-subtle bg-background pb-safe md:hidden rounded-t-2xl shadow-nav overflow-hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border-subtle bg-background/95 backdrop-blur-md pb-safe md:hidden overflow-hidden"
         role="navigation"
         aria-label={t("tabBarAriaLabel")}
       >

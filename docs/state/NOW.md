@@ -3,65 +3,63 @@ schema_version: 1
 updated_at: "2026-02-26"
 project: "Treido"
 stage: "V1 pre-launch (Bulgaria)"
-phase: "Phase 0 - Production Push (Docs OS + Mobile Audit Harness)"
+phase: "Phase 0 launch blockers + Phase 2 AI completion"
 north_star_doc: "docs/strategy/NORTH-STAR.md"
 capability_map_doc: "docs/strategy/CAPABILITY-MAP.md"
-launch_status: "Checklist-authoritative snapshot: P0 fully closed sections 3/7 (1,2,5), P1 fully closed sections 0/4; strict launch harness now shows P0 route bucket pass on M375 and desktop (22/22 each)."
-p0_p1_status: "P0 launch route bucket is green on M375 + desktop; P1 route bucket passes in harness scope (3/3) with remaining checklist items explicitly deferred."
-p2_status: "AI foundations complete (PH2-AI-001..005); remaining: PH2-AI-007..010 (autofill confidence, pricing suggestions, docs closeout)"
-gates_status: "Core gates last verified green 2026-02-26 (`typecheck`, `lint`, `styles:gate`, `test:unit`); architecture metrics remain above baseline (client=276/1214, over300=68, over500=3, duplicates=729 lines, clones=58, pages=86, api-routes=49)."
+launch_status: "Core route harness is green on M375 and desktop; remaining launch risk is concentrated in PH0-LAUNCH-001..004 and PH0-REFACTOR-001."
+p0_p1_status: "P0 route bucket pass achieved on M375 + desktop; P1 harness scope pass remains unchanged."
+p2_status: "AI foundations shipped; open completion items: PH2-AI-007..010."
+gates_status: "Core gates last verified green 2026-02-26 (`typecheck`, `lint`, `styles:gate`, `test:unit`); docs contract now has enforceable `docs:gate`."
 top_blockers:
-  - "ARCH-001: Return architecture metrics to baseline (`client-boundary`, `over300`, duplicates)"
-  - "MIG-001: Finalize v2 migration Step 5 (`deal_products` view/`is_prime` drop sequencing)"
-  - "LAUNCH-001: Verify Stripe webhook idempotency (replay no-op guarantee)"
-  - "LAUNCH-002: Test refund/dispute flow end-to-end"
-  - "LAUNCH-003: Verify Stripe prod/dev environment separation (keys + webhook secrets)"
-  - "LAUNCH-004: Enable leaked password protection + rerun advisor (currently blocked by Supabase plan requirement)"
-current_focus: "Checkpoint 4 blocked state: local blocker evidence is collected, but `LAUNCH-002/003/004` and `MIG-001` still need external/manual verification and execution."
+  - "PH0-LAUNCH-001: Verify Stripe webhook idempotency in production (replay no-op proof)."
+  - "PH0-LAUNCH-002: Execute refund/dispute flow end-to-end with evidence."
+  - "PH0-LAUNCH-003: Audit Stripe prod/dev key and webhook-secret separation."
+  - "PH0-LAUNCH-004: Enable leaked password protection or record accepted risk posture."
+  - "PH0-REFACTOR-001: Complete sensitive Domain 6 refactor with expanded verification."
+current_focus: "Docs control-plane v2 is now execution-first; next work is closing open Phase 0 launch blockers and Phase 2 AI listing tasks from TASKS.md."
 active_workstreams:
-  - "Docs OS rollout (`docs/index`, templates, metadata, docs gates)"
-  - "Mobile-first audit harness normalization (`m375`, tagged launch suites, artifacts)"
-  - "Launch blocker closure with external/manual verification for sensitive ops"
-  - "Architecture baseline recovery planning for production refactor waves"
+  - "Launch blocker closure with human-verified evidence for payments/auth operations"
+  - "Phase 2 AI listings completion (confidence + pricing suggestion + docs closeout)"
+  - "Documentation control-plane maintenance (lean AGENTS/index/TASKS/NOW contract)"
 next_session_boot:
-  - "Read AGENTS.md"
+  - "Read docs/index.md"
   - "Read docs/state/NOW.md"
-  - "Read TASKS.md and execute top unchecked Phase 0 item"
+  - "Read TASKS.md and execute the top unchecked item"
 source_refs:
   tasks: "TASKS.md"
+  docs_router: "docs/index.md"
   checklist: "docs/launch/CHECKLIST.md"
   tracker: "docs/launch/TRACKER.md"
   decisions: "docs/DECISIONS.md"
-  production_plan: "docs/launch/PRODUCTION-PUSH-PLAN-2026-02-26.md"
 ---
 
 # NOW
 
 ## Snapshot
 
-Phase 0 production-push planning is active with docs-first execution and mobile-first launch audit harness normalization.
-Launch risk remains concentrated in sensitive blockers and architecture baseline drift.
+Treido is in a blocker-closure phase: route quality is stable, but launch-critical sensitive checks are still pending.
+The docs system was refactored to reduce noise and speed up AI execution.
 
 ## Recent Changes (Last 3)
 
-- 2026-02-26: Closed checkout guest-auth launch failures with approved auth/session hardening (server guard + middleware checkout protection) and re-ran strict P0 M375 harness to full pass (22/22).
-- 2026-02-26: Completed desktop parity for P0 route bucket (`desktop1280`, 22/22 pass) and ran P1 stabilization bucket on both M375 and desktop (3/3 pass each) with explicit checklist deferrals documented.
-- 2026-02-26: Collected sensitive blocker evidence: local webhook idempotency tests pass, while refund/dispute E2E, env separation audit, leaked-password protection, and MIG-001 remain human-gated.
+- 2026-02-26: Refactored docs control plane for AI execution (lean `AGENTS.md`, canonical `docs/index.md`, active-only `TASKS.md`, archived historical queue in `TASKS.archive.md`).
+- 2026-02-26: Rewrote `docs/DESIGN.md` to reflect actual repository behavior and style-gate coverage; removed stale UI guidance.
+- 2026-02-26: Added enforceable docs governance (`docs:gate`) and wired it into CI.
 
 ## Open Decisions (Max 3)
 
-- Sequence decision: finish all four launch blockers first vs run in parallel with Phase 0 route/mobile audits.
-- Supabase plan decision for leaked-password protection capability.
-- Docs governance decision: keep docs lightweight and AI-friendly while preserving current-truth sync.
+- Supabase plan decision for leaked-password protection capability (`PH0-LAUNCH-004`).
+- Launch sequencing decision: finish all Phase 0 blockers before starting PH2-AI-008/009 implementation.
+- Scope decision for PH0-REFACTOR-001 (full domain pass now vs staged by risk area).
 
 ## Known Constraints
 
-- Auth/session, payments/webhooks, DB schema/migrations/RLS, and destructive ops require explicit evidence and rollback-safe execution.
-- Launch blocker LAUNCH-004 has an external plan dependency (`password_hibp_enabled` unavailable on current Supabase tier).
+- Auth/session, payments/webhooks, DB schema/migrations/RLS, and destructive operations require explicit evidence and rollback-safe execution.
+- External/manual verification is still required for PH0-LAUNCH-001..004.
 
 ## Update Rules
 
-1. Always update `updated_at`, `phase`, `launch_status`, `top_blockers`, and `current_focus`.
+1. Always update `updated_at`, `launch_status`, `top_blockers`, and `current_focus` after material status change.
 2. Keep `Recent Changes` to max 3 bullets.
 3. Keep `Open Decisions` to max 3 bullets.
-4. Do not store full session transcripts here; log outcomes in `docs/state/CHANGELOG.md`.
+4. Keep this file as current state only; log detailed outcomes in `docs/state/CHANGELOG.md`.

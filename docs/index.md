@@ -1,40 +1,51 @@
-# Docs Index
+# Docs Index — AI Load Router
 
-Central map for humans and agents. Use this file to quickly decide what to load, and in what order.
+This is the canonical map for docs loading order and scope. Use it to keep context small and useful.
 
-## Session Boot
+## 60-Second Boot Order
 
-1. `docs/state/NOW.md`
-2. `TASKS.md`
-3. `AGENTS.md`
-4. Domain-specific docs only (from table below)
+1. `AGENTS.md` (execution contract)
+2. `docs/state/NOW.md` (current truth)
+3. `TASKS.md` (active queue only)
+4. Load only task-relevant docs from the table below
 
-## Read By Goal
+## Read By Task
 
-| Goal | Read |
+| If you are working on | Read |
 |---|---|
-| Current status and blockers | `docs/state/NOW.md` |
-| Execution queue | `TASKS.md` |
-| Launch readiness | `docs/launch/CHECKLIST.md`, `docs/launch/TRACKER.md`, `docs/launch/CODEX.md` |
-| Strategy direction | `docs/strategy/NORTH-STAR.md`, `docs/strategy/CAPABILITY-MAP.md` |
-| Platform architecture | `docs/architecture/TARGET-PLATFORM.md`, `docs/architecture/AI-PLATFORM.md` |
-| Stack/runtime patterns | `docs/STACK.md` |
-| Testing and verification | `docs/testing.md` |
-| Durable technical decisions | `docs/DECISIONS.md` |
-| Feature implementation details | `docs/features/*.md` |
-| Docs references and mappings | `docs/_meta/doc-owners.json`, `docs/_meta/capability-task-map.json` |
-| Docs templates | `docs/templates/*.md` |
+| Current focus, blockers, active constraints | `docs/state/NOW.md` |
+| What to execute now | `TASKS.md` |
+| Recent outcomes and evidence | `docs/state/CHANGELOG.md` |
+| Product direction and priorities | `docs/strategy/NORTH-STAR.md`, `docs/strategy/CAPABILITY-MAP.md` |
+| Architecture decisions and contracts | `docs/architecture/TARGET-PLATFORM.md`, `docs/architecture/AI-PLATFORM.md` |
+| Runtime/framework patterns | `docs/STACK.md` |
+| UI contracts and styling guardrails | `designs/ui-ux-dream-weaver/UI_UX_GUIDE.md`, `docs/DESIGN.md` |
+| Database patterns and Supabase usage | `docs/database.md` |
+| Test strategy and conventions | `docs/testing.md` |
+| Launch checklist/tracker work | `docs/launch/CHECKLIST.md`, `docs/launch/TRACKER.md`, `docs/launch/CODEX.md` |
+| Feature-level implementation | `docs/features/*.md` |
+| Durable rationale ("why") | `docs/DECISIONS.md` |
 
-## Docs Guidance
+## Keep Context Small
 
-- Keep docs concise and operational.
-- Update `NOW`, `TASKS`, and `TRACKER/CHECKLIST` together when status changes.
-- Prefer explicit evidence links over long narrative.
+- Default to the boot docs + one or two domain docs.
+- Do not load launch audits, business docs, or large generated references unless task-relevant.
+- Use `TASKS.archive.md` only for historical context.
 
-## Change Rules
+## Source-of-Truth Rules
 
-1. If task/capability status changes, update `TASKS.md`, `docs/strategy/CAPABILITY-MAP.md`, and `docs/state/NOW.md` in the same session.
-2. Log meaningful outcomes in `docs/state/CHANGELOG.md`.
-3. For durable directional decisions, append to `docs/DECISIONS.md`.
+- Active execution queue: `TASKS.md`
+- Historical queue/log dump: `TASKS.archive.md`
+- Current operational truth: `docs/state/NOW.md`
+- Durable outcomes: `docs/state/CHANGELOG.md`
+- Durable decisions: `docs/DECISIONS.md`
+
+## Docs Quality Contract
+
+Docs should optimize execution, not ceremony:
+
+- Minimize duplicated status across files.
+- Prefer short, checkable statements over narrative.
+- Encode critical invariants as gates/tests where possible.
 
 *Last updated: 2026-02-26*

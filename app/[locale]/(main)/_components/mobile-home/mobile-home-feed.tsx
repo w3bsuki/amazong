@@ -30,7 +30,7 @@ export function MobileHomeFeed({
 }: MobileHomeFeedProps) {
   return (
     <>
-      <section data-testid="home-v4-feed" className="px-4 pb-6 pt-2">
+      <section data-testid="home-v4-feed" className="px-4 pb-6 pt-1">
         {products.length > 0 ? (
           <>
             <div className="grid grid-cols-2 gap-x-3 gap-y-5 pb-1">

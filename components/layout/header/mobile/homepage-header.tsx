@@ -25,7 +25,7 @@ export function MobileHomepageHeader({
   const searchPlaceholder = tNav("searchPlaceholderShort")
 
   return (
-    <div className="z-40 border-b border-border bg-card md:hidden pt-safe">
+    <div className="z-40 border-b border-border bg-card/95 backdrop-blur-md md:hidden pt-safe">
       <div className="flex h-(--control-primary) items-center gap-2 px-2">
         {/* Left: hamburger + logo */}
         <SidebarMenu user={user} {...(userStats && { userStats })} />
@@ -42,7 +42,7 @@ export function MobileHomepageHeader({
         <button
           type="button"
           onClick={onSearchOpen}
-          className="flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-surface-subtle px-3 py-1.5 text-left tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="flex min-w-0 flex-1 items-center gap-1.5 rounded-lg bg-secondary px-3 py-1.5 text-left tap-transparent transition-colors duration-fast ease-smooth hover:bg-hover active:bg-active focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           aria-label={searchPlaceholder}
           aria-haspopup="dialog"
           data-testid="mobile-home-header-search-trigger"

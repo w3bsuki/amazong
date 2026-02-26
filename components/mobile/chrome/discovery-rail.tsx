@@ -43,7 +43,7 @@ export function DiscoveryRail({
       className={cn("bg-background", className)}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className="flex items-center gap-1.5 px-4 py-1">
+      <div className="flex items-center gap-1.5 px-4 py-2.5">
         <div role="tablist" className="min-w-0 flex-1 overflow-x-auto scrollbar-hide">
           <div className="flex w-max min-w-full items-center gap-1.5 pr-2">
             {railScopes.map((scope) => {

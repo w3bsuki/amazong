@@ -138,6 +138,22 @@ Append-only. Agents read this to understand *why* patterns exist.
 - **Alternatives considered:** (a) Full CI-gated docs checks. (b) Manual review checklist only. (c) Periodic docs sweeps.
 - **Consequences:** Docs quality depends on disciplined in-session updates rather than a mandatory CI blocker; contributors should keep change logs concise and factual.
 
+### DEC-016: Adopt a minimal, enforceable docs gate for AI execution docs
+- **Date:** 2026-02-26
+- **Context:** After reducing docs surface area, we still needed lightweight automation to prevent broken links and stale control-plane docs.
+- **Decision:** Add `docs:gate` (`docs:lint`, `docs:freshness`, `docs:consistency`) and run it in CI; scope checks to high-value execution docs and keep consistency checks minimal (`NOW` task IDs must exist in `TASKS`).
+- **Rationale:** Combines low-friction docs maintenance with mechanical enforcement where drift directly hurts agent performance.
+- **Alternatives considered:** (a) No docs checks. (b) Heavy docs CI with broad coupling to capability tables. (c) Human-only periodic sweeps.
+- **Consequences:** Docs gate becomes part of default CI while avoiding brittle cross-document coupling and high-maintenance docs rituals.
+
+### DEC-017: Dream Weaver guide becomes the visual benchmark for UI tasks
+- **Date:** 2026-02-26
+- **Context:** `docs/DESIGN.md` was operationally accurate but under-specified on visual quality, producing inconsistent or generic UI outcomes.
+- **Decision:** Treat `designs/ui-ux-dream-weaver/UI_UX_GUIDE.md` as first-read visual source for UI work and align production `docs/DESIGN.md` to that design language (content-first, flat, restrained, editorial cards).
+- **Rationale:** High-quality UI output needs a concrete visual benchmark, not only technical constraints and lint rules.
+- **Alternatives considered:** (a) Keep generic design rules only. (b) Enforce style through scanner-only controls. (c) Maintain separate, disconnected prototype docs.
+- **Consequences:** UI tasks now have a stronger creative direction; scanner checks should enforce consistency and constraints, not suppress intended aesthetic choices.
+
 ---
 
 ## How To Add A Decision

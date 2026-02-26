@@ -170,7 +170,7 @@ export function MobileProductCard({
         </>
       }
     >
-      <CardContent className="flex flex-col gap-0.5 p-0 pt-1.5">
+      <CardContent className="flex flex-col gap-0.5 p-0 pt-2">
         {/* Price first — design: price → title → seller */}
         <div className="flex min-w-0 items-center gap-1.5" data-testid="product-card-price-row">
           <div className="min-w-0 shrink-0">

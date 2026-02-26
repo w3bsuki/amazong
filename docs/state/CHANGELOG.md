@@ -17,6 +17,27 @@
 
 ---
 
+### 2026-02-26 | DOCS-DESIGN-ALIGN-003 | Tailwind v4 + shadcn Official Contract Added
+- Decision/Outcome: Added explicit official implementation contract and primary-source links in `docs/DESIGN.md` for Tailwind v4 theme variables/dark mode/class detection and shadcn Tailwind-v4/theming/dark-mode guidance.
+- Why: Dream Weaver visual patterns were useful, but implementation needed to be grounded in official v4 docs to avoid v3 carryover mistakes.
+- Impact: UI tasks now have both a strong visual benchmark and an authoritative Tailwind v4/shadcn implementation path.
+- Next Action: Continue mapping legacy arbitrary-value examples to reusable marketplace tokens.
+- Links: `docs/DESIGN.md`, `components.json`, `app/styles/tokens.css`, `app/styles/theme-bridge.css`
+
+### 2026-02-26 | DOCS-DESIGN-ALIGN-002 | Dream Weaver Elevated to UI Source of Truth
+- Decision/Outcome: Audited `designs/ui-ux-dream-weaver/UI_UX_GUIDE.md` and aligned production docs accordingly: `docs/DESIGN.md` now treats Dream Weaver as the visual benchmark, `docs/index.md` routes UI tasks to that guide first, and `AGENTS.md` explicitly instructs UI sessions to load it.
+- Why: Existing design guidance was technically accurate but visually under-directive, producing generic/low-quality UI outcomes.
+- Impact: UI docs now optimize for visual quality first (content-first, flat marketplace aesthetics) while preserving production guardrails.
+- Next Action: Apply this contract in upcoming UI tasks and keep scanner rules focused on structural consistency, not subjective style suppression.
+- Links: `designs/ui-ux-dream-weaver/UI_UX_GUIDE.md`, `docs/DESIGN.md`, `docs/index.md`, `AGENTS.md`, `scripts/scan-mobile-chrome-consistency.mjs`
+
+### 2026-02-26 | DOCS-OS-V2-001 | AI-First Docs Refactor (Lean Control Plane)
+- Decision/Outcome: Reworked docs for execution-first AI usage: rewrote `AGENTS.md`, `docs/index.md`, and `docs/DESIGN.md`; reduced `TASKS.md` to active work only; moved prior board to `TASKS.archive.md`; simplified docs consistency checks and added `docs:gate` wiring to CI.
+- Why: Previous docs had high token cost, stale guidance, and duplicated control-plane instructions that slowed agent execution.
+- Impact: Agents now have a single canonical load router, smaller active queue context, risk-based verification guidance, and enforceable minimal docs governance.
+- Next Action: Keep `TASKS.md` compact by moving completed work to archive in batches and maintain `NOW.md` as the single current-state source.
+- Links: `AGENTS.md`, `docs/index.md`, `docs/DESIGN.md`, `TASKS.md`, `TASKS.archive.md`, `scripts/docs-consistency.mjs`, `.github/workflows/ci.yml`
+
 ### 2026-02-26 | PH0-CHECKPOINT-4 | Sensitive Blocker Evidence Sweep (Blocked by Human Signoff)
 - Decision/Outcome: Executed local blocker verification for launch-sensitive domains without expanding risk surface: webhook idempotency tests and architecture boundary ordering checks pass (`14/14` tests across three suites). Updated launch docs with evidence snapshots and blocker state.
 - Why: Checkpoint 4 requires explicit verification evidence for `LAUNCH-001..004` and `MIG-001`.
