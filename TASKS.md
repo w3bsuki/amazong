@@ -251,13 +251,47 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 
 ### 2.2 Photo-to-Listing Autofill
 
+- [ ] **PH2-AI-007:** Autofill confidence scores + UI polish
+  - Context: `docs/architecture/AI-PLATFORM.md`, `lib/ai/schemas/sell-autofill.ts`
+  - Add per-field `confidence` (0-1) to `SellAutofillDraftSchema` output
+  - Show confidence indicators in autofill UI (e.g., muted "Low confidence" badge next to uncertain fields)
+  - Improve category mapping by including subcategory hints from taxonomy
+  - Done: autofill results show confidence per field; seller can see which suggestions need review
+
 ### 2.3 Pricing Suggestions MVP
 
-### 2.4 Phase 2 Exit Criteria
+- [ ] **PH2-AI-008:** AI Price Suggestion Endpoint
+  - Context: `docs/architecture/AI-PLATFORM.md`, `docs/features/sell-flow.md`
+  - New prompt spec: `listing.price-suggestion.v1` with en/bg system prompts
+  - New schema: `PriceSuggestionSchema` (min, mid, max, currency, confidence, rationale)
+  - New route: `POST /api/assistant/suggest-price` with full guardrail+telemetry pipeline
+  - Input: category, condition, brand, title, description, locale
+  - Output: price range suggestion with brief rationale text
+  - Done: endpoint returns structured price suggestions; schema-validated; telemetry emitted
+
+- [ ] **PH2-AI-009:** Sell Form Pricing Suggestion UI
+  - Context: `docs/features/sell-flow.md`, `docs/DESIGN.md`
+  - "Suggest price" button in sell form price step (feature-gated behind `isAiAssistantEnabled()`)
+  - Calls `suggest-price` endpoint with current form data
+  - Shows suggestion as dismissible card: "Suggested: €XX – €YY" with one-tap apply for mid price
+  - Semantic tokens only, matches flat input surface style
+  - i18n: add `Sell.aiAssistant.priceSuggestion.*` messages for en/bg
+  - Done: seller sees AI price suggestion in price step; can accept/dismiss
+
+### 2.4 Docs + Capability Map Closeout
+
+- [ ] **PH2-AI-010:** Update CAPABILITY-MAP statuses + docs closeout
+  - Update `docs/strategy/CAPABILITY-MAP.md` statuses for all completed Phase 2 capabilities
+  - Update `docs/state/NOW.md` (phase progress, recent changes, focus)
+  - Add CHANGELOG entry for Phase 2 completion batch
+  - Done: CAPABILITY-MAP accurate, NOW.md current, CHANGELOG has entry
+
+### 2.5 Phase 2 Exit Criteria
 
 - AI listing MVP with measurable publish-speed and quality gains
 - Prompt registry and eval harness operational
 - Guardrails and schema validation enforced
+- Pricing suggestions available in sell flow
 
 ---
 
