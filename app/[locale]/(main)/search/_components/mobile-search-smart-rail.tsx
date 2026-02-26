@@ -1,12 +1,18 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
 
 import { SmartRail, type SmartRailPill } from "@/components/mobile/chrome/smart-rail"
-import { FilterHub, type FilterHubSubcategory } from "../../_components/filters/filter-hub"
+import type { FilterHubSubcategory } from "../../_components/filters/filter-hub"
 import { SearchActionBar } from "./search-action-bar"
 import type { CategoryAttribute } from "@/lib/data/categories"
+
+const FilterHub = dynamic(
+  () => import("../../_components/filters/filter-hub").then((mod) => mod.FilterHub),
+  { ssr: false },
+)
 
 interface MobileSearchSmartRailProps {
   locale: string
@@ -71,20 +77,22 @@ export function MobileSearchSmartRail({
 
       <SearchActionBar onFilterOpen={() => setFilterOpen(true)} />
 
-      <FilterHub
-        open={filterOpen}
-        onOpenChange={setFilterOpen}
-        locale={locale}
-        attributes={attributes}
-        {...(categorySlug ? { categorySlug } : {})}
-        {...(categoryId ? { categoryId } : {})}
-        {...(query.trim().length > 0 ? { searchQuery: query } : {})}
-        subcategories={subcategories}
-        {...(categoryName ? { categoryName } : {})}
-        basePath={basePath}
-        mode="full"
-        initialSection={null}
-      />
+      {filterOpen ? (
+        <FilterHub
+          open={filterOpen}
+          onOpenChange={setFilterOpen}
+          locale={locale}
+          attributes={attributes}
+          {...(categorySlug ? { categorySlug } : {})}
+          {...(categoryId ? { categoryId } : {})}
+          {...(query.trim().length > 0 ? { searchQuery: query } : {})}
+          subcategories={subcategories}
+          {...(categoryName ? { categoryName } : {})}
+          basePath={basePath}
+          mode="full"
+          initialSection={null}
+        />
+      ) : null}
     </>
   )
 }

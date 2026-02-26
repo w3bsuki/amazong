@@ -37,6 +37,7 @@
 | 2026-02-25 | REF-CLEANUP-012 | Test hygiene: extracted shared Next mocks into `test/mocks/*`; reduced duplicated mock setup | GREEN (typecheck, lint, styles:gate, test:unit) |
 | 2026-02-25 | Phase 1 (REF-CLEANUP) | Before/after: casts 46→15 (prod 34→3); console 111→0; knip warnings 6→0; dupes clones 53→50 lines 628→587 | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate) |
 | 2026-02-25 | Phase 2 (REF-ALIGNMENT) | Completed REF-ALIGNMENT-001..013: modular CSS split + token pruning, Tailwind v4 utility cleanup, unified mobile tab bar spacing (0 `pb-20` hacks), Supabase selects/filters helpers, route chrome moved to `components/layout`, API param normalization, AuthStateManager-driven tab bar, and full server actions Envelope/boundary flow standardization; architecture gate restored to baseline. | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate) |
+| 2026-02-26 | Phase 3 (REF-POLISH) | Completed REF-POLISH-001..010: removed global MotionProvider (framer-motion only on animated routes), sitemap cached (`use cache` + `cacheLife(revalidate_1h)` + `cacheTag(sitemap)`), metadata helper + route coverage, image audit (no raw `<img>`), loading/error completeness, mobile 375px UX sweep, reduced root provider footprint, bundle budget scan (0 routes >150KB gzip), and final E2E smoke + a11y green. Metrics: architecture client 269/1182→269/1195; dupes 655 (clones=53)→646 (clones=52); missingLoading=0; missingMetadata=0. | GREEN (typecheck, lint, styles:gate, test:unit, architecture:gate, test:e2e:smoke, test:a11y) |
 
 ---
 
@@ -123,16 +124,16 @@
 
 | ID | Task | Scope | Depends | Status |
 |----|------|-------|---------|--------|
-| REF-POLISH-001 | Remove global MotionProvider | medium | ALIGN-008 | ⬜ |
-| REF-POLISH-002 | Reduce global client provider footprint | large | 001 | ⬜ |
-| REF-POLISH-003 | Sitemap caching/revalidation | small | — | ⬜ |
-| REF-POLISH-004 | Metadata optimization (all routes) | large | — | ⬜ |
-| REF-POLISH-005 | Image optimization audit | large | — | ⬜ |
-| REF-POLISH-006 | Loading/error states completeness | medium | — | ⬜ |
-| REF-POLISH-007 | Mobile-first UX sweep (per route group) | large | ALIGN-011 | ⬜ |
-| REF-POLISH-008 | Bundle analysis + code splitting | large | 001, 002 | ⬜ |
-| REF-POLISH-009 | Final E2E + a11y smoke | medium | all | ⬜ |
-| REF-POLISH-010 | Close the loop: update state + changelog | small | all | ⬜ |
+| REF-POLISH-001 | Remove global MotionProvider | medium | ALIGN-008 | ✅ |
+| REF-POLISH-002 | Reduce global client provider footprint | large | 001 | ✅ |
+| REF-POLISH-003 | Sitemap caching/revalidation | small | — | ✅ |
+| REF-POLISH-004 | Metadata optimization (all routes) | large | — | ✅ |
+| REF-POLISH-005 | Image optimization audit | large | — | ✅ |
+| REF-POLISH-006 | Loading/error states completeness | medium | — | ✅ |
+| REF-POLISH-007 | Mobile-first UX sweep (per route group) | large | ALIGN-011 | ✅ |
+| REF-POLISH-008 | Bundle analysis + code splitting | large | 001, 002 | ✅ |
+| REF-POLISH-009 | Final E2E + a11y smoke | medium | all | ✅ |
+| REF-POLISH-010 | Close the loop: update state + changelog | small | all | ✅ |
 
 ---
 

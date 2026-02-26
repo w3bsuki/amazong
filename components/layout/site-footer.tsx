@@ -1,14 +1,10 @@
-"use client"
+import type { ReactElement } from "react"
 
-import { Link, usePathname } from "@/i18n/routing"
+import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion"
-import { ChevronUp as CaretUp } from "lucide-react";
+import { ChevronUp } from "lucide-react"
+
+import { FooterMobileVisibility } from "./footer-mobile-visibility"
 
 
 // Social Media Icons (inline SVGs for better performance)
@@ -48,51 +44,8 @@ const PinterestIcon = () => (
     </svg>
 )
 
-function scrollToTop() {
-    const prefersReducedMotion =
-        typeof window !== "undefined" &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
-    window.scrollTo({
-        top: 0,
-        behavior: prefersReducedMotion ? "auto" : "smooth",
-    })
-}
-
 export function SiteFooter() {
-    const t = useTranslations('Footer')
-    const pathname = usePathname()
-
-    // ==========================================================================
-    // 2026 Modern Mobile UX Pattern: App-like Footer Visibility
-    // ==========================================================================
-    // - Landing/Marketing pages: Full footer visible (for SEO, trust signals)
-    // - App pages (browsing, product, cart): Footer HIDDEN on mobile (tab bar replaces it)
-    // - Legal/Support pages: Footer visible (EU compliance requirement)
-    // - Desktop: Always visible (enough screen real estate)
-    //
-    // This mimics native e-commerce apps (Vinted, Depop, eBay) that hide
-    // traditional footers on mobile to maximize browsing space and use
-    // bottom tab bars for navigation instead.
-    // ==========================================================================
-    
-    // Strip locale prefix for route detection
-    const pathWithoutLocale = pathname.replace(/^\/(en|bg)/, "") || "/"
-    
-    // Routes where footer should be visible on mobile
-    const footerVisibleRoutes = [
-        "/", // Homepage/landing
-        "/about", // Company
-        "/terms", "/privacy", "/cookies", "/accessibility", // Legal
-        "/customer-service", "/contact", "/returns", "/security", "/feedback", // Support
-        "/sellers", // Business
-    ]
-    
-    // Check if current route should show footer on mobile
-    const isFooterVisibleOnMobile = footerVisibleRoutes.some(route => {
-        if (route === "/") return pathWithoutLocale === "/"
-        return pathWithoutLocale.startsWith(route)
-    })
+    const t = useTranslations("Footer")
 
     const footerSections = [
         {
@@ -140,7 +93,7 @@ export function SiteFooter() {
         { name: "X", href: process.env.NEXT_PUBLIC_SOCIAL_X_URL, icon: XIcon },
         { name: "YouTube", href: process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE_URL, icon: YouTubeIcon },
         { name: "TikTok", href: process.env.NEXT_PUBLIC_SOCIAL_TIKTOK_URL, icon: TikTokIcon },
-    ].filter((social): social is { name: string; href: string; icon: () => React.ReactElement } => {
+    ].filter((social): social is { name: string; href: string; icon: () => ReactElement } => {
         return typeof social.href === "string" && social.href.trim().length > 0 && social.href.trim() !== "#"
     })
 
@@ -151,36 +104,42 @@ export function SiteFooter() {
         { label: t('odr'), href: "https://ec.europa.eu/consumers/odr", external: true },
     ]
 
-    return (
-        <footer 
-            id="footerHeader" 
-            className={`bg-foreground text-background mt-auto w-full pb-tabbar-safe ${
-                isFooterVisibleOnMobile ? '' : 'hidden md:block'
-            }`}
-            role="contentinfo"
-            aria-label={t('footerLabel')}
-        >
-            {/* Back to Top */}
-            <button
-                className="hidden lg:block w-full bg-foreground/90 hover:bg-foreground/80 py-3.5 text-center transition-colors tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-foreground group"
-                onClick={scrollToTop}
-                aria-label={t('backToTop')}
-            >
-                <span className="text-sm font-normal text-background inline-flex items-center gap-1.5">
-                    <CaretUp size={16} />
-                    {t('backToTop')}
-                </span>
-            </button>
+    const copyrightYear =
+        Number.parseInt(process.env.NEXT_PUBLIC_COPYRIGHT_YEAR ?? "", 10) || 2026
 
-            {/* Mobile/Tablet Footer - Accordion */}
-            <div className="lg:hidden px-4 py-6">
-                <Accordion type="single" collapsible defaultValue="help" className="w-full">
+    return (
+        <>
+            <FooterMobileVisibility />
+            <footer 
+                id="footerHeader" 
+                className="bg-foreground text-background mt-auto w-full pb-tabbar-safe hidden md:block"
+                role="contentinfo"
+                aria-label={t('footerLabel')}
+            >
+                {/* Back to Top */}
+                <a
+                    href="#main-content"
+                    className="hidden lg:block w-full bg-foreground/90 hover:bg-foreground/80 py-3.5 text-center transition-colors tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-foreground group"
+                    aria-label={t('backToTop')}
+                >
+                    <span className="text-sm font-normal text-background inline-flex items-center gap-1.5">
+                        <ChevronUp size={16} />
+                        {t('backToTop')}
+                    </span>
+                </a>
+
+                {/* Mobile/Tablet Footer - Details */}
+                <div className="lg:hidden px-4 py-6">
                     {footerSections.map((section) => (
-                        <AccordionItem key={section.id} value={section.id} className="border-border-subtle">
-                            <AccordionTrigger className="text-sm font-medium text-background hover:no-underline py-4 hover:text-background">
+                        <details
+                            key={section.id}
+                            className="border-b border-border-subtle last:border-b-0"
+                            {...(section.id === "help" ? { open: true } : {})}
+                        >
+                            <summary className="min-h-11 cursor-pointer py-4 text-sm font-medium text-background hover:text-background tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-foreground">
                                 {section.title}
-                            </AccordionTrigger>
-                            <AccordionContent>
+                            </summary>
+                            <div className="pb-2">
                                 <nav aria-label={section.title}>
                                     <ul className="flex flex-col gap-3 pb-2">
                                         {section.links.map((link, linkIndex) => (
@@ -195,11 +154,10 @@ export function SiteFooter() {
                                         ))}
                                     </ul>
                                 </nav>
-                            </AccordionContent>
-                        </AccordionItem>
+                            </div>
+                        </details>
                     ))}
-                </Accordion>
-            </div>
+                </div>
 
             {/* Desktop Footer Links - 4-Column Grid */}
             <div className="hidden lg:block border-b border-border-subtle">
@@ -291,9 +249,10 @@ export function SiteFooter() {
 
                 {/* Copyright */}
                 <p className="text-xs text-background/80 text-center">
-                    {t('copyright', { year: new Date().getFullYear() })}
+                    {t('copyright', { year: copyrightYear })}
                 </p>
             </div>
-        </footer>
+            </footer>
+        </>
     )
 }

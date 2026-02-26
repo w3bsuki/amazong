@@ -1,19 +1,12 @@
 "use client"
 
-import { ArrowUpDown as ArrowsDownUp } from "lucide-react";
+import { ArrowUpDown as ArrowsDownUp, ChevronDown } from "lucide-react"
 
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { useCallback } from "react"
 import { cn } from "@/lib/utils"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
 export function SortSelect() {
   const t = useTranslations('SearchFilters')
@@ -56,33 +49,45 @@ export function SortSelect() {
   const isSorted = currentSort !== 'relevance'
 
   return (
-    <Select value={currentSort} onValueChange={handleSortChange}>
-      <SelectTrigger 
-        size="default"
+    <div className="relative w-full">
+      <label className="sr-only" htmlFor="sort">
+        {t("sortBy")}
+      </label>
+
+      <div
         className={cn(
-          "px-3 w-full rounded-lg gap-2",
-          "bg-surface-subtle hover:bg-hover hover:text-foreground border border-border-subtle",
+          "flex h-(--control-default) w-full items-center gap-2 rounded-lg border px-3 text-xs font-medium",
+          "bg-surface-subtle hover:bg-hover hover:text-foreground border-border-subtle",
           "active:bg-active",
           isSorted && "bg-selected text-primary border-selected-border",
-          "text-xs font-medium text-foreground",
-          "focus:ring-2 focus:ring-offset-1 focus:ring-ring",
-          "[&_svg[data-slot=select-icon]]:size-3"
+          "focus-within:ring-2 focus-within:ring-offset-1 focus-within:ring-ring",
         )}
-        aria-label={t('sortBy')}
       >
-        <ArrowsDownUp size={14} className={cn(
-          isSorted ? "text-primary" : "text-muted-foreground",
-          "shrink-0"
-        )} aria-hidden="true" />
-        <SelectValue placeholder={t('sortBy')} />
-      </SelectTrigger>
-      <SelectContent className="rounded-lg border-border">
-        <SelectItem value="relevance" className="rounded-md">{t('relevance')}</SelectItem>
-        <SelectItem value="price-asc" className="rounded-md">{t('priceLowHigh')}</SelectItem>
-        <SelectItem value="price-desc" className="rounded-md">{t('priceHighLow')}</SelectItem>
-        <SelectItem value="rating" className="rounded-md">{t('avgReview')}</SelectItem>
-        <SelectItem value="newest" className="rounded-md">{t('newestArrivals')}</SelectItem>
-      </SelectContent>
-    </Select>
+        <ArrowsDownUp
+          size={14}
+          className={cn(isSorted ? "text-primary" : "text-muted-foreground", "shrink-0")}
+          aria-hidden="true"
+        />
+
+        <select
+          id="sort"
+          value={currentSort}
+          onChange={(event) => handleSortChange(event.target.value)}
+          className="h-full flex-1 bg-transparent text-foreground outline-none appearance-none pr-5"
+          aria-label={t("sortBy")}
+        >
+          <option value="relevance">{t("relevance")}</option>
+          <option value="price-asc">{t("priceLowHigh")}</option>
+          <option value="price-desc">{t("priceHighLow")}</option>
+          <option value="rating">{t("avgReview")}</option>
+          <option value="newest">{t("newestArrivals")}</option>
+        </select>
+
+        <ChevronDown
+          className="pointer-events-none absolute right-3 size-3 text-muted-foreground"
+          aria-hidden="true"
+        />
+      </div>
+    </div>
   )
 }

@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-02-26 | REF-POLISH-010 | Phase 3 Production Polish Completed (REF-POLISH-001..010)
+- Decision/Outcome: Completed REF-POLISH-001..010: removed global MotionProvider (framer-motion only on animated routes), cached sitemap (1h) + tag, ensured metadata/loading/error completeness across routes, removed raw `<img>` usage, completed mobile 375px UX sweep, reduced root provider footprint, kept bundle budget under 150KB first-load JS, and verified E2E smoke + a11y green.
+- Why: Ship-ready production polish (performance + SEO + UX completeness) before launch.
+- Impact: Gates green (`typecheck`, `lint`, `styles:gate`, `test:unit`, `architecture:gate`, `test:e2e:smoke`, `test:a11y`); metrics: client=269/1195, over300=66, over500=3, missingLoading=0, missingMetadata=0, duplicates=646 (clones=52).
+- Next Action: Resume MIG-001 Step 5 and close LAUNCH-001..004 with human approval for sensitive ops.
+- Links: `refactor/production-push/MASTER-PLAN.md`, `app/sitemap.ts`, `lib/seo/metadata.ts`, `app/styles/tokens.css`, `app/[locale]/(main)/search/_components/search-action-bar.tsx`, `scripts/bundle-budget-scan.mjs`
+
 ### 2026-02-25 | REF-ALIGNMENT-001 | Phase 2 Alignment Completed (REF-ALIGNMENT-001..013)
 - Decision/Outcome: Completed REF-ALIGNMENT-001..013: split `globals.css` into modular `app/styles/*` imports, pruned legacy tokens + removed Tailwind-colliding utilities, eliminated all `pb-20` hacks via inherited tab bar safe padding, centralized Supabase selects + visibility filter + typed query helpers, moved cross-route chrome into `components/layout/*`, normalized categories API param to `[categoryId]`, and refactored mobile tab bar auth to use `AuthStateManager`. Server actions now follow the Envelope + boundary flow standard (Zod → `requireAuth()` → lib/data → revalidate → Envelope).
 - Why: Align the codebase to the refactor architecture contracts so future UX and performance work (REF-POLISH) is safe, consistent, and gate-enforced.

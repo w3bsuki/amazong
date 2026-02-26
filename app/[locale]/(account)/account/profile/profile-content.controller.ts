@@ -2,7 +2,7 @@ import { useRef, useState, useTransition } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
-import { validateEmail, validatePassword } from "@/lib/validation/auth"
+import { validateEmail, validatePassword } from "@/lib/validation/auth-client"
 
 import { getProfileErrorMessage } from "./profile-content.error-message"
 import type { ProfileContentProps } from "./profile-content.types"

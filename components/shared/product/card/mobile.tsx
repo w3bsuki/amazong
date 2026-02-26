@@ -9,14 +9,12 @@ import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { CardContent } from "@/components/ui/card"
-import { MarketplaceBadge } from "@/components/shared/marketplace-badge"
 
 import { ProductCardPrice } from "./price"
 import { ProductCardWishlistOverlay } from "./product-card-wishlist-overlay"
 import { buildProductCardFrameSurface, ProductCardFrame } from "./product-card-frame"
 import { useProductCardQuickViewInput } from "./use-product-card-quick-view-input"
 import {
-  getDiscountPercent,
   getOverlayBadgeVariants,
   getProductUrl,
 } from "./metadata"
@@ -35,7 +33,6 @@ export function MobileProductCard({
   images,
   description,
   originalPrice,
-  salePercent,
   createdAt,
   categoryPath,
   sellerId,
@@ -45,6 +42,7 @@ export function MobileProductCard({
   sellerVerified,
   slug,
   username,
+  layout = "feed",
   showWishlist = true,
   showWishlistAction,
   showPromotedBadge = true,
@@ -68,20 +66,18 @@ export function MobileProductCard({
   const productUrl = getProductUrl(username, slug, id)
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
 
-  const discountPercent = getDiscountPercent(price, originalPrice, salePercent)
-
   const sellerNameLabel = React.useMemo(() => {
     const normalized = sellerName?.trim()
     return normalized && normalized.length > 0 ? normalized : null
   }, [sellerName])
 
   const overlayBadgeVariants = React.useMemo(
-    () => getOverlayBadgeVariants({ isBoosted, boostExpiresAt, discountPercent }),
-    [boostExpiresAt, discountPercent, isBoosted]
+    () => getOverlayBadgeVariants({ isBoosted, boostExpiresAt, discountPercent: 0 }),
+    [boostExpiresAt, isBoosted]
   )
 
   const isVerifiedBusinessSeller = sellerTier === "business" && Boolean(sellerVerified)
-  const mediaRatio = 3 / 4
+  const mediaRatio = layout === "rail" ? 3 / 4 : 4 / 3
   const pricePresentation = "default"
   const surfaceClassName = cn(className, "border-0 bg-transparent shadow-none")
 
@@ -134,11 +130,8 @@ export function MobileProductCard({
                   )
                 }
 
-                return (
-                  <MarketplaceBadge key={variant} size="compact" variant="discount" className="px-1.5 py-0.5 text-2xs font-semibold rounded bg-destructive text-destructive-foreground">
-                    -{discountPercent}%
-                  </MarketplaceBadge>
-                )
+                // Mobile card surface stays clean — avoid percent discount badges (tested by e2e smoke).
+                return null
               })}
             </div>
           )}
@@ -184,7 +177,7 @@ export function MobileProductCard({
 
         <h3
           className={cn(
-            "min-w-0 text-xs leading-tight text-foreground",
+            "min-w-0 text-xs leading-snug text-muted-foreground",
             titleLines === 1 ? "truncate" : "line-clamp-2 break-words"
           )}
         >

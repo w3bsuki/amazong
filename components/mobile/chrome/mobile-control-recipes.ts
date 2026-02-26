@@ -13,6 +13,9 @@ const MOBILE_GHOST_PILL_INACTIVE_CLASS =
 export const MOBILE_ACTION_CHIP_CLASS =
   "inline-flex shrink-0 px-3.5 py-1.5 items-center gap-2 rounded-full bg-secondary text-sm font-medium leading-none text-foreground tap-transparent transition-all hover:bg-accent active:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 
+export const MOBILE_ACTION_ICON_CLASS =
+  "inline-flex shrink-0 size-8 items-center justify-center rounded-full bg-secondary text-foreground tap-transparent transition-all hover:bg-accent active:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+
 export const MOBILE_SEGMENTED_CONTAINER_CLASS =
   "grid grid-cols-2 rounded-full border border-border-subtle bg-surface-subtle p-0.5"
 

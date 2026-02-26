@@ -329,7 +329,7 @@ export function CategoryBrowseDrawer({
         </div>
       }
     >
-      <DrawerBody className="px-inset py-3">
+      <DrawerBody data-testid="home-v4-category-picker" className="px-inset py-3">
         {browseTab === "sellers" ? (
           <CategoryBrowseDrawerSellersTab
             normalizedQuery={normalizedQuery}

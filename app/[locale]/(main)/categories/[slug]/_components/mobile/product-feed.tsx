@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react"
 import type { UIProduct } from "@/lib/data/products"
-import { ProductGridSkeleton, type ProductGridProduct } from "@/components/shared/product/product-grid"
-import { AnimatedProductGrid } from "@/components/shared/product/animated-product-grid"
+import { ProductGrid, ProductGridSkeleton, type ProductGridProduct } from "@/components/shared/product/product-grid"
 import { EmptyStateCTA } from "../../../../../_components/empty-state-cta"
 import { useTranslations } from "next-intl"
 
@@ -123,13 +122,13 @@ export function ProductFeed({
             <ProductGridSkeleton count={6} density="compact" />
           ) : (
             <>
-              <AnimatedProductGrid
+              <ProductGrid
+                key={resolvedGridBatchKey}
                 products={gridProducts}
                 viewMode="grid"
                 density="compact"
                 preset="mobile-feed"
                 className="py-1 transition-colors duration-200"
-                batchKey={resolvedGridBatchKey}
               />
 
               {showInlineRefreshSkeleton && (

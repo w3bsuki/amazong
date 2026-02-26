@@ -112,7 +112,7 @@ function ProductCardPrice({
       {/* Primary price */}
       <span
         className={cn(
-          "tabular-nums whitespace-nowrap tracking-tight text-foreground text-sm font-bold"
+          "tabular-nums whitespace-nowrap tracking-tight text-foreground text-sm font-semibold"
         )}
       >
         {formattedPrice}

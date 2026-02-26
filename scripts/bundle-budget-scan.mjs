@@ -20,6 +20,7 @@ function parseArgs() {
   const scope = String(getArgValue("--scope", "extra"));
   const maxKb = Number(getArgValue("--max-kb", 150));
   const top = Number(getArgValue("--top", 25));
+  const route = String(getArgValue("--route", ""));
   const gate = args.includes("--gate") || String(process.env.FAIL_ON_FINDINGS || "") === "1";
 
   if (metric !== "gzip" && metric !== "raw") {
@@ -42,7 +43,7 @@ function parseArgs() {
     process.exit(2);
   }
 
-  return { metric, scope, maxKb, top, gate };
+  return { metric, scope, maxKb, top, route, gate };
 }
 
 function walkFiles(rootDir) {
@@ -219,6 +220,36 @@ function main() {
       console.log(
         `- ${row[valueKey]}KB\t(total gzip ${row.gzipKb}KB)\t${row.route}`,
       );
+    }
+  }
+
+  if (options.route) {
+    const target = rows.find((row) => row.route === options.route || row.routeKey === options.route);
+    if (!target) {
+      console.error(`[bundle:scan] --route "${options.route}" not found.`);
+      process.exit(2);
+    }
+
+    const metricBytesKey = options.metric === "gzip" ? "gzipBytes" : "rawBytes";
+    const sharedSet = new Set(shared);
+
+    const filesWithSizes = target.entryFiles.map((rel) => {
+      const sizes = getSizes(rel);
+      const bytes = sizes[metricBytesKey];
+      return { rel, bytes, kb: formatKb(bytes), shared: sharedSet.has(rel) };
+    });
+
+    filesWithSizes.sort((a, b) => b.bytes - a.bytes);
+
+    console.log(`[bundle:scan] File breakdown for ${target.route}`);
+    console.log(`[bundle:scan] ${options.metric} total=${target[options.metric + "Kb"]}KB extra=${target[valueKey]}KB files=${filesWithSizes.length}`);
+
+    const extraFiles = filesWithSizes.filter((f) => !f.shared);
+    const extraTotalBytes = extraFiles.reduce((sum, f) => sum + f.bytes, 0);
+    console.log(`[bundle:scan] extra files=${extraFiles.length} ${options.metric}=${formatKb(extraTotalBytes)}KB`);
+
+    for (const file of filesWithSizes.slice(0, 20)) {
+      console.log(`${file.shared ? "SHARED" : "EXTRA"}\t${file.kb}KB\t${file.rel}`);
     }
   }
 

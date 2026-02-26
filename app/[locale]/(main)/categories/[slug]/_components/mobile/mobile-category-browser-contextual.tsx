@@ -258,7 +258,7 @@ export function MobileCategoryBrowserContextual({
       icon: <ChevronLeft size={18} aria-hidden="true" />,
       onSelect: handleSectionBack,
       ariaLabel: tCommon("back"),
-      variant: "chip",
+      variant: "icon",
       testId: "mobile-category-rail-back",
     }
   }, [handleSectionBack, sectionPath.length, tCommon])
@@ -290,6 +290,7 @@ export function MobileCategoryBrowserContextual({
       active: hasActiveFilters,
       ...(activeFilterCount > 0 ? { badgeCount: activeFilterCount } : {}),
       testId: "mobile-category-filter-trigger",
+      variant: "icon",
     }
   }, [activeFilterCount, hasActiveFilters, tSearchFilters])
 

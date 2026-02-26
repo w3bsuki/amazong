@@ -1,10 +1,19 @@
 "use client"
 
 import * as React from "react"
+import dynamic from "next/dynamic"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
-import { ProductFormModal, type ProductFormData } from "../../../../../_components/product-form-modal"
+import type { ProductFormData } from "../../../../../_components/product-form-modal"
 import { updateProduct } from "../../../../../../../actions/products-update"
+
+const ProductFormModal = dynamic(
+  () => import("../../../../../_components/product-form-modal").then((mod) => mod.ProductFormModal),
+  {
+    ssr: false,
+    loading: () => <div className="min-h-dvh bg-background" />,
+  },
+)
 
 type Category = {
   id: string

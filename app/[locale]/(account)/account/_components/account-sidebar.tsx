@@ -1,12 +1,13 @@
 "use client"
 
 import * as React from "react"
+import dynamic from "next/dynamic"
 import { Link } from "@/i18n/routing"
 import { usePathname } from "@/i18n/routing"
 import { useLocale } from "next-intl"
 import { Bell as IconBell, Store as IconBuildingStore, ChartLine as IconChartLine, CreditCard as IconCreditCard, Crown as IconCrown, Heart as IconHeart, House as IconHome, Lock as IconLock, LogOut as IconLogout, MapPin as IconMapPin, MessageCircle as IconMessage, Package as IconPackage, Receipt as IconReceipt, Settings as IconSettings, Sparkles as IconSparkles, User as IconUser } from "lucide-react";
 
-import { PlansModal, type PlansModalServerActions } from "./plans-modal"
+import type { PlansModalServerActions } from "./plans-modal"
 import { Button } from "@/components/ui/button"
 import { DashboardSidebar } from "@/components/shared/dashboard-sidebar"
 
@@ -112,6 +113,11 @@ const getSecondaryNav = (locale: string) => [
   },
 ]
 
+const PlansModal = dynamic(
+  () => import("./plans-modal").then((mod) => mod.PlansModal),
+  { ssr: false },
+)
+
 interface AccountSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: {
     name: string
@@ -210,6 +216,7 @@ function AccountNavUser({
 export function AccountSidebar({ user, plansModalActions, ...props }: AccountSidebarProps) {
   const locale = useLocale()
   const pathname = usePathname()
+  const [isPlansOpen, setIsPlansOpen] = React.useState(false)
 
   const localePrefix = `/${locale}`
   const basePathname = pathname.startsWith(localePrefix)
@@ -294,16 +301,23 @@ export function AccountSidebar({ user, plansModalActions, ...props }: AccountSid
                 ? 'По-ниски такси и повече възможности'
                 : 'Lower fees & more features'}
             </p>
-            <PlansModal
-              source="sidebar"
-              actions={plansModalActions}
-              trigger={
-                <Button size="sm" className="w-full h-8 text-xs">
-                  <IconCrown className="size-3.5 mr-1.5" />
-                  {locale === 'bg' ? 'Виж планове' : 'View Plans'}        
-                </Button>
-              }
-            />
+            <Button
+              size="sm"
+              className="w-full h-8 text-xs"
+              onClick={() => setIsPlansOpen(true)}
+            >
+              <IconCrown className="size-3.5 mr-1.5" />
+              {locale === 'bg' ? 'Виж планове' : 'View Plans'}
+            </Button>
+
+            {isPlansOpen ? (
+              <PlansModal
+                source="sidebar"
+                actions={plansModalActions}
+                open={isPlansOpen}
+                onOpenChange={setIsPlansOpen}
+              />
+            ) : null}
           </div>
         </SidebarGroup>
 

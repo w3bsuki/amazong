@@ -1,8 +1,6 @@
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
-import { redirect } from "@/i18n/routing"
-import { createClient } from "@/lib/supabase/server"
 import { createPageMetadata } from "@/lib/seo/metadata"
 
 import CheckoutPageClient from "../_components/checkout-page-client"
@@ -33,19 +31,6 @@ export default async function Page({ params }: CheckoutPageProps) {
   const { locale: localeParam } = await params
   const locale = localeParam === "bg" ? "bg" : "en"
   setRequestLocale(locale)
-
-  const supabase = await createClient()
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError || !user) {
-    redirect({
-      href: { pathname: "/auth/login", query: { next: "/checkout" } },
-      locale,
-    })
-  }
 
   return (
     <CheckoutPageClient

@@ -1,14 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
 import { createClient } from "@/lib/supabase/client"
-import { validateEmail, validatePassword } from "@/lib/validation/auth"
+import { validateEmail, validatePassword } from "@/lib/validation/auth-client"
 
-import { SecurityChangeEmailDialog } from "./security-change-email-dialog"
-import { SecurityChangePasswordDialog } from "./security-change-password-dialog"
 import { getPasswordStrength, getSecurityCopy } from "./security-content.copy"
 import { SecurityContentOverview } from "./security-content-overview"
 
@@ -17,6 +16,16 @@ interface SecurityContentProps {
   locale: string
   userEmail: string
 }
+
+const SecurityChangePasswordDialog = dynamic(
+  () => import("./security-change-password-dialog").then((mod) => mod.SecurityChangePasswordDialog),
+  { ssr: false },
+)
+
+const SecurityChangeEmailDialog = dynamic(
+  () => import("./security-change-email-dialog").then((mod) => mod.SecurityChangeEmailDialog),
+  { ssr: false },
+)
 
 export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
   const tAuth = useTranslations("Auth")
@@ -114,33 +123,37 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
         onOpenPassword={() => setIsChangePasswordOpen(true)}
       />
 
-      <SecurityChangePasswordDialog
-        copy={copy}
-        tAuth={(key) => tAuth(key as never)}
-        open={isChangePasswordOpen}
-        onOpenChange={setIsChangePasswordOpen}
-        isLoading={isLoading}
-        showNewPassword={showNewPassword}
-        setShowNewPassword={setShowNewPassword}
-        passwordData={passwordData}
-        setPasswordData={setPasswordData}
-        passwordStrength={passwordStrength}
-        passwordErrors={passwordErrors}
-        isPasswordValid={isPasswordValid}
-        onSubmit={handleChangePassword}
-      />
+      {isChangePasswordOpen ? (
+        <SecurityChangePasswordDialog
+          copy={copy}
+          tAuth={(key) => tAuth(key as never)}
+          open={isChangePasswordOpen}
+          onOpenChange={setIsChangePasswordOpen}
+          isLoading={isLoading}
+          showNewPassword={showNewPassword}
+          setShowNewPassword={setShowNewPassword}
+          passwordData={passwordData}
+          setPasswordData={setPasswordData}
+          passwordStrength={passwordStrength}
+          passwordErrors={passwordErrors}
+          isPasswordValid={isPasswordValid}
+          onSubmit={handleChangePassword}
+        />
+      ) : null}
 
-      <SecurityChangeEmailDialog
-        copy={copy}
-        userEmail={userEmail}
-        open={isChangeEmailOpen}
-        onOpenChange={setIsChangeEmailOpen}
-        isLoading={isLoading}
-        emailData={emailData}
-        setEmailData={setEmailData}
-        isEmailValid={isEmailValid}
-        onSubmit={handleChangeEmail}
-      />
+      {isChangeEmailOpen ? (
+        <SecurityChangeEmailDialog
+          copy={copy}
+          userEmail={userEmail}
+          open={isChangeEmailOpen}
+          onOpenChange={setIsChangeEmailOpen}
+          isLoading={isLoading}
+          emailData={emailData}
+          setEmailData={setEmailData}
+          isEmailValid={isEmailValid}
+          onSubmit={handleChangeEmail}
+        />
+      ) : null}
     </div>
   )
 }

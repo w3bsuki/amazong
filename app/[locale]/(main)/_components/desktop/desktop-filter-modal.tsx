@@ -1,5 +1,6 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import * as React from "react"
 import { useSearchParams } from "next/navigation"
 import { useRouter, usePathname } from "@/i18n/routing"
@@ -10,13 +11,41 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogContent,
+  DialogDescription,
   DialogTrigger,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { useFilterCount } from "../filters/use-filter-count"
 import type { CategoryAttribute } from "@/lib/types/categories"
 import { getCategoryAttributeKey } from "@/lib/filters/category-attribute"
-import { DesktopFilterModalContent } from "./desktop-filter-modal-content"
+
+const DesktopFilterModalContent = dynamic(
+  () => import("./desktop-filter-modal-content").then((mod) => mod.DesktopFilterModalContent),
+  {
+    ssr: false,
+    loading: () => (
+      <DialogContent
+        className="sm:max-w-(--container-modal-lg) h-(--dialog-h-85vh) max-h-(--dialog-h-85vh) p-0 gap-0 flex flex-col overflow-hidden"
+        showCloseButton={false}
+      >
+        <DialogDescription className="sr-only">Loading filters</DialogDescription>
+        <div className="border-b bg-background px-6 py-5">
+          <DialogTitle className="text-lg font-semibold tracking-tight">Loading…</DialogTitle>
+          <p className="mt-1 text-xs text-muted-foreground">Preparing filter options.</p>
+        </div>
+        <div className="flex-1 overflow-y-auto overscroll-contain p-6">
+          <div className="space-y-3">
+            <div className="h-5 w-40 animate-pulse rounded-md bg-muted" />
+            <div className="h-5 w-64 animate-pulse rounded-md bg-muted" />
+            <div className="h-5 w-52 animate-pulse rounded-md bg-muted" />
+          </div>
+        </div>
+      </DialogContent>
+    ),
+  },
+)
 
 interface DesktopFilterModalProps {
   attributes?: CategoryAttribute[]
@@ -193,24 +222,26 @@ export function DesktopFilterModal({
         {trigger ?? defaultTrigger}
       </DialogTrigger>
 
-      <DesktopFilterModalContent
-        t={t}
-        tHub={tHub}
-        locale={locale}
-        filterableAttributes={filterableAttributes}
-        pendingFilters={pendingFilters}
-        pendingPrice={pendingPrice}
-        pendingRating={pendingRating}
-        setPendingPrice={setPendingPrice}
-        setPendingRating={setPendingRating}
-        handleAttrChange={handleAttrChange}
-        handleBooleanAttr={handleBooleanAttr}
-        clearAll={clearAll}
-        applyFilters={applyFilters}
-        hasPendingFilters={hasPendingFilters}
-        liveCount={liveCount}
-        isCountLoading={isCountLoading}
-      />
+      {isOpen ? (
+        <DesktopFilterModalContent
+          t={t}
+          tHub={tHub}
+          locale={locale}
+          filterableAttributes={filterableAttributes}
+          pendingFilters={pendingFilters}
+          pendingPrice={pendingPrice}
+          pendingRating={pendingRating}
+          setPendingPrice={setPendingPrice}
+          setPendingRating={setPendingRating}
+          handleAttrChange={handleAttrChange}
+          handleBooleanAttr={handleBooleanAttr}
+          clearAll={clearAll}
+          applyFilters={applyFilters}
+          hasPendingFilters={hasPendingFilters}
+          liveCount={liveCount}
+          isCountLoading={isCountLoading}
+        />
+      ) : null}
     </Dialog>
   )
 }

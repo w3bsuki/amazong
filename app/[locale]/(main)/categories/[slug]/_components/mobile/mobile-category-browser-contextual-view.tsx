@@ -1,11 +1,11 @@
 import type { CategoryAttribute } from "@/lib/data/categories"
 import type { UIProduct } from "@/lib/data/products"
+import dynamic from "next/dynamic"
 import {
   SmartRail,
   type SmartRailAction,
   type SmartRailPill,
 } from "@/components/mobile/chrome/smart-rail"
-import { FilterHub } from "../../../../_components/filters/filter-hub"
 import { PageShell } from "../../../../../_components/page-shell"
 import { ProductFeed } from "./product-feed"
 import {
@@ -13,7 +13,12 @@ import {
   type ScopeCategory,
 } from "./mobile-category-browser-contextual-utils"
 
-const MOBILE_FEED_FRAME_CLASS = "mx-auto w-full max-w-(--breakpoint-md) pb-tabbar-safe"
+const FilterHub = dynamic(
+  () => import("../../../../_components/filters/filter-hub").then((mod) => mod.FilterHub),
+  { ssr: false },
+)
+
+const MOBILE_FEED_FRAME_CLASS = "mx-auto w-full max-w-screen-md pb-tabbar-safe"
 
 interface MobileCategoryBrowserContextualViewProps {
   locale: string
@@ -65,7 +70,7 @@ export function MobileCategoryBrowserContextualView({
           ariaLabel={navigationAriaLabel}
           pills={railPills}
           {...(railLeadingAction ? { leadingAction: railLeadingAction } : {})}
-          {...(railTrailingAction ? { trailingAction: railTrailingAction } : {})}
+          {...(railTrailingAction ? { filterAction: railTrailingAction } : {})}
           stickyTop="var(--offset-mobile-primary-rail)"
           sticky={true}
           testId="mobile-category-scope-rail"
@@ -89,21 +94,23 @@ export function MobileCategoryBrowserContextualView({
         </div>
       </div>
 
-      <FilterHub
-        open={filterOpen}
-        onOpenChange={onFilterOpenChange}
-        locale={locale}
-        attributes={attributes}
-        {...(categorySlug !== "all" ? { categorySlug } : {})}
-        {...(categoryId ? { categoryId } : {})}
-        subcategories={toFilterSubcategories(railCategories)}
-        {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
-        basePath={`/categories/${categorySlug}`}
-        appliedSearchParams={appliedSearchParams}
-        onApply={onApplyFilters}
-        mode="full"
-        initialSection={null}
-      />
+      {filterOpen ? (
+        <FilterHub
+          open={filterOpen}
+          onOpenChange={onFilterOpenChange}
+          locale={locale}
+          attributes={attributes}
+          {...(categorySlug !== "all" ? { categorySlug } : {})}
+          {...(categoryId ? { categoryId } : {})}
+          subcategories={toFilterSubcategories(railCategories)}
+          {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
+          basePath={`/categories/${categorySlug}`}
+          appliedSearchParams={appliedSearchParams}
+          onApply={onApplyFilters}
+          mode="full"
+          initialSection={null}
+        />
+      ) : null}
     </PageShell>
   )
 }

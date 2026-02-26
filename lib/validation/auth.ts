@@ -68,29 +68,5 @@ export const signUpSchema = z
     path: ["confirmPassword"],
   })
 
-// Validate password and return message keys
-export function validatePassword(password: string): { valid: boolean; errors: string[] } {
-  const errors: string[] = []
-
-  if (password.length < 8) errors.push("errors.passwordMin")
-  if (!/[a-zA-Z]/.test(password)) errors.push("errors.passwordLetter")
-  if (!/[0-9]/.test(password)) errors.push("errors.passwordNumber")
-
-  return { valid: errors.length === 0, errors }
-}
-
-// Validate email and return message key
-export function validateEmail(email: string): { valid: boolean; error: string | null } {
-  if (!email || email.trim().length === 0) {
-    return { valid: false, error: "errors.emailRequired" }
-  }
-
-  const result = emailSchema.safeParse(email)
-  if (!result.success) {
-    // Normalize any issue to the same UX message.
-    return { valid: false, error: "errors.emailInvalid" }
-  }
-
-  return { valid: true, error: null }
-}
+export { validateEmail, validatePassword } from "./auth-validators"
 

@@ -1,7 +1,5 @@
 "use client"
 
-import { formatDistanceToNow } from "date-fns"
-import { bg, enUS } from "date-fns/locale"
 import { useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
@@ -11,6 +9,70 @@ import { ActivityListShell, ActivitySectionHeader } from "@/components/shared/ac
 import { formatPrice } from "@/lib/price"
 import { EmptyStateCTA } from "../../../_components/empty-state-cta"
 
+type RelativeTimeUnit = "year" | "month" | "week" | "day" | "hour" | "minute" | "second"
+
+const RELATIVE_TIME_STEPS: Array<{ unit: RelativeTimeUnit; seconds: number }> = [
+  { unit: "year", seconds: 60 * 60 * 24 * 365 },
+  { unit: "month", seconds: 60 * 60 * 24 * 30 },
+  { unit: "week", seconds: 60 * 60 * 24 * 7 },
+  { unit: "day", seconds: 60 * 60 * 24 },
+  { unit: "hour", seconds: 60 * 60 },
+  { unit: "minute", seconds: 60 },
+  { unit: "second", seconds: 1 },
+]
+
+const UNIT_LABELS: Record<
+  "en" | "bg",
+  Record<RelativeTimeUnit, { one: string; other: string }>
+> = {
+  en: {
+    year: { one: "year", other: "years" },
+    month: { one: "month", other: "months" },
+    week: { one: "week", other: "weeks" },
+    day: { one: "day", other: "days" },
+    hour: { one: "hour", other: "hours" },
+    minute: { one: "minute", other: "minutes" },
+    second: { one: "second", other: "seconds" },
+  },
+  bg: {
+    year: { one: "година", other: "години" },
+    month: { one: "месец", other: "месеца" },
+    week: { one: "седмица", other: "седмици" },
+    day: { one: "ден", other: "дни" },
+    hour: { one: "час", other: "часа" },
+    minute: { one: "минута", other: "минути" },
+    second: { one: "секунда", other: "секунди" },
+  },
+}
+
+function formatRelativeTime(valueIso: string, locale: "en" | "bg", addSuffix: boolean) {
+  const date = new Date(valueIso)
+  if (Number.isNaN(date.getTime())) return ""
+
+  const now = Date.now()
+  const diffSeconds = Math.round((date.getTime() - now) / 1000)
+  const absSeconds = Math.abs(diffSeconds)
+
+  const step =
+    RELATIVE_TIME_STEPS.find(({ seconds }) => absSeconds >= seconds) ?? RELATIVE_TIME_STEPS.at(-1)
+  if (!step) return ""
+
+  const relativeValue = Math.round(diffSeconds / step.seconds)
+  const unit = step.unit
+
+  if (addSuffix) {
+    return new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(
+      relativeValue,
+      unit,
+    )
+  }
+
+  const absValue = Math.max(0, Math.abs(relativeValue))
+  const pluralRule = new Intl.PluralRules(locale).select(absValue) as "one" | "other"
+  const label = UNIT_LABELS[locale][unit][pluralRule] ?? UNIT_LABELS[locale][unit].other
+  const number = new Intl.NumberFormat(locale).format(absValue)
+  return `${number} ${label}`
+}
 
 interface RecentOrder {
   id: string
@@ -75,7 +137,6 @@ function getRecentProductHref(product: RecentProduct) {
 }
 
 export function AccountRecentActivity({ orders, products, sales, locale }: AccountRecentActivityProps) {
-  const dateLocale = locale === 'bg' ? bg : enUS
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -84,7 +145,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
 
   const formatRelative = (value: string, withSuffix: boolean) => {
     if (!mounted) return ""
-    return formatDistanceToNow(new Date(value), { addSuffix: withSuffix, locale: dateLocale })
+    return formatRelativeTime(value, locale === "bg" ? "bg" : "en", withSuffix)
   }
 
   const formatCurrency = (value: number) => formatPrice(value, { locale })

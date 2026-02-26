@@ -5,6 +5,7 @@ import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import {
   MOBILE_ACTION_CHIP_CLASS,
+  MOBILE_ACTION_ICON_CLASS,
   getMobileQuickPillClass,
 } from "@/components/mobile/chrome/mobile-control-recipes"
 
@@ -27,7 +28,7 @@ export interface SmartRailAction {
   onSelect?: (() => void) | undefined
   ariaLabel?: string
   testId?: string
-  variant?: "chip" | "pill"
+  variant?: "chip" | "pill" | "icon"
 }
 
 export interface SmartRailProps {
@@ -35,6 +36,7 @@ export interface SmartRailProps {
   pills: SmartRailPill[]
   leadingAction?: SmartRailAction | undefined
   trailingAction?: SmartRailAction | undefined
+  filterAction?: SmartRailAction | undefined
   sticky?: boolean
   stickyTop?: string | number
   className?: string
@@ -55,9 +57,75 @@ function getActionClass(action: SmartRailAction): string {
     return getMobileQuickPillClass(Boolean(action.active))
   }
 
+  if (variant === "icon") {
+    return cn(
+      MOBILE_ACTION_ICON_CLASS,
+      action.active && "border-foreground bg-secondary"
+    )
+  }
+
   return cn(
     MOBILE_ACTION_CHIP_CLASS,
     action.active && "border-foreground",
+  )
+}
+
+type SmartRailPressableProps = {
+  href?: string
+  onSelect?: (() => void) | undefined
+  className: string
+  active?: boolean
+  ariaLabel: string
+  title?: string
+  testId?: string
+  children: React.ReactNode
+}
+
+function SmartRailPressable({
+  href,
+  onSelect,
+  className,
+  active,
+  ariaLabel,
+  title,
+  testId,
+  children,
+}: SmartRailPressableProps) {
+  const testProps = testId ? { "data-testid": testId } : {}
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        title={title}
+        aria-current={active ? "page" : undefined}
+        aria-label={ariaLabel}
+        onClick={(event) => {
+          if (!onSelect) return
+          if (!shouldInterceptLinkClick(event)) return
+          event.preventDefault()
+          onSelect()
+        }}
+        className={className}
+        {...testProps}
+      >
+        {children}
+      </Link>
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={className}
+      aria-pressed={active}
+      aria-label={ariaLabel}
+      title={title}
+      {...testProps}
+    >
+      {children}
+    </button>
   )
 }
 
@@ -65,16 +133,20 @@ type SmartRailActionContentProps = {
   icon?: React.ReactNode
   label: string
   badgeCount?: number | undefined
+  variant?: "chip" | "pill" | "icon" | undefined
 }
 
-function SmartRailActionContent({ icon, label, badgeCount }: SmartRailActionContentProps) {
+function SmartRailActionContent({ icon, label, badgeCount, variant }: SmartRailActionContentProps) {
   return (
     <>
       {icon}
-      <span className="whitespace-nowrap">{label}</span>
+      <span className={cn("whitespace-nowrap", variant === "icon" && "sr-only")}>{label}</span>
       {typeof badgeCount === "number" && badgeCount > 0 && (
         <span
-          className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 py-0.5 text-2xs font-semibold text-background"
+          className={cn(
+            "inline-flex items-center justify-center rounded-full bg-foreground font-semibold text-background",
+            variant === "icon" ? "absolute -top-1 -right-1 size-4 text-2xs" : "min-w-5 px-1.5 py-0.5 text-2xs"
+          )}
           aria-label={String(badgeCount)}
         >
           {badgeCount}
@@ -89,12 +161,13 @@ export function SmartRail({
   pills,
   leadingAction,
   trailingAction,
+  filterAction,
   sticky = true,
   stickyTop = "var(--offset-mobile-primary-rail)",
   className,
   testId,
 }: SmartRailProps) {
-  if (pills.length === 0 && !leadingAction && !trailingAction) return null
+  if (pills.length === 0 && !leadingAction && !trailingAction && !filterAction) return null
 
   return (
     <nav
@@ -109,119 +182,87 @@ export function SmartRail({
     >
       <div className="overflow-x-auto scrollbar-hide">
         <div className="flex w-max min-w-full items-center gap-2 px-4">
+          {filterAction && (
+            <>
+              <SmartRailPressable
+                {...(filterAction.href ? { href: filterAction.href } : {})}
+                onSelect={filterAction.onSelect}
+                className={cn(
+                  getActionClass(filterAction), 
+                  "border bg-background hover:bg-secondary relative",
+                  !filterAction.active && "border-border"
+                )}
+                active={Boolean(filterAction.active)}
+                ariaLabel={filterAction.ariaLabel ?? filterAction.label}
+                {...(filterAction.testId ? { testId: filterAction.testId } : {})}
+              >
+                <SmartRailActionContent
+                  icon={filterAction.icon}
+                  label={filterAction.label}
+                  badgeCount={filterAction.badgeCount}
+                  variant={filterAction.variant}
+                />
+              </SmartRailPressable>
+              <div className="w-px h-5 bg-border shrink-0 mx-0.5" />
+            </>
+          )}
+
           {leadingAction && (
             <>
-              {leadingAction.href ? (
-                <Link
-                  href={leadingAction.href}
-                  onClick={(event) => {
-                    if (!leadingAction.onSelect) return
-                    if (!shouldInterceptLinkClick(event)) return
-                    event.preventDefault()
-                    leadingAction.onSelect()
-                  }}
-                  className={getActionClass(leadingAction)}
-                  aria-current={leadingAction.active ? "page" : undefined}
-                  aria-label={leadingAction.ariaLabel ?? leadingAction.label}
-                  {...(leadingAction.testId ? { "data-testid": leadingAction.testId } : {})}
-                >
-                  {leadingAction.icon}
-                  <span className="whitespace-nowrap">{leadingAction.label}</span>
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={leadingAction.onSelect}
-                  className={getActionClass(leadingAction)}
-                  aria-pressed={leadingAction.active}
-                  aria-label={leadingAction.ariaLabel ?? leadingAction.label}
-                  {...(leadingAction.testId ? { "data-testid": leadingAction.testId } : {})}
-                >
-                  {leadingAction.icon}
-                  <span className="whitespace-nowrap">{leadingAction.label}</span>
-                </button>
-              )}
+              <SmartRailPressable
+                {...(leadingAction.href ? { href: leadingAction.href } : {})}
+                onSelect={leadingAction.onSelect}
+                className={getActionClass(leadingAction)}
+                active={Boolean(leadingAction.active)}
+                ariaLabel={leadingAction.ariaLabel ?? leadingAction.label}
+                {...(leadingAction.testId ? { testId: leadingAction.testId } : {})}
+              >
+                <SmartRailActionContent
+                  icon={leadingAction.icon}
+                  label={leadingAction.label}
+                  badgeCount={leadingAction.badgeCount}
+                  variant={leadingAction.variant}
+                />
+              </SmartRailPressable>
             </>
           )}
 
           {pills.map((pill) => {
             const pillClass = getMobileQuickPillClass(Boolean(pill.active))
 
-            if (pill.href) {
-              return (
-                <Link
-                  key={pill.id}
-                  href={pill.href}
-                  title={pill.title ?? pill.label}
-                  aria-current={pill.active ? "page" : undefined}
-                  aria-label={pill.label}
-                  onClick={(event) => {
-                    if (!pill.onSelect) return
-                    if (!shouldInterceptLinkClick(event)) return
-                    event.preventDefault()
-                    pill.onSelect()
-                  }}
-                  className={pillClass}
-                  {...(pill.testId ? { "data-testid": pill.testId } : {})}
-                >
-                  <span className="whitespace-nowrap">{pill.label}</span>
-                </Link>
-              )
-            }
-
             return (
-              <button
+              <SmartRailPressable
                 key={pill.id}
-                type="button"
-                onClick={pill.onSelect}
+                {...(pill.href ? { href: pill.href } : {})}
+                onSelect={pill.onSelect}
                 className={pillClass}
-                aria-pressed={pill.active}
-                aria-label={pill.label}
-                {...(pill.testId ? { "data-testid": pill.testId } : {})}
+                active={Boolean(pill.active)}
+                ariaLabel={pill.label}
+                title={pill.title ?? pill.label}
+                {...(pill.testId ? { testId: pill.testId } : {})}
               >
                 <span className="whitespace-nowrap">{pill.label}</span>
-              </button>
+              </SmartRailPressable>
             )
           })}
 
           {trailingAction && (
             <>
-              {trailingAction.href ? (
-                <Link
-                  href={trailingAction.href}
-                  onClick={(event) => {
-                    if (!trailingAction.onSelect) return
-                    if (!shouldInterceptLinkClick(event)) return
-                    event.preventDefault()
-                    trailingAction.onSelect()
-                  }}
-                  className={getActionClass(trailingAction)}
-                  aria-current={trailingAction.active ? "page" : undefined}
-                  aria-label={trailingAction.ariaLabel ?? trailingAction.label}
-                  {...(trailingAction.testId ? { "data-testid": trailingAction.testId } : {})}
-                >
-                  <SmartRailActionContent
-                    icon={trailingAction.icon}
-                    label={trailingAction.label}
-                    badgeCount={trailingAction.badgeCount}
-                  />
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={trailingAction.onSelect}
-                  className={getActionClass(trailingAction)}
-                  aria-pressed={trailingAction.active}
-                  aria-label={trailingAction.ariaLabel ?? trailingAction.label}
-                  {...(trailingAction.testId ? { "data-testid": trailingAction.testId } : {})}
-                >
-                  <SmartRailActionContent
-                    icon={trailingAction.icon}
-                    label={trailingAction.label}
-                    badgeCount={trailingAction.badgeCount}
-                  />
-                </button>
-              )}
+              <SmartRailPressable
+                {...(trailingAction.href ? { href: trailingAction.href } : {})}
+                onSelect={trailingAction.onSelect}
+                className={getActionClass(trailingAction)}
+                active={Boolean(trailingAction.active)}
+                ariaLabel={trailingAction.ariaLabel ?? trailingAction.label}
+                {...(trailingAction.testId ? { testId: trailingAction.testId } : {})}
+              >
+                <SmartRailActionContent
+                  icon={trailingAction.icon}
+                  label={trailingAction.label}
+                  badgeCount={trailingAction.badgeCount}
+                  variant={trailingAction.variant}
+                />
+              </SmartRailPressable>
             </>
           )}
         </div>

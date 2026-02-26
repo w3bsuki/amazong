@@ -15,7 +15,7 @@
   --popover-foreground: 0.18 0.02 255;
 
   /* Brand blue (primary) */
-  --primary: 0.62 0.20 255;
+  --primary: 0.54 0.20 255;
   --primary-foreground: 1 0 0;
 
   /* Secondary surfaces */
@@ -29,13 +29,13 @@
   --accent-foreground: 0.22 0.02 255;
 
   /* Destructive (discount/error) */
-  --destructive: 0.62 0.22 30;
+  --destructive: 0.50 0.22 30;
   --destructive-foreground: 1 0 0;
 
   --border: 0.92 0.01 255;
   --border-subtle: 0.96 0.005 255;
   --input: 0.92 0.01 255;
-  --ring: 0.62 0.20 255;
+  --ring: 0.54 0.20 255;
   --ring-subtle: var(--border-subtle);
   --category-ring: 0.18 0.02 255;
 
@@ -48,14 +48,14 @@
   --active: 0.96 0.01 255;
   --selected: 0.96 0.01 255;
   --selected-foreground: 0.18 0.02 255;
-  --selected-border: 0.62 0.20 255;
+  --selected-border: 0.54 0.20 255;
   --hover-border: 0.92 0.01 255;
   --nav-active: var(--foreground);
   --nav-inactive: 0.42 0.01 255;
   --nav-indicator: 0.94 0.015 255;
 
   /* Notification badge (red dot on avatar/icon) */
-  --notification: 0.62 0.22 30;
+  --notification: 0.50 0.22 30;
   /* vivid red-orange */
 
   /* Brand/CTA accents (raw components; mapped to `--color-*` tokens in @theme) */

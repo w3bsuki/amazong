@@ -15,6 +15,7 @@ import { createClient, createFreshClient } from "@/lib/supabase/client"
 import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js"
 
 import { logger } from "@/lib/logger"
+import { isUnauthenticatedRefreshError } from "./auth-state-manager-errors"
 interface AuthState {
   user: User | null
   session: Session | null
@@ -99,7 +100,23 @@ export function AuthStateManager({ children }: { children: ReactNode }) {
           error,
         } = await readFreshUser()
 
-        if (error) throw error
+        if (error && forceRetry && isUnauthenticatedRefreshError(error)) {
+          await new Promise((resolve) => setTimeout(resolve, 180))
+          const retry = await readFreshUser()
+          user = retry.data.user
+          error = retry.error
+        }
+
+        if (error) {
+          if (isUnauthenticatedRefreshError(error)) {
+            setStateFromUser(null)
+            await syncSingletonSession(null)
+            return
+          }
+
+          throw error
+        }
+
         if (!user && forceRetry) {
           await new Promise((resolve) => setTimeout(resolve, 180))
           const retry = await readFreshUser()

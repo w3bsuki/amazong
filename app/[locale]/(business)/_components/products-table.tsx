@@ -1,8 +1,9 @@
 "use client"
 import * as React from "react"
+import dynamic from "next/dynamic"
 import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
-import { ProductFormModal, type ProductFormData } from "./product-form-modal"
+import type { ProductFormData } from "./product-form-modal"
 import { ProductsTableGrid } from "./products-table-grid"
 import { toNewProduct, toUpdatedProduct } from "./products-table-mappers"
 import { ProductsTableToolbar } from "./products-table-toolbar"
@@ -14,6 +15,11 @@ import type {
   StatusFilter,
 } from "./products-table.types"
 export type { ProductsTableServerActions } from "./products-table.types"
+
+const ProductFormModal = dynamic(
+  () => import("./product-form-modal").then((mod) => mod.ProductFormModal),
+  { ssr: false },
+)
 export function ProductsTable({
   initialProducts,
   categories,
@@ -260,13 +266,15 @@ export function ProductsTable({
           </div>
         )}
       </div>
-      <ProductFormModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        product={editingProduct}
-        categories={categories}
-        onSubmit={handleProductSubmit}
-      />
+      {isModalOpen ? (
+        <ProductFormModal
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          product={editingProduct}
+          categories={categories}
+          onSubmit={handleProductSubmit}
+        />
+      ) : null}
     </>
   )
 }
