@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { stripe } from '@/lib/stripe';
+import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation-email"
 import { getStripeWebhookSecrets } from '@/lib/env';
 import { ensureOrderConversations } from "@/lib/order-conversations"
 import { logError } from "@/lib/logger"
+import { normalizeLocale } from "@/lib/stripe-locale"
 import type { Json } from "@/lib/supabase/database.types"
 import type Stripe from 'stripe';
 import { z } from "zod"
@@ -286,8 +288,36 @@ async function processCheckoutSessionCompleted(params: {
       )
     }
 
-    // NOTE (BACKLOG-006): Send buyer confirmation email when email service is set up.
-    // await sendOrderConfirmationEmail(session.customer_details?.email, order);
+    const buyerEmail = session.customer_details?.email || session.customer_email || null
+    const buyerLocale = normalizeLocale(session.metadata?.locale)
+    const sellerId = typeof session.metadata?.seller_id === "string" ? session.metadata.seller_id : null
+
+    if (!buyerEmail) {
+      logError("stripe_checkout_webhook_missing_buyer_email", null, {
+        route: CHECKOUT_WEBHOOK_ROUTE,
+        sessionId: session.id,
+        orderId: order.id,
+      })
+    } else {
+      try {
+        await sendOrderConfirmationEmail({
+          supabase,
+          to: buyerEmail,
+          orderId: order.id,
+          items: itemsData,
+          sellerId,
+          locale: buyerLocale,
+          currency: session.currency,
+          totalAmount: (session.amount_total || 0) / 100,
+        })
+      } catch (emailError) {
+        logError("stripe_checkout_webhook_order_confirmation_email_failed", emailError, {
+          route: CHECKOUT_WEBHOOK_ROUTE,
+          sessionId: session.id,
+          orderId: order.id,
+        })
+      }
+    }
   } catch (error) {
     logError("stripe_checkout_webhook_handler_failed", error, {
       route: CHECKOUT_WEBHOOK_ROUTE,

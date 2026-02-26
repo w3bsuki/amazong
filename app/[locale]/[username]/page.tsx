@@ -23,6 +23,10 @@ import { followSeller, unfollowSeller } from "../../actions/seller-follows"
 // - New/less-active sellers are rendered on-demand (ISR)
 // =============================================================================
 
+function normalizeUsernameParam(value: string) {
+  return value.startsWith("@") ? value.slice(1) : value
+}
+
 // Pre-generate top 25 active sellers (by product count) for fast SEO pages
 export async function generateStaticParams() {
   const supabase = createStaticClient()
@@ -69,9 +73,10 @@ interface ProfilePageProps {
 
 // Generate metadata for SEO - uses CACHED data function
 export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
-  const { username, locale } = await params
+  const { username: rawUsername, locale } = await params
   setRequestLocale(locale)
 
+  const username = normalizeUsernameParam(rawUsername)
   const data = await getProfileMetadata(username)
 
   if (!data?.profile) {
@@ -135,13 +140,15 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
 
 export default async function PublicProfilePage({ params }: ProfilePageProps) {
   // NO connection() - uses cached getPublicProfileData function
-  const { username, locale } = await params
+  const { username: rawUsername, locale } = await params
   setRequestLocale(locale)
 
   // Handle fallback from generateStaticParams (when Supabase unavailable at build)
-  if (username === '__fallback__') {
+  if (rawUsername === '__fallback__') {
     notFound()
   }
+
+  const username = normalizeUsernameParam(rawUsername)
 
   // Fetch ALL public profile data from CACHED function (single call)
   const profileData = await getPublicProfileData(username)

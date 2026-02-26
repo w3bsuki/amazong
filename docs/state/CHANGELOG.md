@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-02-26 | PH1-BUYER-BATCH-001 | Buyer Conversion + Trust UX (PH1-BUYER-001..002)
+- Decision/Outcome: Shipped PH1 buyer conversion batch: added an order confirmation email template and an additive trigger from the existing `checkout.session.completed` Stripe webhook (send is stubbed via `logger.info` until a transactional provider is configured), and surfaced a mobile PDP seller bio card (avatar, rating + count, joined year, verified) that links to the seller profile.
+- Why: Improve buyer trust and reduce uncertainty immediately after purchase and during PDP evaluation.
+- Impact: Checkout completion now generates a branded confirmation email payload (ready for provider wiring) and mobile PDP exposes seller trust signals without extra fetches; gates re-verified green (`pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`).
+- Next Action: Wire a transactional email provider (Resend/Postmark/etc) and add locale metadata to the checkout session for localized transactional comms.
+- Links: `app/api/checkout/webhook/route.ts`, `lib/email/templates/order-confirmation.tsx`, `lib/email/send-order-confirmation-email.ts`, `app/[locale]/[username]/[productSlug]/_components/mobile/mobile-product-single-scroll.tsx`, `app/[locale]/[username]/page.tsx`
+
 ### 2026-02-26 | PH0-SAFE-001 | Phase 0 Safe Launch Hardening Completed (UX + Core Journeys + Trust)
 - Decision/Outcome: Completed all Codex-executable Phase 0 safe items: PH0-UX-001..008 + PH0-UX-012 (Home/Cards/Search/Categories UX), PH0-FIX-002..003 (Sell flow + Account settings hardening), and PH0-TRUST-001..003 (buyer protection copy, PDP report modal stored via existing DB tables, product data sanity audit).
 - Why: Close all non-sensitive launch hardening work so remaining risk is isolated to human-approved auth/payments/migration blockers.

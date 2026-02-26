@@ -202,12 +202,12 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 
 ### 1.2 Buyer Conversion & Trust UX
 
-- [ ] **PH1-BUYER-001:** Buyer confirmation email on checkout completion
+- [x] **PH1-BUYER-001:** Buyer confirmation email on checkout completion
   - Context: `docs/features/checkout-payments.md`
   - Capability: Transactional email + trust communications
   - Done: email sent with order summary, delivery estimate, seller info
 
-- [ ] **PH1-BUYER-002:** PDP mobile seller bio surface
+- [x] **PH1-BUYER-002:** PDP mobile seller bio surface
   - Context: `docs/features/product-cards.md`, `docs/DESIGN.md`
   - Done: seller name, avatar, rating, join date visible on mobile PDP
 

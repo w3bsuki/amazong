@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 
 import { cn } from "@/lib/utils"
 import type { HomeDiscoveryScope } from "@/lib/home-browse-href"
-import { MOBILE_ACTION_ICON_CLASS, getMobileGhostPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
+import { MOBILE_ACTION_ICON_CLASS, getMobileQuickPillClass } from "@/components/mobile/chrome/mobile-control-recipes"
 
 const DISCOVERY_SCOPES: HomeDiscoveryScope[] = ["forYou", "newest", "promoted", "deals", "nearby"]
 
@@ -51,7 +51,7 @@ export function DiscoveryRail({
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => onScopeChange(scope)}
-                  className={getMobileGhostPillClass(isActive)}
+                  className={getMobileQuickPillClass(isActive)}
                   data-testid={testId ? `${testId}-${scope}` : undefined}
                 >
                   {t(`scopes.${scope}`)}

@@ -12,8 +12,8 @@ import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { formatDistanceToNow } from "date-fns";
 import { bg, enUS } from "date-fns/locale";
-import { Clock, MapPin } from "lucide-react";
-import { useRouter } from "@/i18n/routing";
+import { Clock, MapPin, Star } from "lucide-react";
+import { Link, useRouter } from "@/i18n/routing";
 
 // Mobile-specific components
 import { MobileGallery } from "./mobile-gallery";
@@ -26,6 +26,7 @@ import { ReportListingDialog } from "../report-listing-dialog";
 // Shared product components
 import { VisualDrawerSurface } from "@/components/shared/visual-drawer-surface";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MetaRow, type CategorySummary } from "../pdp/meta-row";
 import { ProductHeader } from "../pdp/product-header";
 import { SpecificationsList } from "../pdp/specifications-list";
@@ -37,9 +38,11 @@ import { RecentlyViewedTracker } from "../pdp/recently-viewed-tracker";
 import { PageShell } from "../../../../_components/page-shell";
 import { HeroSpecs } from "../pdp/hero-specs";
 import { CustomerReviewsHybrid } from "../pdp/customer-reviews-hybrid";
+import { MarketplaceBadge } from "@/components/shared/marketplace-badge";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { ProductPageProduct, ProductPageVariant } from "@/lib/data/product-page";
+import { safeAvatarSrc } from "@/lib/utils";
 import type { CustomerReview } from "../pdp/customer-reviews-hybrid";
 import type { SubmitReviewFn } from "../pdp/write-review-dialog";
 
@@ -79,8 +82,17 @@ interface MobileProductSingleScrollProps {
 // Main Component
 // -----------------------------------------------------------------------------
 
+function getInitials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0]?.slice(0, 1) ?? "";
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.slice(0, 1) ?? "") : "";
+  const initials = `${first}${last}`.toUpperCase();
+  return initials || "T";
+}
+
 export function MobileProductSingleScroll(props: MobileProductSingleScrollProps) {
   const t = useTranslations("Product");
+  const tSeller = useTranslations("Seller");
   const currentLocale = useLocale();
   const router = useRouter();
   const {
@@ -173,6 +185,10 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
     bio: null as string | null, // NOTE (BACKLOG-007): Add seller bio when available.
   };
 
+  const sellerProfileHref = sellerPreview.username ? `/@${sellerPreview.username}` : null;
+  const sellerAvatar = safeAvatarSrc(sellerPreview.avatarUrl);
+  const sellerInitials = getInitials(sellerPreview.name);
+
   // Convert relatedProducts to drawer-compatible format
   const sellerProducts = relatedProducts.map((p) => ({
     id: p.id,
@@ -264,6 +280,62 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
           {viewModel.heroSpecs.length > 0 && (
             <HeroSpecs specs={viewModel.heroSpecs.slice(0, 4)} variant="mobile" />
           )}
+
+          {/* Seller bio (mobile only) */}
+          {sellerProfileHref ? (
+            <Link
+              href={sellerProfileHref}
+              className="block md:hidden bg-surface-subtle rounded-xl p-4"
+            >
+              <div className="flex items-center gap-3">
+                <Avatar className="size-12">
+                  {sellerAvatar ? (
+                    <AvatarImage src={sellerAvatar} alt={sellerPreview.name} />
+                  ) : null}
+                  <AvatarFallback className="text-sm font-semibold text-foreground">
+                    {sellerInitials}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {sellerPreview.name}
+                    </p>
+                    {sellerPreview.verified ? (
+                      <MarketplaceBadge variant="verified" className="shrink-0">
+                        {tSeller("verified")}
+                      </MarketplaceBadge>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                    {sellerPreview.rating != null && sellerPreview.reviewCount != null ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <Star className="size-3.5 fill-current" strokeWidth={1.5} aria-hidden="true" />
+                        <span className="font-medium text-foreground">
+                          {sellerPreview.rating.toFixed(1)}
+                        </span>
+                        <span>
+                          ({t("reviews", { count: sellerPreview.reviewCount })})
+                        </span>
+                      </span>
+                    ) : null}
+
+                    {sellerPreview.joinedYear ? (
+                      <span>
+                        {tSeller("memberSince", { date: sellerPreview.joinedYear })}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-2 text-xs font-medium text-foreground underline underline-offset-4">
+                    {tSeller("visitStore")}
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ) : null}
         </div>
 
         {/* Expandable sections */}

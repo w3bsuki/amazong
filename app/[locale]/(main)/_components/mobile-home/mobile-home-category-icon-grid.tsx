@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, LayoutGrid } from "lucide-react"
 
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import { Link } from "@/i18n/routing"
@@ -34,10 +34,10 @@ export function MobileHomeCategoryIconGrid({
 
   return (
     <section
-      className={cn("w-full px-4 pt-3", className)}
+      className={cn("w-full px-4 pt-2", className)}
       {...(testId ? { "data-testid": testId } : {})}
     >
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3 hidden">
         <h2 className="text-reading font-semibold text-foreground">{title}</h2>
         <Link
           href="/categories"
@@ -48,17 +48,14 @@ export function MobileHomeCategoryIconGrid({
         </Link>
       </div>
 
-      <div className="mt-2 overflow-x-auto scrollbar-hide">
-        <div className="flex w-max min-w-full items-start gap-3 pr-4">
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="flex w-max min-w-full items-start gap-2 pr-4">
           {items.map((category) => {
             const label = getCategoryLabel(category)
             const content = (
               <>
-                <span className="inline-flex size-(--size-category-tile) items-center justify-center rounded-xl bg-surface-subtle text-muted-foreground transition-colors group-hover:text-foreground group-active:text-foreground">
-                  {getCategoryIcon(category.slug, { size: 20 })}
-                </span>
-                <span className="w-full truncate text-center text-2xs text-muted-foreground transition-colors group-hover:text-foreground group-active:text-foreground">
-                  {label}
+                <span className="inline-flex size-(--size-category-tile) items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors group-hover:text-foreground group-active:text-foreground">
+                  {getCategoryIcon(category.slug, { size: 24 })}
                 </span>
               </>
             )
@@ -70,7 +67,7 @@ export function MobileHomeCategoryIconGrid({
                   type="button"
                   onClick={() => onSelectCategory(category.slug)}
                   aria-label={label}
-                  className="group flex w-16 shrink-0 flex-col items-center gap-1 rounded-xl tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+                  className="group flex shrink-0 flex-col items-center gap-1 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
                 >
                   {content}
                 </button>
@@ -82,7 +79,7 @@ export function MobileHomeCategoryIconGrid({
                 key={category.id}
                 href={`/categories/${category.slug}`}
                 aria-label={label}
-                className="group flex w-16 shrink-0 flex-col items-center gap-1 rounded-xl tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+                className="group flex shrink-0 flex-col items-center gap-1 rounded-full tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
               >
                 {content}
               </Link>

@@ -317,7 +317,7 @@ export function MobileHome({
         {!activeCategorySlug ? (
           <>
             <MobileHomeCategoryIconGrid
-              title={tCategories("title")}
+              title={tV4("categories.title")}
               seeAllLabel={tV4("actions.seeAll")}
               categories={categories}
               getCategoryLabel={getCategoryLabel}
