@@ -3622,6 +3622,16 @@
             "generate": "Generate",
             "generating": "Generating...",
             "applyAll": "Apply all",
+            "textGeneration": {
+                "generate": "Generate with AI",
+                "generating": "Generating with AI...",
+                "toasts": {
+                    "generated": "AI draft applied to title and description"
+                },
+                "errors": {
+                    "failed": "Failed to generate listing text"
+                }
+            },
             "toasts": {
                 "applied": "Applied AI suggestions",
                 "nothingToApply": "Nothing to apply",

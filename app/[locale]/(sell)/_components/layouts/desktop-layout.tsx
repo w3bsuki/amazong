@@ -24,6 +24,7 @@ import { TitleField } from "../fields/title-field";
 import { ChecklistSidebar } from "../ui/checklist-sidebar";
 import { ProgressHeader } from "../ui/progress-header";
 import { AiListingAssistant } from "../ai/ai-listing-assistant";
+import { AiListingTextGenerator } from "../ai/ai-listing-text-generator";
 
 // ============================================================================
 // DESKTOP LAYOUT - Two-column layout with all fields visible
@@ -130,6 +131,7 @@ export function DesktopLayout({
                 </h2>
 
                 <TitleField compact idPrefix="sell-form-desktop" />
+                <AiListingTextGenerator />
                 <CategoryField compact />
                 <ConditionField compact />
                 <BrandField compact />

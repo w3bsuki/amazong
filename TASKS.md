@@ -229,7 +229,25 @@ Phase alignment tells agents WHY this task matters in the bigger picture.
 
 ### 2.1 AI Platform Foundations
 
-*(Tasks created when Phase 2 begins. See `docs/architecture/AI-PLATFORM.md` for architecture.)*
+- [x] **PH2-AI-001:** Prompt Registry v1 + Version Pinning
+  - Context: `docs/architecture/AI-PLATFORM.md`
+  - Done: versioned prompt registry added; assistant routes use pinned prompt specs (no inline prompt strings in handlers)
+
+- [x] **PH2-AI-002:** AI Telemetry Envelope
+  - Context: `docs/architecture/AI-PLATFORM.md`
+  - Done: shared telemetry wrapper (`aiTelemetryWrap`) logs structured success/failure and returns `AiResponseMeta`
+
+- [x] **PH2-AI-003:** Guardrail Policy Layer v1
+  - Context: `docs/architecture/AI-PLATFORM.md`
+  - Done: pre/post guardrails added and enforced on AI endpoints with structured rejection logging
+
+- [x] **PH2-AI-004:** AI Description/Title Generation
+  - Context: `docs/features/sell-flow.md`, `docs/architecture/AI-PLATFORM.md`
+  - Done: new `/api/assistant/generate-listing-text` endpoint + sell-flow "Generate with AI" button for title/description suggestions (feature-gated)
+
+- [x] **PH2-AI-005:** Offline Eval Harness Scaffold
+  - Context: `docs/architecture/AI-PLATFORM.md`, `docs/testing.md`
+  - Done: eval harness + listing-autofill golden set + unit tests added
 
 ### 2.2 Photo-to-Listing Autofill
 

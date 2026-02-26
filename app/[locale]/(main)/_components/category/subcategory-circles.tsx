@@ -112,8 +112,8 @@ function AllCircle({
           "rounded-full flex items-center justify-center overflow-hidden",
           "transition-all group-active:opacity-90",
           isDesktop && !activeSubcategorySlug
-            ? "bg-selected border border-selected-border ring-2 ring-ring ring-offset-2 ring-offset-background"
-            : "bg-surface-subtle border border-border",
+            ? "bg-selected ring-2 ring-ring ring-offset-2 ring-offset-background"
+            : "bg-surface-subtle ring-1 ring-border-subtle",
           isDesktop
             ? "size-(--spacing-category-circle-desktop)"
             : "size-(--spacing-category-circle) shrink-0"

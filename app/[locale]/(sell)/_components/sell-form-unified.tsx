@@ -61,6 +61,7 @@ interface UnifiedSellFormProps {
   existingProduct?: SellFormDataV4 & { id: string };
   sellerId: string;
   categories?: Category[];
+  aiAssistantEnabled?: boolean;
   createListingAction: CreateListingAction;
   payoutStatus?: SellerPayoutStatus;
 }
@@ -79,6 +80,7 @@ export function UnifiedSellForm({
   existingProduct,
   sellerId,
   categories = [],
+  aiAssistantEnabled = false,
   createListingAction,
   payoutStatus,
 }: UnifiedSellFormProps) {
@@ -89,6 +91,7 @@ export function UnifiedSellForm({
       locale={safeLocale}
       categories={categories}
       sellerId={sellerId}
+      aiAssistantEnabled={aiAssistantEnabled}
       {...(existingProduct ? { existingProduct } : {})}
       totalSteps={5}
     >

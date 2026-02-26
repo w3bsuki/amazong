@@ -28,11 +28,8 @@ export function MobileWishlistButton() {
         className="group relative flex size-(--control-default) cursor-pointer items-center justify-center rounded-full p-0 text-header-text touch-manipulation tap-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={tNav("wishlist")}
       >
-        <span
-          className="relative flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active"
-          aria-hidden="true"
-        >
-          <Heart className="size-icon-sm text-header-text" />
+        <span className="relative flex items-center justify-center" aria-hidden="true">
+          <Heart className="size-6 text-header-text" />
         </span>
       </span>
     )
@@ -50,15 +47,12 @@ export function MobileWishlistButton() {
         if (enabledDrawers.wishlist) openDrawer("wishlist")
       }}
     >
-      <span
-        className="relative flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active"
-        aria-hidden="true"
-      >
-        <Heart className="size-icon-sm text-header-text" />
+      <span className="relative flex items-center justify-center" aria-hidden="true">
+        <Heart className="size-6 text-header-text" />
         {totalItems > 0 && (
           <CountBadge
             count={totalItems}
-            className="absolute -top-1 -right-1 h-4 min-w-4 bg-wishlist-active px-1 text-2xs leading-none text-primary-foreground ring-1 ring-header-bg"
+            className="absolute -top-2 -right-2.5 bg-wishlist-active text-primary-foreground ring-2 ring-header-bg"
             aria-hidden="true"
           />
         )}
@@ -66,4 +60,3 @@ export function MobileWishlistButton() {
     </IconButton>
   )
 }
-

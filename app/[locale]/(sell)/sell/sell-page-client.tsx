@@ -36,6 +36,7 @@ interface SellPageClientProps {
   initialUsername?: string | null;
   initialPayoutStatus?: SellerPayoutStatus;
   categories: Category[];
+  aiAssistantEnabled?: boolean;
   createListingAction: CreateListingAction;
 }
 
@@ -78,6 +79,7 @@ export function SellPageClient({
   initialUsername = null,
   initialPayoutStatus,
   categories, // Pre-fetched from server
+  aiAssistantEnabled = false,
   createListingAction,
 }: SellPageClientProps) {
   const t = useTranslations("Sell");
@@ -251,6 +253,7 @@ export function SellPageClient({
         sellerId={seller.id}
         locale={safeLocale}
         categories={categories}
+        aiAssistantEnabled={aiAssistantEnabled}
         createListingAction={createListingAction}
         payoutStatus={payoutStatus}
       />

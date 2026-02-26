@@ -3,20 +3,20 @@ schema_version: 1
 updated_at: "2026-02-26"
 project: "Treido"
 stage: "V1 pre-launch (Bulgaria)"
-phase: "Phase 1 - Liquidity + Conversion"
+phase: "Phase 2 - AI Listings MVP"
 north_star_doc: "docs/strategy/NORTH-STAR.md"
 capability_map_doc: "docs/strategy/CAPABILITY-MAP.md"
 launch_status: "11/15 checklist sections audited and pass"
 p0_p1_status: "11/11 sections audited and pass after iteration"
-p2_status: "Not started (Sections 12-15)"
-gates_status: "Green (typecheck, lint, styles:gate, test:unit re-verified 2026-02-26; architecture:gate, test:e2e:smoke, test:a11y last verified 2026-02-26); architecture metrics: client=269/1195, over300=66, over500=3, missingLoading=0, missingMetadata=0, duplicates=646 (clones=52)"
+p2_status: "AI foundations complete (PH2-AI-001..005)"
+gates_status: "Green (typecheck, lint, styles:gate, test:unit re-verified 2026-02-26 after PH2-AI-001..005; architecture:gate, test:e2e:smoke, test:a11y last verified 2026-02-26); architecture metrics: client=269/1195, over300=66, over500=3, missingLoading=0, missingMetadata=0, duplicates=646 (clones=52)"
 top_blockers:
   - "MIG-001: Finalize v2 migration Step 5 (`deal_products` view/`is_prime` drop sequencing)"
   - "LAUNCH-001: Verify Stripe webhook idempotency (replay no-op guarantee)"
   - "LAUNCH-002: Test refund/dispute flow end-to-end"
   - "LAUNCH-003: Verify Stripe prod/dev environment separation (keys + webhook secrets)"
   - "LAUNCH-004: Enable leaked password protection + rerun advisor (currently blocked by Supabase plan requirement)"
-current_focus: "Phase 1 buyer conversion batch complete (PH1-BUYER-001..002). Launch blockers remain human-only (MIG-001 Step 5 + LAUNCH-001..004)."
+current_focus: "Phase 2 AI Listings MVP foundations are complete (prompt registry, telemetry, guardrails, listing-text generation, eval harness). Next focus: AI quality iteration and launch blocker closure (MIG-001 + LAUNCH-001..004)."
 active_workstreams:
   - "Launch blocker closure with human approval for sensitive ops"
   - "Resume MIG-001 Step 5 safely (schema/migration sequencing)"
@@ -36,14 +36,14 @@ source_refs:
 
 ## Snapshot
 
-Phase 1 buyer conversion batch shipped (order confirmation email + mobile PDP seller bio surface).
+Phase 2 AI Listings MVP foundations shipped across backend and sell-flow UX.
 Launch readiness risk remains concentrated in a small set of sensitive blockers (payments/compliance/env + migration sequencing).
 
 ## Recent Changes (Last 3)
 
+- 2026-02-26: Completed Phase 2 AI Listings MVP foundations (PH2-AI-001..005): prompt registry/version pinning, telemetry envelope, guardrail policy layer, new listing text generation endpoint + sell-form "Generate with AI" button (feature-gated), and eval harness scaffold with golden set; gates re-verified green (`typecheck`, `lint`, `styles:gate`, `test:unit`).
 - 2026-02-26: Completed Phase 1 buyer conversion batch: PH1-BUYER-001 order confirmation email template + webhook trigger (send stubbed via logger until provider), and PH1-BUYER-002 mobile PDP seller bio surface (tap-to-profile, rating + joined year + verified); gates re-verified green (`typecheck`, `lint`, `styles:gate`, `test:unit`).
 - 2026-02-26: Completed REF-POLISH Phase 3 tasks 001–010: removed global MotionProvider, shipped sitemap caching + metadata hardening, closed route loading/error gaps, completed image audit (no raw `<img>`), swept mobile UX (375px), enforced bundle budget (<150KB first-load JS), and verified E2E smoke + a11y green (tuned `--destructive` for discount badge contrast); all gates remain green.
-- 2026-02-26: Completed Phase 0 safe launch hardening batches: PH0-UX-001..008 + PH0-UX-012 (Home/Cards/Search/Categories), PH0-FIX-002..003 (Sell/Account UX hardening), and PH0-TRUST-001..003 (buyer protection copy, PDP report modal, data sanity audit); gates re-verified green (`typecheck`, `lint`, `styles:gate`, `test:unit`).
 
 ## Open Decisions (Max 3)
 

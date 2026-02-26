@@ -32,6 +32,7 @@ interface SellFormContextValue {
   categories: Category[];
   brands: Brand[];
   sellerId: string;
+  aiAssistantEnabled: boolean;
   
   // Form state
   isSubmitting: boolean;
@@ -94,6 +95,7 @@ interface SellFormProviderProps {
   categories: Category[];
   brands?: Brand[];
   sellerId: string;
+  aiAssistantEnabled?: boolean;
   defaultValues?: Partial<SellFormDataV4>;
   existingProduct?: SellFormDataV4 & { id: string };
   totalSteps?: number;
@@ -111,6 +113,7 @@ export function SellFormProvider({
   categories,
   brands = [],
   sellerId,
+  aiAssistantEnabled = false,
   defaultValues,
   existingProduct,
   totalSteps = 5,
@@ -255,6 +258,7 @@ export function SellFormProvider({
     categories,
     brands,
     sellerId,
+    aiAssistantEnabled,
     
     // Form state
     isSubmitting,

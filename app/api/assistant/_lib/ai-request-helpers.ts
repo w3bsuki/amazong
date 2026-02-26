@@ -14,6 +14,10 @@ type SupabaseAuthLike = {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null
+}
+
 export async function requireAuthedUser({
   supabase,
   json,
@@ -71,3 +75,7 @@ export function validateAiImageUrl(
   return { ok: true }
 }
 
+export function getAuthenticatedUserId(user: unknown): string | null {
+  if (!isRecord(user)) return null
+  return typeof user.id === "string" && user.id.length > 0 ? user.id : null
+}

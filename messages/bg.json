@@ -3622,6 +3622,16 @@
             "generate": "Генерирай",
             "generating": "Генериране...",
             "applyAll": "Приложи всички",
+            "textGeneration": {
+                "generate": "Генерирай с AI",
+                "generating": "Генериране с AI...",
+                "toasts": {
+                    "generated": "AI черновата е приложена към заглавието и описанието"
+                },
+                "errors": {
+                    "failed": "Неуспешно генериране на текст за обява"
+                }
+            },
             "toasts": {
                 "applied": "Приложени AI предложения",
                 "nothingToApply": "Няма какво да се приложи",

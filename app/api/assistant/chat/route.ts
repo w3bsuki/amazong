@@ -4,7 +4,16 @@ import { z } from "zod"
 
 import { assistantTools } from "@/lib/ai/tools/assistant-tools"
 import { getAiChatModel, getAiFallbackModel } from "@/lib/ai/models"
-import { isAiAssistantEnabled, getGroqApiKey } from "@/lib/ai/env"
+import {
+  getAiChatModelSpec,
+  getAiFallbackModelSpec,
+  isAiAssistantEnabled,
+  getGroqApiKey,
+} from "@/lib/ai/env"
+import { preInferenceCheck } from "@/lib/ai/guardrails"
+import { getAssistantChatSystemPrompt } from "@/lib/ai/prompts/assistant-chat.v1"
+import { getActivePrompt } from "@/lib/ai/prompts/registry"
+import { aiTelemetryWrap, type AiResponseMeta } from "@/lib/ai/telemetry"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
 
@@ -53,31 +62,58 @@ function isUiMessageArray(messages: IncomingAssistantMessages): messages is UIMe
   return messages.every(isUiLikeAssistantMessage)
 }
 
+function extractUiMessageText(message: UIMessage): string {
+  return message.parts
+    .map((part) => {
+      if (
+        typeof part === "object" &&
+        part !== null &&
+        "type" in part &&
+        part.type === "text" &&
+        "text" in part &&
+        typeof part.text === "string"
+      ) {
+        return part.text
+      }
+      return ""
+    })
+    .filter(Boolean)
+    .join("\n")
+}
+
+function getLatestUserPromptText(messages: IncomingAssistantMessages): string {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index]
+    if (!message || message.role !== "user") continue
+
+    if (isSimpleAssistantMessage(message)) {
+      return message.content
+    }
+    if (isUiLikeAssistantMessage(message)) {
+      return extractUiMessageText(message)
+    }
+  }
+
+  return ""
+}
+
 const AssistantChatRequestSchema = z.object({
   messages: z.custom<IncomingAssistantMessages>(isIncomingAssistantMessages),
   locale: z.enum(["en", "bg"]).optional(),
 })
 
-function getSystemPrompt(locale: "en" | "bg") {
-  const languageLine =
-    locale === "bg"
-      ? "Reply in Bulgarian unless the user explicitly asks for English."
-      : "Reply in English."
-
-  return [
-    "You are Treido's in-app shopping assistant.",
-    languageLine,
-    "",
-    "Rules:",
-    "- You MUST ground product suggestions in tool results (searchListings/getListing).",
-    "- If you do not have enough information, ask a short clarifying question.",
-    "- Do not claim to browse the web or access external websites.",
-    "- Do not invent product details, prices, availability, or URLs.",
-    "- Prefer concise answers. When showing results, summarize and let the UI render listing cards.",
-  ].join("\n")
-}
-
 function isRateLimitError(error: unknown): boolean {
+  const cause =
+    typeof error === "object" &&
+    error !== null &&
+    "cause" in error
+      ? (error as { cause?: unknown }).cause
+      : undefined
+
+  if (cause) {
+    return isRateLimitError(cause)
+  }
+
   if (error instanceof Error) {
     const msg = error.message.toLowerCase()
     return (
@@ -88,6 +124,24 @@ function isRateLimitError(error: unknown): boolean {
     )
   }
   return false
+}
+
+function getMetaHeaders(meta: AiResponseMeta): Record<string, string> {
+  const headers: Record<string, string> = {
+    "X-AI-Prompt-Version": meta.prompt_version,
+    "X-AI-Model-Route": meta.model_route,
+    "X-AI-Latency-Ms": String(meta.latency_ms),
+    "X-AI-Success": String(meta.success),
+  }
+
+  if (typeof meta.cost_estimate === "number") {
+    headers["X-AI-Cost-Estimate"] = String(meta.cost_estimate)
+  }
+  if (meta.error) {
+    headers["X-AI-Error"] = meta.error
+  }
+
+  return headers
 }
 
 export async function POST(request: NextRequest) {
@@ -121,8 +175,28 @@ export async function POST(request: NextRequest) {
     }
 
     const locale = parsed.data.locale ?? "en"
+    const prompt = getActivePrompt("assistant.chat")
+    const systemPrompt = getAssistantChatSystemPrompt(locale)
     
     const rawMessages = parsed.data.messages
+    const latestUserPromptText = getLatestUserPromptText(rawMessages)
+    const preCheck = preInferenceCheck({
+      text: latestUserPromptText,
+      userId: user.id,
+    })
+    if (!preCheck.ok) {
+      logger.warn("[AI Guardrail] assistant-chat pre-inference rejected", {
+        feature_id: "assistant.chat",
+        user_id: user.id,
+        reason: preCheck.reason,
+        prompt_version: prompt.id,
+      })
+      return json(
+        { error: { code: "GUARDRAIL_REJECTED" } },
+        { status: 400, headers: noStoreHeaders },
+      )
+    }
+
     let messages: ModelMessage[]
     if (isSimpleAssistantMessageArray(rawMessages)) {
       messages = rawMessages.map((message) => ({
@@ -138,39 +212,59 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const systemPrompt = getSystemPrompt(locale)
-
     // Try primary model first, fallback to Groq on rate limit
     let model = getAiChatModel()
+    let modelRoute = getAiChatModelSpec()
 
     try {
-      const result = streamText({
-        model,
-        system: systemPrompt,
-        messages,
-        tools: assistantTools,
-      })
+      const { result, meta } = await aiTelemetryWrap(
+        {
+          featureId: "assistant.chat",
+          promptVersion: prompt.id,
+          modelRoute,
+        },
+        async () =>
+          streamText({
+            model,
+            system: systemPrompt,
+            messages,
+            tools: assistantTools,
+          }),
+      )
 
       return result.toUIMessageStreamResponse({
-        headers: noStoreHeaders,
+        headers: {
+          ...noStoreHeaders,
+          ...getMetaHeaders(meta),
+        },
       })
     } catch (primaryError) {
       // If rate limited and fallback is available, try fallback
       if (isRateLimitError(primaryError) && getGroqApiKey()) {
         logger.warn("[AI Assistant] Primary model rate limited, trying fallback")
         model = getAiFallbackModel()
+        modelRoute = getAiFallbackModelSpec()
 
-        const result = streamText({
-          model,
-          system: systemPrompt,
-          messages,
-          tools: assistantTools,
-        })
+        const { result, meta } = await aiTelemetryWrap(
+          {
+            featureId: "assistant.chat",
+            promptVersion: prompt.id,
+            modelRoute,
+          },
+          async () =>
+            streamText({
+              model,
+              system: systemPrompt,
+              messages,
+              tools: assistantTools,
+            }),
+        )
 
         return result.toUIMessageStreamResponse({
           headers: {
             ...noStoreHeaders,
             "X-AI-Fallback": "true",
+            ...getMetaHeaders(meta),
           },
         })
       }

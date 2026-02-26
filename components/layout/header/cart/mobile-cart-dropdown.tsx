@@ -35,16 +35,13 @@ export function MobileCartDropdown() {
         router.push("/cart")
       }}
     >
-      <span
-        className="relative flex size-(--control-compact) items-center justify-center rounded-full bg-surface-subtle motion-safe:transition-colors motion-safe:duration-fast motion-safe:ease-(--ease-smooth) motion-reduce:transition-none group-hover:bg-hover group-active:bg-active"
-        aria-hidden="true"
-      >
-        <ShoppingCart className="size-icon-sm text-header-text" />
+      <span className="relative flex items-center justify-center" aria-hidden="true">
+        <ShoppingCart className="size-6 text-header-text" />
         {displayItems > 0 && (
           <CountBadge
             count={displayItems}
             max={CART_BADGE_MAX}
-            className="absolute -top-1 -right-1 h-4 min-w-4 bg-cart-badge px-1 text-2xs leading-none text-primary-foreground ring-1 ring-header-bg"
+            className="absolute -top-2 -right-2.5 bg-cart-badge text-primary-foreground ring-2 ring-header-bg"
             aria-hidden="true"
           />
         )}

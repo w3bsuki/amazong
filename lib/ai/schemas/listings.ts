@@ -24,3 +24,10 @@ export const SearchListingsInputSchema = z.object({
 
 export type SearchListingsInput = z.infer<typeof SearchListingsInputSchema>
 
+export const ListingTextGenerationSchema = z.object({
+  title: z.string().trim().min(5).max(80),
+  description: z.string().trim().min(50).max(2000),
+  tags: z.array(z.string().trim().min(1).max(32)).min(3).max(10),
+})
+
+export type ListingTextGeneration = z.infer<typeof ListingTextGenerationSchema>

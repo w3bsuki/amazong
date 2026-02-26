@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, LayoutGrid } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 
 import type { CategoryTreeNode } from "@/lib/data/categories/types"
 import { Link } from "@/i18n/routing"
@@ -54,7 +54,7 @@ export function MobileHomeCategoryIconGrid({
             const label = getCategoryLabel(category)
             const content = (
               <>
-                <span className="inline-flex size-(--size-category-tile) items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors group-hover:text-foreground group-active:text-foreground">
+                <span className="inline-flex size-(--size-category-tile) items-center justify-center rounded-full ring-1 ring-border-subtle bg-background text-muted-foreground transition-colors group-hover:text-foreground group-active:text-foreground">
                   {getCategoryIcon(category.slug, { size: 24 })}
                 </span>
               </>

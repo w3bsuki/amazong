@@ -19,7 +19,7 @@ import {
 
 export function AiListingAssistant() {
   const form = useSellForm();
-  const { categories, locale } = useSellFormContext();
+  const { categories, locale, aiAssistantEnabled } = useSellFormContext();
   const tSell = useTranslations("Sell");
   const tCommon = useTranslations("Common");
 
@@ -174,6 +174,8 @@ export function AiListingAssistant() {
         return suggestions.condition;
       })()
     : null;
+
+  if (!aiAssistantEnabled) return null
 
   return (
     <AiListingAssistantView

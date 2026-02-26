@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-02-26 | PH2-AI-FOUNDATIONS-001 | Phase 2 AI Listings MVP Foundations (PH2-AI-001..005)
+- Decision/Outcome: Completed Phase 2 AI foundations batch end-to-end: prompt registry + version pinning, telemetry envelope, pre/post guardrail policy layer, AI listing title/description generation API + sell-flow "Generate with AI" UX (feature-gated), and an offline eval harness scaffold with a listing-autofill golden set and tests.
+- Why: Establish shared AI platform contracts before scaling additional AI listing capabilities.
+- Impact: All assistant routes now emit prompt/model/latency metadata, AI calls are telemetry-wrapped with structured logging, guardrail rejections are logged, and sell flow supports editable AI text suggestions; gates re-verified green (`pnpm -s typecheck && pnpm -s lint && pnpm -s styles:gate && pnpm -s test:unit`).
+- Next Action: Start Phase 2 quality iteration (pricing suggestions + stronger eval scoring/cost controls) while keeping launch blockers (MIG-001 + LAUNCH-001..004) on the human approval track.
+- Links: `lib/ai/prompts/registry.ts`, `lib/ai/telemetry.ts`, `lib/ai/guardrails/index.ts`, `app/api/assistant/generate-listing-text/route.ts`, `app/[locale]/(sell)/_components/ai/ai-listing-text-generator.tsx`, `lib/ai/eval/harness.ts`, `__tests__/ai-eval-harness.test.ts`
+
 ### 2026-02-26 | PH1-BUYER-BATCH-001 | Buyer Conversion + Trust UX (PH1-BUYER-001..002)
 - Decision/Outcome: Shipped PH1 buyer conversion batch: added an order confirmation email template and an additive trigger from the existing `checkout.session.completed` Stripe webhook (send is stubbed via `logger.info` until a transactional provider is configured), and surfaced a mobile PDP seller bio card (avatar, rating + count, joined year, verified) that links to the seller profile.
 - Why: Improve buyer trust and reduce uncertainty immediately after purchase and during PDP evaluation.

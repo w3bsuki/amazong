@@ -61,6 +61,23 @@ type SellerSummary = {
   created_at?: string | null;
 };
 
+type SellerPreviewModel = {
+  id: string
+  name: string
+  username: string | null
+  avatarUrl: string | null
+  verified: boolean
+  rating: number | null
+  reviewCount: number | null
+  responseTimeHours: number | null
+  listingsCount: number | null
+  totalSales: number | null
+  positivePercent: number | null
+  joinedAt: string | null
+  joinedYear: string | null
+  bio: string | null
+}
+
 interface MobileProductSingleScrollProps {
   locale: string;
   username: string;
@@ -88,6 +105,49 @@ function getInitials(name: string) {
   const last = parts.length > 1 ? (parts[parts.length - 1]?.slice(0, 1) ?? "") : "";
   const initials = `${first}${last}`.toUpperCase();
   return initials || "T";
+}
+
+function buildSellerPreview(args: {
+  product: ProductWithSellerStats
+  seller: SellerSummary
+  viewModel: ProductPageViewModel
+  username: string
+  sellerLabel: string
+}): SellerPreviewModel {
+  const { product, seller, viewModel, username, sellerLabel } = args
+
+  return {
+    id: seller.id,
+    name: viewModel.sellerName || seller.display_name || seller.username || username || sellerLabel,
+    username: seller.username ?? null,
+    avatarUrl: viewModel.sellerAvatarUrl ?? seller.avatar_url ?? null,
+    verified: Boolean(viewModel.sellerVerified || seller.verified),
+    rating:
+      product.seller_stats?.average_rating != null
+        ? Number(product.seller_stats.average_rating)
+        : null,
+    reviewCount:
+      product.seller_stats?.total_reviews != null
+        ? Number(product.seller_stats.total_reviews)
+        : null,
+    responseTimeHours:
+      product.seller_stats?.response_time_hours != null
+        ? Number(product.seller_stats.response_time_hours)
+        : null,
+    listingsCount:
+      product.seller_stats?.active_listings != null
+        ? Number(product.seller_stats.active_listings)
+        : null,
+    totalSales:
+      product.seller_stats?.total_sales != null ? Number(product.seller_stats.total_sales) : null,
+    positivePercent:
+      product.seller_stats?.positive_feedback_pct != null
+        ? Number(product.seller_stats.positive_feedback_pct)
+        : null,
+    joinedAt: seller.created_at ?? null,
+    joinedYear: seller.created_at ? new Date(seller.created_at).getFullYear().toString() : null,
+    bio: null,
+  }
 }
 
 export function MobileProductSingleScroll(props: MobileProductSingleScrollProps) {
@@ -151,39 +211,13 @@ export function MobileProductSingleScroll(props: MobileProductSingleScrollProps)
   const viewCount = product.view_count ?? product.viewers_count ?? null;
 
   // Seller preview info
-  const sellerPreview = {
-    id: seller.id,
-    name:
-      viewModel.sellerName || seller?.display_name || seller?.username || username || t("seller"),
-    username: seller?.username ?? null,
-    avatarUrl: viewModel.sellerAvatarUrl ?? seller?.avatar_url ?? null,
-    verified: Boolean(viewModel.sellerVerified || seller?.verified),
-    rating:
-      product.seller_stats?.average_rating != null
-        ? Number(product.seller_stats.average_rating)
-        : null,
-    reviewCount:
-      product.seller_stats?.total_reviews != null
-        ? Number(product.seller_stats.total_reviews)
-        : null,
-    responseTimeHours:
-      product.seller_stats?.response_time_hours != null
-        ? Number(product.seller_stats.response_time_hours)
-        : null,
-    listingsCount:
-      product.seller_stats?.active_listings != null
-        ? Number(product.seller_stats.active_listings)
-        : null,
-    totalSales:
-      product.seller_stats?.total_sales != null ? Number(product.seller_stats.total_sales) : null,
-    positivePercent:
-      product.seller_stats?.positive_feedback_pct != null
-        ? Number(product.seller_stats.positive_feedback_pct)
-        : null,
-    joinedAt: seller?.created_at ?? null,
-    joinedYear: seller?.created_at ? new Date(seller.created_at).getFullYear().toString() : null,
-    bio: null as string | null, // NOTE (BACKLOG-007): Add seller bio when available.
-  };
+  const sellerPreview = buildSellerPreview({
+    product,
+    seller,
+    viewModel,
+    username,
+    sellerLabel: t("seller"),
+  })
 
   const sellerProfileHref = sellerPreview.username ? `/@${sellerPreview.username}` : null;
   const sellerAvatar = safeAvatarSrc(sellerPreview.avatarUrl);

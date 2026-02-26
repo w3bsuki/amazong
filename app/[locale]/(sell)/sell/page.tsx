@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isAiAssistantEnabled } from "@/lib/ai/env"
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SellPageClient } from "./sell-page-client";
 import { getSellCategories } from "./_lib/categories";
@@ -57,6 +58,7 @@ export default async function SellPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const aiAssistantEnabled = isAiAssistantEnabled()
 
   const supabase = await createClient();
   if (!supabase) {
@@ -68,6 +70,7 @@ export default async function SellPage({
         initialUsername={null}
         initialPayoutStatus={null}
         categories={[]}
+        aiAssistantEnabled={aiAssistantEnabled}
         createListingAction={createListing}
       />
     )
@@ -84,6 +87,7 @@ export default async function SellPage({
         initialUsername={null}
         initialPayoutStatus={null}
         categories={[]}
+        aiAssistantEnabled={aiAssistantEnabled}
         createListingAction={createListing}
       />
     )
@@ -125,6 +129,7 @@ export default async function SellPage({
       initialUsername={seller?.username ?? null}
       initialPayoutStatus={payoutStatus ?? null}
       categories={categories}
+      aiAssistantEnabled={aiAssistantEnabled}
       createListingAction={createListing}
     />
   );
